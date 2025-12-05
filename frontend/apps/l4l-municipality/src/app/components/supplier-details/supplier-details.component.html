@@ -1,0 +1,25 @@
+<centric-mat-tab-group [theme]="2" [selectedIndex]="tabIndex" (selectedTabChange)="tabChanged($event)">
+	<centric-mat-tab>
+		<ng-container tab-label>
+			<centric-icon2 [svgIcon]="'shop_b'" [size]="'20'"></centric-icon2>
+			<span>{{ 'general.pages.supplierDetails' | translate }}</span>
+		</ng-container>
+		<ng-container>
+			<frontend-supplier-profile [isReadOnly]="true"></frontend-supplier-profile>
+		</ng-container>
+	</centric-mat-tab>
+
+	<centric-mat-tab>
+		<ng-container tab-label>
+			<centric-icon2 [svgIcon]="'star_b'" [size]="'20'"></centric-icon2>
+			<span>{{ 'general.pages.offers' | translate }}</span>
+		</ng-container>
+		<ng-container>
+			<frontend-offers-for-municipality [supplierId]="supplierId"></frontend-offers-for-municipality>
+		</ng-container>
+	</centric-mat-tab>
+</centric-mat-tab-group>
+
+<ng-template #noData>
+	<frontend-no-data [noDataTitle]="'noDataTitle'" [noDataDescription]="'noDataDescription'"> </frontend-no-data>
+</ng-template>

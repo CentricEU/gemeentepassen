@@ -1,0 +1,7 @@
+export enum GenericStatusEnum {
+	ACTIVE = 'ACTIVE',
+	APPROVED = 'APPROVED',
+	PENDING = 'PENDING',
+	EXPIRED = 'EXPIRED',
+	REJECTED = 'REJECTED',
+}

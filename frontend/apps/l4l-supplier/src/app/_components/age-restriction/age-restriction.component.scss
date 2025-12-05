@@ -1,0 +1,16 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+
+:host {
+	::ng-deep {
+		.other-input-field {
+			.windmill-input {
+				width: 140px;
+			}
+		}
+	}
+
+	form {
+		@include flex(column);
+		gap: 12px;
+	}
+}

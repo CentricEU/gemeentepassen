@@ -1,0 +1,10 @@
+<frontend-table
+	#supplierRequestTable
+	class="table-scroll"
+	[columns]="allColumns"
+	[listLength]="dataCount"
+	[showFooter]="true"
+	[showHeader]="false"
+	(actionButtonClicked)="onActionButtonClicked($event)"
+	(loadDataEvent)="loadData($event)">
+</frontend-table>

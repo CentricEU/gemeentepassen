@@ -1,0 +1,8 @@
+export enum ColumnDataType {
+	CURRENCY,
+	TRANSLATION,
+	DEFAULT,
+	CHIPS,
+	STATUS,
+	REGISTERED,
+}

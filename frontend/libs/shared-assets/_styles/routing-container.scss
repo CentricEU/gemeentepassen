@@ -1,0 +1,12 @@
+@import 'mixins';
+
+:host {
+	::ng-deep {
+		.inside-routing-container {
+			&.active {
+				@include flex(column);
+				padding: 16px;
+			}
+		}
+	}
+}

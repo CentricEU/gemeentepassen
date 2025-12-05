@@ -1,0 +1,8 @@
+@import '../../../../../../libs/shared-assets/_styles/form';
+:host {
+	::ng-deep {
+		centric-input-timepicker2 {
+			width: 252px;
+		}
+	}
+}

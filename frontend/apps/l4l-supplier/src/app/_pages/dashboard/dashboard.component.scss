@@ -1,0 +1,116 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+
+:host {
+	height: 100%;
+	@include flex(column);
+
+	::ng-deep {
+		.centric-alert {
+			@include size(100%);
+		}
+
+		centric-panel {
+			@include size(100%, 100%);
+		}
+
+	}
+}
+
+.dashboard-container {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-template-rows: repeat(4, 1fr);
+	gap: 16px;
+	padding-bottom: 16px;
+	height: calc(100% - 52px);
+}
+
+.welcome {
+	font-size: 24px;
+	font-weight: 700;
+	padding: 16px 0px;
+}
+
+.add-offer-section {
+	grid-column: 1 / 3;
+	grid-row: 1 / 2;
+
+	::ng-deep {
+		.panel-content {
+			display: flex;
+			padding: 32px;
+			gap: 16px;
+		}
+	}
+
+	img {
+		@include size(156px, 132px);
+		max-width: 156px;
+		max-height: 132px;
+		border-radius: 8px;
+		border: 1px solid var(--greyscale-100);
+	}
+
+	.right-section {
+		@include flex(column, center, flex-start);
+		gap: 16px;
+	}
+
+	.empty-logo {
+		@include flex(column, center, center);
+		@include size(160px, 160px);
+		min-width: 160px;
+		border-radius: 8px;
+		background: var(--greyscale-50);
+	}
+
+	centric-icon2 {
+		color: var(--greyscale-400);
+	}
+}
+
+frontend-offers-chart-panel {
+	grid-column: 3 / 5;
+	grid-row: 1 / 3;
+}
+
+frontend-transactions-panel {
+	grid-column: 1 / 3;
+	grid-row: 2 / 5;
+}
+
+frontend-used-offers-panel {
+	grid-column: 3 / 5;
+	grid-row: 3 / 5;
+}
+
+@media only screen and (max-width: 1366px) {
+	.dashboard-container {
+		grid-template-columns: repeat(2, 1fr);
+		grid-template-rows: none;
+		height: fit-content;
+	}
+
+	.add-offer-section {
+		grid-column: 1 / 3;
+		grid-row: 1 / 2;
+	}
+
+
+	frontend-offers-chart-panel {
+		grid-column: 2 / 3;
+		grid-row: 2 / 3;
+	}
+
+	frontend-transactions-panel {
+		grid-column: 1 / 3;
+		grid-row: 3 / 4;
+		height: 384px;
+	}
+
+	frontend-used-offers-panel {
+		grid-column: 3 / 1;
+		grid-row: 4 / 5;
+		height: 384px;
+	}
+}

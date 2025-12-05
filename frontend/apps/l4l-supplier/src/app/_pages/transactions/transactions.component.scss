@@ -1,0 +1,14 @@
+@import '../../../../../../libs/shared-assets/_styles/full-size-pannel';
+
+:host {
+	::ng-deep {
+		.centric-dg th .cell-content-ellipsis,
+		.centric-dg td .cell-content-ellipsis {
+			white-space: normal;
+		}
+	}
+
+	.right-container {
+		gap: 8px;
+	}
+}

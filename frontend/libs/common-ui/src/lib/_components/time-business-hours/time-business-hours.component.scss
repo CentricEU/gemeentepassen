@@ -1,0 +1,21 @@
+@import '../../../../../../libs/shared-assets/_styles/form';
+:host {
+	width: fit-content;
+	&:first-child {
+		margin-top: 16px;
+	}
+	::ng-deep {
+		centric-input-timepicker2 {
+			width: 140px;
+		}
+
+		.form-item-group-inline {
+			align-items: center;
+			gap: 64px !important;
+		}
+
+		.day-checkbox {
+			width: 120px;
+		}
+	}
+}

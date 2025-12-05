@@ -1,0 +1,105 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
+@use '../../../../../../libs/shared-assets/_styles/common-spacing.scss' as spacing;
+
+$gap-large: spacing.$common-spacing * 15;
+
+:host {
+	height: 100%;
+}
+::ng-deep {
+	.centric-complex-form centric-form-item centric-form-control > *:not(centric-button) {
+		width: 356px;
+	}
+}
+
+.validation-container {
+	@include mixins.flex(column, center, center);
+	padding-top: 80px;
+	height: 100%;
+}
+
+.validation-title {
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: spacing.$common-spacing;
+}
+
+.subtitle {
+	margin-bottom: spacing.$gap-medium;
+}
+
+.validation {
+	@include mixins.flex(row, center, flex-start);
+	gap: spacing.$common-spacing;
+}
+
+.validated-codes-title {
+	padding: 100px 0 24px;
+}
+
+.validated-codes-flex {
+	@include mixins.flex(column, $align: flex-start);
+	height: calc(100% - 304px);
+	flex-wrap: wrap;
+	column-gap: $gap-large;
+	overflow-x: auto;
+}
+
+.date {
+	@include mixins.flex(column, center, flex-start);
+	height: 40px;
+}
+
+.date-text {
+	color: var(--status-success-500);
+}
+
+.validated-code-item {
+	@include mixins.flex(row, $align: center);
+	font-size: spacing.$gap-small;
+	gap: spacing.$gap-medium;
+	height: 40px;
+}
+
+.code {
+	font-size: 14px;
+	width: 60px;
+}
+
+.clock {
+	@include mixins.flex(row, $align: center);
+	gap: 4px;
+}
+
+.time,
+.clock-icon {
+	color: var(--greyscale-600);
+}
+
+.time {
+	font-size: 12px;
+}
+
+.validation-message {
+	@include mixins.flex(row, center, flex-start);
+	gap: spacing.$common-spacing;
+	background-color: var(--greyscale-0);
+	padding: spacing.$common-spacing;
+	width: 100%;
+}
+
+.error-icon,
+.error-message {
+	color: var(--status-danger-500);
+}
+
+.success-icon,
+.success-message {
+	color: var(--status-success-500);
+}
+
+.validation-section {
+	@include mixins.flex(column, center, flex-start);
+	width: fit-content;
+	gap: spacing.$gap-medium;
+}

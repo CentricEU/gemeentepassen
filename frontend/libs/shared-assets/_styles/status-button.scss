@@ -1,0 +1,17 @@
+.l4l-status-button {
+	border-radius: 4px;
+	padding: 4px;
+	font-size: 14px;
+}
+
+.danger {
+	@extend .l4l-status-button;
+	background-color: var(--status-danger-100);
+	color: var(--status-danger-900) !important;
+}
+
+.success {
+	@extend .l4l-status-button;
+	background-color: var(--status-success-100);
+	color: var(--status-success-900) !important;
+}

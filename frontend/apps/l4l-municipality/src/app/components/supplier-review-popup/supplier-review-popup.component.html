@@ -1,0 +1,104 @@
+<section mat-dialog-title>
+	<h3>
+		{{ 'suppliersApproval.reviewSuppliers' | translate }}
+	</h3>
+	<button
+		ariaAttributes
+		windmill-tooltip
+		class="close-button"
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[tooltipColor]="'theme'"
+		[tooltipText]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'contactInformation.branchProvincePlaceholder'"
+		(click)="close()">
+		<centric-icon2 ariaAttributes [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+	</button>
+</section>
+
+<section mat-dialog-content *ngIf="!isRejecting; else supplierRejectionForm">
+	<div class="half-width">
+		<div class="form-header">
+			<p class="generic-color-text bold">{{ 'generalInformation.header' | translate }}</p>
+		</div>
+		<frontend-general-information [isReadonly]="true"></frontend-general-information>
+	</div>
+	<div class="half-width">
+		<div class="form-header">
+			<p class="generic-color-text bold">{{ 'contactInformation.header' | translate }}</p>
+		</div>
+		<frontend-contact-information [isReadonly]="true"></frontend-contact-information>
+	</div>
+</section>
+<ng-template #supplierRejectionForm>
+	<section mat-dialog-content>
+		<form centric-complex-form [formGroup]="rejectSupplierForm">
+			<centric-form-item>
+				<centric-form-label>{{ 'generalRejection.reason' | translate }}</centric-form-label>
+				<centric-form-control frontendRequiredInput>
+					<ng-container *ngIf="reasonUpdatedSource">
+						<windmill-dropdown-search
+							ariaAttributes
+							formControlName="rejectionReason"
+							dropdownPlaceholder="{{ 'rejectSupplier.placeHolderReason' | translate }}"
+							[source]="reasonUpdatedSource"
+							[hasClearIcon]="true"
+							[ariaLabelTranslation]="'generalRejection.reason'"
+							[validationFunction]="validationFunctionError.bind(this, 'reason', rejectSupplierForm)"
+							(searchValueChange)="onSearchValueChanged($event)">
+							<ng-container errors *ngIf="hasFormControlRequiredErrors('reason', rejectSupplierForm)">
+								<span class="centric-error-message"
+									>{{ 'generalRejection.reasonRequired' | translate }}
+								</span>
+							</ng-container>
+						</windmill-dropdown-search>
+					</ng-container>
+				</centric-form-control>
+			</centric-form-item>
+			<centric-form-item>
+				<centric-form-label>{{ 'rejectSupplier.comments' | translate }}</centric-form-label>
+				<centric-form-control>
+					<centric-textarea2
+						ariaAttributes
+						frontendHtmlContentValidator
+						ariaLabelClearIcon
+						formControlName="rejectionComments"
+						[ariaLabel]="'Add a comment'"
+						[maxLength]="1024"
+						[counterMessages]="counterMessages"
+						[ariaLabelTranslation]="'rejectSupplier.placeHolderComments'"
+						[ariaLabelClearIcon]="'rejectSupplier.placeHolderComments' | translate"
+						[placeholder]="'rejectSupplier.placeHolderComments' | translate">
+					</centric-textarea2>
+				</centric-form-control>
+				<ng-container errors *ngIf="rejectSupplierForm.get('rejectionComments')?.hasError('isHTML')">
+					<span class="centric-error-message">
+						{{ 'errors.htmlContent' | translate }}
+					</span>
+				</ng-container>
+			</centric-form-item>
+		</form>
+	</section>
+</ng-template>
+
+<section mat-dialog-actions *ngIf="!isRejecting; else supplierRejectionActions">
+	<centric-button type="button-link-dark" (click)="close()">{{ 'general.button.cancel' | translate }}</centric-button>
+	<centric-button type="button-theme" (click)="setIsRejecting(true)">{{
+		'general.reject' | translate
+	}}</centric-button>
+	<centric-button ariaAttributes [type]="data.acceptButtonType" (click)="approveSupplier()">
+		{{ 'general.approve' | translate }}
+	</centric-button>
+</section>
+<ng-template #supplierRejectionActions>
+	<section mat-dialog-actions>
+		<centric-button type="button-link-dark" (click)="close()">
+			{{ 'general.button.cancel' | translate }}</centric-button
+		>
+		<centric-button type="button-theme" (click)="setIsRejecting(false)">
+			{{ 'general.button.back' | translate }}</centric-button
+		>
+		<centric-button [disabled]="!rejectSupplierForm.valid" (click)="rejectSupplier()">
+			{{ 'general.reject' | translate }}
+		</centric-button>
+	</section>
+</ng-template>

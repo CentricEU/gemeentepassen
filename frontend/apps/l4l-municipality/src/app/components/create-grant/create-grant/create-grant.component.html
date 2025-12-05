@@ -1,0 +1,154 @@
+<section mat-dialog-title>
+	<h3>
+		{{ title | translate }}
+	</h3>
+	<button
+		ariaAttributes
+		class="close-button"
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="close()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'16'"></centric-icon2>
+	</button>
+</section>
+<div mat-dialog-content>
+	<form centric-complex-form [formGroup]="createGrantForm">
+		<centric-form-item>
+			<centric-form-label>{{ 'grants.title' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<windmill-input
+					ariaAttributes
+					frontendHtmlContentValidator
+					ariaLabelClearIcon
+					formControlName="title"
+					[placeholder]="'grants.titlePlaceholder' | translate"
+					[maxLength]="256"
+					[hasClearIcon]="true"
+					[ariaLabelTranslation]="'grants.titlePlaceholder'"
+					[validationFunction]="validationFunctionError.bind(this, 'title', createGrantForm)">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('title', createGrantForm)">
+						<span class="centric-error-message">
+							{{ getErrorMessageFormInputs('title') }}
+						</span>
+					</ng-container>
+					<ng-container errors *ngIf="createGrantForm.get('title')?.hasError('isHTML')">
+						<span class="centric-error-message">
+							{{ 'errors.htmlContent' | translate }}
+						</span>
+					</ng-container>
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'grants.description' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<centric-textarea2
+					ariaAttributes
+					frontendHtmlContentValidator
+					ariaLabelClearIcon
+					formControlName="description"
+					[placeholder]="'grants.descriptionPlaceholder' | translate"
+					[ariaLabelTranslation]="'grants.descriptionPlaceholder'"
+					[counterMessages]="counterMessages"
+					[maxLength]="1024"
+					[validationFunction]="validationFunctionError.bind(this, 'description', createGrantForm)">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('description', createGrantForm)">
+						<span class="centric-error-message">
+							{{ getErrorMessageFormInputs('description') }}
+						</span>
+					</ng-container>
+					<ng-container errors *ngIf="createGrantForm.get('description')?.hasError('isHTML')">
+						<span class="centric-error-message">
+							{{ 'errors.htmlContent' | translate }}
+						</span>
+					</ng-container>
+				</centric-textarea2>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'general.amount' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<windmill-input
+					frontendNumericalInput
+					ariaAttributes
+					ariaLabelClearIcon
+					formControlName="amount"
+					[placeholder]="'grants.amountPlaceholder' | translate"
+					[maxLength]="256"
+					[hasClearIcon]="true"
+					[ariaLabelTranslation]="'grants.amountPlaceholder'"
+					[validationFunction]="validationFunctionError.bind(this, 'amount', createGrantForm)">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('amount', createGrantForm)">
+						<span class="centric-error-message">
+							{{ getErrorMessageFormInputs('amount') }}
+						</span>
+					</ng-container>
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'grants.createdFor' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<centric-radio-group formControlName="createFor" [inline]="true">
+					<centric-radio
+						*ngFor="let holder of typeOfHolder"
+						[value]="holder"
+						[ariaLabel]="holder | translate"
+						[label]="holder | translate">
+					</centric-radio>
+				</centric-radio-group>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item-group [type]="'inline'">
+			<centric-form-item>
+				<centric-form-label>{{ 'grants.validity' | translate }}</centric-form-label>
+				<centric-form-control role="group" frontendRequiredInput>
+					<section class="validity">
+						<label class="time-label"> {{ 'general.from' | translate }} </label>
+						<windmill-date-picker
+							formControlName="startDate"
+							(dateChange)="onStartDateChange()"
+							[placeholder]="'general.dateFormat' | translate"
+							[hasClearIcon]="true"
+							[ariaLabel]="'startDate'"
+							[ariaLabelClearIcon]="'general.label.close' | translate"
+							[validationFunction]="validationFunctionError.bind(this, 'startDate', createGrantForm)">
+						</windmill-date-picker>
+
+						<label class="time-label"> {{ 'general.to' | translate }} </label>
+						<windmill-date-picker
+							formControlName="expirationDate"
+							[placeholder]="'general.dateFormat' | translate"
+							[hasClearIcon]="true"
+							[ariaLabel]="'expirationDate'"
+							[min]="expirationDateInit(createGrantForm.controls['startDate'].value, isEditable)"
+							[ariaLabelClearIcon]="'general.label.close' | translate"
+							[validationFunction]="
+								validationFunctionError.bind(this, 'expirationDate', createGrantForm)
+							">
+						</windmill-date-picker>
+					</section>
+				</centric-form-control>
+				<ng-container errors *ngIf="displayValidityError()">
+					<div class="states-messages">
+						<span class="centric-error-message">
+							{{ getErrorMessageFormInputs('validity') }}
+						</span>
+					</div>
+				</ng-container>
+			</centric-form-item>
+		</centric-form-item-group>
+	</form>
+</div>
+<section mat-dialog-actions>
+	<centric-button ariaAttributes type="button-link-dark" (click)="close()">
+		{{ 'general.button.cancel' | translate }}
+	</centric-button>
+	<centric-button ariaAttributes [disabled]="!isFormValid()" (click)="saveGrant()">
+		{{ 'general.button.save' | translate }}
+	</centric-button>
+</section>

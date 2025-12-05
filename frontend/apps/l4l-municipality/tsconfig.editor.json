@@ -1,0 +1,7 @@
+{
+	"extends": "./tsconfig.json",
+	"include": ["src/**/*.ts", "../../libs/common-ui/src/lib/_interceptors/error-catching.interceptor.ts"],
+	"compilerOptions": {
+		"types": ["jest", "node"]
+	}
+}

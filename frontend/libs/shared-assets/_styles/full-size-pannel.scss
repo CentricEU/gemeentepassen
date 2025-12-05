@@ -1,0 +1,22 @@
+:host {
+	height: 100%;
+
+	::ng-deep {
+		.full-size-panel,
+		.panel-content {
+			height: 100%;
+		}
+
+		table {
+			overflow: unset; //this is for fixint double-scroll on table.
+		}
+
+		.table-pannel {
+			.centric-panel-container {
+				max-height: calc(
+					100vh - 80px
+				); // 120 = 64px(app.component padding ) + (24+ 32)(breadcrumbs with padding);
+			}
+		}
+	}
+}

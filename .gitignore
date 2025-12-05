@@ -1,0 +1,47 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+/backend/local4local/.metadata/.lock
+/backend/local4local/.metadata/.mylyn/.taskListIndex/segments_1
+/backend/local4local/.metadata/.mylyn/.taskListIndex/write.lock
+/backend/local4local/.metadata/.plugins/org.eclipse.core.resources/.root/.indexes/history.version
+/backend/local4local/.metadata/.plugins/org.eclipse.core.resources/.root/.indexes/properties.index
+/backend/local4local/.metadata/.plugins/org.eclipse.core.resources/.root/.indexes/properties.version
+/backend/local4local/.metadata/.plugins/org.eclipse.core.resources/.root/2.tree
+/backend/local4local/.metadata/.plugins/org.eclipse.core.resources/.safetable/org.eclipse.core.resources
+/backend/local4local/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi
+/backend/local4local/.metadata/.plugins/org.eclipse.jdt.core/assumedExternalFilesCache
+/backend/local4local/.metadata/.plugins/org.eclipse.jdt.core/externalFilesCache
+/backend/local4local/.metadata/.plugins/org.eclipse.jdt.core/nonChainingJarsCache
+/backend/local4local/.metadata/.plugins/org.eclipse.jdt.core/variablesAndContainers.dat
+/backend/local4local/.metadata/.plugins/org.eclipse.jdt.ui/OpenTypeHistory.xml
+/backend/local4local/.metadata/.plugins/org.eclipse.jdt.ui/QualifiedTypeNameHistory.xml
+/backend/local4local/.metadata/.plugins/org.eclipse.jdt.ui/dialog_settings.xml
+/backend/local4local/.metadata/.plugins/org.eclipse.m2e.logback.configuration/logback.1.15.0.20191217-1149.xml
+/backend/local4local/.metadata/.plugins/org.eclipse.oomph.setup/workspace.setup
+/backend/local4local/.metadata/.plugins/org.eclipse.tips.ide/dialog_settings.xml
+/backend/local4local/.metadata/.plugins/org.eclipse.ui.ide/dialog_settings.xml
+/backend/local4local/.metadata/.plugins/org.eclipse.ui.intro/introstate
+/backend/local4local/.metadata/.plugins/org.eclipse.ui.workbench/workingsets.xml
+/backend/local4local/.metadata/version.ini
+/mobile/Local4Local/android/local.properties

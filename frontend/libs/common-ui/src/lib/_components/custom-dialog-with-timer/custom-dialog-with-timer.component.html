@@ -1,0 +1,9 @@
+<frontend-custom-dialog [customButton]="isCustomDialogWithButton">
+	<centric-button
+		[id]="data.acceptButtonText"
+		[type]="data.acceptButtonType"
+		[disabled]="shouldDisableButton()"
+		(click)="buttonClick()">
+		{{ (data.acceptButtonText | translate) + (shouldDisableButton() ? ' (' + remainingTime + 's)' : '') }}
+	</centric-button>
+</frontend-custom-dialog>

@@ -1,0 +1,29 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+@import '../../../../../../libs/shared-assets/_styles/pallete';
+
+:host {
+	.footer-actions {
+		gap: 16px;
+	}
+
+	::ng-deep {
+		centric-panel {
+			height: 100%;
+		}
+
+		.panel-content {
+			@include flex(column, flex-start, flex-start);
+			gap: 16px;
+			height: 100%;
+			padding: 32px;
+			overflow-y: scroll;
+		}
+
+		.custom-right-container {
+			@include flex(row, flex-end, center);
+			align-self: center !important;
+			color: var(--greyscale-500) !important;
+			font-weight: bold;
+		}
+	}
+}

@@ -1,0 +1,16 @@
+	CREATE TYPE l4l_global.created_for AS ENUM (
+    'PASS_OWNER',
+    'PASS_CHILD'
+	);
+
+	CREATE TABLE l4l_security.grants (
+        id uuid DEFAULT uuid_generate_v1() PRIMARY KEY,
+        title character varying(255) NOT NULL,
+        description character varying(1024) NOT NULL,
+        amount integer NOT NULL,
+        create_for l4l_global.created_for DEFAULT 'PASS_OWNER',
+        created_date timestamp without time zone DEFAULT now() NOT NULL,
+        start_date timestamp without time zone DEFAULT now() NOT NULL,
+        expiration_date timestamp without time zone NOT NULL
+    );
+

@@ -1,0 +1,28 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+
+:host {
+	display: block;
+	width: 100%;
+	.working-hours {
+		@include flex(row, space-between, center);
+	}
+
+	.setup-schedule {
+		@include flex(row, start, center);
+		gap: 16px;
+		margin-top: 16px;
+	}
+
+	.container {
+		@include flex(column);
+	}
+
+	.days-data-panel {
+		@include flex(row, start, center);
+		gap: 64px;
+	}
+
+	.day {
+		width: 100px;
+	}
+}

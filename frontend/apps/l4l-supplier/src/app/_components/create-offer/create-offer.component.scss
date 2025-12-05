@@ -1,0 +1,15 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+@import '../../../../../../libs/shared-assets/_styles/form';
+
+:host {
+	form {
+		width: 100%;
+	}
+}
+.restrictions-section {
+	@include flex(column, $gap: 16px);
+}
+
+.restriction-items-section {
+	@include flex(column, $gap: 24px);
+}

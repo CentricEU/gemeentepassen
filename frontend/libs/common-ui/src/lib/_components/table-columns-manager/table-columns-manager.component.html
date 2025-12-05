@@ -1,0 +1,40 @@
+<span mat-dialog-title>
+	<h1>{{ 'modal.manageColumns.title' | translate }}</h1>
+	<ng-container *ngIf="!data.hideCancelButton">
+		<button
+			mat-dialog-close
+			windmill-tooltip
+			class="close-button"
+			ariaAttributes
+			[ariaLabelTranslation]="'general.button.close' | translate"
+			[attr.ariaLabel]="'general.button.close' | translate"
+			[tooltipText]="'general.button.close' | translate"
+			(click)="close()">
+			<centric-icon2 [svgIcon]="'cancel_b'" [size]="'16'"></centric-icon2>
+		</button>
+	</ng-container>
+</span>
+<div mat-dialog-content>
+	<p class="modal-description">{{ 'modal.manageColumns.description' | translate }}</p>
+	<section class="columns-section">
+		<ng-container *ngFor="let item of tableColumns">
+			<ng-container *ngIf="!item.isFixed">
+				<windmill-checkbox
+					ariaAttributes
+					[ariaLabelTranslation]="item.columnLabel | translate"
+					[(ngModel)]="item.isChecked"
+					[disabled]="!!item.isDefault"
+					[label]="item.columnLabel | translate">
+				</windmill-checkbox>
+			</ng-container>
+		</ng-container>
+	</section>
+</div>
+<div mat-dialog-actions>
+	<centric-button type="button-link-dark" (click)="close()">
+		{{ 'general.button.cancel' | translate }}
+	</centric-button>
+	<centric-button [disabled]="isButtonDisabled()" (click)="accept()">
+		{{ 'general.button.applyChanges' | translate }}
+	</centric-button>
+</div>

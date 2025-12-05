@@ -1,0 +1,58 @@
+<ng-container [formGroup]="hoursForm">
+	<centric-form-item-group [type]="'inline'">
+		<centric-form-control class="day-checkbox">
+			<windmill-checkbox
+				formControlName="isEnabled"
+				[label]="'general.weekdays.' + day | translate"
+				[id]="dayUppercase">
+			</windmill-checkbox>
+		</centric-form-control>
+		<ng-container formGroupName="schedule">
+			<centric-form-item>
+				<centric-form-control role="group">
+					<section class="validity">
+						<label class="time-label"> {{ 'general.from' | translate }} </label>
+						<centric-input-timepicker2
+							formControlName="start"
+							[ariaLabel]="'general.timePicker.timeFrom' | translate"
+							[ariaLabelTimepickerIcon]="'general.timePicker.timePickerIcon' | translate"
+							[id]="'id-time-from'"
+							[placeholder]="'general.hourFormat' | translate"
+							[hasClearIcon]="true"
+							[ariaLabelClearIcon]="'general.button.close'"
+							[validationFunction]="validationFunction.bind(this, 'start')"
+							(ngModelChange)="onFieldsCleanValidators(schedule, 'start', 'end', 'start', $event)">
+						</centric-input-timepicker2>
+
+						<label class="time-label"> {{ 'general.to' | translate }} </label>
+						<centric-input-timepicker2
+							formControlName="end"
+							[ariaLabel]="'general.timePicker.timeTo' | translate"
+							[ariaLabelTimepickerIcon]="'general.timePicker.timePickerIcon' | translate"
+							[id]="'id-time-to'"
+							[placeholder]="'general.hourFormat' | translate"
+							[hasClearIcon]="true"
+							[ariaLabelClearIcon]="'general.button.close'"
+							[validationFunction]="validationFunction.bind(this, 'end')"
+							(ngModelChange)="onFieldsCleanValidators(schedule, 'start', 'end', 'end', $event)">
+						</centric-input-timepicker2>
+					</section>
+				</centric-form-control>
+				<ng-container errors *ngIf="displayValidityError('start', 'end')">
+					<div class="states-messages">
+						<span class="centric-error-message">
+							{{ 'workingHours.timeSlotsFormControlRequired' | translate }}
+						</span>
+					</div>
+				</ng-container>
+				<ng-container errors *ngIf="shouldDisplayCompareDoubleFieldError(schedule, 'start', 'end')">
+					<div class="states-messages">
+						<span class="centric-error-message">
+							{{ 'general.timePicker.timeSlotCompareError' | translate }}
+						</span>
+					</div>
+				</ng-container>
+			</centric-form-item>
+		</ng-container>
+	</centric-form-item-group>
+</ng-container>

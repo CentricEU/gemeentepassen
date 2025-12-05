@@ -1,0 +1,96 @@
+<section mat-dialog-title>
+	<h3>
+		{{ 'offer.approve.review' | translate }}
+	</h3>
+	<button
+		ariaAttributes
+		windmill-tooltip
+		class="close-button"
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[tooltipColor]="'theme'"
+		[tooltipText]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="close()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+	</button>
+</section>
+
+<section mat-dialog-content class="offer-information" *ngIf="!isRejecting; else offerRejectionForm">
+	<div class="half-width">
+		<div class="form-header">
+			<p class="generic-color-text bold">{{ 'offer.approve.titleLeft' | translate }}</p>
+		</div>
+		<frontend-offer-information [offer]="data.offer"></frontend-offer-information>
+	</div>
+	<div class="half-width">
+		<div class="form-header">
+			<p class="generic-color-text bold">{{ 'offer.approve.titleRight' | translate }}</p>
+		</div>
+		<frontend-general-information [isReadonly]="true"></frontend-general-information>
+	</div>
+</section>
+<ng-template #offerRejectionForm>
+	<section mat-dialog-content>
+		<form centric-complex-form [formGroup]="rejectionForm">
+			<centric-form-item>
+				<centric-form-label>
+					{{ 'generalRejection.reason' | translate }}
+				</centric-form-label>
+				<centric-form-control frontendRequiredInput>
+					<centric-textarea2
+						frontendHtmlContentValidator
+						ariaAttributes
+						ariaLabelClearIcon
+						formControlName="rejectionReason"
+						[ariaLabel]="'rejectOffer.placeholderReason' | translate"
+						[maxLength]="1024"
+						[counterMessages]="counterMessages"
+						[ariaLabelTranslation]="'rejectOffer.placeholderReason'"
+						[ariaLabelClearIcon]="'rejectOffer.placeholderReason' | translate"
+						[placeholder]="'rejectOffer.placeholderReason' | translate"
+						[validationFunction]="validationFunctionError.bind(this, 'rejectionReason', rejectionForm)">
+						<ng-container errors *ngIf="rejectionForm.get('rejectionReason')?.hasError('isHTML')">
+							<span class="centric-error-message">
+								{{ 'errors.htmlContent' | translate }}
+							</span>
+						</ng-container>
+						<ng-container
+							errors
+							*ngIf="hasFormControlRequiredErrors('rejectionReason', rejectionForm)">
+							<span class="centric-error-message">
+								{{ 'rejectOffer.errorRequired' | translate }}
+							</span>
+						</ng-container>
+					</centric-textarea2>
+				</centric-form-control>
+			</centric-form-item>
+		</form>
+	</section>
+</ng-template>
+
+<section mat-dialog-actions *ngIf="!isRejecting; else rejectionActions">
+	<centric-button type="button-link-dark" (click)="close()">{{ 'general.button.cancel' | translate }}</centric-button>
+	<centric-button type="button-theme" (click)="setIsRejecting(true)">{{
+		'general.reject' | translate
+	}}</centric-button>
+	<centric-button ariaAttributes [type]="data.acceptButtonType" (click)="approveOffer()">
+		{{ 'general.approve' | translate }}
+	</centric-button>
+</section>
+<ng-template #rejectionActions>
+	<section mat-dialog-actions>
+		<centric-button type="button-link-dark" (click)="close()">{{
+			'general.button.cancel' | translate
+		}}</centric-button>
+		<centric-button type="button-theme" (click)="setIsRejecting(false)">{{
+			'general.back' | translate
+		}}</centric-button>
+		<centric-button
+			ariaAttributes
+			[type]="data.acceptButtonType"
+			(click)="rejectOffer()"
+			[disabled]="!rejectionForm.valid">
+			{{ 'general.reject' | translate }}
+		</centric-button>
+	</section>
+</ng-template>

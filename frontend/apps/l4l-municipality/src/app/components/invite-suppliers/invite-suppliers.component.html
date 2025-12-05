@@ -1,0 +1,79 @@
+<section mat-dialog-title>
+	<h3>{{ 'general.inviteSuppliers' | translate }}</h3>
+	<button
+		class="close-button"
+		ariaAttributes
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="close()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+	</button>
+</section>
+<section mat-dialog-content>
+	<form centric-complex-form [formGroup]="inviteSuppliersForm">
+		<centric-form-item>
+			<centric-form-label>{{ 'inviteSuppliers.invitationMessage' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<centric-textarea2
+					ariaAttributes
+					frontendHtmlContentValidator
+					formControlName="invitationMessage"
+					[ariaLabelClearIcon]="'general.label.clear' | translate"
+					[placeholder]="'inviteSuppliers.invitationDescription' | translate"
+					[maxLength]="1024"
+					[counterMessages]="counterMessages"
+					[validationFunction]="validationFunctionError.bind(this, 'invitationMessage', inviteSuppliersForm)">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('invitationMessage', inviteSuppliersForm)">
+						<span class="centric-error-message">
+							{{ 'inviteSuppliers.invitationMessageRequired' | translate }}
+						</span>
+					</ng-container>
+					<ng-container errors *ngIf="inviteSuppliersForm.get('invitationMessage')?.hasError('isHTML')">
+						<span class="centric-error-message">
+							{{ 'errors.htmlContent' | translate }}
+						</span>
+					</ng-container>
+				</centric-textarea2>
+			</centric-form-control>
+		</centric-form-item>
+		<centric-form-item>
+			<centric-form-label>{{ 'genericFields.email.title' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<windmill-input
+					ariaAttributes
+					formControlName="email"
+					(keydown)="handleKeydown($event)"
+					[ariaLabelClearIcon]="'general.label.clear' | translate"
+					[attr.ariaLabel]="'genericFields.email.title' | translate"
+					[ariaLabelTranslation]="'genericFields.email.title'">
+					<ng-container hints>
+						<p>{{ 'inviteSuppliers.hintMessage' | translate }}</p>
+					</ng-container>
+				</windmill-input>
+			</centric-form-control>
+			<centric-chips-list class="email-chip-list">
+				<centric-chip
+					class="email-chip"
+					*ngFor="let email of supplierEmails"
+					[message]="email"
+					[hasTitle]="true"
+					(deleteChip)="removeEmailFromList(email)"
+					[ariaLabelDeleteButton]="'general.label.clear' | translate">
+				</centric-chip>
+			</centric-chips-list>
+			<ng-container *ngIf="emailError">
+				<span class="email-error-message">
+					{{ emailError | translate }}
+				</span>
+			</ng-container>
+		</centric-form-item>
+	</form>
+</section>
+<section mat-dialog-actions>
+	<centric-button ariaAttributes type="button-link-dark" (click)="close()">
+		{{ 'general.button.cancel' | translate }}
+	</centric-button>
+	<centric-button ariaAttributes (click)="sendInvitations()" [disabled]="!isFormValid()">
+		{{ 'general.button.sendInvite' | translate }}
+	</centric-button>
+</section>

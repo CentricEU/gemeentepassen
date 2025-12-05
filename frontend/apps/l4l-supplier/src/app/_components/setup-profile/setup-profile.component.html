@@ -1,0 +1,66 @@
+<ng-container>
+	<span mat-dialog-title>
+		<h3>
+			{{ 'setupProfile.setup' | translate }}
+		</h3>
+	</span>
+	<div mat-dialog-content>
+		<div class="stepper-container" tabindex="0">
+			<centric-horizontal-stepper #horizontalStepper [linear]="true" [disableInactiveSteps]="true">
+				<centric-step [stepControl]="generalInformationForm">
+					<ng-template centricStepLabel>
+						<span class="line-clamp-{{ maxLines }}"> {{ 'generalInformation.header' | translate }} </span>
+					</ng-template>
+					<frontend-general-information
+						#generalInformation
+						(selectedSupplierEvent)="onCurrentSupplierId($event)"></frontend-general-information>
+				</centric-step>
+
+				<centric-step [stepControl]="contactInformation.contactInformationForm">
+					<ng-template centricStepLabel>
+						<span class="line-clamp-{{ maxLines }}">{{ 'contactInformation.header' | translate }} </span>
+					</ng-template>
+					<frontend-contact-information #contactInformation></frontend-contact-information>
+				</centric-step>
+
+				<centric-step [stepControl]="workingHoursEdit.workingHoursForm">
+					<ng-template centricStepLabel>
+						<span class="line-clamp-{{ maxLines }}">{{ 'workingHours.header' | translate }} </span>
+					</ng-template>
+					<frontend-working-hours-edit #workingHoursEdit></frontend-working-hours-edit>
+				</centric-step>
+			</centric-horizontal-stepper>
+		</div>
+	</div>
+	<div mat-dialog-actions>
+		<centric-button type="button-link-dark" [id]="data.acceptButtonText" [size]="'small'" (click)="logout()">{{
+			'general.logout' | translate
+		}}</centric-button>
+		<centric-button
+			type="button-theme"
+			[disabled]="shouldDisableBackButton()"
+			[size]="'small'"
+			(click)="goToPreviousStep()">
+			{{ 'general.back' | translate }}
+		</centric-button>
+		<ng-container *ngIf="shouldShowNextButton()">
+			<centric-button
+				ariaAttributes
+				[disabled]="shouldDisableNextButton()"
+				[size]="'small'"
+				(click)="goToNextStep()"
+				>{{ 'generalInformation.next' | translate }}</centric-button
+			>
+		</ng-container>
+		<ng-container *ngIf="shouldShowFinishButton()">
+			<centric-button
+				ariaAttributes
+				[id]="data.acceptButtonText"
+				[size]="'small'"
+				[disabled]="shouldDisableFinishButton()"
+				(click)="saveSupplierSetupProfile()">
+				{{ 'setupProfile.finish' | translate }}
+			</centric-button>
+		</ng-container>
+	</div>
+</ng-container>

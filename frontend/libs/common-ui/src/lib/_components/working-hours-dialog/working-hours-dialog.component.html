@@ -1,0 +1,25 @@
+<section mat-dialog-title>
+	<h3>
+		{{ 'workingHours.editSchedule' | translate }}
+	</h3>
+	<button
+		ariaAttributes
+		mat-dialog-close
+		class="close-button"
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="closePopup()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'16'"></centric-icon2>
+	</button>
+</section>
+<div mat-dialog-content>
+	<frontend-working-hours-edit #workingHoursEdit [workingHoursData]="workingHoursData"></frontend-working-hours-edit>
+</div>
+<section mat-dialog-actions>
+	<centric-button type="button-link-dark" (click)="closePopup()">
+		{{ 'general.button.cancel' | translate }}
+	</centric-button>
+	<centric-button [disabled]="!workingHoursEdit.isFormValid()" (click)="updateHours()">
+		{{ 'general.button.save' | translate }}
+	</centric-button>
+</section>

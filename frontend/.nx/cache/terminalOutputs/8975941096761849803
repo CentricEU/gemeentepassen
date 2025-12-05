@@ -1,0 +1,108 @@
+- Generating browser application bundles (phase: setup)...
+[32m✔[39m Browser application bundle generation complete.
+[37m[0m[0m[39m
+[37m[0m[1mInitial chunk files[22m  [2m | [22m[1mNames[22m        [2m | [22m [1mRaw size[22m[0m[39m
+[37m[0m[32mvendor.js[39m[37m            [2m | [22m[2mvendor[22m       [2m | [22m [36m10.80 MB[39m[37m[2m | [22m[0m[39m
+[37m[0m[32mmain.js[39m[37m              [2m | [22m[2mmain[22m         [2m | [22m  [36m1.53 MB[39m[37m[2m | [22m[0m[39m
+[37m[0m[32mstyles.css, styles.js[39m[37m[2m | [22m[2mstyles[22m       [2m | [22m  [36m1.11 MB[39m[37m[2m | [22m[0m[39m
+[37m[0m[32mpolyfills.js[39m[37m         [2m | [22m[2mpolyfills[22m    [2m | [22m[36m238.94 kB[39m[37m[2m | [22m[0m[39m
+[37m[0m[32mruntime.js[39m[37m           [2m | [22m[2mruntime[22m      [2m | [22m  [36m8.56 kB[39m[37m[2m | [22m[0m[39m
+[37m[0m[0m[39m
+[37m[0m[1m [22m                    [2m | [22m[1mInitial total[22m[2m | [22m [1m13.69 MB[22m[0m[39m
+[37m[0m[0m[39m
+[37m[0mBuild at: [1m[37m2025-11-27T15:36:19.569Z[39m[37m[22m - Hash: [1m[37md2293fdb1f901cc5[39m[37m[22m - Time: [1m[37m11061[39m[37m[22mms[0m[39m
+[1m[33m[39m[22m
+[1m[33m[0m[33mWarning: [39m[33m[0mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-municipality\src\app\components\generate-invoice\generate-invoice.component.ts depends on 'moment'. CommonJS or AMD dependencies can cause optimization bailouts.[39m[22m
+[1m[33mFor more info see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies[39m[22m
+[1m[33m[39m[22m
+[1m[33m[0m[33mWarning: [39m[33m[0mC:\Denis_Projects\L4L\Local4Local\frontend\node_modules\angular-iban\fesm2022\angular-iban.mjs depends on 'iban'. CommonJS or AMD dependencies can cause optimization bailouts.[39m[22m
+[1m[33mFor more info see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies[39m[22m
+[1m[33m[39m[22m
+[1m[33m[0m[33mWarning: [39m[33m[0mC:\Denis_Projects\L4L\Local4Local\frontend\node_modules\ol\layer\BaseVector.js depends on 'rbush'. CommonJS or AMD dependencies can cause optimization bailouts.[39m[22m
+[1m[33mFor more info see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies[39m[22m
+[1m[33m[39m[22m
+[1m[33m[0m[33mWarning: [39m[33m[0mC:\Denis_Projects\L4L\Local4Local\frontend\node_modules\ol\render\webgl\utils.js depends on 'earcut'. CommonJS or AMD dependencies can cause optimization bailouts.[39m[22m
+[1m[33mFor more info see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies[39m[22m
+[1m[33m[39m[22m
+[1m[33m[39m[22m
+[37m[39m
+[37m** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **[39m
+[37m[39m
+[37m[39m
+[37m[92m√[39m[37m Compiled successfully.[39m
+[32m✔[39m Browser application bundle generation complete.
+[37m[0m[0m[39m
+[37m[0m[1mInitial chunk files[22m[2m | [22m[1mNames[22m  [2m | [22m[1mRaw size[22m[0m[39m
+[37m[0m[32mruntime.js[39m[37m         [2m | [22m[2mruntime[22m[2m | [22m [36m8.56 kB[39m[37m[2m | [22m[0m[39m
+[37m[0m[0m[39m
+[37m[0m4 unchanged chunks[0m[39m
+[37m[0m[0m[39m
+[37m[0mBuild at: [1m[37m2025-11-27T15:36:23.017Z[39m[37m[22m - Hash: [1m[37m9b3eaa0872f67bd9[39m[37m[22m - Time: [1m[37m2962[39m[37m[22mms[0m[39m
+[37m[39m
+[37m[92m√[39m[37m Compiled successfully.[39m
+[32m✔[39m Browser application bundle generation complete.
+[37m[0m[0m[39m
+[37m[0m[1mInitial chunk files[22m[2m | [22m[1mNames[22m  [2m | [22m[1mRaw size[22m[0m[39m
+[37m[0m[32mmain.js[39m[37m            [2m | [22m[2mmain[22m   [2m | [22m [36m1.53 MB[39m[37m[2m | [22m[0m[39m
+[37m[0m[32mruntime.js[39m[37m         [2m | [22m[2mruntime[22m[2m | [22m [36m8.56 kB[39m[37m[2m | [22m[0m[39m
+[37m[0m[0m[39m
+[37m[0m3 unchanged chunks[0m[39m
+[37m[0m[0m[39m
+[37m[0mBuild at: [1m[37m2025-11-28T09:20:32.302Z[39m[37m[22m - Hash: [1m[37m45ae200278af862e[39m[37m[22m - Time: [1m[37m27401[39m[37m[22mms[0m[39m
+[37m[39m
+[37m[92m√[39m[37m Compiled successfully.[39m
+[32m✔[39m Browser application bundle generation complete.
+[37m[0m[0m[39m
+[37m[0m[1mInitial chunk files[22m[2m | [22m[1mNames[22m  [2m | [22m[1mRaw size[22m[0m[39m
+[37m[0m[32mmain.js[39m[37m            [2m | [22m[2mmain[22m   [2m | [22m [36m1.53 MB[39m[37m[2m | [22m[0m[39m
+[37m[0m[32mruntime.js[39m[37m         [2m | [22m[2mruntime[22m[2m | [22m [36m8.56 kB[39m[37m[2m | [22m[0m[39m
+[37m[0m[0m[39m
+[37m[0m3 unchanged chunks[0m[39m
+[37m[0m[0m[39m
+[37m[0mBuild at: [1m[37m2025-11-28T09:20:49.985Z[39m[37m[22m - Hash: [1m[37mab8bc8f2aae05e54[39m[37m[22m - Time: [1m[37m17358[39m[37m[22mms[0m[39m
+[37m[39m
+[37m[92m√[39m[37m Compiled successfully.[39m
+[32m✔[39m Browser application bundle generation complete.
+[37m[0m[0m[39m
+[37m[0m[1mInitial chunk files[22m[2m | [22m[1mNames[22m  [2m | [22m[1mRaw size[22m[0m[39m
+[37m[0m[32mmain.js[39m[37m            [2m | [22m[2mmain[22m   [2m | [22m [36m1.53 MB[39m[37m[2m | [22m[0m[39m
+[37m[0m[32mruntime.js[39m[37m         [2m | [22m[2mruntime[22m[2m | [22m [36m8.56 kB[39m[37m[2m | [22m[0m[39m
+[37m[0m[0m[39m
+[37m[0m3 unchanged chunks[0m[39m
+[37m[0m[0m[39m
+[37m[0mBuild at: [1m[37m2025-11-28T14:50:18.296Z[39m[37m[22m - Hash: [1m[37m8a74eec30c916ca7[39m[37m[22m - Time: [1m[37m5029[39m[37m[22mms[0m[39m
+[37m[39m
+[37m[92m√[39m[37m Compiled successfully.[39m
+[32m✔[39m Browser application bundle generation complete.
+[37m[0m[0m[39m
+[37m[0m[1mInitial chunk files[22m[2m | [22m[1mNames[22m  [2m | [22m[1mRaw size[22m[0m[39m
+[37m[0m[32mmain.js[39m[37m            [2m | [22m[2mmain[22m   [2m | [22m [36m1.53 MB[39m[37m[2m | [22m[0m[39m
+[37m[0m[32mruntime.js[39m[37m         [2m | [22m[2mruntime[22m[2m | [22m [36m8.56 kB[39m[37m[2m | [22m[0m[39m
+[37m[0m[0m[39m
+[37m[0m3 unchanged chunks[0m[39m
+[37m[0m[0m[39m
+[37m[0mBuild at: [1m[37m2025-11-28T15:06:02.893Z[39m[37m[22m - Hash: [1m[37ma28f13edfaf1b8f7[39m[37m[22m - Time: [1m[37m7237[39m[37m[22mms[0m[39m
+[37m[39m
+[37m[92m√[39m[37m Compiled successfully.[39m
+[32m✔[39m Browser application bundle generation complete.
+[37m[0m[0m[39m
+[37m[0m[1mInitial chunk files[22m[2m | [22m[1mNames[22m  [2m | [22m[1mRaw size[22m[0m[39m
+[37m[0m[32mmain.js[39m[37m            [2m | [22m[2mmain[22m   [2m | [22m [36m1.53 MB[39m[37m[2m | [22m[0m[39m
+[37m[0m[32mruntime.js[39m[37m         [2m | [22m[2mruntime[22m[2m | [22m [36m8.56 kB[39m[37m[2m | [22m[0m[39m
+[37m[0m[0m[39m
+[37m[0m3 unchanged chunks[0m[39m
+[37m[0m[0m[39m
+[37m[0mBuild at: [1m[37m2025-11-28T15:23:27.234Z[39m[37m[22m - Hash: [1m[37m8a74eec30c916ca7[39m[37m[22m - Time: [1m[37m3342[39m[37m[22mms[0m[39m
+[37m[39m
+[37m[92m√[39m[37m Compiled successfully.[39m
+[32m✔[39m Browser application bundle generation complete.
+[37m[0m[0m[39m
+[37m[0m[1mInitial chunk files[22m[2m | [22m[1mNames[22m  [2m | [22m[1mRaw size[22m[0m[39m
+[37m[0m[32mmain.js[39m[37m            [2m | [22m[2mmain[22m   [2m | [22m [36m1.53 MB[39m[37m[2m | [22m[0m[39m
+[37m[0m[32mruntime.js[39m[37m         [2m | [22m[2mruntime[22m[2m | [22m [36m8.56 kB[39m[37m[2m | [22m[0m[39m
+[37m[0m[0m[39m
+[37m[0m3 unchanged chunks[0m[39m
+[37m[0m[0m[39m
+[37m[0mBuild at: [1m[37m2025-11-28T15:25:30.212Z[39m[37m[22m - Hash: [1m[37ma28f13edfaf1b8f7[39m[37m[22m - Time: [1m[37m7320[39m[37m[22mms[0m[39m
+[37m[39m
+[37m[92m√[39m[37m Compiled successfully.[39m

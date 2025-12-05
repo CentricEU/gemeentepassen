@@ -1,0 +1,72 @@
+<div class="validation-container">
+	<p class="validation-title">{{ 'validationPage.title' | translate }}</p>
+	<p class="subtitle">{{ 'validationPage.subtitle' | translate }}</p>
+	<div class="validation-section">
+		<div class="validation">
+			<form centric-complex-form [formGroup]="validateCodeForm">
+				<centric-form-item appearance="outline">
+					<centric-form-control frontendRequiredInput>
+						<windmill-input
+							ariaAttributes
+							formControlName="validateCode"
+							[hasClearIcon]="true"
+							[placeholder]="'validationPage.codePlaceholder' | translate"
+							[maxLength]="5"
+							[ariaLabelClearIcon]="'general.label.clear' | translate"
+							[validationFunction]="validationFunctionError.bind(this, 'validateCode', validateCodeForm)"
+							[ariaLabelTranslation]="'validationPage.codePlaceholder'">
+							<ng-container errors *ngIf="validationFunctionError('validateCode', validateCodeForm)">
+								<span class="centric-error-message">{{ getCodeErrorMessage() | translate }}</span>
+							</ng-container>
+						</windmill-input>
+					</centric-form-control>
+				</centric-form-item>
+			</form>
+			<centric-button
+				type="button-default"
+				class="pointer"
+				[disabled]="validateCodeForm.invalid"
+				(click)="validateDiscountCode()"
+				>{{ 'validationPage.validate' | translate }}</centric-button
+			>
+		</div>
+
+		<ng-container *ngIf="validationStatus">
+			<div class="validation-message common-radius">
+				<centric-icon2 [svgIcon]="validationIcon" [size]="'24'" [ngClass]="validationClass"> </centric-icon2>
+				<strong>{{ code }}</strong>
+				<p [ngClass]="[validationMessageClass, 'semi-bold']">
+					{{ validationStatus.message | translate }}
+				</p>
+			</div>
+		</ng-container>
+	</div>
+
+	<ng-container *ngIf="validatedCodes.length; else noDataState">
+		<p class="validated-codes-title bold">{{ 'validationPage.validatedCodes' | translate }}</p>
+		<div class="validated-codes-flex">
+			<div *ngFor="let entry of validatedCodes; let i = index">
+				<ng-container *ngIf="shouldSplitByDate(i)">
+					<div class="date">
+						<p class="date-text bold">{{ entry.date }}</p>
+					</div>
+				</ng-container>
+
+				<div class="validated-code-item">
+					<p class="code bold">{{ entry.code }}</p>
+					<div class="clock">
+						<centric-icon2 class="clock-icon" [size]="'12'" [svgIcon]="'clock_r'"></centric-icon2>
+						<p class="time">{{ entry.time }}</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</ng-container>
+
+	<ng-template #noDataState>
+		<frontend-no-data
+			[noDataTitle]="'validationPage.noCodesValidated'"
+			[noDataDescription]="'validationPage.noCodesValidatedDescription'">
+		</frontend-no-data>
+	</ng-template>
+</div>

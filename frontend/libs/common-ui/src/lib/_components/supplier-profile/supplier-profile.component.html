@@ -1,0 +1,69 @@
+<div class="flex-column-start top-section">
+	<div class="flex-row-center logo-section">
+		<ng-container *ngIf="!isGenericState && decodedImage; else emptyLogo">
+			<div class="image-section img-fit" [style.backgroundImage]="'url(' + decodedImage + ')'">
+				<ng-container *ngIf="!isReadOnly">
+					<ng-container *ngTemplateOutlet="editableLogo"></ng-container>
+				</ng-container>
+			</div>
+		</ng-container>
+
+		<ng-template #emptyLogo>
+			<div class="generic-square">
+				<ng-container *ngIf="!isReadOnly">
+					<ng-container *ngTemplateOutlet="editableLogo"></ng-container>
+				</ng-container>
+				<centric-icon2 [svgIcon]="'image_b'" [size]="'48'"></centric-icon2>
+			</div>
+		</ng-template>
+
+		<ng-template #editableLogo>
+			<div class="edit-logo" [tabIndex]="0" (keydown.enter)="openFileInput()">
+				<input
+					#fileUpload
+					ariaAttributes
+					type="file"
+					class="hidden"
+					accept=".png, .svg, .jpg, .jpeg"
+					(click)="fileInputClick($event)"
+					(change)="onFileSelected($event)" />
+				<centric-icon2
+					class="pointer"
+					(click)="fileUpload.click()"
+					[svgIcon]="'edit_b'"
+					[size]="'24'"></centric-icon2>
+			</div>
+		</ng-template>
+
+		<div class="address-section">
+			<p class="bold">{{ supplierProfileServiceInformation.companyName }}</p>
+			<p class="address-color">
+				{{ supplierProfileServiceInformation.companyBranchAddress }},{{
+					supplierProfileServiceInformation.branchProvince
+				}}
+			</p>
+		</div>
+	</div>
+	<ng-container *ngIf="isSizeExceeded">
+		<p class="error-message">{{ 'generalInformation.sizeExcedeedLogo' | translate }}</p>
+	</ng-container>
+</div>
+<div class="form-header">
+	<p class="generic-color-text bold">{{ 'generalInformation.header' | translate }}</p>
+</div>
+<frontend-general-information
+	(generalInformationEvent)="handleInformationFormEvent($event, false)"
+	[isReadonly]="isReadOnly"
+	[isEditProfileComponent]="true"></frontend-general-information>
+
+<div class="form-header">
+	<p class="generic-color-text bold">{{ 'contactInformation.header' | translate }}</p>
+</div>
+<frontend-contact-information
+	(contactInformationEvent)="handleInformationFormEvent($event, true)"
+	[isReadonly]="isReadOnly"
+	[isEditProfileComponent]="true"></frontend-contact-information>
+
+<ng-container *ngIf="!isReadOnly">
+	<frontend-working-hours></frontend-working-hours>
+</ng-container>

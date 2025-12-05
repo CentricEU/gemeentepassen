@@ -1,0 +1,79 @@
+@import '../../../../../../../libs/shared-assets/_styles/mixins';
+
+:host {
+	::ng-deep {
+		.panel-header {
+			div {
+				windmill-combo-button {
+					min-width: 124px;
+					margin: 0 0 0 auto;
+				}
+			}
+		}
+
+		.panel-content {
+			@include flex(column, space-between, space-between);
+			@include size(100%, 100%);
+			padding: 32px;
+
+			.outer-chart-container {
+				@include flex(column, center, center);
+				@include size(100%);
+
+				.inner-chart-container {
+					@include size(90%, 26vh);
+				}
+			}
+
+			.empty-chart-container {
+				@include flex(column, center, center);
+				@include size(100%, 100%);
+
+				.empty-chart {
+					@include size(160px, 160px);
+					background: var(--greyscale-50);
+					border-radius: 50%;
+				}
+			}
+		}
+	}
+}
+
+@media only screen and (max-width: 1536px) {
+	:host {
+		::ng-deep {
+			.panel-content {
+				@include flex(column, flex-start, flex-start);
+				gap: 16px;
+			}
+		}
+	}
+}
+
+@media only screen and (max-width: 1366px) {
+	:host {
+		::ng-deep {
+			.panel-content {
+				.outer-chart-container {
+					padding: 32px;
+
+					.inner-chart-container {
+						@include size(85%, 100%);
+					}
+				}
+			}
+		}
+	}
+}
+
+@media only screen and (max-width: 1180px) {
+	:host {
+		::ng-deep {
+			.panel-content {
+				.outer-chart-container {
+					padding: 16px;
+				}
+			}
+		}
+	}
+}

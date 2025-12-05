@@ -1,0 +1,164 @@
+{
+	"name": "l4l-municipality",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"projectType": "application",
+	"prefix": "frontend",
+	"sourceRoot": "apps/l4l-municipality/src",
+	"tags": [],
+	"targets": {
+		"build": {
+			"executor": "@angular-devkit/build-angular:browser",
+			"outputs": ["{options.outputPath}"],
+			"options": {
+				"outputPath": "dist/apps/l4l-municipality",
+				"index": "apps/l4l-municipality/src/index.html",
+				"main": "apps/l4l-municipality/src/main.ts",
+				"polyfills": ["zone.js"],
+				"tsConfig": "apps/l4l-municipality/tsconfig.app.json",
+				"assets": [
+					"apps/l4l-municipality/src/favicon.ico",
+					"apps/l4l-municipality/src/assets",
+					{
+						"input": "./libs/shared-assets/",
+						"glob": "**/*",
+						"output": "/assets/"
+					}
+				],
+				"styles": ["apps/l4l-municipality/src/styles.scss"],
+				"scripts": []
+			},
+			"configurations": {
+				"production": {
+					"budgets": [
+						{
+							"type": "initial",
+							"maximumWarning": "2mb",
+							"maximumError": "6mb"
+						},
+						{
+							"type": "anyComponentStyle",
+							"maximumWarning": "7kb",
+							"maximumError": "14kb"
+						}
+					],
+					"fileReplacements": [
+						{
+							"replace": "apps/l4l-municipality/src/environment/environment.ts",
+							"with": "apps/l4l-municipality/src/environment/environment.prod.ts"
+						}
+					],
+					"outputHashing": "all"
+				},
+				"beta": {
+					"budgets": [
+						{
+							"type": "initial",
+							"maximumWarning": "2mb",
+							"maximumError": "15mb"
+						},
+						{
+							"type": "anyComponentStyle",
+							"maximumWarning": "7kb",
+							"maximumError": "20kb"
+						}
+					],
+					"fileReplacements": [
+						{
+							"replace": "apps/l4l-municipality/src/environment/environment.ts",
+							"with": "apps/l4l-municipality/src/environment/environment.beta.ts"
+						}
+					],
+					"styles": ["apps/l4l-municipality/src/styles.testing.scss"],
+					"buildOptimizer": false,
+					"optimization": false,
+					"vendorChunk": true,
+					"extractLicenses": false,
+					"sourceMap": true,
+					"namedChunks": true
+				},
+				"acceptance": {
+					"budgets": [
+						{
+							"type": "initial",
+							"maximumWarning": "2mb",
+							"maximumError": "15mb"
+						},
+						{
+							"type": "anyComponentStyle",
+							"maximumWarning": "7kb",
+							"maximumError": "20kb"
+						}
+					],
+					"fileReplacements": [
+						{
+							"replace": "apps/l4l-municipality/src/environment/environment.ts",
+							"with": "apps/l4l-municipality/src/environment/environment.acceptance.ts"
+						}
+					],
+					"styles": ["apps/l4l-municipality/src/styles.testing.scss"],
+					"buildOptimizer": false,
+					"optimization": false,
+					"vendorChunk": true,
+					"extractLicenses": false,
+					"sourceMap": true,
+					"namedChunks": true
+				},
+				"development": {
+					"styles": ["apps/l4l-municipality/src/styles.testing.scss"],
+					"buildOptimizer": false,
+					"optimization": false,
+					"vendorChunk": true,
+					"extractLicenses": false,
+					"sourceMap": true,
+					"namedChunks": true
+				}
+			},
+			"defaultConfiguration": "production"
+		},
+		"serve": {
+			"executor": "@angular-devkit/build-angular:dev-server",
+			"configurations": {
+				"production": {
+					"browserTarget": "l4l-municipality:build:production"
+				},
+				"development": {
+					"browserTarget": "l4l-municipality:build:development"
+				}
+			},
+			"defaultConfiguration": "development"
+		},
+		"extract-i18n": {
+			"executor": "@angular-devkit/build-angular:extract-i18n",
+			"options": {
+				"browserTarget": "l4l-municipality:build"
+			}
+		},
+		"lint": {
+			"executor": "@nx/linter:eslint",
+			"outputs": ["{options.outputFile}"],
+			"options": {
+				"lintFilePatterns": ["apps/l4l-municipality/**/*.ts", "apps/l4l-municipality/**/*.html"]
+			}
+		},
+		"test": {
+			"executor": "@nx/jest:jest",
+			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"options": {
+				"jestConfig": "apps/l4l-municipality/jest.config.ts",
+				"passWithNoTests": true
+			},
+			"configurations": {
+				"ci": {
+					"ci": true,
+					"codeCoverage": true
+				}
+			}
+		},
+		"serve-static": {
+			"executor": "@nx/web:file-server",
+			"options": {
+				"buildTarget": "l4l-municipality:build"
+			}
+		}
+	}
+}

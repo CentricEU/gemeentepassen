@@ -1,0 +1,1 @@
+ALTER TYPE l4l_global.offer_status ADD VALUE 'REJECTED';

@@ -1,0 +1,77 @@
+<ng-container *ngIf="shouldDisplayTable(); else noData">
+	<frontend-table
+		#offersTable
+		class="table-pannel"
+		[columns]="allColumns"
+		[filterColumns]="allFilterColumns"
+		[hasCheckbox]="true"
+		[typeOfT]="typeOfModal"
+		[columnWithChips]="'grants'"
+		[shouldDisplayButtonForChips]="false"
+		[hasFilters]="true"
+		[showFooter]="true"
+		[showHeader]="true"
+		[listLength]="dataCount"
+		(actionButtonClicked)="onActionButtonClicked($event)"
+		(getSelectedItemsNumber)="setAreOffersSelected($event)"
+		(applyFilters)="onApplyFilters($event, true)"
+		(loadDataEvent)="loadData($event)">
+		<ng-container>
+			<span class="left-container">{{ 'general.pages.offers' | translate }} </span>
+			<ng-container *ngIf="isDataExisting || filterDto">
+				<section class="right-container">
+					<ng-container *ngIf="areOffersSelected">
+						<centric-button
+							ariaAttributes
+							type="uncontained-danger"
+							class="delete-multiple-button"
+							(click)="openDeleteDialog()">
+							{{ 'general.button.delete' | translate }}
+						</centric-button>
+					</ng-container>
+					<centric-button
+						ariaAttributes
+						type="uncontained-greyscale"
+						class="clear-filters-button"
+						[disabled]="!areFiltersApplied"
+						(click)="clearFilters()">
+						{{ 'general.button.clearFilter' | translate }}
+					</centric-button>
+					<centric-button
+						ariaAttributes
+						windmill-tooltip
+						class="item"
+						type="icon-button-fourth-dark"
+						iconId="slider-vert_b"
+						size="small"
+						tooltipColor="surface"
+						tooltipPosition="above"
+						[ariaLabelTranslation]="'modal.manageColumns.title'"
+						[tooltipText]="'modal.manageColumns.title' | translate"
+						(click)="manageColumns()"></centric-button>
+
+					<centric-button
+						ariaAttributes
+						type="button-default"
+						iconId="plus_b"
+						[ariaLabelTranslation]="'offer.createOffer'"
+						(click)="openCreateOfferModal()">
+						{{ 'offer.createOffer' | translate }}
+					</centric-button>
+				</section>
+			</ng-container>
+		</ng-container>
+	</frontend-table>
+</ng-container>
+
+<ng-template #noData>
+	<centric-panel class="table-pannel" [class.full-size-panel]="true" [showFooter]="false">
+		<ng-container panel-content>
+			<frontend-no-data [noDataTitle]="'offer.noData.title'" [noDataDescription]="'offer.noData.description'">
+				<centric-button type="button-default" iconId="plus_b" (click)="openCreateOfferModal()">
+					{{ 'offer.createOffer' | translate }}
+				</centric-button>
+			</frontend-no-data>
+		</ng-container>
+	</centric-panel>
+</ng-template>

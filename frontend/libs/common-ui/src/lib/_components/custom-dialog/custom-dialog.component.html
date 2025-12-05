@@ -1,0 +1,60 @@
+<span mat-dialog-title [class]="data.modalTypeClass">
+	<h3>{{ data.title | translate }}</h3>
+	<ng-container *ngIf="!data.disableClosing">
+		<button
+			ariaAttributes
+			mat-dialog-close
+			windmill-tooltip
+			class="close-button"
+			[attr.ariaLabel]="'general.button.close' | translate"
+			[ariaLabelTranslation]="'general.button.close'"
+			[tooltipColor]="data.tooltipColor"
+			[tooltipText]="'general.button.close' | translate"
+			(click)="close()">
+			<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+		</button>
+	</ng-container>
+</span>
+<div mat-dialog-content>
+	<ng-container *ngIf="data.fileName">
+		<img [src]="'/assets/images/' + data.fileName" alt="logo" class="image" />
+	</ng-container>
+
+	<div class="main-content">
+		<ng-container *ngIf="shouldDisplayMainContent()">
+			<h4>{{ data.mainContent | translate }}</h4>
+		</ng-container>
+		<p
+			[innerHTML]="
+				data.secondaryContent
+					| translate
+						: {
+								municipality: data.optionalText?.tenantName,
+								reason: data.optionalText?.reason,
+								comments: data.optionalText?.comments,
+								email: data.optionalText?.email,
+								offerName: data.optionalText?.offerName,
+						  }
+			"></p>
+	</div>
+</div>
+<div mat-dialog-actions>
+	<ng-container *ngIf="customButton; else defaultButton">
+		<ng-content></ng-content>
+	</ng-container>
+
+	<ng-template #defaultButton>
+		<centric-button
+			*ngIf="!data.disableClosing"
+			[id]="data.cancelButtonText"
+			[type]="data.cancelButtonType"
+			(click)="close()">
+			{{ data.cancelButtonText | translate }}
+		</centric-button>
+		<ng-container *ngIf="isShown">
+			<centric-button [id]="data.acceptButtonText" [type]="data.acceptButtonType" (click)="accept()">
+				{{ data.acceptButtonText | translate }}
+			</centric-button>
+		</ng-container>
+	</ng-template>
+</div>

@@ -1,0 +1,45 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+
+::ng-deep {
+	.ol-attribution,
+	.ol-rotate {
+		display: none;
+	}
+
+	.ol-viewport {
+		border-radius: 0 0 8px 8px;
+	}
+	.custom-zoom-control {
+		@include pos(absolute, $r: 12px, $b: 12px);
+		@include flex(column, $gap: 8px);
+	}
+
+	.custom-zoom-control button {
+		@include flex(center, center);
+		@include size(40px, 40px);
+		color: transparent;
+		cursor: pointer;
+		border: none;
+		border-radius: 8px;
+		background-color: var(--greyscale-0);
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: 24px 24px;
+	}
+
+	.custom-zoom-control .custom-zoom-control-in {
+		background-image: url('/assets/images/zoom-in.svg');
+	}
+
+	.custom-zoom-control .custom-zoom-control-out {
+		background-image: url('/assets/images/zoom-out.svg');
+	}
+
+	.no-location-data {
+		padding: 32px !important;
+	}
+}
+
+.map {
+	@include size(100%, 516px);
+}

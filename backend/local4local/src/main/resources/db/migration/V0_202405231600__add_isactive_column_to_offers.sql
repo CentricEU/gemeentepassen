@@ -1,0 +1,1 @@
+ALTER TABLE l4l_global.offers ADD COLUMN "is_active" BOOLEAN DEFAULT true;

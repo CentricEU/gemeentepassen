@@ -1,0 +1,17 @@
+<form [formGroup]="createOfferForm">
+	<centric-form-item>
+		<centric-form-label>{{ 'offer.frequencyOfUse.label' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput>
+			<centric-radio-group formControlName="frequencyOfUseValue" [inline]="true">
+				<centric-radio
+					*ngFor="let type of getFrequencyOfUseData()"
+					[value]="mapToFrequencyOfUseEnum(type)"
+					[label]="type | translate"
+					[checked]="shouldCheckFirst(type)"
+					[ariaLabel]="type | translate"
+					(radioChange)="onRestrictionTypeChange('frequencyOfUse', $event)">
+				</centric-radio>
+			</centric-radio-group>
+		</centric-form-control>
+	</centric-form-item>
+</form>

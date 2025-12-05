@@ -1,0 +1,16 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+
+$background-image: '/assets/images/login.svg';
+
+::ng-deep {
+	@media screen and (max-width: 600px) {
+		mat-dialog-container.mdc-dialog .mat-mdc-dialog-surface {
+			width: 94vw;
+		}
+	}
+}
+
+.background-cover {
+	@include size(100%, 100%);
+	@include background-image($background-image, cover, no-repeat, center);
+}

@@ -1,0 +1,70 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+@import '../../../../../../libs/shared-assets/_styles/pallete';
+
+:host {
+	width: 100%;
+}
+
+.logo-section {
+	gap: 32px;
+}
+
+.image-section {
+	@include pos(relative);
+	@include size(156px, 132px);
+	max-height: 132px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: contain;
+	border: 1px solid var(--greyscale-100);
+	box-sizing: border-box;
+	border-radius: 8px;
+}
+
+.top-section {
+	gap: 12px;
+}
+
+.address-section {
+	@include flex(column);
+	gap: 4px;
+}
+
+.address-color {
+	color: var(--greyscale-400);
+}
+
+.edit-logo {
+	@include pos(absolute, $t: 8px, $r: 8px);
+	@include size(32px, 32px);
+	@include flex(column, center, center);
+	border-radius: 8px;
+	padding: 8px;
+	background: var(--greyscale-0);
+
+	centric-icon2 {
+		color: var(--a11y-theme-500);
+	}
+}
+
+.generic-square {
+	@include pos(relative);
+	@include flex(column, center, center);
+	@include size(156px, 132px);
+	border-radius: 8px;
+	background: var(--greyscale-50);
+
+	centric-icon2 {
+		color: var(--greyscale-400) !important;
+	}
+
+	.edit-empty-logo {
+		@extend .edit-logo;
+		top: 8px;
+		right: 8px;
+
+		centric-icon2 {
+			color: var(--a11y-theme-500) !important;
+		}
+	}
+}

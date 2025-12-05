@@ -1,0 +1,13 @@
+<div class="flex-row-spaced">
+	<p>{{ 'workingHours.toggleText' | translate }}</p>
+	<centric-slide-toggle2
+		label="{{ 'workingHours.enableAllDays' | translate }}"
+		[id]="'id-input-element-slide-toggle-ng-model'"
+		[(ngModel)]="isToggleActive"
+		(click)="toggleEnableDays()"></centric-slide-toggle2>
+</div>
+<ng-container *ngIf="workingHoursForm">
+	<form centric-complex-form [formGroup]="workingHoursForm">
+		<frontend-time-business-hours *ngFor="let day of days" [day]="day"> </frontend-time-business-hours>
+	</form>
+</ng-container>

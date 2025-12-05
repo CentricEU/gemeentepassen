@@ -1,0 +1,239 @@
+{
+	"generic": {
+		"buttons": {
+			"getStarted": "Get started",
+			"logIn": "Log in",
+			"continueDigiD": "Continue with DigiD",
+			"continue": "Continue",
+			"createAccount": "Create account",
+			"viewList": "View list",
+			"viewMap": "View map",
+			"viewDetails": "See more",
+			"cancel": "Cancel",
+			"createNewAccount": "Create new account",
+			"done": "Done",
+			"saveChanges": "Save changes",
+			"register": "Register",
+			"viewDiscounts": "View your discounts",
+			"addApple": "Add to Apple Wallet",
+			"addAndroid": "Add to Google Wallet",
+			"exploreOffers": "Explore offers"
+		},
+		"errors": {
+			"requiredField": "This field is required",
+			"invalidEmail": "Invalid email address",
+			"passwordMatch": "Password and Confirm Password do not match",
+			"passwordRule": "Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long,"
+		},
+		"weekDays": {
+			"monday": "Monday",
+			"tuesday": "Tuesday",
+			"wednesday": "Wednesday",
+			"thursday": "Thursday",
+			"friday": "Friday",
+			"saturday": "Saturday",
+			"sunday": "Sunday"
+		},
+		"welcome": "Welcome back to Stadspassen",
+		"balance": "Balance: "
+	},
+	"navigation": {
+		"offers": "Offers",
+		"scan": "Scan",
+		"transactions": "Transactions",
+		"profile": "Profile",
+		"discounts": "Discounts"
+	},
+	"landingPage": {
+		"title": "Welcome to Stadspassen!",
+		"description": "Whether you use your grants or not, you could benefit from our supplier offers."
+	},
+	"getStartedPage": {
+		"title": "Get started",
+		"titleDescription": "Choose an option below to get started"
+	},
+	"registerPage": {
+		"createAccount": "Create account",
+		"createAccountDescription": "It takes a few minutes to create an account",
+		"createPassword": "Create a password",
+		"createPasswordDescription": "You will use your password and e-mail to login.",
+		"registerForm": {
+			"firstName": "First name",
+			"firstNamePlaceholder": "Enter your first name",
+			"lastName": "Last name",
+			"lastNamePlaceholder": "Enter your last name",
+			"passId": "Pass ID",
+			"passIdPlaceholder": "Enter your pass ID",
+			"email": "Email",
+			"emailPlaceholder": "Enter your email",
+			"password": "Password",
+			"passwordPlaceholder": "Enter your password",
+			"retypePassword": "Repeat password",
+			"retypePasswordPlaceholder": "Re-enter your password"
+		},
+		"uniqueEmailError": "This email address has already been used for registration. Please use a different one.",
+		"passnumberAlreadyUsedOrInvalid": "This pass ID has already been used for registration or is invalid. Please use a different one.",
+		"register": "Register",
+		"registrationDialog": {
+			"description": "We have sent a confirmation e-mail to **{{email}}**.\nPlease follow instructions in the message to confirm your account.",
+			"buttonText": "Resend",
+			"title": "Check your e-mail!"
+		},
+		"resendEmailError": "You have already confirmed your email."
+	},
+	"loginPage": {
+		"title": "Log in",
+		"wrongCredentials": "Your e-mail or password is incorrect.",
+		"requestError": "There is an error in logging you into this application. Please try again later.",
+		"accountNotConfirmed": "Your account is not validated yet. Please check your email and confirm your email address to complete the registration process.",
+		"account": "Don't have an account?",
+		"captchaError": "Your attempt was unsuccessful multiple times. Please complete the ReCAPTCHA to proceed."
+	},
+	"offersPage": {
+		"title": "Offers",
+		"offerTypes": "Offer types",
+		"seeAll": "See all",
+		"chipList": {
+			"all": "All discounts",
+			"credit": "Credit",
+			"bogo": "BOGO",
+			"percentage": "Percentage",
+			"grant": "Grant",
+			"freeEntry": "Free entry"
+		},
+		"offerGroup": "Offer group ({{number}})",
+		"availableWith": "Available starting with {{startDate}}"
+	},
+	"offerDetailsPage": {
+		"title": "Offer details",
+		"restrictions": "Restrictions",
+		"getOffer": "Get Offer",
+		"description": "Description",
+		"validFrom": "Valid from",
+		"validity": "{{startDate}} to {{endDate}}",
+		"acceptedGrants": "Accepted grants",
+		"bogo": "Buy one, get one (BOGO)",
+		"amount": "Discount amount",
+		"frecquency": "Frequency of use",
+		"timeSlots": "Time slots",
+		"hourValidity": "From {{startHour}} until {{endHour}}",
+		"ageRestriction": "Age restriction",
+		"above": "Above {{years}} years old",
+		"price": "Price",
+		"priceRange": "Minimum €{{startPrice}} - Maximum €{{endPrice}}",
+		"successMessage": "You have successfully used this offer.",
+		"seeDiscountCode": "See the discount code",
+		"inactive": "This offer isn’t available yet. Check back on {{startDate}}!"
+	},
+	"termsAndConditions": {
+		"textDescription1": "By signing up you agree to Stadspassen's ",
+		"textDescription2": "Terms and Conditions",
+		"textDescription3": " and ",
+		"textDescription4": "Privacy Policy.",
+		"question": "Already have an account?",
+		"logIn": "Log in"
+	},
+	"actionCard": {
+		"noPass": "I don't have a pass",
+		"pass": "I have a pass"
+	},
+	"offerRestriction": {
+		"alreadyUsedToday": "You've already utilized this offer today.",
+		"alreadyUsed": "You've already utilized this offer.",
+		"alreadyUsedYear": "You've already utilized this offer this year.",
+		"alreadyUsedMonth": "You've already utilized this offer this month.",
+		"alreadyUsedWeek": "You've already utilized this offer this week.",
+		"timeSlotsWarning": "This offer is only valid between {{startHour}} and {{endHour}}.",
+		"offerUsed": "Offer used",
+		"notAvailableNow": "Not available now"
+	},
+	"profile": {
+		"personalInfo": "Personal information",
+		"myCode": "My code",
+		"changePassword": "Change password",
+		"changeLanguage": "Change language",
+		"communicationPref": "Communication preferences",
+		"logout": "Log out",
+		"deleteAccount": "Delete account",
+		"logoutModal": {
+			"title": "Are you sure?",
+			"description": "You will have to log in again later."
+		},
+		"language": {
+			"en": "English",
+			"nl": "Dutch"
+		}
+	},
+	"store": {
+		"open": "Open",
+		"closed": "Closed",
+		"opensAt": "• Opens {{day}} at {{hour}}",
+		"closesAt": "`• Closes at {{hour}}",
+		"bankHolidaysWarning": "Hours or services may differ due to the bank holiday. Please contact the business directly."
+	},
+	"category": {
+		"types": {
+			"culture": "Culture",
+			"music": "Music",
+			"foodAndDrinks": "Food & Drinks",
+			"courses": "Courses",
+			"sport": "Sport",
+			"dance": "Dance"
+		}
+	},
+	"dayOfWeek": {
+		"1": "Monday",
+		"2": "Tuesday",
+		"3": "Wednesday",
+		"4": "Thursday",
+		"5": "Friday",
+		"6": "Saturday",
+		"7": "Sunday"
+	},
+	"deleteAccount": {
+		"sorryMessage": "We're really sorry to see you go!",
+		"descritpion": "This process will permanently delete your Stadspassen account details. We can't retrieve this data once it's deleted, but you can create a new account any time.",
+		"selectReasons": "Select the reason(s) why you are deleting your account:",
+		"successfullyDeleted": "Account successfully deleted",
+		"successfullyDeletedMessage": "Your account and data have been succesfully deleted!",
+		"reasons": {
+			"noLongerUsing": "I am no longer using the app",
+			"notUseful": "I don’t find it useful",
+			"safetyConcerns": "I have safety concerns",
+			"privacyConcerns": "I have privacy concerns",
+			"other": "Other reason"
+		}
+	},
+	"personalInformation": {
+		"address": "Address",
+		"addressPlaceholder": "Enter your address",
+		"phoneNumber": "Phone number",
+		"phoneNumberPlaceholder": "Enter your phone number"
+	},
+	"offer": {
+		"types": {
+			"freeEntry": "Free entry",
+			"percentage": "Percentage",
+			"bogo": "BOGO",
+			"credit": "Credit",
+			"grant": "Grant"
+		},
+		"offerType": "Offer type: ",
+		"expirationDate": "Expiration date: ",
+		"useCode": "You’ll need this code to use it in store."
+	},
+	"discounts": {
+		"noDiscountsTitle": "Welcome to your discounts",
+		"noDiscountsDescription": "It looks like you have no discounts yet. Explore offers to get your discounts!",
+		"activeDiscounts": "Active",
+		"expiredDiscounts": "Expired",
+		"noExpiredDiscounts": "You have no expired discounts.",
+		"noActiveDiscounts": "You have no active discounts.\nExplore offers to get your discounts!",
+		"expirationDate": "Expire:",
+		"discount": "discount"
+	},
+	"search": {
+		"searchBarTextOffer": "Search for offer",
+		"searchBarTextDiscounts": "Search for discounts"
+	}
+}

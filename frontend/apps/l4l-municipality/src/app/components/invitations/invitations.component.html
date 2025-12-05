@@ -1,0 +1,9 @@
+<frontend-table
+	#invitationTable
+	[columns]="allColumns"
+	[showFooter]="true"
+	[showHeader]="false"
+	[listLength]="dataCount"
+	(actionButtonClicked)="onActionButtonClicked($event)"
+	(loadDataEvent)="loadData($event)">
+</frontend-table>

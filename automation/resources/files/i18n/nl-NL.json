@@ -1,0 +1,583 @@
+{
+	"general": {
+	"logout": "Uitloggen",
+	"welcomeL4L": "Welkom bij Local for Local!",
+	"hello": "Hallo",
+	"password": "Wachtwoord",
+	"checkbox": "Selectievak",
+	"approve": "Goedkeuren",
+	"reject": "Weigeren",
+	"uploadFile": "Bestand uploaden",
+	"replaceFile": "Bestand vervangen",
+	"bsn": "BSN",
+	"address": "Adres",
+	"residenceCity": "Woonplaats",
+	"expiringDate": "Vervaldatum",
+	"passNumber": "Pasnummer",
+	"preview": "Voorbeeldweergave",
+	"remainingItems": "Resterende artikelen",
+	"supplier": "Leverancier",
+	"valuePlaceholder": "Waarde",
+	"success": {
+		"title": "Gefeliciteerd",
+		"accountCreatedText": "Uw account is succesvol aangemaakt!",
+		"accountCreatedTextForCitizen": "...Your account has been successfully created!<br>Please go to your Local for Local mobile app to log in.",
+		"confirmEmailText": "...We have sent the confirmation e-mail.",
+		"recoverPasswordText": "Wachtwoordherstel e-mail verzonden!",
+		"passwordUpdateText": "Uw wachtwoord is succesvol bijgewerkt!",
+		"changesSavedText": "Uw wijzigingen zijn opgeslagen.",
+		"offerSavedText": "Uw aanbod is opgeslagen."
+	},
+	"button": {
+		"close": "Sluiten",
+		"cancel": "Annuleren",
+		"import": "Importeren",
+		"applyChanges": "Wijzigingen toepassen",
+		"save": "Opslaan",
+		"addOffer": "Aanbieding toevoegen",
+		"addColumn": "Kolom toevoegen",
+		"login": "Inloggen",
+		"sendLink": "Stuur mij de link",
+		"back": "Terug",
+		"confirm": "Bevestigen",
+		"remove": "Verwijderen",
+		"view": "Bekijken",
+		"suspend": "Beëindigen",
+		"suspendSupplier": "Leverancier stop zetten",
+		"reset": "Resetten",
+		"saveChanges": "Wijzigingen opslaan",
+		"filter": "Filteren",
+		"applyAgain": "Opnieuw toepassen",
+		"download": "Downloaden",
+		"stay": "Op pagina blijven",
+		"understand": "Begrepen",
+		"delete": "Verwijderen",
+		"sendInvite": "Uitnodiging versturen",
+		"assign": "...Assign grant"
+	},
+	"chip": {
+		"title": "Geselecteerde artikelen",
+		"description": "Dit zijn de geselecteerde artikelen",
+		"moreButton": "Klik hier om alles te zien"
+	},
+	"resultsPerPage": "Resultaten per pagina",
+	"status": "Status",
+	"name": "Naam",
+	"category": "Categorie",
+	"actions": "Acties",
+	"pendingRequests": "Lopende Aanvragen",
+	"inviteSuppliers": "Nodig leveranciers uit",
+	"back": "Terug",
+	"email": "E-mail",
+	"dateFormat": "DD/MM/YYYY",
+	"from": "Van",
+	"to": "Tot",
+	"description": "Beschrijving",
+	"pages": {
+		"dashboard": "Dashboard",
+		"suppliers": "Leveranciers",
+		"passholders": "Pasbezitters",
+		"grants": "Subsidies",
+		"editProfile": "Profiel bewerken",
+		"offers": "Aanbiedingen",
+		"pendingOffers": "In afwachting van aanbiedingen",
+		"invitations": "Uitnodigingen",
+		"supplierDetails": "...Details"
+	},
+	"welcome": "Welkom!",
+	"warning": "Waarschuwing",
+	"label": {
+		"close": "sluiten",
+		"label": "label",
+		"clear": "leeg"
+	},
+	"hourFormat": "00:00",
+	"weekdays": {
+		"monday": "Monday",
+		"tuesday": "Tuesday",
+		"wednesday": "Wednesday",
+		"thursday": "Thursday",
+		"friday": "Friday",
+		"saturday": "Saturday",
+		"sunday": "Sunday"
+	},
+	"timePicker": {
+		"timeFrom": "Tijd van invoer",
+		"timeTo": "Tijd tot invoer",
+		"timePickerIcon": "Icoon tijdkiezer",
+		"timeSlotCompareError": "Zorg ervoor dat de starttijd vóór de eindtijd ligt."
+	}
+	},
+	"genericFields": {
+	"email": {
+		"requiredEmail": "E-mail is verplicht.",
+		"validEmail": "Voer een geldig e-mailadres in.",
+		"title": "E-mailadres",
+		"placeholder": "Voer uw e-mailadres in",
+		"requiredError": "E-mailadres is verplicht"
+	},
+	"password": {
+		"passwordPlaceholder": "Voer uw wachtwoord in",
+		"confirmPassword": "Herhaal wachtwoord",
+		"confirmPasswordPlaceholder": "Herhaal uw wachtwoord",
+		"confirmPasswordRequired": "Wachtwoordherhaling is verplicht",
+		"confirmPasswordMatch": "Wachtwoorden moeten overeenkomen"
+	}
+	},
+	"modal": {
+	"manageColumns": {
+		"title": "Kolommen beheren",
+		"description": "Selecteer kolommen om weer te geven:"
+	},
+	"continueLogin": "Doorgaan met inloggen"
+	},
+	"errors": {
+	"error": "Fout",
+	"generic": "Er is een fout opgetreden. Probeer het later opnieuw.",
+	"400": "De server kon het verzoek niet begrijpen, controleer en dien een geldig verzoek in.",
+	"authentication_failed": "Authenticatie mislukt. Controleer uw inloggegevens en probeer het opnieuw. ",
+	"403": "Toestemming geweigerd. Uw huidige toegangsniveau is onvoldoende voor deze handeling.",
+	"404": "Oeps, het lijkt erop dat u een doodlopende weg bent ingeslagen. De bron die u zoekt, kon niet worden gevonden.",
+	"500": "Onze server heeft een interne fout ondervonden. Probeer het later opnieuw.",
+	"40001": "Verzoek mislukt vanwege een validatie fout. Controleer en corrigeer de verstrekte gegevens voordat u opnieuw indient.",
+	"40002": "Wachtwoord bijwerken mislukt. Zorg ervoor dat uw nieuw wachtwoord voldoet aan de opgegeven vereisten en probeer het opnieuw.",
+	"40003": "E-mail verzenden mislukt. Het opgegeven e-mailadres lijkt ongeldig te zijn. Controleer dit en probeer het opnieuw.",
+	"40004": "Authenticatie mislukt. Controleer uw inloggegevens en probeer het opnieuw.",
+	"40005": "Verzoek mislukt vanwege een unieke beperking. Zorg ervoor dat de verstrekte informatie uniek is en probeer het opnieuw.",
+	"40006": "Bepaalde details in uw verzoek zijn onvolledig. Probeer het nogmaals. ",
+	"40007": "ERR TOEVOEGEN",
+	"40008": "Het ingevoerde wachtwoord en het bevestigde wachtwoord komen niet overeen. Wijzig het wachtwoord en probeer opnieuw.",
+	"40009": "Uw poging was meerdere keren onsuccesvol. Voltooi de ReCAPTCHA om door te gaan.",
+	"40010": "Voltooi het ReCAPTCHA-proces.",
+	"40011": "Toegang tot deze actie is beperkt. Neem contact op met uw beheerder voor assistentie.",
+	"40012": "Het bestand dat u heeft geüpload is te groot. Upload een ander bestand en probeer het nogmaals.",
+	"40013": "U kunt slechts drie pogingen tot wachtwoordherstel per dag initiëren.",
+	"40014": "De link voor wachtwoordherstel is verlopen.",
+	"40015": "Uw nieuwe wachtwoord komt overeen met uw oude wachtwoord. Kies alstublieft een ander wachtwoord.",
+	"40016": "Uw inlogsessie is beëindigd. Log alstublieft opnieuw in.",
+	"40017": "Uw inlogsessie is beëindigd. Log alstublieft opnieuw in.",
+	"40019": "Volledige functionaliteit is beschikbaar zodra uw gemeentelijke goedkeuring is voltooid, meestal binnen 5 werkdagen. Wacht op bevestiging om toegang te krijgen tot alle functies.",
+	"40020": "We konden het CSV-bestand niet inlezen",
+	"40021": "Ongeldig datumformaat in CSV-bestand ",
+	"40027": "Je hebt je e-mail al bevestigd.",
+	"40025": "Je account is nog niet gevalideerd. Controleer je e-mail en bevestig je e-mailadres om het registratieproces te voltooien."
+	},
+	"alerts": {
+	"passwordAlertRequirements1": "Wachtwoord moet minimaal 8 tekens bevatten.",
+	"passwordAlertRequirements2": "Waaronder minimaal één hoofdletter, één cijfer en één symbool."
+	},
+	"login": {
+	"rememberMe": "Onthoud mij",
+	"forgotPassword": "Wachtwoord vergeten",
+	"username": {
+		"title": "Gebruikersnaam",
+		"placeholder": "Voer uw gebruikersnaam in",
+		"requiredError": "Gebruikersnaam is verplicht"
+	},
+	"password": {
+		"placeholder": "Voer uw wachtwoord in",
+		"requiredError": "Wachtwoord is verplicht"
+	}
+	},
+	"register": {
+	"registerButton": "Registreren",
+	"title": "Registreer bij Local for Local!",
+	"firstName": "Voornaam",
+	"lastName": "Achternaam",
+	"companyName": "Bedrijfsnaam",
+	"kvkNumber": "KvK-nummer",
+	"municipality": "Gemeente",
+	"emailAddress": "E-mailadres",
+	"firstNamePlaceholder": "Voer uw voornaam in",
+	"lastNamePlaceholder": "Voer uw achternaam in",
+	"companyNamePlaceholder": "Voer uw bedrijfsnaam in",
+	"kvkNumberPlaceholder": "Voer uw KvK-nummer in",
+	"municipalityPlaceholder": "Selecteer uw gemeente",
+	"emailAddressPlaceholder": "Voer uw e-mailadres in",
+	"passwordPlaceholder": "Voer uw wachtwoord in",
+	"requiredMunicipality": "Gemeente is verplicht",
+	"accountAlreadyCreated": "Heeft u al een account?",
+	"login": "Inloggen",
+	"agreements": "Ik ga akkoord met de voorwaarden",
+	"middleKeyword": "en het",
+	"privacyPolicy": "Privacybeleid",
+	"termsAndConditions": "Algemene Voorwaarden",
+	"firstNameFormControlRequired": "Voornaam is verplicht.",
+	"lastNameFormControlRequired": "Achternaam is verplicht.",
+	"companyFormControlRequired": "Bedrijfsnaam is verplicht.",
+	"kvkFormControlRequired": "KvK is verplicht.",
+	"passwordFormControlRequired": "Wachtwoord is verplicht.",
+	"kvkFormControlLength": "KvK nummer moet 8 cijfers hebben",
+	"registrationSuccessful": "Registratie succesvol!",
+	"continue": "Doorgaan naar inloggen",
+	"accountConfirmation": {
+		"title": "Check je e-mail!",
+		"content": "We hebben een bevestiging gestuurd naar {{email}}.Volg de instructies in het bericht op om je account te bevestigen.",
+		"resendConfirmation": "...Resend",
+		"validateEmailTitle": "Bevestig je e-mail",
+		"validateEmailDescription": "Voer de volgende informatie in om je e-mail te bevestigen:",
+		"confirmationSuccessful": "E-mail succesvol bevestigd!"
+	}
+	},
+	"supplierList": {
+	"welcome": "Welkom bij Leveranciersbeheer",
+	"noData": "Het lijkt erop dat er nog geen leveranciers op het platform zijn aangesloten. Laten we beginnen door leveranciers uit te nodigen.",
+	"invite": "Leveranciers uitnodigen",
+	"tableColumn": {
+		"district": "Provincie",
+		"manager": "Accountmanager"
+	},
+	"kvkFormControlLength": "KvK nummer moet 8 cijfers hebben"
+	},
+	"supplierRequests": {
+	"noRequests": "Geen openstaande verzoeken",
+	"noData": "Het lijkt erop dat er geen openstaande verzoeken van leveranciers zijn."
+	},
+	"suppliersApproval": {
+	"reviewSuppliers": "Beoordeel leveranciersverzoek",
+	"successfulApproval": "Het verzoek is succesvol goedgekeurd. De leverancier is verplaatst van 'Openstaande verzoeken' naar 'Leveranciers'."
+	},
+	"invitations": {
+	"welcome": "Nodig nieuwe leveranciers uit",
+	"noData": "Het lijkt erop dat er geen uitnodigingen opnieuw te versturen zijn. Laten we nieuwe leveranciers uitnodigen.",
+	"sendingDate": "...Sending date",
+	"sendAgain": "...Send again"
+	},
+	"inviteSuppliers": {
+	"invitationMessage": "Uitnodigingsbericht",
+	"invitationMessageRequired": "Een uitnodigingsbericht is vereist.",
+	"invitationDescription": "Voer een omschrijving in voor de uitnodiging",
+	"emailAlreadyInList": "Deze e-mail komt al op de lijst voor.",
+	"emailsLimitReached": "Je hebt de limiet van 50 e-mails bereikt.",
+	"leavingWarning": "Het proces voor het uitnodigen van leveranciers wordt geannuleerd en niet-opgeslagen wijzigingen worden verwijderd.",
+	"sentSuccessfully": "...The invitation was sent successfully."
+	},
+	"generalInformation": {
+	"header": "Algemene informatie",
+	"legalForm": "Rechtsvorm",
+	"ownerName": "Naam eigenaar",
+	"category": "Categorie",
+	"commerceNumber": "Kamer van Koophandel nummer",
+	"ownerNamePlaceholder": "Voer de naam van de eigenaar in",
+	"legalFormPlaceholder": "Selecteer rechtsvorm",
+	"legalFormFormControlRequired": "Rechtsvorm is verplicht",
+	"categoryPlaceholder": "Selecteer categorie",
+	"commerceNumberPlaceholder": "Voer het Kamer van Koophandel nummer in",
+	"email": "Bedrijfsadministrateur e-mail",
+	"uploadMessage": "Je kunt hier <b> 1 bestand </b> uploaden. U kunt PNG, SVG, JPG, JPEG-bestanden toevoegen en de maximale bestandsgrootte die is toegestaan, is 200 KB.",
+	"groupPlaceholder": "Selecteer groep",
+	"group": "Groep",
+	"subcategory": "Subcategorie",
+	"subcategoryPlaceholder": "Selecteer subcategorie",
+	"commerceMainLocation": "Hoofdlocatie registratie in Kamer van Koophandel",
+	"commercePostalAdress": "Postadres registratie in Kamer van Koophandel",
+	"commerceMainLocationPlaceholder": "Voer de hoofdlocatie registratie in Kamer van Koophandel in",
+	"commercePostalAdressPlaceholder": "Voer het postadres registratie in Kamer van Koophandel in",
+	"companyNameFormControlRequired": "Bedrijfsnaam is verplicht.",
+	"ownerNameFormControlRequired": "Naam eigenaar is verplicht.",
+	"groupFormControlRequired": "Groep is verplicht.",
+	"subcategoryFormControlRequired": "Subcategorie is verplicht.",
+	"commerceMainLocationFormControlRequired": "Hoofdlocatie geregistreerd in Kamer van Koophandel is verplicht.",
+	"commercePostalAdressFormControlRequired": "Postadres geregistreerd in Kamer van Koophandel is verplicht.",
+	"catgeoryFormControlRequired": "Categorie is verplicht.",
+	"commerceNumberFormControlRequired": "Kamer van Koophandel nummer is verplicht.",
+	"replaceLogo": "Logo vervangen",
+	"uploadLogo": "Logo uploaden",
+	"next": "Volgende",
+	"removeLogo": "Logo verwijderen",
+	"sizeExcedeedLogo": "Het bestand dat u probeert te uploaden overschrijdt de maximale toegestane bestandsgrootte van 200 KB.",
+	"companyAdminstratorEmail": "Bedrijfsbeheerder e-mail"
+	},
+	"contactInformation": {
+	"header": "Contactgegevens",
+	"companyBranchAddress": "Bedrijfsadres filiaal",
+	"companyBranchAddressFormControlRequired": "Bedrijfsadres filiaal is verplicht.",
+	"companyBranchAddressPlaceholder": "Voer het leveranciersadres in",
+	"branchProvince": "Provincie filiaal",
+	"branchProvinceFormControlRequired": "Provincie filiaal is verplicht.",
+	"branchProvincePlaceholder": "Voer de provincie van het filiaal in",
+	"branchZip": "Postcode filiaal",
+	"branchZipFormControlRequired": "Postcode filiaal is verplicht.",
+	"branchZipPlaceholder": "Voer de postcode van het filiaal in",
+	"branchLocation": "Locatie filiaal",
+	"branchLocationFormControlRequired": "Locatie filiaal is verplicht.",
+	"branchLocationPlaceholder": "Voer de locatie van het filiaal in",
+	"branchTelephone": "Telefoonnummer filiaal",
+	"branchTelephoneFormControlRequired": "Telefoonnummer filiaal is verplicht.",
+	"branchTelephonePlaceholder": "Voer het telefoonnummer van het filiaal in",
+	"emailFormControlRequired": "E-mail is verplicht.",
+	"emailPlaceholder": "Voer het e-mailadres van de leverancier in",
+	"website": "Website",
+	"websitePlaceholder": "Voer de website van de leverancier in",
+	"accountManager": "Accountmanager",
+	"accountManagerFormControlRequired": "Naam accountmanager is verplicht.",
+	"accountManagerPlaceholder": "Voer de naam van de accountmanager in",
+	"validZipCode": "Voer een geldige filiaalpostcode in.",
+	"validTelephone": "Voer een geldig filiaaltelefoonnummer in."
+	},
+	"workingHours": {
+	"header": "Openingsuren",
+	"enableAllDays": "Ale dagen inschakelen",
+	"timeSlotsFormControlRequired": "Vul beide tijdslotvelden in.",
+	"editSchedule": "Pas schema aan",
+	"setupSchedule": "Schema instellen",
+	"setupText": "Stel uw werkdagen en -uren in.",
+	"toggleText": "Gebruik de schakelaar om alle dagen te selecteren."
+	},
+	"setupProfile": {
+	"setupSuccessful": "Wacht op goedkeuring",
+	"success": {
+		"text": "De goedkeuring door de gemeente duurt meestal tot 5 werkdagen.<br>Houd er rekening mee dat u geen aanbiedingen kunt plaatsen totdat uw verzoek is goedgekeurd."
+	},
+	"continue": "Ik begrijp het",
+	"finish": "Profiel instellen voltooien",
+	"setup": "Profiel instellen",
+	"successfulInfoMessage": "De goedkeuring door de gemeente duurt meestal tot 5 werkdagen. Houd er rekening mee dat u geen aanbiedingen kunt plaatsen totdat uw verzoek is goedgekeurd.",
+	"invalidZipCode": "We couldn't complete your profile setup due to an invalid zip code entered. Please ensure that the zip code you provided is accurate and try again.",
+	"invalidZipCodeEdit": "We konden je bewerkingsactie niet voltooien omdat er een ongeldige postcode is ingevoerd. Zorg ervoor dat de postcode die je hebt opgegeven juist is en probeer het opnieuw."
+	},
+	"forgotPassword": {
+	"title": "Wachtwoord vergeten?",
+	"description": "Voer de volgende informatie in om een nieuw wachtwoord in te stellen:",
+	"recoverSuccessfull": "Wachtwoord herstel succesvol!"
+	},
+	"changePassword": {
+	"title": "Wachtwoord wijzigen",
+	"changeSuccessull": "Nieuw wachtwoord succesvol ingesteld"
+	},
+	"actionButtons": {
+	"review": "Beoordelen",
+	"details": "Details",
+	"remove": "Verwijderen",
+	"viewSupplier": "Leverancier bekijken",
+	"suspendSupplier": "Leverancier schorsen",
+	"viewGrant": "Subsidie bekijken",
+	"editGrant": "Subsidie bewerken",
+	"delete": "Verwijderen",
+	"viewPassholder": "Pasbezitter bekijken",
+	"rejected": "Afgewezen"
+	},
+	"paginator": {
+	"next": "Volgende pagina",
+	"previous": "Vorige pagina",
+	"first": "Eerste pagina",
+	"last": "Laatste pagina",
+	"selectPageSize": "Selecteer de paginagrootte",
+	"listResults": "Resultaten per pagina",
+	"descriptionListResults": "Kies de paginagrootte voor uw resultaten"
+	},
+	"upload": {
+	"description": "Sleep 1 bestand hier naartoe",
+	"supports": "Ondersteunt: ",
+	"warningFilesNumber": "U kunt slechts <b>1 bestand </b> uploaden",
+	"warningFormat": "Niet-ondersteund bestandsformaat. Upload alleen {{ acceptedFormats }} bestanden"
+	},
+	"approvedModal": {
+	"header": "Goedkeuring aangevraagd",
+	"title": "Uw verzoek is goedgekeurd",
+	"description": "Uw verzoek om lid te worden van Local for Local is goedgekeurd door {{municipality}}"
+	},
+	"passholders": {
+	"title": "Pasbezitters importeren",
+	"noData": {
+		"title": "Welkom bij Pasbeheer",
+		"description": "Het lijkt erop dat u nog geen pasbezitters heeft. Laten we beginnen door uw lijst met pasbezitters te importeren"
+	},
+	"import": "CSV-bestand importeren",
+	"uploadDescription": "Voeg automatisch pasbezitters toe door te importeren uit een CSV-bestand",
+	"download": "CSV-sjabloon downloaden",
+	"successImport": "Het bestand is succesvol geïmporteerd. De pasbezitters zijn geladen",
+	"assignedGrants": "Toegewezen tegoeden",
+	"assignGrants": "Tegoed toewijzen",
+	"grantName": "Subsidienaam",
+	"amoungGranted": "Bedrag toegekend",
+	"delete": {
+		"title": "Pasbezitter verwijderen",
+		"content": "De geselecteerde pasbezitter wordt verwijderd  Verwijderde gegevens kunnen niet worden hersteld"
+	}
+	},
+	"grants": {
+	"grant": "Tegoed",
+	"noData": {
+		"title": "Welkom bij Tegoedbeheer",
+		"description": "Het lijkt erop dat u nog geen tegoeden heeft. Laten we beginnen door uw eerste tegoed toe te voegen"
+	},
+	"assigning": "Tegoed toewijzen",
+	"warningMessage": "Het proces voor het toewijzen van tegoed wordt geannuleerd en niet-opgeslagen wijzigingen worden verwijderd",
+	"createGrant": "Tegoed aanmaken",
+	"title": "tegoednaam",
+	"description": "Tegoedbeschrijving",
+	"amount": "Bedrag",
+	"createdFor": "Tegoed gemaakt voor",
+	"validity": "Geldigheid",
+	"titlePlaceholder": "Voer tegoednaam in",
+	"descriptionPlaceholder": "Voer Tegoedbeschrijving in",
+	"amountPlaceholder": "Voer tegoedbedrag in (Euro)",
+	"titleFormControlRequired": "Tegoednaam is verplicht",
+	"descriptionFormControlRequired": "Tegoedbeschrijving is verplicht",
+	"amountFormControlRequired": "Bedrag is verplicht",
+	"addGrant": "Nieuw tegoed toevoegen",
+	"validityFormControlRequired": "Voer alstublieft geldige data in beide velden in met alleen cijfers (DD/MM/JJJJ)",
+	"cardHolder": "Pasbezitter",
+	"childrenHolder": "Kinderen van een pasbezitter",
+	"beneficiaries": "Begunstigden",
+	"nrBeneficiaries": "Aantal begunstigden",
+	"editGrant": "...Edit grant"
+	},
+	"offer": {
+	"noData": {
+		"title": "Welkom bij Aanbiedingenbeheer",
+		"description": "Het lijkt erop dat u nog geen aanbiedingen heeft. Laten we beginnen door uw eerste aanbieding toe te voegen"
+	},
+	"createOffer": "Aanbieding toevoegen",
+	"addOffer": "Nieuwe aanbieding toevoegen",
+	"offer": "Aanbieding",
+	"title": "Titel vermelding",
+	"targetAudience": "Doelgroep (aangemaakt voor)",
+	"acceptedGrants": "Geaccepteerde Tegoeden",
+	"acceptedGrantsPlaceholder": "Selecteer geaccepteerde tegoeden",
+	"titlePlaceholder": "Voer titel van de vermelding in",
+	"typeOfOffer": "Type aanbieding",
+	"typeOfOfferPlaceholder": "Selecteer type aanbieding",
+	"description": "Aanbiedingsbeschrijving",
+	"descriptionPlaceholder": "Voer aanbiedingsbeschrijving in",
+	"amount": "Korting bedrag",
+	"amountCreditPlaceholder": "...Insert the credit discount amount in Euro (€)",
+	"amountPercentagePlaceholder": "Voer het kortingspercentage in",
+	"offerCreatedFor": "Aanbieding gemaakt voor",
+	"validity": "Geldigheid",
+	"restrictions": "Beperkingen",
+	"frequencyOfUse": {
+		"label": "Frequentie van gebruik",
+		"singleUse": "Eenmalig gebruik",
+		"daily": "Dagelijks",
+		"weekly": "Wekelijks",
+		"monthly": "Maandelijks",
+		"yearly": "Jaarlijks"
+	},
+	"ageRestriction": {
+		"label": "Leeftijdsbeperking",
+		"aboveEighteen": "Boven de 18 jaar",
+		"aboveTwentyOne": "Boven de 21 jaar",
+		"other": "Anders",
+		"otherPlaceholder": "Typ leeftijdsbeperking in",
+		"otherLabel": "Leeftijd"
+	},
+	"timeSlots": "Tijdslots",
+	"priceRange": {
+		"label": "Passende prijsklasse",
+		"minPrice": "Minimale prijs",
+		"maxPrice": "Maximale prijs",
+		"error": "Vul tenminste één prijsveld in"
+	},
+	"citizen": "Burger",
+	"citizenWithPass": "Burger met pas",
+	"formRequired": {
+		"titleFormControlRequired": "Titel is verplicht",
+		"descriptionFormControlRequired": "Aanbiedingsbeschrijving is verplicht",
+		"validityFormControlRequired": "Vul alstublieft beide datumvelden in",
+		"amountFormControlRequired": "Bedrag is verplicht"
+	},
+	"types": {
+		"grant": "Subsidie",
+		"percentage": "Percentage",
+		"bogo": "Koop één krijg één gratis",
+		"credit": "...Credit"
+	},
+	"dialogOfferGrant": {
+		"createSuccessful": "Wacht op goedkeuring",
+		"mainContent": "Wacht op goedkeuring",
+		"mainContentText": "U heeft een aanbieding ingesteld waarmee burgers betalingen kunnen doen met gemeentelijke tegoeden, wat goedkeuring van de gemeente vereist. De goedkeuring door de gemeente duurt meestal tot 5 werkdagen"
+	},
+	"approve": {
+		"review": "Beoordeling aanbieding van leverancier",
+		"titleLeft": "Aanbiedingsinformatie",
+		"titleRight": "Leveranciersinformatie",
+		"successfulApproval": "Het verzoek is succesvol goedgekeurd",
+		"information": {
+		"createdFor": "Aanbieding gemaakt voor",
+		"title": "Titel van de vermelding",
+		"tyoeOfOffer": "Type aanbieding",
+		"acceptedGrants": "Geaccepteerde tegoeden",
+		"description": "Aanbiedingsbeschrijving"
+		}
+	},
+	"timeSlotFormControlRequired": "...Vul alstublieft minstens één uurveld in",
+	"priceRangeCompareError": "...Zorg ervoor dat de minimumprijs lager is dan de maximumprijs."
+	},
+	"pendingOffer": {
+	"noData": {
+		"title": "Welkom bij aanbiedingen wachtend op beoordeling",
+		"description": "Het lijkt erop dat er geen aanbiedingen zijn die moeten worden beoordeeld"
+	}
+	},
+	"rejectSupplier": {
+	"error": "Reden is verplicht",
+	"comments": "Opmerkingen",
+	"reason": "Reden voor afwijzing",
+	"placeHolderReason": "Selecteer de redenen voor afwijzing",
+	"placeHolderComments": "Voer uw opmerkingen hier in",
+	"modal": {
+		"header": "Verzoek afgewezen",
+		"title": "Uw verzoek is afgewezen",
+		"description": "Uw verzoek om lid te worden van 'Local for Local' is op dit moment afgewezen door {{municipality}}.<br><br><b>Afwijsreden:</b> {{reason}}<br><b>Afwijsdetails:</b> {{comments}}<br>"
+	}
+	},
+	"status": {
+	"pending": "In afwachting",
+	"expired": "Verlopen",
+	"approved": "Goedgekeurd",
+	"active": "Actief"
+	},
+	"dashboard": {
+	"offer": {
+		"header": "QR-code",
+		"textApproved": "Toon deze QR-code in uw winkel voor eenvoudige toegang tot uw aanbiedingen",
+		"textPending": "Na goedkeuring door de gemeente wordt uw QR-code weergegeven"
+	}
+	},
+	"group": {
+	"types": {
+		"commercial": "Commercieel",
+		"public": "Openbaar",
+		"association": "Vereniging",
+		"social": "Sociaal"
+	}
+	},
+	"legalForm": {
+	"types": {
+		"sole": "Eenmanszaak",
+		"foundation": "De stichting",
+		"association": "De vereniging",
+		"cooperative": "De coöperatie",
+		"publicLimitedCompany": "Naamloze vennootschap (nv)",
+		"privateLimitedCompany": "Besloten vennootschap (bv)",
+		"limitedPartnership": "De commanditaire vennootschap (cv)",
+		"publicPartnership": "De maatschap",
+		"commercialPartnership": "Vennootschap onder firma (vof)"
+	}
+	},
+	"category": {
+	"types": {
+		"culture": "Cultuur",
+		"music": "Muziek",
+		"foodAndDrinks": "Eten en drinken",
+		"courses": "Cursussen",
+		"sport": "Sport",
+		"dance": "Dans"
+	}
+	},
+	"subcategory": {
+	"types": {
+		"museums": "Musea",
+		"theatre": "Theater",
+		"singing": "Zingen"
+	}
+	},
+	"ariaDescription": {
+	"breadcrumbs": "Navigeer naar een pagina"
+	},
+	"ariaLabel": {
+	"breadcrumbs": "Navigeer naar een pagina"
+	}
+}

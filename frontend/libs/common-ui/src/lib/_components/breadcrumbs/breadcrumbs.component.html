@@ -1,0 +1,13 @@
+<ng-container *ngIf="displayBreadcrumbs">
+	<centric-breadcrumbs
+		[ariaLabel]="'ariaLabel.breadcrumbs' | translate"
+		[ariaDescription]="'ariaDescription.breadcrumbs' | translate">
+		<ol class="breadcrumbs-container">
+			<li *ngFor="let crumb of breadcrumbs">
+				<a (keydown.enter)="navigateToCrumb(crumb)" (click)="navigateToCrumb(crumb)">
+					{{ crumb.translationLabel | translate }}
+				</a>
+			</li>
+		</ol>
+	</centric-breadcrumbs>
+</ng-container>

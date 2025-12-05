@@ -1,0 +1,23 @@
+.stepper-container {
+	overflow: hidden;
+	width: 100%;
+}
+
+:host {
+	::ng-deep {
+		.centric-horizontal-content-container {
+			min-height: 504px;
+		}
+
+		.centric-stepper-horizontal
+			.centric-horizontal-stepper-header-container
+			.centric-horizontal-stepper-header.is-disabled
+			.centric-step-label {
+			color: var(--greyscale-400);
+		}
+	}
+
+	.stepper-container:focus-visible {
+		outline: none;
+	}
+}

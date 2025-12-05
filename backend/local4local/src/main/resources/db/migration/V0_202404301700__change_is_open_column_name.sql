@@ -1,0 +1,1 @@
+ALTER TABLE l4l_global.working_hours RENAME COLUMN is_open TO is_checked;

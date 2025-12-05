@@ -1,0 +1,349 @@
+
+Linting "l4l-supplier"...
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_components\age-restriction\age-restriction.component.spec.ts[24m[0m
+[0m   [2m12:6[22m   [33mwarning[39m  'formBuilder' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m79:47[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m153:39[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m153:44[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m154:35[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m154:40[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_components\create-offer\create-offer.component.spec.ts[24m[0m
+[0m    [2m27:29[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m    [2m36:24[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m    [2m41:26[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m    [2m64:64[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m106:38[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m106:44[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m833:31[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m837:63[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m838:61[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m840:21[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m853:31[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m857:63[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m858:61[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m860:21[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m869:31[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m870:31[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m872:31[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1079:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1080:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1104:9[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1138:9[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1356:49[22m  [33mwarning[39m  'date' is defined but never used          [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m1360:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1360:82[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1423:48[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1448:40[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1450:18[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1455:33[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1461:33[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1473:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1528:29[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1541:29[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1552:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1553:40[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1561:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1562:40[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1570:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1594:48[22m  [33mwarning[39m  'date' is defined but never used          [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m1601:27[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1601:99[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1614:55[22m  [33mwarning[39m  'date' is defined but never used          [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m1621:27[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1621:99[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1668:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1676:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1758:7[22m   [33mwarning[39m  'fixture' is defined but never used       [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m1765:45[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1766:31[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1770:54[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1772:18[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1794:18[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1801:18[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1809:40[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1810:18[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1813:25[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1818:40[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1819:18[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1826:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1827:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1828:40[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1829:18[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1836:18[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1840:40[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1853:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1854:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1855:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1856:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1857:40[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1858:18[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1883:29[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1884:29[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1903:29[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1904:29[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_components\create-offer\create-offer.component.ts[24m[0m
+[0m  [2m158:40[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m158:54[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m165:42[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m165:56[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m296:42[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m318:47[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m374:25[22m  [33mwarning[39m  'offerDto' is defined but never used      [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m511:70[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m595:44[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m610:50[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_components\discount-modal\discount-modal.component.spec.ts[24m[0m
+[0m  [2m17:6[22m  [33mwarning[39m  'dialogService' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_components\frequency-of-use\frequency-of-use.component.spec.ts[24m[0m
+[0m  [2m12:6[22m  [33mwarning[39m  'translateService' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_components\generate-invoice\generate-invoice.component.spec.ts[24m[0m
+[0m  [2m148:8[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m167:47[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m226:9[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_components\header\header.component.spec.ts[24m[0m
+[0m  [2m15:6[22m  [33mwarning[39m  'tenantService' is assigned a value but never used        [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m18:6[22m  [33mwarning[39m  'supplierService' is assigned a value but never used      [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m33:8[22m  [33mwarning[39m  'supplierServiceMock' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_components\registration-successful\registration-successful.component.spec.ts[24m[0m
+[0m  [2m59:46[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m71:95[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m74:47[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_components\setup-profile\setup-profile.component.spec.ts[24m[0m
+[0m   [2m36:19[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m211:11[22m  [33mwarning[39m  'companyName' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m211:24[22m  [33mwarning[39m  'adminEmail' is assigned a value but never used   [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m211:36[22m  [33mwarning[39m  'kvkNumber' is assigned a value but never used    [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m267:53[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m267:58[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m268:36[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m268:41[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m291:58[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m292:66[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m293:49[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m386:18[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m387:18[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m438:11[22m  [33mwarning[39m  'companyName' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m438:24[22m  [33mwarning[39m  'adminEmail' is assigned a value but never used   [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m438:36[22m  [33mwarning[39m  'kvkNumber' is assigned a value but never used    [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_components\setup-profile\setup-profile.component.ts[24m[0m
+[0m   [2m56:41[22m  [33mwarning[39m  Unexpected any. Specify a different type          [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m191:11[22m  [33mwarning[39m  'adminEmail' is assigned a value but never used   [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m191:23[22m  [33mwarning[39m  'kvkNumber' is assigned a value but never used    [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m  [2m191:34[22m  [33mwarning[39m  'companyName' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_components\supplier-edit\supplier-edit.component.spec.ts[24m[0m
+[0m   [2m19:26[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m20:35[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m21:22[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m76:73[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m78:21[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m84:21[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m85:9[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m91:25[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m97:18[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m115:18[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m133:18[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_pages\dashboard\dashboard.component.spec.ts[24m[0m
+[0m   [2m33:22[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m34:22[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m36:25[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m37:35[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m116:93[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m139:41[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m145:67[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m163:67[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m345:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m369:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m409:74[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m421:74[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m433:74[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m446:74[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m479:27[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m480:27[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m488:27[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m489:27[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m575:27[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m601:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_pages\dashboard\offers-chart-panel\offers-chart-panel.component.spec.ts[24m[0m
+[0m   [2m422:30[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m434:30[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m443:57[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m454:60[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m614:53[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m644:53[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m679:51[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m715:51[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m725:84[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m735:35[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m743:20[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m841:30[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m845:20[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m846:22[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m847:27[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m865:30[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m918:50[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m964:50[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m975:33[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m986:32[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1003:58[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1018:85[22m   [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1029:100[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_pages\dashboard\transactions-panel\transactions-panel.component.spec.ts[24m[0m
+[0m  [2m19:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_pages\offer-validation\offer-validation.component.spec.ts[24m[0m
+[0m   [2m62:61[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m74:24[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m86:61[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m267:61[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m281:61[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m297:61[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m321:61[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_pages\offers\offers.component.spec.ts[24m[0m
+[0m    [2m43:23[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m    [2m46:30[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m    [2m47:6[22m   [33mwarning[39m  'formBuilder' is assigned a value but never used    [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m    [2m50:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m    [2m51:26[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m    [2m54:9[22m   [33mwarning[39m  'mockFormGroup' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m182:74[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m190:32[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m194:29[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m213:74[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m222:74[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m234:60[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m235:59[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m313:9[22m   [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m427:27[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m496:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m611:72[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m612:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m625:72[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m626:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m639:72[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m652:72[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m653:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m661:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m662:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m663:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m705:29[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m720:74[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m721:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m731:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m751:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m782:74[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m795:74[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m796:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m817:60[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m862:34[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m864:39[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m875:35[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m879:40[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m885:40[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m910:30[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m983:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m992:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1021:27[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1029:22[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1031:27[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1047:8[22m   [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1067:73[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1069:27[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1082:71[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1084:27[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1195:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1196:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1197:91[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1208:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1209:32[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1244:28[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1245:91[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1256:29[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1259:10[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1267:29[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m1270:10[22m  [33mwarning[39m  Unexpected any. Specify a different type            [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\_pages\transactions\transactions.component.spec.ts[24m[0m
+[0m   [2m27:6[22m   [33mwarning[39m  'translateService' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m29:28[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m   [2m30:26[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m113:43[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m113:48[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m119:37[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m119:42[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m169:65[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m189:43[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m189:48[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m195:38[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m195:43[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m201:37[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m201:42[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m273:68[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m287:91[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m292:92[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m297:37[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m297:42[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m298:51[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m298:56[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m308:37[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m308:42[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m309:51[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m309:56[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m323:52[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m323:57[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m355:68[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m374:73[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m375:37[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m375:42[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m393:73[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m394:37[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m394:42[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m423:33[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m443:33[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m466:33[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m476:24[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m487:18[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m491:16[22m  [33mwarning[39m  Unexpected any. Specify a different type               [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\app.component.spec.ts[24m[0m
+[0m  [2m27:22[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\services\invoice-service\invoice.service.spec.ts[24m[0m
+[0m  [2m39:9[22m  [33mwarning[39m  'headers' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\services\offer-service\offer.service.spec.ts[24m[0m
+[0m  [2m250:30[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m251:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m282:30[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m283:28[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m330:25[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m362:20[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\supplier-register\supplier-register.component.spec.ts[24m[0m
+[0m   [2m29:6[22m   [33mwarning[39m  'router' is assigned a value but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m   [2m30:25[22m  [33mwarning[39m  Unexpected any. Specify a different type     [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m410:21[22m  [33mwarning[39m  Unexpected any. Specify a different type     [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m556:77[22m  [33mwarning[39m  Unexpected any. Specify a different type     [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m  [2m564:65[22m  [33mwarning[39m  Unexpected any. Specify a different type     [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[4mC:\Denis_Projects\L4L\Local4Local\frontend\apps\l4l-supplier\src\app\supplier-register\supplier-register.component.ts[24m[0m
+[0m  [2m143:39[22m  [33mwarning[39m  Unexpected any. Specify a different type  [2m@typescript-eslint/no-explicit-any[22m[0m
+[0m[0m
+[0m[33m[1m✖ 298 problems (0 errors, 298 warnings)[22m[39m[0m
+[0m[33m[1m[22m[39m[0m
+✖ 298 problems (0 errors, 298 warnings)
+

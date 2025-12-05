@@ -1,0 +1,8 @@
+export enum FrequencyOfUseEnum {
+	SINGLE_USE = 'SINGLE_USE',
+	DAILY = 'DAILY',
+	WEEKLY = 'WEEKLY',
+	MONTHLY = 'MONTHLY',
+	YEARLY = 'YEARLY',
+	UNSPECIFIED = "UNSPECIFIED"
+}

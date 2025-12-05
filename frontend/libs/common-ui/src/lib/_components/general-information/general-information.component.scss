@@ -1,0 +1,29 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+@import '../../../../../../libs/shared-assets/_styles/form';
+
+:host {
+	::ng-deep {
+		.disabled {
+			.windmill-input.is-disabled {
+				background-color: transparent;
+			}
+		}
+	}
+
+	width: 100%;
+
+	.upload-button {
+		@include size(auto, 100%);
+	}
+}
+
+.button-style {
+	@include flex(row, flex-start, center);
+	gap: 16px;
+	padding-bottom: 16px;
+}
+
+.upload-text {
+	height: 20px;
+	font-size: 14px;
+}

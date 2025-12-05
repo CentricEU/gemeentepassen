@@ -1,0 +1,35 @@
+<centric-alert *ngIf="shouldDisplayInfoMessage">
+	<div message>{{ 'setupProfile.successfulInfoMessage' | translate }}</div>
+</centric-alert>
+<div class="welcome">{{ 'general.welcome' | translate }}</div>
+
+<div class="dashboard-container">
+	<centric-panel class="add-offer-section" [header]="false" [shadow]="true">
+		<ng-container panel-content>
+			<ng-container *ngIf="supplierLogoSrc; else emptyLogo">
+				<img class="img-fit" [src]="supplierLogoSrc" alt="logo" />
+			</ng-container>
+			<ng-template #emptyLogo>
+				<section class="empty-logo">
+					<centric-icon2 [svgIcon]="'image_b'" [size]="'48'"></centric-icon2>
+				</section>
+			</ng-template>
+			<section class="right-section">
+				<p class="bold">
+					{{ 'dashboard.addOfferDescription' | translate }}
+				</p>
+				<centric-button
+					type="button-default"
+					iconId="plus_r"
+					[disabled]="shouldDisableAddOfferButton"
+					(click)="addOffer()">
+					{{ 'offer.addOffer' | translate }}
+				</centric-button>
+			</section>
+		</ng-container>
+	</centric-panel>
+
+	<frontend-transactions-panel></frontend-transactions-panel>
+	<frontend-used-offers-panel></frontend-used-offers-panel>
+	<frontend-offers-chart-panel></frontend-offers-chart-panel>
+</div>

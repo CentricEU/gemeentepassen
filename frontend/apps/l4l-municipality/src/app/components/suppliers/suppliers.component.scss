@@ -1,0 +1,37 @@
+:host {
+	height: 100%;
+	::ng-deep {
+		centric-panel,
+		centric-mat-tab-group {
+			height: 100%;
+		}
+
+		.mat-tab-body-wrapper {
+			padding: 0 !important;
+		}
+
+		mat-tab-group {
+			height: 100%;
+			max-height: calc(100vh - 80px);
+		}
+
+		centric-mat-tab-group {
+			height: 100%;
+		}
+
+		.full-size-panel {
+			height: 100%;
+
+			.centric-tabs,
+			.centric-tab-group,
+			.mat-tab-body-wrapper,
+			.mat-mdc-tab-body-wrapper {
+				height: 100%;
+			}
+		}
+
+		.mat-mdc-tab-body-wrapper {
+			padding: 0 !important;
+		}
+	}
+}

@@ -1,0 +1,19 @@
+<div class="form-header working-hours">
+	<p class="generic-color-text bold">{{ 'workingHours.header' | translate }}</p>
+	<centric-button type="button-link-dark" iconId="edit_b" (click)="openSaveScheduleModal()">{{
+		'workingHours.editSchedule' | translate
+	}}</centric-button>
+</div>
+<section class="setup-schedule">
+	<div class="container">
+		<div class="days-data-panel" *ngFor="let dayData of workingHoursData">
+			<p class="day">{{ dayName(dayData) | translate }}</p>
+			<ng-container *ngIf="dayData.isChecked; else notChecked">
+				<p>{{ workingDailyHours(dayData) }}</p>
+			</ng-container>
+			<ng-template #notChecked>
+				<p>{{ 'general.closed' | translate }}</p>
+			</ng-template>
+		</div>
+	</div>
+</section>

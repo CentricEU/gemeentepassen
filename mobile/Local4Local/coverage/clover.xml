@@ -1,0 +1,2013 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1722335477360" clover="3.2.0">
+  <project timestamp="1722335477360" name="All files">
+    <metrics statements="1443" coveredstatements="1331" conditionals="245" coveredconditionals="203" methods="259" coveredmethods="209" elements="1947" coveredelements="1743" complexity="0" loc="1443" ncloc="1443" packages="53" files="135" classes="135"/>
+    <package name="assets">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="background-element.png" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\background-element.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="4" type="stmt"/>
+      </file>
+      <file name="exclamation-danger.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\exclamation-danger.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="assets.icons">
+      <metrics statements="18" coveredstatements="18" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="check-circle_b.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\check-circle_b.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="chevron-large-left_r.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\chevron-large-left_r.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="chevron-large-right_r.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\chevron-large-right_r.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="clock_b.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\clock_b.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="close.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\close.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="coins.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\coins.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="directions_walk.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\directions_walk.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="euro-coin_b.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\euro-coin_b.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="exclamation-circle_b.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\exclamation-circle_b.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="exclamation-triangle_b.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\exclamation-triangle_b.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="flag-en.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\flag-en.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="flag-nl.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\flag-nl.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="hand-euro-coin_b.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\hand-euro-coin_b.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="image_b.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\image_b.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="info-circle_b.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\info-circle_b.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="map-pin_b.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\map-pin_b.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="percent_b.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\percent_b.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="plus_eb.svg" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\icons\plus_eb.svg">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="assets.markers">
+      <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="bogo.png" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\markers\bogo.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="8" type="stmt"/>
+      </file>
+      <file name="cash.png" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\markers\cash.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="8" type="stmt"/>
+      </file>
+      <file name="grant.png" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\markers\grant.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="8" type="stmt"/>
+      </file>
+      <file name="other.png" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\markers\other.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="8" type="stmt"/>
+      </file>
+      <file name="percentage.png" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\markers\percentage.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="8" type="stmt"/>
+      </file>
+      <file name="seasonal.png" path="C:\Work\Local4Local\mobile\Local4Local\app\assets\markers\seasonal.png">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="8" type="stmt"/>
+      </file>
+    </package>
+    <package name="common-style">
+      <metrics statements="13" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="CommonStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\common-style\CommonStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="8" type="stmt"/>
+        <line num="2" count="8" type="stmt"/>
+        <line num="4" count="8" type="stmt"/>
+        <line num="22" count="8" type="stmt"/>
+      </file>
+      <file name="FontFamily.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\common-style\FontFamily.tsx">
+        <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="21" type="stmt"/>
+        <line num="2" count="21" type="stmt"/>
+        <line num="3" count="21" type="stmt"/>
+        <line num="4" count="21" type="stmt"/>
+        <line num="5" count="21" type="stmt"/>
+        <line num="6" count="21" type="stmt"/>
+        <line num="7" count="21" type="stmt"/>
+        <line num="8" count="21" type="stmt"/>
+      </file>
+      <file name="Palette.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\common-style\Palette.tsx">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="32" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.auth-header">
+      <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="AuthHeader.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\auth-header\AuthHeader.tsx">
+        <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+      </file>
+      <file name="AuthHeaderStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\auth-header\AuthHeaderStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.button-with-arrow">
+      <metrics statements="13" coveredstatements="13" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+      <file name="ButtonWithArrow.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\button-with-arrow\ButtonWithArrow.tsx">
+        <metrics statements="9" coveredstatements="9" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="10" count="16" type="stmt"/>
+        <line num="12" count="16" type="stmt"/>
+      </file>
+      <file name="ButtonWithArrowStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\button-with-arrow\ButtonWithArrowStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="27" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.customMarker">
+      <metrics statements="38" coveredstatements="35" conditionals="5" coveredconditionals="4" methods="5" coveredmethods="4"/>
+      <file name="CustomMarker.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\customMarker\CustomMarker.tsx">
+        <metrics statements="34" coveredstatements="31" conditionals="5" coveredconditionals="4" methods="5" coveredmethods="4"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="20" count="5" type="stmt"/>
+        <line num="21" count="4" type="stmt"/>
+        <line num="23" count="4" type="stmt"/>
+        <line num="24" count="2" type="stmt"/>
+        <line num="25" count="2" type="cond" truecount="0" falsecount="1"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="32" count="1" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="37" count="4" type="stmt"/>
+        <line num="38" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="39" count="2" type="stmt"/>
+        <line num="40" count="2" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="45" count="4" type="stmt"/>
+        <line num="46" count="2" type="stmt"/>
+        <line num="48" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="49" count="1" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="56" count="4" type="stmt"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="60" count="4" type="stmt"/>
+      </file>
+      <file name="CustomMarkerStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\customMarker\CustomMarkerStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.error-toaster">
+      <metrics statements="16" coveredstatements="15" conditionals="4" coveredconditionals="1" methods="2" coveredmethods="1"/>
+      <file name="CustomToaster.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\error-toaster\CustomToaster.tsx">
+        <metrics statements="12" coveredstatements="11" conditionals="4" coveredconditionals="1" methods="2" coveredmethods="1"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="26" count="2" type="stmt"/>
+        <line num="27" count="9" type="stmt"/>
+        <line num="42" count="9" type="stmt"/>
+        <line num="44" count="9" type="stmt"/>
+        <line num="57" count="2" type="stmt"/>
+        <line num="58" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="61" count="2" type="stmt"/>
+      </file>
+      <file name="CustomToasterStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\error-toaster\CustomToasterStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="40" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.generic-accordion">
+      <metrics statements="13" coveredstatements="13" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2"/>
+      <file name="GenericAccordion.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\generic-accordion\GenericAccordion.tsx">
+        <metrics statements="10" coveredstatements="10" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="4" count="3" type="stmt"/>
+        <line num="5" count="3" type="stmt"/>
+        <line num="7" count="3" type="stmt"/>
+        <line num="9" count="5" type="stmt"/>
+        <line num="11" count="5" type="stmt"/>
+        <line num="13" count="5" type="stmt"/>
+        <line num="15" count="5" type="stmt"/>
+      </file>
+      <file name="GenericAccordionStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\generic-accordion\GenericAccordionStyle.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.generic-button">
+      <metrics statements="32" coveredstatements="30" conditionals="16" coveredconditionals="14" methods="4" coveredmethods="4"/>
+      <file name="GenericButton.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\generic-button\GenericButton.tsx">
+        <metrics statements="28" coveredstatements="26" conditionals="16" coveredconditionals="14" methods="4" coveredmethods="4"/>
+        <line num="2" count="11" type="stmt"/>
+        <line num="3" count="11" type="stmt"/>
+        <line num="4" count="11" type="stmt"/>
+        <line num="5" count="11" type="stmt"/>
+        <line num="6" count="11" type="stmt"/>
+        <line num="8" count="11" type="stmt"/>
+        <line num="10" count="11" type="stmt"/>
+        <line num="19" count="11" type="cond" truecount="1" falsecount="0"/>
+        <line num="20" count="91" type="stmt"/>
+        <line num="22" count="91" type="stmt"/>
+        <line num="23" count="91" type="cond" truecount="3" falsecount="0"/>
+        <line num="25" count="75" type="stmt"/>
+        <line num="27" count="11" type="stmt"/>
+        <line num="29" count="5" type="stmt"/>
+        <line num="33" count="91" type="stmt"/>
+        <line num="34" count="91" type="cond" truecount="3" falsecount="1"/>
+        <line num="36" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="38" count="75" type="cond" truecount="2" falsecount="0"/>
+        <line num="40" count="11" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="46" count="91" type="stmt"/>
+        <line num="47" count="91" type="cond" truecount="3" falsecount="1"/>
+        <line num="49" count="75" type="stmt"/>
+        <line num="51" count="11" type="stmt"/>
+        <line num="53" count="5" type="stmt"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="59" count="91" type="stmt"/>
+        <line num="75" count="11" type="stmt"/>
+      </file>
+      <file name="GenericButtonStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\generic-button\GenericButtonStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="11" type="stmt"/>
+        <line num="2" count="11" type="stmt"/>
+        <line num="4" count="11" type="stmt"/>
+        <line num="22" count="11" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.generic-dialog">
+      <metrics statements="16" coveredstatements="16" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <file name="GenericDialog.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\generic-dialog\GenericDialog.tsx">
+        <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="23" count="2" type="stmt"/>
+        <line num="25" count="2" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+      </file>
+      <file name="GenericDialogStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\generic-dialog\GenericDialogStyle.tsx">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="87" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.generic-drawer">
+      <metrics statements="21" coveredstatements="21" conditionals="1" coveredconditionals="1" methods="4" coveredmethods="4"/>
+      <file name="GenericDrawer.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\generic-drawer\GenericDrawer.tsx">
+        <metrics statements="17" coveredstatements="17" conditionals="1" coveredconditionals="1" methods="4" coveredmethods="4"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="22" count="5" type="stmt"/>
+        <line num="24" count="5" type="stmt"/>
+        <line num="26" count="5" type="stmt"/>
+        <line num="29" count="5" type="stmt"/>
+        <line num="30" count="4" type="stmt"/>
+        <line num="34" count="5" type="cond" truecount="1" falsecount="0"/>
+        <line num="35" count="3" type="stmt"/>
+        <line num="38" count="2" type="stmt"/>
+        <line num="43" count="2" type="stmt"/>
+        <line num="58" count="2" type="stmt"/>
+      </file>
+      <file name="GenericDrawerStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\generic-drawer\GenericDrawerStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="37" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.generic-information-block">
+      <metrics statements="12" coveredstatements="12" conditionals="6" coveredconditionals="6" methods="2" coveredmethods="2"/>
+      <file name="GenericInformationBlock.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\generic-information-block\GenericInformationBlock.tsx">
+        <metrics statements="8" coveredstatements="8" conditionals="6" coveredconditionals="6" methods="2" coveredmethods="2"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="5" count="3" type="stmt"/>
+        <line num="6" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+        <line num="16" count="55" type="stmt"/>
+        <line num="23" count="159" type="stmt"/>
+      </file>
+      <file name="GenericInformationBlockStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\generic-information-block\GenericInformationBlockStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="5" count="3" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.grant-chip">
+      <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="GrantChip.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\grant-chip\GrantChip.tsx">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="2" count="4" type="stmt"/>
+        <line num="3" count="4" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
+        <line num="6" count="4" type="stmt"/>
+        <line num="7" count="25" type="stmt"/>
+      </file>
+      <file name="GrantChipStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\grant-chip\GrantChipStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="2" count="4" type="stmt"/>
+        <line num="3" count="4" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.header">
+      <metrics statements="13" coveredstatements="12" conditionals="2" coveredconditionals="1" methods="2" coveredmethods="1"/>
+      <file name="GlobalHeader.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\header\GlobalHeader.tsx">
+        <metrics statements="9" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="4" count="3" type="stmt"/>
+        <line num="5" count="3" type="stmt"/>
+        <line num="6" count="3" type="stmt"/>
+        <line num="9" count="3" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+      </file>
+      <file name="GlobalHeaderStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\header\GlobalHeaderStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="1" methods="0" coveredmethods="0"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="4" count="3" type="stmt"/>
+        <line num="26" count="3" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.loader">
+      <metrics statements="13" coveredstatements="13" conditionals="1" coveredconditionals="1" methods="1" coveredmethods="1"/>
+      <file name="LoadingIndicator.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\loader\LoadingIndicator.tsx">
+        <metrics statements="10" coveredstatements="10" conditionals="1" coveredconditionals="1" methods="1" coveredmethods="1"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="10" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+      </file>
+      <file name="LoadingIndicatorStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\loader\LoadingIndicatorStyle.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.map">
+      <metrics statements="38" coveredstatements="36" conditionals="1" coveredconditionals="1" methods="9" coveredmethods="7"/>
+      <file name="Map.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\map\Map.tsx">
+        <metrics statements="35" coveredstatements="33" conditionals="1" coveredconditionals="1" methods="9" coveredmethods="7"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="17" count="8" type="stmt"/>
+        <line num="18" count="8" type="stmt"/>
+        <line num="19" count="8" type="stmt"/>
+        <line num="21" count="8" type="stmt"/>
+        <line num="28" count="8" type="stmt"/>
+        <line num="29" count="5" type="stmt"/>
+        <line num="32" count="8" type="stmt"/>
+        <line num="33" count="5" type="stmt"/>
+        <line num="34" count="5" type="stmt"/>
+        <line num="35" count="5" type="stmt"/>
+        <line num="36" count="5" type="stmt"/>
+        <line num="37" count="5" type="stmt"/>
+        <line num="38" count="10" type="cond" truecount="1" falsecount="0"/>
+        <line num="39" count="5" type="stmt"/>
+        <line num="40" count="5" type="stmt"/>
+        <line num="42" count="5" type="stmt"/>
+        <line num="44" count="5" type="stmt"/>
+        <line num="45" count="2" type="stmt"/>
+        <line num="47" count="3" type="stmt"/>
+        <line num="51" count="8" type="stmt"/>
+        <line num="52" count="2" type="stmt"/>
+        <line num="53" count="2" type="stmt"/>
+        <line num="56" count="8" type="stmt"/>
+        <line num="68" count="0" type="stmt"/>
+        <line num="72" count="1" type="stmt"/>
+        <line num="74" count="3" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+      </file>
+      <file name="MapStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\map\MapStyle.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.offer-card">
+      <metrics statements="33" coveredstatements="33" conditionals="11" coveredconditionals="10" methods="7" coveredmethods="7"/>
+      <file name="OfferCard.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offer-card\OfferCard.tsx">
+        <metrics statements="28" coveredstatements="28" conditionals="11" coveredconditionals="10" methods="7" coveredmethods="7"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="20" count="2" type="stmt"/>
+        <line num="36" count="9" type="stmt"/>
+        <line num="38" count="9" type="stmt"/>
+        <line num="39" count="2" type="stmt"/>
+        <line num="41" count="9" type="stmt"/>
+        <line num="43" count="9" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="46" count="1" type="stmt"/>
+        <line num="52" count="9" type="stmt"/>
+        <line num="55" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="56" count="1" type="stmt"/>
+        <line num="58" count="1" type="stmt"/>
+        <line num="73" count="2" type="stmt"/>
+        <line num="82" count="1" type="stmt"/>
+        <line num="116" count="18" type="stmt"/>
+        <line num="126" count="2" type="stmt"/>
+      </file>
+      <file name="OfferCardStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offer-card\OfferCardStyle.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="59" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.offer-chip">
+      <metrics statements="13" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="OfferChip.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offer-chip\OfferChip.tsx">
+        <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="2" count="4" type="stmt"/>
+        <line num="3" count="4" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
+        <line num="11" count="4" type="stmt"/>
+        <line num="13" count="39" type="stmt"/>
+        <line num="15" count="39" type="stmt"/>
+      </file>
+      <file name="OfferChipStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offer-chip\OfferChipStyle.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="2" count="4" type="stmt"/>
+        <line num="3" count="4" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
+        <line num="28" count="4" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.offer-drawerd">
+      <metrics statements="14" coveredstatements="14" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="2"/>
+      <file name="OfferDrawer.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offer-drawerd\OfferDrawer.tsx">
+        <metrics statements="11" coveredstatements="11" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="2"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+      </file>
+      <file name="OfferDrawerStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offer-drawerd\OfferDrawerStyle.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.offer-store-details">
+      <metrics statements="28" coveredstatements="28" conditionals="5" coveredconditionals="3" methods="4" coveredmethods="4"/>
+      <file name="OfferStoreDetails.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offer-store-details\OfferStoreDetails.tsx">
+        <metrics statements="23" coveredstatements="23" conditionals="5" coveredconditionals="3" methods="4" coveredmethods="4"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+        <line num="26" count="3" type="stmt"/>
+        <line num="30" count="3" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="32" count="3" type="stmt"/>
+        <line num="35" count="3" type="stmt"/>
+        <line num="36" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="37" count="2" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="42" count="3" type="stmt"/>
+      </file>
+      <file name="OfferStoreDetailsStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offer-store-details\OfferStoreDetailsStyle.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="37" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.offer-type-button">
+      <metrics statements="18" coveredstatements="18" conditionals="7" coveredconditionals="6" methods="3" coveredmethods="3"/>
+      <file name="OfferTypeButton.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offer-type-button\OfferTypeButton.tsx">
+        <metrics statements="13" coveredstatements="13" conditionals="7" coveredconditionals="6" methods="3" coveredmethods="3"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="10" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="20" count="3" type="cond" truecount="3" falsecount="0"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="23" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="25" count="1" type="stmt"/>
+      </file>
+      <file name="OfferTypeButtonStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offer-type-button\OfferTypeButtonStyle.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="43" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.offer-type-selector">
+      <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <file name="OfferTypeSelector.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offer-type-selector\OfferTypeSelector.tsx">
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="16" count="10" type="stmt"/>
+      </file>
+      <file name="OfferTypeSelectorStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offer-type-selector\OfferTypeSelectorStyle.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.offers-list">
+      <metrics statements="38" coveredstatements="37" conditionals="4" coveredconditionals="4" methods="8" coveredmethods="8"/>
+      <file name="OffersList.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offers-list\OffersList.tsx">
+        <metrics statements="33" coveredstatements="32" conditionals="4" coveredconditionals="4" methods="8" coveredmethods="8"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="16" count="19" type="stmt"/>
+        <line num="18" count="19" type="stmt"/>
+        <line num="19" count="19" type="stmt"/>
+        <line num="20" count="19" type="stmt"/>
+        <line num="22" count="19" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="27" count="19" type="stmt"/>
+        <line num="28" count="6" type="stmt"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="32" count="6" type="cond" truecount="1" falsecount="0"/>
+        <line num="33" count="3" type="stmt"/>
+        <line num="36" count="3" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="40" count="6" type="stmt"/>
+        <line num="45" count="19" type="stmt"/>
+        <line num="46" count="19" type="stmt"/>
+        <line num="66" count="19" type="stmt"/>
+        <line num="71" count="12" type="stmt"/>
+        <line num="78" count="1" type="cond" truecount="3" falsecount="0"/>
+        <line num="79" count="1" type="stmt"/>
+        <line num="82" count="15" type="stmt"/>
+      </file>
+      <file name="OffersListStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\offers-list\OffersListStyle.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="36" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.supplier-info">
+      <metrics statements="63" coveredstatements="59" conditionals="10" coveredconditionals="7" methods="12" coveredmethods="11"/>
+      <file name="SupplierInfo.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\supplier-info\SupplierInfo.tsx">
+        <metrics statements="59" coveredstatements="55" conditionals="10" coveredconditionals="7" methods="12" coveredmethods="11"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="26" count="2" type="stmt"/>
+        <line num="27" count="1" type="stmt"/>
+        <line num="28" count="1" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="43" count="1" type="stmt"/>
+        <line num="44" count="1" type="cond" truecount="2" falsecount="1"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="47" count="1" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
+        <line num="58" count="1" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="67" count="1" type="stmt"/>
+        <line num="69" count="1" type="stmt"/>
+        <line num="70" count="1" type="stmt"/>
+        <line num="71" count="1" type="stmt"/>
+        <line num="73" count="1" type="cond" truecount="2" falsecount="1"/>
+        <line num="74" count="1" type="stmt"/>
+        <line num="76" count="0" type="stmt"/>
+        <line num="80" count="1" type="stmt"/>
+        <line num="81" count="1" type="stmt"/>
+        <line num="82" count="1" type="stmt"/>
+        <line num="85" count="1" type="stmt"/>
+        <line num="86" count="2" type="stmt"/>
+        <line num="87" count="1" type="stmt"/>
+        <line num="88" count="1" type="stmt"/>
+        <line num="91" count="1" type="stmt"/>
+        <line num="92" count="1" type="stmt"/>
+        <line num="93" count="2" type="stmt"/>
+        <line num="97" count="1" type="stmt"/>
+        <line num="108" count="1" type="stmt"/>
+        <line num="111" count="7" type="stmt"/>
+        <line num="123" count="1" type="stmt"/>
+      </file>
+      <file name="SupplierInfoStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\supplier-info\SupplierInfoStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.supplier-logo-card">
+      <metrics statements="9" coveredstatements="9" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+      <file name="SupplierLogoCard.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\supplier-logo-card\SupplierLogoCard.tsx">
+        <metrics statements="6" coveredstatements="6" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+      </file>
+      <file name="SupplierLogoCardStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\supplier-logo-card\SupplierLogoCardStyle.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.timer-button">
+      <metrics statements="25" coveredstatements="21" conditionals="4" coveredconditionals="3" methods="8" coveredmethods="7"/>
+      <file name="TimerButton.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\timer-button\TimerButton.tsx">
+        <metrics statements="25" coveredstatements="21" conditionals="4" coveredconditionals="3" methods="8" coveredmethods="7"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="63" type="stmt"/>
+        <line num="8" count="63" type="stmt"/>
+        <line num="9" count="63" type="stmt"/>
+        <line num="10" count="63" type="stmt"/>
+        <line num="12" count="63" type="stmt"/>
+        <line num="15" count="63" type="stmt"/>
+        <line num="16" count="62" type="stmt"/>
+        <line num="17" count="60" type="stmt"/>
+        <line num="21" count="63" type="cond" truecount="1" falsecount="0"/>
+        <line num="22" count="62" type="stmt"/>
+        <line num="25" count="63" type="stmt"/>
+        <line num="28" count="126" type="stmt"/>
+        <line num="30" count="63" type="stmt"/>
+        <line num="31" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="39" count="63" type="cond" truecount="2" falsecount="0"/>
+        <line num="42" count="63" type="stmt"/>
+        <line num="52" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="components.view-mode-button">
+      <metrics statements="16" coveredstatements="16" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2"/>
+      <file name="ViewModeButton.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\view-mode-button\ViewModeButton.tsx">
+        <metrics statements="11" coveredstatements="11" conditionals="4" coveredconditionals="4" methods="2" coveredmethods="2"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="11" count="4" type="stmt"/>
+        <line num="13" count="4" type="stmt"/>
+        <line num="21" count="4" type="cond" truecount="2" falsecount="0"/>
+      </file>
+      <file name="ViewModeButtonStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\components\view-mode-button\ViewModeButtonStyle.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="contexts.authentication">
+      <metrics statements="17" coveredstatements="17" conditionals="2" coveredconditionals="2" methods="4" coveredmethods="3"/>
+      <file name="authentication-context.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\contexts\authentication\authentication-context.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="14" count="4" type="stmt"/>
+        <line num="19" count="4" type="stmt"/>
+      </file>
+      <file name="authentication-provider.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\contexts\authentication\authentication-provider.tsx">
+        <metrics statements="14" coveredstatements="14" conditionals="2" coveredconditionals="2" methods="3" coveredmethods="3"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="4" type="stmt"/>
+        <line num="12" count="4" type="stmt"/>
+        <line num="14" count="4" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="18" count="4" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="20" count="2" type="stmt"/>
+        <line num="25" count="2" type="stmt"/>
+        <line num="28" count="4" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="contexts.bank-holidays">
+      <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
+      <file name="bank-holidays-context.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\contexts\bank-holidays\bank-holidays-context.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="10" count="4" type="stmt"/>
+        <line num="15" count="4" type="stmt"/>
+      </file>
+      <file name="bank-holidays-provider.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\contexts\bank-holidays\bank-holidays-provider.tsx">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="7" count="3" type="stmt"/>
+        <line num="9" count="3" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="contexts.location">
+      <metrics statements="20" coveredstatements="20" conditionals="4" coveredconditionals="4" methods="7" coveredmethods="5"/>
+      <file name="location-provider.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\contexts\location\location-provider.tsx">
+        <metrics statements="20" coveredstatements="20" conditionals="4" coveredconditionals="4" methods="7" coveredmethods="5"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="12" count="6" type="stmt"/>
+        <line num="22" count="6" type="stmt"/>
+        <line num="23" count="9" type="stmt"/>
+        <line num="24" count="9" type="stmt"/>
+        <line num="26" count="9" type="stmt"/>
+        <line num="27" count="5" type="stmt"/>
+        <line num="28" count="5" type="stmt"/>
+        <line num="29" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="32" count="5" type="stmt"/>
+        <line num="34" count="5" type="stmt"/>
+        <line num="35" count="5" type="cond" truecount="1" falsecount="0"/>
+        <line num="36" count="2" type="stmt"/>
+        <line num="41" count="9" type="stmt"/>
+        <line num="42" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="43" count="1" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="48" count="9" type="stmt"/>
+        <line num="55" count="6" type="stmt"/>
+      </file>
+    </package>
+    <package name="contexts.offer">
+      <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <file name="offer-context.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\contexts\offer\offer-context.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="7" type="stmt"/>
+        <line num="14" count="7" type="stmt"/>
+        <line num="19" count="7" type="stmt"/>
+      </file>
+      <file name="offer-provider.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\contexts\offer\offer-provider.tsx">
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
+        <line num="10" count="4" type="stmt"/>
+        <line num="12" count="4" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="navigations">
+      <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="StackNavigator.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\navigations\StackNavigator.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="screens.change-language">
+      <metrics statements="24" coveredstatements="24" conditionals="2" coveredconditionals="2" methods="4" coveredmethods="4"/>
+      <file name="ChangeLanguage.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\change-language\ChangeLanguage.tsx">
+        <metrics statements="20" coveredstatements="20" conditionals="2" coveredconditionals="2" methods="4" coveredmethods="4"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="33" count="3" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
+      </file>
+      <file name="ChangeLanguageStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\change-language\ChangeLanguageStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="25" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="screens.delete-account">
+      <metrics statements="52" coveredstatements="51" conditionals="3" coveredconditionals="3" methods="12" coveredmethods="12"/>
+      <file name="DeleteAccount.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\delete-account\DeleteAccount.tsx">
+        <metrics statements="48" coveredstatements="47" conditionals="3" coveredconditionals="3" methods="12" coveredmethods="12"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="20" count="4" type="stmt"/>
+        <line num="21" count="4" type="stmt"/>
+        <line num="22" count="4" type="stmt"/>
+        <line num="24" count="4" type="stmt"/>
+        <line num="34" count="4" type="stmt"/>
+        <line num="38" count="4" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="46" count="1" type="stmt"/>
+        <line num="49" count="4" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="56" count="4" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="58" count="5" type="stmt"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="62" count="4" type="stmt"/>
+        <line num="63" count="1" type="stmt"/>
+        <line num="64" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="65" count="1" type="stmt"/>
+        <line num="66" count="1" type="stmt"/>
+        <line num="67" count="1" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="74" count="4" type="stmt"/>
+        <line num="76" count="4" type="stmt"/>
+        <line num="77" count="16" type="stmt"/>
+        <line num="80" count="4" type="stmt"/>
+        <line num="108" count="4" type="stmt"/>
+        <line num="122" count="20" type="stmt"/>
+        <line num="126" count="1" type="stmt"/>
+      </file>
+      <file name="DeleteAccountStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\delete-account\DeleteAccountStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="46" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="screens.delete-account-success">
+      <metrics statements="16" coveredstatements="16" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+      <file name="DeleteAccountSuccess.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\delete-account-success\DeleteAccountSuccess.tsx">
+        <metrics statements="13" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+      </file>
+      <file name="DeleteAccountSuccessStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\delete-account-success\DeleteAccountSuccessStyle.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="screens.get-started">
+      <metrics statements="20" coveredstatements="20" conditionals="2" coveredconditionals="2" methods="4" coveredmethods="4"/>
+      <file name="GetStarted.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\get-started\GetStarted.tsx">
+        <metrics statements="16" coveredstatements="16" conditionals="2" coveredconditionals="2" methods="4" coveredmethods="4"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="25" count="6" type="stmt"/>
+        <line num="26" count="2" type="stmt"/>
+        <line num="38" count="3" type="stmt"/>
+      </file>
+      <file name="GetStartedStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\get-started\GetStartedStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="screens.home">
+      <metrics statements="27" coveredstatements="23" conditionals="2" coveredconditionals="0" methods="6" coveredmethods="3"/>
+      <file name="HomeTabs.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\home\HomeTabs.tsx">
+        <metrics statements="27" coveredstatements="23" conditionals="2" coveredconditionals="0" methods="6" coveredmethods="3"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="22" count="8" type="stmt"/>
+        <line num="24" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="39" count="2" type="stmt"/>
+        <line num="41" count="2" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="77" count="2" type="stmt"/>
+        <line num="83" count="8" type="stmt"/>
+      </file>
+    </package>
+    <package name="screens.landing">
+      <metrics statements="28" coveredstatements="23" conditionals="3" coveredconditionals="1" methods="5" coveredmethods="3"/>
+      <file name="Landing.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\landing\Landing.tsx">
+        <metrics statements="24" coveredstatements="19" conditionals="3" coveredconditionals="1" methods="5" coveredmethods="3"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="27" count="3" type="stmt"/>
+        <line num="28" count="1" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="32" count="1" type="stmt"/>
+        <line num="35" count="3" type="stmt"/>
+        <line num="42" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="45" count="0" type="stmt"/>
+      </file>
+      <file name="LandingStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\landing\LandingStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="screens.login">
+      <metrics statements="20" coveredstatements="20" conditionals="3" coveredconditionals="3" methods="4" coveredmethods="4"/>
+      <file name="Login.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\login\Login.tsx">
+        <metrics statements="17" coveredstatements="17" conditionals="3" coveredconditionals="3" methods="4" coveredmethods="4"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="5" type="stmt"/>
+        <line num="21" count="5" type="stmt"/>
+        <line num="23" count="5" type="stmt"/>
+        <line num="24" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="29" count="5" type="stmt"/>
+        <line num="31" count="5" type="stmt"/>
+        <line num="43" count="1" type="stmt"/>
+      </file>
+      <file name="LoginStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\login\LoginStyle.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="screens.offer-details">
+      <metrics statements="148" coveredstatements="138" conditionals="47" coveredconditionals="42" methods="19" coveredmethods="18"/>
+      <file name="OfferDetails.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\offer-details\OfferDetails.tsx">
+        <metrics statements="144" coveredstatements="134" conditionals="47" coveredconditionals="42" methods="19" coveredmethods="18"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="22" count="2" type="stmt"/>
+        <line num="23" count="2" type="stmt"/>
+        <line num="25" count="2" type="stmt"/>
+        <line num="26" count="46" type="stmt"/>
+        <line num="27" count="46" type="stmt"/>
+        <line num="28" count="46" type="stmt"/>
+        <line num="29" count="46" type="stmt"/>
+        <line num="30" count="46" type="stmt"/>
+        <line num="32" count="46" type="stmt"/>
+        <line num="34" count="46" type="stmt"/>
+        <line num="35" count="16" type="stmt"/>
+        <line num="38" count="46" type="stmt"/>
+        <line num="39" count="29" type="stmt"/>
+        <line num="42" count="46" type="stmt"/>
+        <line num="43" count="16" type="stmt"/>
+        <line num="45" count="16" type="cond" truecount="1" falsecount="0"/>
+        <line num="46" count="2" type="stmt"/>
+        <line num="49" count="14" type="stmt"/>
+        <line num="53" count="13" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
+        <line num="59" count="46" type="stmt"/>
+        <line num="60" count="30" type="stmt"/>
+        <line num="78" count="46" type="stmt"/>
+        <line num="79" count="2" type="stmt"/>
+        <line num="80" count="2" type="stmt"/>
+        <line num="81" count="2" type="stmt"/>
+        <line num="82" count="2" type="stmt"/>
+        <line num="83" count="1" type="stmt"/>
+        <line num="84" count="1" type="stmt"/>
+        <line num="85" count="1" type="stmt"/>
+        <line num="87" count="1" type="stmt"/>
+        <line num="91" count="46" type="stmt"/>
+        <line num="92" count="24" type="stmt"/>
+        <line num="95" count="23" type="stmt"/>
+        <line num="98" count="23" type="stmt"/>
+        <line num="105" count="46" type="stmt"/>
+        <line num="106" count="6" type="stmt"/>
+        <line num="107" count="6" type="stmt"/>
+        <line num="109" count="6" type="cond" truecount="3" falsecount="0"/>
+        <line num="111" count="2" type="stmt"/>
+        <line num="112" count="2" type="stmt"/>
+        <line num="114" count="2" type="stmt"/>
+        <line num="115" count="2" type="stmt"/>
+        <line num="117" count="2" type="stmt"/>
+        <line num="118" count="2" type="stmt"/>
+        <line num="121" count="6" type="stmt"/>
+        <line num="127" count="46" type="stmt"/>
+        <line num="128" count="37" type="cond" truecount="0" falsecount="1"/>
+        <line num="129" count="0" type="stmt"/>
+        <line num="132" count="37" type="cond" truecount="1" falsecount="0"/>
+        <line num="133" count="4" type="stmt"/>
+        <line num="136" count="33" type="cond" truecount="5" falsecount="1"/>
+        <line num="138" count="21" type="stmt"/>
+        <line num="140" count="3" type="stmt"/>
+        <line num="142" count="3" type="stmt"/>
+        <line num="144" count="3" type="stmt"/>
+        <line num="146" count="3" type="stmt"/>
+        <line num="148" count="0" type="stmt"/>
+        <line num="152" count="46" type="stmt"/>
+        <line num="153" count="18" type="cond" truecount="2" falsecount="1"/>
+        <line num="154" count="0" type="stmt"/>
+        <line num="157" count="18" type="cond" truecount="1" falsecount="0"/>
+        <line num="158" count="18" type="stmt"/>
+        <line num="161" count="0" type="stmt"/>
+        <line num="164" count="46" type="stmt"/>
+        <line num="166" count="18" type="cond" truecount="2" falsecount="0"/>
+        <line num="169" count="46" type="stmt"/>
+        <line num="170" count="29" type="cond" truecount="1" falsecount="0"/>
+        <line num="171" count="17" type="stmt"/>
+        <line num="174" count="12" type="cond" truecount="1" falsecount="0"/>
+        <line num="175" count="9" type="stmt"/>
+        <line num="176" count="9" type="stmt"/>
+        <line num="177" count="9" type="stmt"/>
+        <line num="178" count="9" type="stmt"/>
+        <line num="179" count="9" type="stmt"/>
+        <line num="182" count="3" type="cond" truecount="1" falsecount="0"/>
+        <line num="183" count="3" type="stmt"/>
+        <line num="187" count="3" type="stmt"/>
+        <line num="188" count="3" type="stmt"/>
+        <line num="189" count="3" type="stmt"/>
+        <line num="190" count="3" type="stmt"/>
+        <line num="193" count="0" type="stmt"/>
+        <line num="194" count="0" type="stmt"/>
+        <line num="197" count="46" type="stmt"/>
+        <line num="198" count="13" type="stmt"/>
+        <line num="199" count="13" type="stmt"/>
+        <line num="200" count="13" type="cond" truecount="1" falsecount="0"/>
+        <line num="201" count="9" type="stmt"/>
+        <line num="203" count="4" type="stmt"/>
+        <line num="206" count="46" type="stmt"/>
+        <line num="208" count="9" type="cond" truecount="5" falsecount="1"/>
+        <line num="210" count="5" type="stmt"/>
+        <line num="211" count="5" type="stmt"/>
+        <line num="213" count="1" type="stmt"/>
+        <line num="214" count="1" type="stmt"/>
+        <line num="216" count="1" type="stmt"/>
+        <line num="217" count="1" type="stmt"/>
+        <line num="219" count="1" type="stmt"/>
+        <line num="220" count="1" type="stmt"/>
+        <line num="222" count="1" type="stmt"/>
+        <line num="223" count="1" type="stmt"/>
+        <line num="225" count="0" type="stmt"/>
+        <line num="227" count="9" type="stmt"/>
+        <line num="230" count="46" type="stmt"/>
+        <line num="231" count="25" type="cond" truecount="0" falsecount="1"/>
+        <line num="232" count="0" type="stmt"/>
+        <line num="235" count="25" type="stmt"/>
+        <line num="237" count="25" type="cond" truecount="1" falsecount="0"/>
+        <line num="238" count="25" type="stmt"/>
+        <line num="239" count="25" type="stmt"/>
+        <line num="246" count="25" type="cond" truecount="3" falsecount="0"/>
+        <line num="247" count="15" type="stmt"/>
+        <line num="248" count="15" type="stmt"/>
+        <line num="258" count="25" type="cond" truecount="1" falsecount="0"/>
+        <line num="259" count="15" type="stmt"/>
+        <line num="267" count="25" type="cond" truecount="3" falsecount="0"/>
+        <line num="268" count="15" type="stmt"/>
+        <line num="277" count="25" type="stmt"/>
+        <line num="280" count="46" type="stmt"/>
+        <line num="281" count="46" type="stmt"/>
+        <line num="282" count="46" type="stmt"/>
+        <line num="288" count="46" type="stmt"/>
+        <line num="289" count="0" type="stmt"/>
+        <line num="290" count="0" type="stmt"/>
+        <line num="297" count="46" type="stmt"/>
+        <line num="309" count="30" type="stmt"/>
+      </file>
+      <file name="OfferDetailsStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\offer-details\OfferDetailsStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="screens.offers">
+      <metrics statements="33" coveredstatements="32" conditionals="6" coveredconditionals="4" methods="5" coveredmethods="4"/>
+      <file name="OfferScreen.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\offers\OfferScreen.tsx">
+        <metrics statements="29" coveredstatements="28" conditionals="6" coveredconditionals="4" methods="5" coveredmethods="4"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="28" count="6" type="stmt"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="31" count="6" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
+        <line num="34" count="6" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="38" count="6" type="stmt"/>
+        <line num="39" count="4" type="cond" truecount="1" falsecount="1"/>
+        <line num="54" count="6" type="stmt"/>
+        <line num="78" count="1" type="stmt"/>
+        <line num="79" count="1" type="stmt"/>
+        <line num="81" count="1" type="stmt"/>
+        <line num="97" count="0" type="stmt"/>
+      </file>
+      <file name="OffersStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\offers\OffersStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="screens.personal-information">
+      <metrics statements="52" coveredstatements="17" conditionals="11" coveredconditionals="0" methods="14" coveredmethods="0"/>
+      <file name="PersonalInformation.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\personal-information\PersonalInformation.tsx">
+        <metrics statements="48" coveredstatements="13" conditionals="11" coveredconditionals="0" methods="14" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="55" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="60" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="64" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="68" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="84" count="0" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="92" count="0" type="stmt"/>
+        <line num="95" count="0" type="stmt"/>
+        <line num="96" count="0" type="stmt"/>
+        <line num="97" count="0" type="stmt"/>
+        <line num="98" count="0" type="stmt"/>
+        <line num="99" count="0" type="stmt"/>
+        <line num="101" count="0" type="stmt"/>
+        <line num="105" count="0" type="stmt"/>
+        <line num="106" count="0" type="stmt"/>
+        <line num="109" count="0" type="stmt"/>
+        <line num="110" count="0" type="stmt"/>
+        <line num="114" count="0" type="stmt"/>
+        <line num="126" count="0" type="stmt"/>
+        <line num="137" count="0" type="cond" truecount="0" falsecount="3"/>
+        <line num="164" count="0" type="stmt"/>
+      </file>
+      <file name="PersonalInformationStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\personal-information\PersonalInformationStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="screens.profile">
+      <metrics statements="69" coveredstatements="58" conditionals="3" coveredconditionals="3" methods="20" coveredmethods="6"/>
+      <file name="ProfileScreen.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\profile\ProfileScreen.tsx">
+        <metrics statements="65" coveredstatements="54" conditionals="3" coveredconditionals="3" methods="20" coveredmethods="6"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="27" count="1" type="stmt"/>
+        <line num="28" count="2" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
+        <line num="31" count="2" type="stmt"/>
+        <line num="32" count="2" type="stmt"/>
+        <line num="33" count="2" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="39" count="2" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="48" count="2" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="55" count="2" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="58" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="66" count="2" type="stmt"/>
+        <line num="68" count="2" type="stmt"/>
+        <line num="70" count="2" type="stmt"/>
+        <line num="71" count="2" type="stmt"/>
+        <line num="72" count="2" type="stmt"/>
+        <line num="73" count="2" type="stmt"/>
+        <line num="74" count="2" type="stmt"/>
+        <line num="75" count="2" type="stmt"/>
+        <line num="76" count="2" type="stmt"/>
+        <line num="78" count="2" type="stmt"/>
+        <line num="106" count="2" type="stmt"/>
+        <line num="120" count="10" type="stmt"/>
+        <line num="172" count="1" type="stmt"/>
+        <line num="173" count="0" type="stmt"/>
+        <line num="175" count="0" type="stmt"/>
+        <line num="194" count="0" type="stmt"/>
+        <line num="204" count="0" type="stmt"/>
+        <line num="214" count="0" type="stmt"/>
+      </file>
+      <file name="ProfileStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\profile\ProfileStyle.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="screens.register">
+      <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="Register.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\register\Register.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="15" count="2" type="stmt"/>
+      </file>
+      <file name="RegisterStyle.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\screens\register\RegisterStyle.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="services">
+      <metrics statements="97" coveredstatements="77" conditionals="5" coveredconditionals="3" methods="15" coveredmethods="13"/>
+      <file name="BankHolidaysService.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\services\BankHolidaysService.tsx">
+        <metrics statements="12" coveredstatements="10" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="19" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="30" count="3" type="stmt"/>
+      </file>
+      <file name="OfferService.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\services\OfferService.tsx">
+        <metrics statements="47" coveredstatements="46" conditionals="2" coveredconditionals="2" methods="7" coveredmethods="7"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+        <line num="32" count="3" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="37" count="2" type="stmt"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="44" count="2" type="stmt"/>
+        <line num="45" count="2" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="62" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="63" count="1" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="68" count="1" type="stmt"/>
+        <line num="73" count="2" type="stmt"/>
+        <line num="75" count="2" type="stmt"/>
+        <line num="77" count="2" type="stmt"/>
+        <line num="82" count="2" type="stmt"/>
+        <line num="87" count="2" type="stmt"/>
+        <line num="89" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="90" count="1" type="stmt"/>
+        <line num="93" count="1" type="stmt"/>
+        <line num="95" count="1" type="stmt"/>
+        <line num="101" count="7" type="stmt"/>
+        <line num="102" count="7" type="stmt"/>
+        <line num="104" count="7" type="stmt"/>
+        <line num="109" count="7" type="stmt"/>
+        <line num="110" count="6" type="stmt"/>
+        <line num="112" count="5" type="stmt"/>
+        <line num="113" count="4" type="stmt"/>
+        <line num="117" count="3" type="stmt"/>
+        <line num="120" count="4" type="stmt"/>
+        <line num="121" count="4" type="stmt"/>
+        <line num="126" count="3" type="stmt"/>
+      </file>
+      <file name="UserService.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\services\UserService.tsx">
+        <metrics statements="38" coveredstatements="21" conditionals="2" coveredconditionals="1" methods="7" coveredmethods="5"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="11" count="5" type="cond" truecount="1" falsecount="0"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="17" count="4" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="22" count="2" type="stmt"/>
+        <line num="29" count="2" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
+        <line num="44" count="1" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+        <line num="51" count="2" type="stmt"/>
+        <line num="52" count="2" type="stmt"/>
+        <line num="63" count="2" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="73" count="0" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="82" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="86" count="0" type="stmt"/>
+        <line num="88" count="0" type="stmt"/>
+        <line num="93" count="2" type="stmt"/>
+        <line num="94" count="2" type="stmt"/>
+        <line num="96" count="2" type="stmt"/>
+        <line num="104" count="0" type="stmt"/>
+        <line num="109" count="0" type="stmt"/>
+        <line num="110" count="0" type="stmt"/>
+        <line num="111" count="0" type="stmt"/>
+        <line num="119" count="0" type="stmt"/>
+        <line num="121" count="0" type="stmt"/>
+        <line num="127" count="3" type="stmt"/>
+      </file>
+    </package>
+    <package name="utils">
+      <metrics statements="60" coveredstatements="60" conditionals="16" coveredconditionals="16" methods="13" coveredmethods="13"/>
+      <file name="DateUtils.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\DateUtils.tsx">
+        <metrics statements="47" coveredstatements="47" conditionals="10" coveredconditionals="10" methods="9" coveredmethods="9"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="9" count="4" type="stmt"/>
+        <line num="10" count="61" type="stmt"/>
+        <line num="11" count="61" type="stmt"/>
+        <line num="12" count="61" type="stmt"/>
+        <line num="15" count="4" type="stmt"/>
+        <line num="16" count="23" type="stmt"/>
+        <line num="17" count="23" type="stmt"/>
+        <line num="18" count="23" type="stmt"/>
+        <line num="19" count="23" type="stmt"/>
+        <line num="20" count="23" type="stmt"/>
+        <line num="23" count="4" type="stmt"/>
+        <line num="24" count="4" type="stmt"/>
+        <line num="25" count="4" type="stmt"/>
+        <line num="26" count="4" type="stmt"/>
+        <line num="29" count="4" type="stmt"/>
+        <line num="30" count="4" type="stmt"/>
+        <line num="31" count="4" type="stmt"/>
+        <line num="32" count="4" type="stmt"/>
+        <line num="35" count="4" type="stmt"/>
+        <line num="36" count="4" type="stmt"/>
+        <line num="37" count="4" type="stmt"/>
+        <line num="38" count="4" type="stmt"/>
+        <line num="41" count="4" type="stmt"/>
+        <line num="42" count="5" type="stmt"/>
+        <line num="43" count="5" type="stmt"/>
+        <line num="44" count="5" type="stmt"/>
+        <line num="46" count="5" type="stmt"/>
+        <line num="47" count="5" type="stmt"/>
+        <line num="49" count="5" type="stmt"/>
+        <line num="50" count="5" type="stmt"/>
+        <line num="51" count="5" type="stmt"/>
+        <line num="53" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="56" count="4" type="stmt"/>
+        <line num="57" count="8" type="cond" truecount="8" falsecount="0"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
+        <line num="63" count="1" type="stmt"/>
+        <line num="65" count="1" type="stmt"/>
+        <line num="67" count="1" type="stmt"/>
+        <line num="69" count="1" type="stmt"/>
+        <line num="71" count="1" type="stmt"/>
+        <line num="73" count="1" type="stmt"/>
+        <line num="78" count="37" type="stmt"/>
+        <line num="79" count="37" type="stmt"/>
+        <line num="83" count="2" type="stmt"/>
+        <line num="84" count="2" type="stmt"/>
+      </file>
+      <file name="StoreUtils.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\StoreUtils.tsx">
+        <metrics statements="13" coveredstatements="13" conditionals="6" coveredconditionals="6" methods="4" coveredmethods="4"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
+        <line num="6" count="4" type="stmt"/>
+        <line num="7" count="5" type="cond" truecount="3" falsecount="0"/>
+        <line num="8" count="4" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="14" count="4" type="stmt"/>
+        <line num="15" count="11" type="stmt"/>
+        <line num="16" count="6" type="cond" truecount="1" falsecount="0"/>
+        <line num="17" count="5" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="25" count="3" type="cond" truecount="2" falsecount="0"/>
+      </file>
+    </package>
+    <package name="utils.auth">
+      <metrics statements="22" coveredstatements="19" conditionals="1" coveredconditionals="1" methods="3" coveredmethods="3"/>
+      <file name="jwtSecurity.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\auth\jwtSecurity.tsx">
+        <metrics statements="22" coveredstatements="19" conditionals="1" coveredconditionals="1" methods="3" coveredmethods="3"/>
+        <line num="1" count="10" type="stmt"/>
+        <line num="2" count="10" type="stmt"/>
+        <line num="5" count="10" type="stmt"/>
+        <line num="7" count="10" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="16" count="10" type="stmt"/>
+        <line num="17" count="11" type="stmt"/>
+        <line num="19" count="11" type="stmt"/>
+        <line num="21" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="22" count="2" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="28" count="9" type="stmt"/>
+        <line num="29" count="9" type="stmt"/>
+        <line num="33" count="10" type="stmt"/>
+        <line num="34" count="3" type="stmt"/>
+        <line num="35" count="3" type="stmt"/>
+        <line num="37" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="utils.constants">
+      <metrics statements="22" coveredstatements="22" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="api.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\constants\api.tsx">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="8" type="stmt"/>
+      </file>
+      <file name="frequencyOfUseText.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\constants\frequencyOfUseText.tsx">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+      </file>
+      <file name="headers.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\constants\headers.tsx">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="3" count="6" type="stmt"/>
+        <line num="8" count="6" type="stmt"/>
+        <line num="9" count="8" type="stmt"/>
+        <line num="10" count="8" type="stmt"/>
+        <line num="12" count="8" type="stmt"/>
+      </file>
+      <file name="mapConstants.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\constants\mapConstants.tsx">
+        <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="3" count="8" type="stmt"/>
+        <line num="4" count="8" type="stmt"/>
+        <line num="5" count="8" type="stmt"/>
+        <line num="9" count="8" type="stmt"/>
+        <line num="10" count="8" type="stmt"/>
+        <line num="11" count="8" type="stmt"/>
+        <line num="13" count="8" type="stmt"/>
+        <line num="52" count="8" type="stmt"/>
+      </file>
+      <file name="offerChipsData.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\constants\offerChipsData.tsx">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="4" count="3" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="40" count="3" type="stmt"/>
+      </file>
+    </package>
+    <package name="utils.enums">
+      <metrics statements="53" coveredstatements="53" conditionals="20" coveredconditionals="20" methods="10" coveredmethods="10"/>
+      <file name="accountDeletionReason.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\enums\accountDeletionReason.tsx">
+        <metrics statements="6" coveredstatements="6" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="1" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="4" count="3" type="stmt"/>
+        <line num="5" count="3" type="stmt"/>
+        <line num="6" count="3" type="stmt"/>
+      </file>
+      <file name="buttonStyleEnum.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\enums\buttonStyleEnum.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="1" count="11" type="cond" truecount="2" falsecount="0"/>
+        <line num="2" count="11" type="stmt"/>
+        <line num="3" count="11" type="stmt"/>
+      </file>
+      <file name="buttonTypeEnum.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\enums\buttonTypeEnum.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="1" count="12" type="cond" truecount="2" falsecount="0"/>
+        <line num="2" count="12" type="stmt"/>
+        <line num="3" count="12" type="stmt"/>
+        <line num="4" count="12" type="stmt"/>
+      </file>
+      <file name="citizenOfferType.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\enums\citizenOfferType.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="1" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="2" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+      </file>
+      <file name="frequencyOfUseEnum.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\enums\frequencyOfUseEnum.tsx">
+        <metrics statements="7" coveredstatements="7" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="1" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+      </file>
+      <file name="navigationEnum.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\enums\navigationEnum.tsx">
+        <metrics statements="12" coveredstatements="12" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="1" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="2" count="7" type="stmt"/>
+        <line num="3" count="7" type="stmt"/>
+        <line num="4" count="7" type="stmt"/>
+        <line num="5" count="7" type="stmt"/>
+        <line num="6" count="7" type="stmt"/>
+        <line num="7" count="7" type="stmt"/>
+        <line num="8" count="7" type="stmt"/>
+        <line num="9" count="7" type="stmt"/>
+        <line num="10" count="7" type="stmt"/>
+        <line num="11" count="7" type="stmt"/>
+        <line num="12" count="7" type="stmt"/>
+      </file>
+      <file name="offerTypeEnum.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\enums\offerTypeEnum.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="1" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+      </file>
+      <file name="personalInfoFormControlsEnum.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\enums\personalInfoFormControlsEnum.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="1" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="4" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+      </file>
+      <file name="timeZoneEnum.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\enums\timeZoneEnum.tsx">
+        <metrics statements="3" coveredstatements="3" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="1" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+      </file>
+      <file name="toasterTypeEnum.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\enums\toasterTypeEnum.tsx">
+        <metrics statements="5" coveredstatements="5" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="1" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="2" count="4" type="stmt"/>
+        <line num="3" count="4" type="stmt"/>
+        <line num="4" count="4" type="stmt"/>
+        <line num="5" count="4" type="stmt"/>
+      </file>
+    </package>
+    <package name="utils.form">
+      <metrics statements="10" coveredstatements="10" conditionals="7" coveredconditionals="7" methods="4" coveredmethods="4"/>
+      <file name="formRules.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\form\formRules.tsx">
+        <metrics statements="10" coveredstatements="10" conditionals="7" coveredconditionals="7" methods="4" coveredmethods="4"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="15" count="2" type="stmt"/>
+        <line num="17" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="27" count="2" type="cond" truecount="2" falsecount="0"/>
+      </file>
+    </package>
+    <package name="utils.geolocation">
+      <metrics statements="40" coveredstatements="37" conditionals="10" coveredconditionals="9" methods="9" coveredmethods="7"/>
+      <file name="GeolocationUtils.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\geolocation\GeolocationUtils.tsx">
+        <metrics statements="40" coveredstatements="37" conditionals="10" coveredconditionals="9" methods="9" coveredmethods="7"/>
+        <line num="1" count="6" type="stmt"/>
+        <line num="2" count="6" type="stmt"/>
+        <line num="3" count="6" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="6" count="6" type="stmt"/>
+        <line num="8" count="6" type="stmt"/>
+        <line num="11" count="5" type="cond" truecount="2" falsecount="0"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="4" type="cond" truecount="1" falsecount="0"/>
+        <line num="14" count="4" type="stmt"/>
+        <line num="15" count="4" type="cond" truecount="1" falsecount="0"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="20" count="5" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="24" count="5" type="stmt"/>
+        <line num="27" count="6" type="stmt"/>
+        <line num="28" count="1" type="stmt"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="39" count="6" type="stmt"/>
+        <line num="40" count="3" type="stmt"/>
+        <line num="42" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="43" count="2" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="56" count="2" type="stmt"/>
+        <line num="57" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="66" count="1" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="73" count="1" type="stmt"/>
+        <line num="75" count="1" type="stmt"/>
+        <line num="78" count="6" type="stmt"/>
+        <line num="79" count="1" type="cond" truecount="2" falsecount="0"/>
+      </file>
+    </package>
+    <package name="utils.models">
+      <metrics statements="30" coveredstatements="29" conditionals="7" coveredconditionals="5" methods="6" coveredmethods="6"/>
+      <file name="CitizenProfileDto.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\models\CitizenProfileDto.tsx">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="11" count="2" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="14" count="2" type="stmt"/>
+      </file>
+      <file name="DeleteAccountDto.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\models\DeleteAccountDto.tsx">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+      </file>
+      <file name="OfferType.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\models\OfferType.tsx">
+        <metrics statements="12" coveredstatements="11" conditionals="5" coveredconditionals="4" methods="2" coveredmethods="2"/>
+        <line num="1" count="3" type="stmt"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="10" count="38" type="stmt"/>
+        <line num="11" count="38" type="stmt"/>
+        <line num="12" count="38" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="18" count="38" type="cond" truecount="4" falsecount="1"/>
+        <line num="20" count="32" type="stmt"/>
+        <line num="22" count="2" type="stmt"/>
+        <line num="24" count="2" type="stmt"/>
+        <line num="26" count="2" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+      </file>
+      <file name="UseOfferDto.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\models\UseOfferDto.tsx">
+        <metrics statements="4" coveredstatements="4" conditionals="2" coveredconditionals="1" methods="1" coveredmethods="1"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="11" count="2" type="cond" truecount="1" falsecount="1"/>
+      </file>
+      <file name="WorkingHour.tsx" path="C:\Work\Local4Local\mobile\Local4Local\app\utils\models\WorkingHour.tsx">
+        <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="9" count="8" type="stmt"/>
+        <line num="10" count="8" type="stmt"/>
+        <line num="11" count="8" type="stmt"/>
+        <line num="12" count="8" type="stmt"/>
+        <line num="13" count="8" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

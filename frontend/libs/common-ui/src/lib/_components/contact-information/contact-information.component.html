@@ -1,0 +1,223 @@
+<form
+	centric-complex-form
+	class="grid-form"
+	[class.editable]="!isReadonly"
+	[formGroup]="contactInformationForm"
+	(change)="updateLocalStorage()">
+	<centric-form-item class="full-width">
+		<centric-form-label>{{ 'contactInformation.companyBranchAddress' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+			<windmill-input
+				ariaAttributes
+				frontendHtmlContentValidator
+				formControlName="companyBranchAddress"
+				[placeholder]="'contactInformation.companyBranchAddressPlaceholder' | translate"
+				[maxLength]="256"
+				[hasClearIcon]="true"
+				[readonly]="isReadonly"
+				[ariaLabelClearIcon]="'contactInformation.companyBranchAddressPlaceholder'"
+				[ariaLabelTranslation]="'contactInformation.companyBranchAddressPlaceholder'"
+				[validationFunction]="
+					validationFunctionError.bind(this, 'companyBranchAddress', contactInformationForm)
+				">
+				<ng-container
+					errors
+					*ngIf="hasFormControlRequiredErrors('companyBranchAddress', contactInformationForm)">
+					<span class="centric-error-message">
+						{{ getErrorMessageContactFormInputs('companyBranchAddress') }}
+					</span>
+				</ng-container>
+				<ng-container errors *ngIf="contactInformationForm.get('companyBranchAddress')?.hasError('isHTML')">
+					<span class="centric-error-message">
+						{{ 'errors.htmlContent' | translate }}
+					</span>
+				</ng-container>
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+
+	<centric-form-item>
+		<centric-form-label>{{ 'contactInformation.branchProvince' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+			<windmill-input
+				ariaAttributes
+				frontendHtmlContentValidator
+				formControlName="branchProvince"
+				[placeholder]="'contactInformation.branchProvincePlaceholder' | translate"
+				[maxLength]="256"
+				[hasClearIcon]="true"
+				[readonly]="isReadonly"
+				[ariaLabelClearIcon]="'contactInformation.branchProvincePlaceholder'"
+				[ariaLabelTranslation]="'contactInformation.branchProvincePlaceholder'"
+				[validationFunction]="validationFunctionError.bind(this, 'branchProvince', contactInformationForm)">
+				<ng-container errors *ngIf="hasFormControlRequiredErrors('branchProvince', contactInformationForm)">
+					<span class="centric-error-message">
+						{{ getErrorMessageContactFormInputs('branchProvince') }}
+					</span>
+				</ng-container>
+				<ng-container errors *ngIf="contactInformationForm.get('branchProvince')?.hasError('isHTML')">
+					<span class="centric-error-message">
+						{{ 'errors.htmlContent' | translate }}
+					</span>
+				</ng-container>
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+	<centric-form-item>
+		<centric-form-label>{{ 'contactInformation.branchZip' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+			<windmill-input
+				ariaAttributes
+				formControlName="branchZip"
+				[placeholder]="'contactInformation.branchZipPlaceholder' | translate"
+				[maxLength]="7"
+				[hasClearIcon]="true"
+				[readonly]="isReadonly"
+				[ariaLabelClearIcon]="'contactInformation.branchZipPlaceholder'"
+				[ariaLabelTranslation]="'contactInformation.branchZipPlaceholder'"
+				[validationFunction]="validationFunctionError.bind(this, 'branchZip', contactInformationForm)">
+				<ng-container errors *ngIf="validationFieldRequired('branchZip', contactInformationForm)">
+					<span class="centric-error-message">{{
+						'contactInformation.branchZipFormControlRequired' | translate
+					}}</span>
+				</ng-container>
+				<ng-container errors *ngIf="zipCodeValidator(contactInformationForm)">
+					<span class="centric-error-message">{{
+						getErrorMessage('branchZip', 'validZip', 'contactInformation.validZipCode')
+					}}</span>
+				</ng-container>
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+
+	<centric-form-item>
+		<centric-form-label>{{ 'contactInformation.branchLocation' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+			<windmill-input
+				ariaAttributes
+				frontendHtmlContentValidator
+				formControlName="branchLocation"
+				[placeholder]="'contactInformation.branchLocationPlaceholder' | translate"
+				[maxLength]="256"
+				[hasClearIcon]="true"
+				[readonly]="isReadonly"
+				[ariaLabelClearIcon]="'contactInformation.branchLocationPlaceholder'"
+				[ariaLabelTranslation]="'contactInformation.branchLocationPlaceholder'"
+				[validationFunction]="validationFunctionError.bind(this, 'branchLocation', contactInformationForm)">
+				<ng-container errors *ngIf="hasFormControlRequiredErrors('branchLocation', contactInformationForm)">
+					<span class="centric-error-message">
+						{{ getErrorMessageContactFormInputs('branchLocation') }}
+					</span>
+				</ng-container>
+				<ng-container errors *ngIf="contactInformationForm.get('branchLocation')?.hasError('isHTML')">
+					<span class="centric-error-message">
+						{{ 'errors.htmlContent' | translate }}
+					</span>
+				</ng-container>
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+
+	<centric-form-item>
+		<centric-form-label>{{ 'contactInformation.branchTelephone' | translate }}</centric-form-label>
+		<centric-form-control>
+			<windmill-input
+				ariaAttributes
+				formControlName="branchTelephone"
+				[placeholder]="'contactInformation.branchTelephonePlaceholder' | translate"
+				[maxLength]="12"
+				[hasClearIcon]="true"
+				[readonly]="isReadonly"
+				[ariaLabelClearIcon]="'contactInformation.branchTelephonePlaceholder'"
+				[ariaLabelTranslation]="'contactInformation.branchTelephonePlaceholder'"
+				[validationFunction]="
+					validationFunctionErrorNonRequiredFields.bind(this, 'branchTelephone', contactInformationForm)
+				">
+				<ng-container errors *ngIf="validationFunctionError('branchTelephone', contactInformationForm)">
+					<span class="centric-error-message">{{
+						getErrorMessage('branchTelephone', 'validTelephone', 'contactInformation.validTelephone')
+					}}</span>
+				</ng-container>
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+
+	<centric-form-item>
+		<centric-form-label>{{ 'general.email' | translate }}</centric-form-label>
+		<centric-form-control>
+			<windmill-input
+				ariaAttributes
+				formControlName="email"
+				[placeholder]="'contactInformation.emailPlaceholder' | translate"
+				[maxLength]="256"
+				[hasClearIcon]="true"
+				[readonly]="isReadonly"
+				[ariaLabelClearIcon]="'contactInformation.emailPlaceholder'"
+				[ariaLabelTranslation]="'contactInformation.emailPlaceholder'"
+				[validationFunction]="
+					validationFunctionErrorNonRequiredFields.bind(this, 'email', contactInformationForm)
+				">
+				<ng-container errors *ngIf="validationFunctionError('email', contactInformationForm)">
+					<span class="centric-error-message">{{
+						getErrorMessage('email', 'validEmail', 'genericFields.email.validEmail')
+					}}</span>
+				</ng-container>
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+
+	<centric-form-item>
+		<centric-form-label>{{ 'contactInformation.website' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput>
+			<windmill-input
+				ariaAttributes
+				formControlName="website"
+				[placeholder]="'contactInformation.websitePlaceholder' | translate"
+				[maxLength]="256"
+				[hasClearIcon]="true"
+				[readonly]="isReadonly"
+				[ariaLabelClearIcon]="'contactInformation.websitePlaceholder'"
+				[ariaLabelTranslation]="'contactInformation.websitePlaceholder'"
+				[validationFunction]="validationFunctionError.bind(this, 'website', contactInformationForm)">
+				<ng-container errors *ngIf="hasFormControlRequiredErrors('website', contactInformationForm)">
+					<span class="centric-error-message">
+						{{ getErrorMessageContactFormInputs('website') }}
+					</span>
+				</ng-container>
+				<ng-container errors *ngIf="hasPatternError(contactInformationForm, 'website')">
+					<span class="centric-error-message">
+						{{ 'genericFields.website.invalidUrl' | translate }}
+					</span>
+				</ng-container>
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+
+	<centric-form-item class="full-width">
+		<centric-form-label>{{ 'contactInformation.accountManager' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+			<windmill-input
+				ariaAttributes
+				frontendHtmlContentValidator
+				formControlName="accountManager"
+				[placeholder]="'contactInformation.accountManagerPlaceholder' | translate"
+				[maxLength]="256"
+				[hasClearIcon]="true"
+				[readonly]="isReadonly"
+				[ariaLabelClearIcon]="'contactInformation.accountManagerPlaceholder'"
+				[ariaLabelTranslation]="'contactInformation.accountManagerPlaceholder'"
+				[validationFunction]="validationFunctionError.bind(this, 'accountManager', contactInformationForm)">
+				<ng-container errors *ngIf="hasFormControlRequiredErrors('accountManager', contactInformationForm)">
+					<span class="centric-error-message">
+						{{ getErrorMessageContactFormInputs('accountManager') }}
+					</span>
+				</ng-container>
+				<ng-container errors *ngIf="contactInformationForm.get('accountManager')?.hasError('isHTML')">
+					<span class="centric-error-message">
+						{{ 'errors.htmlContent' | translate }}
+					</span>
+				</ng-container>
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+</form>

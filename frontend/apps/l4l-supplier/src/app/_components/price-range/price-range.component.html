@@ -1,0 +1,81 @@
+<form [formGroup]="createOfferForm">
+	<centric-form-label frontendRequiredInput>{{ 'offer.priceRange.label' | translate }}</centric-form-label>
+	<centric-form-item-group [type]="'inline'">
+		<centric-form-item>
+			<centric-form-label>{{ 'offer.priceRange.minPrice' | translate }}</centric-form-label>
+			<centric-form-control>
+				<windmill-input
+					formControlName="minPrice"
+					type="text"
+					[readonly]="isReadonly"
+					[mask]="showDecimal"
+					[placeholder]="'general.valuePlaceholder' | translate"
+					[ariaLabelClearIcon]="'general.button.close'"
+					[ariaLabel]="'offer.priceRange.placeholder'"
+					[validationFunction]="
+						validationFunctionErrorMinFieldCompleted.bind(
+							this,
+							'minPrice',
+							'maxPrice',
+							clickedOutsideFieldPrice,
+							createOfferForm
+						)
+					"
+					(inputValueChanged)="
+						onRestrictionTypeChange(createOfferForm, 'minPrice', 'maxPrice', 'priceRange', $event)
+					">
+					<ng-container
+						errors
+						*ngIf="
+							shouldDisplayDoubleFieldValidityError(
+								createOfferForm,
+								'minPrice',
+								'maxPrice',
+								clickedOutsideFieldPrice
+							)
+						">
+						<span class="centric-error-message">
+							{{ getErrorMessageForPriceRange(false) }}
+						</span>
+					</ng-container>
+					<ng-container
+						errors
+						*ngIf="shouldDisplayCompareError(createOfferForm, 'minPrice', 'maxPrice', 'priceRange')">
+						<div class="states-messages">
+							<span class="centric-error-message">
+								{{ getErrorMessageForPriceRange(true) }}
+							</span>
+						</div>
+					</ng-container>
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'offer.priceRange.maxPrice' | translate }}</centric-form-label>
+			<centric-form-control>
+				<windmill-input
+					formControlName="maxPrice"
+					type="text"
+					[readonly]="isReadonly"
+					[mask]="showDecimal"
+					[placeholder]="'general.valuePlaceholder' | translate"
+					[ariaLabelClearIcon]="'general.button.close'"
+					[ariaLabel]="'offer.priceRange.placeholder'"
+					[validationFunction]="
+						validationFunctionErrorMinFieldCompleted.bind(
+							this,
+							'minPrice',
+							'maxPrice',
+							clickedOutsideFieldPrice,
+							createOfferForm
+						)
+					"
+					(inputValueChanged)="
+						onRestrictionTypeChange(createOfferForm, 'minPrice', 'maxPrice', 'priceRange', $event)
+					">
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+	</centric-form-item-group>
+</form>

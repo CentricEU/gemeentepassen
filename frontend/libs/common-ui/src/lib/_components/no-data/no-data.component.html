@@ -1,0 +1,6 @@
+<img [src]="getImagePath()" alt="No data image" />
+<section class="no-data-description">
+	<h4>{{ noDataTitle | translate }}</h4>
+	<p [innerHTML]="noDataDescription | translate"></p>
+	<ng-content button></ng-content>
+</section>

@@ -1,0 +1,90 @@
+<form [class.editable]="false" [formGroup]="offerInformation">
+	<div class="grid-form" centric-complex-form>
+		<centric-form-item>
+			<centric-form-label>{{ 'offer.approve.information.createdFor' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput [isVisible]="true">
+				<windmill-input
+					ariaAttributes
+					formControlName="citizenOfferType"
+					[ariaLabelTranslation]="'offer.approve.information.createdFor'"
+					[readonly]="true">
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+		<centric-form-item>
+			<centric-form-label>{{ 'offer.approve.information.title' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput [isVisible]="true">
+				<windmill-input
+					ariaAttributes
+					formControlName="title"
+					[ariaLabelTranslation]="'offer.approve.information.title'"
+					[readonly]="true">
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'offer.approve.information.tyoeOfOffer' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput [isVisible]="true">
+				<windmill-input
+					ariaAttributes
+					formControlName="offerTypeId"
+					[ariaLabelTranslation]="'offer.approve.information.tyoeOfOffer'"
+					[readonly]="true">
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'offer.approve.information.acceptedGrants' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput [isVisible]="true">
+				<windmill-input
+					ariaAttributes
+					formControlName="acceptedGrants"
+					[ariaLabelTranslation]="'offer.approve.information.acceptedGrants'"
+					[readonly]="true">
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item class="full-width">
+			<centric-form-label>{{ 'offer.approve.information.description' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput [isVisible]="true">
+				<centric-textarea2
+					ariaAttributes
+					ariaLabelClearIcon
+					formControlName="description"
+					[ariaLabelTranslation]="'offer.approve.information.description'"
+					[readonly]="true">
+				</centric-textarea2>
+			</centric-form-control>
+		</centric-form-item>
+	</div>
+
+	<centric-form-item-group [type]="'inline'" class="full-width">
+		<centric-form-item [width]="'100%'">
+			<centric-form-label>{{ 'offer.validity' | translate }}</centric-form-label>
+			<centric-form-control role="group">
+				<section class="validity">
+					<label class="time-label"> {{ 'general.from' | translate }} </label>
+					<windmill-date-picker
+						ariaAttributes
+						formControlName="startDate"
+						[ariaLabelTranslation]="'general.from'"
+						[placeholder]="'general.dateFormat' | translate"
+						[readonly]="true">
+					</windmill-date-picker>
+
+					<label class="time-label"> {{ 'general.to' | translate }} </label>
+					<windmill-date-picker
+						ariaAttributes
+						formControlName="expirationDate"
+						[ariaLabelTranslation]="'general.to'"
+						[placeholder]="'general.dateFormat' | translate"
+						[readonly]="true">
+					</windmill-date-picker>
+				</section>
+			</centric-form-control>
+		</centric-form-item>
+	</centric-form-item-group>
+</form>

@@ -1,0 +1,12 @@
+<ng-container *ngIf="!showEmptyState; else noDataState">
+	<div id="map" class="map"></div>
+</ng-container>
+
+<ng-template #noDataState>
+	<frontend-no-data
+		class="no-location-data"
+		[noDataTitle]="'general.noLocationData.noDataTitle'"
+		[noDataDescription]="'general.noLocationData.noDataDescription'"
+		[imageName]="'no-location.svg'">
+	</frontend-no-data>
+</ng-template>

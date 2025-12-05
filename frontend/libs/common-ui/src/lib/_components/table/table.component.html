@@ -1,0 +1,196 @@
+<centric-panel [class.full-height]="!hasData && filterColumns" [header]="showHeader" [showFooter]="showFooter">
+	<ng-container panel-header>
+		<ng-content></ng-content>
+	</ng-container>
+	<ng-container panel-content>
+		<table
+			centric-dg
+			[dataSource]="currentDisplayedPage"
+			[fixedHeader]="true"
+			[class.selectable]="hasCheckbox"
+			[filters]="hasFilters">
+			<ng-container
+				*ngFor="let col of displayedColumns; trackBy: columnName"
+				centricColumnDef="{{ col['property'] }}">
+				<ng-container *ngIf="col.value === 'checkbox'">
+					<th
+						*centricHeaderCellDef
+						ariaAttributes
+						centric-header-cell
+						[ariaLabelTranslation]="'general.checkbox'"
+						[ariaLabelTranslation]="'general.checkbox'">
+						<windmill-checkbox
+							class="demo-checkbox"
+							[indeterminate]="indeterminateSelect"
+							(ngModelChange)="toggleCheckbox()"
+							[(ngModel)]="selectAll">
+						</windmill-checkbox>
+					</th>
+				</ng-container>
+				<th centric-header-cell *centricHeaderCellDef>
+					<span class="cell-content-ellipsis"> {{ col['columnLabel'] | translate }}</span>
+				</th>
+
+				<td centric-cell *centricCellDef="let row; index as i">
+					<ng-container *ngIf="col['value'] === 'checkbox'">
+						<windmill-checkbox
+							ariaAttributes
+							class="demo-checkbox"
+							[ariaLabelTranslation]="'general.checkbox'"
+							[disabled]="currentDisplayedPage[i].isCheckboxDisabled"
+							[(ngModel)]="currentDisplayedPage[i].selected"
+							(ngModelChange)="updateSelectAll()">
+						</windmill-checkbox>
+					</ng-container>
+					<ng-container *ngIf="col['value'] === 'actions'; else noActions">
+						<ng-container *ngTemplateOutlet="actionButtonsTemplate; context: { row: row }"></ng-container>
+					</ng-container>
+					<ng-template #noActions>
+						<ng-container [ngSwitch]="col['columnDataType']">
+							<ng-container *ngSwitchCase="columnDataTypes.TRANSLATION">
+								<span class="cell-content-ellipsis"> {{ row[col['value']] | translate }}</span>
+							</ng-container>
+
+							<ng-container *ngSwitchCase="columnDataTypes.STATUS">
+								<section class="status-section">
+									<span class="status-icon">
+										<centric-icon2
+											[svgIcon]="statusUtil.getSvgIconForStatus(row[col['value']])"
+											[class]="statusUtil.getColorClassForStatus(row[col['value']])"
+											[size]="'20'"></centric-icon2>
+									</span>
+
+									<span class="cell-content-ellipsis">
+										{{ statusUtil.mapStatusTranslationLabel(row[col['value']]) | translate }}</span
+									>
+								</section>
+							</ng-container>
+
+							<ng-container *ngSwitchCase="columnDataTypes.CURRENCY">
+								<span class="cell-content-ellipsis">
+									{{ row[col['value']] | currency: 'EUR' : 'symbol' : '1.2-2' }}</span
+								>
+							</ng-container>
+
+							<ng-container *ngSwitchCase="columnDataTypes.CHIPS">
+								<frontend-chip-cell
+									[row]="row"
+									[typeOfT]="typeOfT"
+									[columnWithChips]="columnWithChips"
+									[shouldDisplayButton]="shouldDisplayButtonForChips"></frontend-chip-cell>
+							</ng-container>
+
+							<ng-container *ngSwitchCase="columnDataTypes.REGISTERED">
+								<div class="flex-row-start registered">
+									<span class="status-icon">
+										<centric-icon2
+											[svgIcon]="statusUtil.getSvgIconForIsAnswerYesNo(row[col['value']])"
+											[class]="statusUtil.getColorClassForIsAnswerYesNo(row[col['value']])"
+											[size]="'20'"></centric-icon2>
+									</span>
+									<span>
+										{{
+											statusUtil.getMessagesForIsAnswerYesNo(row[col['value']]) | translate
+										}}</span
+									>
+								</div>
+							</ng-container>
+
+							<ng-container *ngSwitchCase="columnDataTypes.DEFAULT">
+								<span class="cell-content-ellipsis"> {{ row[col['value']] }}</span>
+							</ng-container>
+						</ng-container>
+					</ng-template>
+				</td>
+			</ng-container>
+
+			<form [formGroup]="filterFormGroup">
+				<ng-container *ngFor="let col of filterColumns" centricColumnDef="{{ col.filterName }}">
+					<th
+						centric-filter-cell
+						ariaAttributes
+						*centricFilterCellDef
+						[ariaLabelTranslation]="'general.filter'"
+						[ariaLabelTranslation]="'general.filter'">
+						<ng-container *ngIf="isFilterCriteria(col.filterName)">
+							<windmill-dropdown-search
+								ariaAttributes
+								[formControlName]="col.filterName"
+								[valuePropertyName]="'key'"
+								[displayPropertyName]="'value' | translate"
+								[ariaLabelTranslation]="col.placeholder | translate"
+								[ariaLabelClearButtonSearchInput]="'general.label.close' | translate"
+								[ariaLabelClearButton]="'general.label.close' | translate"
+								[dropdownPlaceholder]="col.placeholder | translate"
+								[source]="col.source"
+								[hasClearIcon]="true"
+								(searchValueChange)="onSearchValueChanged($event, col.filterName)">
+							</windmill-dropdown-search>
+						</ng-container>
+					</th>
+				</ng-container>
+			</form>
+
+			<tr centric-header-row *centricHeaderRowDef="fixedContentCols"></tr>
+			<tr centric-filter-header-row *centricHeaderRowDef="dynamicContentCols"></tr>
+			<tr centric-row *centricRowDef="let row; columns: fixedContentCols"></tr>
+		</table>
+		<ng-template #actionButtonsTemplate let-row="row">
+			<section class="action-buttons">
+				<ng-container *ngFor="let actionButton of row.actionButtons">
+					<centric-button
+						ariaAttributes
+						windmill-tooltip
+						tooltipPosition="below"
+						[type]="actionButton.buttonType"
+						[iconId]="actionButton.name"
+						[disabled]="actionButton.isDisabled"
+						[class.icon-disable]="actionButton.isDisabled"
+						[tooltipColor]="'surface'"
+						[ariaLabelTranslation]="actionButton.tooltipTranslationLabel"
+						[tooltipText]="actionButton.tooltipTranslationLabel | translate"
+						[isTooltipDisabled]="isTooltipDisabled(actionButton.text)"
+						(click)="onActionButtonPress(actionButton.name, row)"
+						>{{ actionButton.text | translate }}</centric-button
+					>
+				</ng-container>
+			</section>
+		</ng-template>
+
+		<ng-container *ngIf="!hasData && filterColumns">
+			<frontend-no-data
+				class="no-data"
+				[noDataTitle]="'general.noFilterData.title'"
+				[noDataDescription]="'general.noFilterData.description'">
+			</frontend-no-data>
+		</ng-container>
+
+		<ng-container *ngIf="innerEmptyState">
+			<frontend-no-data class="no-data" [noDataTitle]="innerEmptyStateTitle" [noDataDescription]="''">
+			</frontend-no-data>
+		</ng-container>
+	</ng-container>
+
+	<ng-container panel-footer>
+		<windmill-paginator
+			#paginatorRequests
+			ariaAttributes
+			[length]="listLength"
+			[pageSize]="paginatedData.pageSize"
+			[pageIndex]="paginatedData.currentIndex"
+			[pageSizeOptions]="[5, 10, 25]"
+			[ariaLabelTranslation]="'general.resultsPerPage'"
+			[ariaLabel]="'general.resultsPerPage' | translate"
+			[ariaLabelFirstPageButton]="'paginator.first' | translate"
+			[ariaLabelPreviousPageButton]="'paginator.previous' | translate"
+			[ariaLabelNextPageButton]="'paginator.next' | translate"
+			[ariaLabelLastPageButton]="'paginator.last' | translate"
+			[ariaDescriptionResults]="'paginator.selectPageSize' | translate"
+			[ariaLabelListResults]="'paginator.listResults' | translate"
+			[ariaDescriptionListItemResults]="'ariaDescriptionListItemResultsValue'"
+			[resultsLabel]="'general.resultsPerPage' | translate"
+			(pageChange)="handlePageChange($event)"
+			(selectedPage)="handlePageSizeChange($event)">
+		</windmill-paginator>
+	</ng-container>
+</centric-panel>
