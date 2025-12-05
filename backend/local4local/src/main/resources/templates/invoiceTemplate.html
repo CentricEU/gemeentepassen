@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title th:text="#{invoice.title} + ' - ' + ${invoiceNumber}"></title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
+    <link rel="stylesheet" th:href="@{classpath:static/styles/invoice.css}">
+</head>
+<body>
+<div class="container" style="margin-top:20px">
+    <table class="table-full-width">
+        <tr>
+            <td class="table-cell">
+                    <span class="invoice-title" th:text="#{invoice.title}"></span>
+                    <span class="invoice-number" th:text="#{invoice.number} + ' ' + ${invoiceNumber}"></span>
+                    <div class="text-muted" th:text="#{invoice.supplier} + ' ' + ${supplierName}"></div>
+            </td>
+            <td class="table-cell text-right">
+                <img alt="Logo" style="width:74px; height:64px" th:src="@{classpath:static/images/logo.png}"
+                     class="no-border"/>
+            </td>
+        </tr>
+    </table>
+
+    <div class="divider"></div>
+    <div class="margin">
+        <table class="table-full-width">
+            <tr>
+                <td class="table-cell">
+                    <div class="section-header" style="margin-bottom:4px" th:text="#{invoice.from}"></div>
+                    <div class="section-content name" th:text="${supplierName}"></div>
+                    <div class="section-content address supplier-address" th:text="${supplierAddress}"></div>
+                </td>
+                <td class="table-cell">
+                    <div class="section-header" style="margin-bottom:4px" th:text="#{invoice.to}"></div>
+                    <div class="section-content name" th:text="${municipalityName}"></div>
+                    <div class="section-content address municipality-address" th:text="${municipalityAddress}"></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="table-cell">
+                    <div class="section-header date-label" th:text="#{invoice.issueDate}"></div>
+                    <div class="section-content date-value" th:text="${issueDate}"></div>
+                </td>
+                <td class="table-cell">
+                    <div class="section-header date-label" style="color: #B60809" th:text="#{invoice.dueDate}"></div>
+                    <div class="section-content date-value" th:text="${dueDate}"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="container" style="margin-top:24px">
+    <p style="margin:0px" class="title" th:text="#{invoice.details}"></p>
+    <p class="margin"><span class="invoice-details" th:text="#{invoice.billingPeriod}"></span> <span
+            th:text="${billingPeriod}"></span></p>
+    <p class="margin"><span class="invoice-details margin" th:text="#{invoice.total}"></span> <span
+            th:text="#{invoice.euro}"></span><span
+            th:text="${totalAmount}"></span></p>
+</div>
+<table style="margin-top:12px">
+    <thead>
+    <tr>
+        <th th:text="#{invoice.passholderNumber}"></th>
+        <th th:text="#{invoice.amount}"></th>
+        <th th:text="#{invoice.acceptedGrants}"></th>
+        <th th:text="#{invoice.date}"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="transaction : ${offerTransactions}">
+        <td th:text="${transaction.passNumber}"></td>
+        <td th:text="'€' + ${transaction.amount}"></td>
+        <td th:text="${transaction.acceptedGrants}"></td>
+        <td th:text="${transaction.createdDate}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    function adjustAddressHeight() {
+        let supplierAddress = document.querySelector('.supplier-address');
+        let municipalityAddress = document.querySelector('.municipality-address');
+
+        if (supplierAddress && municipalityAddress) {
+            let maxHeight = Math.max(supplierAddress.offsetHeight, municipalityAddress.offsetHeight);
+
+            // Set both addresses to the same height
+            supplierAddress.style.minHeight = maxHeight + "px";
+            municipalityAddress.style.minHeight = maxHeight + "px";
+        }
+    }
+
+    // Run after the page is fully loaded
+    window.onload = adjustAddressHeight;
+
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+
+:host {
+	::ng-deep {
+		.mdc-card.centric-card .mat-mdc-card-content {
+			@include flex(column);
+			@include size(100%, 100%);
+			padding: 0 !important;
+		}
+
+		.metrics-section {
+			.mdc-card.centric-card.mat-mdc-card {
+				height: 100%;
+			}
+		}
+	}
+}
+
+.metrics-section {
+	display: flex;
+	gap: 16px;
+	padding-bottom: 16px;
+
+	.widgets-section {
+		@include flex(column);
+		gap: 16px;
+	}
+
+	.transactions-section {
+		@include size(100%, auto);
+		flex: 3;
+	}
+}

@@ -1,0 +1,1 @@
+ALTER TABLE l4l_global.offers ALTER COLUMN amount TYPE numeric(8,2);

@@ -1,0 +1,22 @@
+@import '../../../../../../libs/shared-assets/_styles/full-size-pannel';
+
+:host {
+	::ng-deep {
+		tr:last-of-type {
+			td {
+				border-bottom: none;
+			}
+		}
+
+		.no-offers-data {
+			overflow: hidden !important;
+
+			.centric-panel-container {
+				height: 100vh;
+				max-height: calc(100vh - 80px);
+				border-radius: 0;
+				border: none;
+			}
+		}
+	}
+}

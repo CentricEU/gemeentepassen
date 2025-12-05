@@ -1,0 +1,65 @@
+<section mat-dialog-title>
+	<h3>
+		{{ 'discount.applyDiscount' | translate }}
+	</h3>
+	<button
+		ariaAttributes
+		mat-dialog-close
+		class="close-button"
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="close()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'16'"></centric-icon2>
+	</button>
+</section>
+<div mat-dialog-content>
+	<ng-container *ngIf="discountForm">
+		<form centric-complex-form [formGroup]="discountForm">
+			<div
+				[attr.aria-hidden]="true"
+				[innerHTML]="
+					'discount.description'
+						| translate
+							: {
+									offerName: offerName,
+									offerType: offerType | translate,
+							  }
+				"></div>
+
+			<centric-form-item>
+				<centric-form-label>{{ 'general.amount' | translate }}</centric-form-label>
+				<centric-form-control frontendRequiredInput>
+					<windmill-input
+						formControlName="amount"
+						[placeholder]="'discount.enterAmount' | translate"
+						[hasClearIcon]="true"
+						[prefix]="'€'"
+						[mask]="'separator.2'"
+						[separatorLimit]="'100000'"
+						[ariaLabelClearIcon]="'general.amount' | translate"
+						[ariaLabel]="'discount.enterAmount'"
+						[validationFunction]="validationFunctionError.bind(this, 'amount', discountForm)">
+						<ng-container errors *ngIf="hasFormControlRequiredErrors('amount', discountForm)">
+							<span class="centric-error-message">
+								{{ 'genericFields.amount.amountFormControlRequired' | translate }}
+							</span>
+						</ng-container>
+						<ng-container errors *ngIf="hasNonZeroAmountError()">
+							<span class="centric-error-message">
+								{{ 'genericFields.amount.nonZeroAmount' | translate }}
+							</span>
+						</ng-container>
+					</windmill-input>
+				</centric-form-control>
+			</centric-form-item>
+		</form>
+	</ng-container>
+</div>
+<section mat-dialog-actions>
+	<centric-button ariaAttributes type="button-link-dark" (click)="close()">
+		{{ 'general.button.cancel' | translate }}
+	</centric-button>
+	<centric-button ariaAttributes [disabled]="isFormInvalid()" (click)="applyDiscount()">
+		{{ 'discount.applyDiscount' | translate }}
+	</centric-button>
+</section>

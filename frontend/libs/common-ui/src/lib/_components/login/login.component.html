@@ -1,0 +1,76 @@
+<centric-login class="login-pattern">
+	<ng-container title>
+		<frontend-logo-title [title]="'general.welcomeL4L'"></frontend-logo-title>
+	</ng-container>
+	<ng-container form>
+		<form
+			centric-complex-form
+			labelPosition="top"
+			class="form-login-template"
+			[formGroup]="form"
+			(ngSubmit)="login()">
+			<centric-form-item appearance="outline">
+				<centric-form-label> {{ 'genericFields.email.title' | translate }} </centric-form-label>
+				<centric-form-control frontendRequiredInput>
+					<windmill-input
+						ariaAttributes
+						formControlName="email"
+						[hasClearIcon]="true"
+						[ariaLabelClearIcon]="'genericFields.email.placeholder' | translate"
+						[placeholder]="'genericFields.email.placeholder' | translate"
+						[validationFunction]="validationFunctionError.bind(this, 'email', form)"
+						[ariaLabelTranslation]="'genericFields.email.placeholder'">
+						<ng-container errors *ngIf="validationFunctionError('email', form)">
+							<span class="centric-error-message">{{ getEmailErrorMessage(form) | translate }}</span>
+						</ng-container>
+					</windmill-input>
+				</centric-form-control>
+			</centric-form-item>
+			<centric-form-item appearance="outline">
+				<centric-form-label> {{ 'general.password' | translate }} </centric-form-label>
+				<centric-form-control frontendRequiredInput>
+					<windmill-input
+						ariaAttributes
+						type="password"
+						formControlName="password"
+						[hasClearIcon]="true"
+						[ariaLabelClearIcon]="'login.password.placeholder' | translate"
+						[placeholder]="'login.password.placeholder' | translate"
+						[validationFunction]="validationFunctionError.bind(this, 'password', form)"
+						[ariaLabelTranslation]="'login.password.placeholder'">
+						<ng-container errors *ngIf="hasControlRequiredErrorAndTouched('password', form)">
+							<span class="centric-error-message">{{ 'login.password.requiredError' | translate }}</span>
+						</ng-container>
+					</windmill-input>
+				</centric-form-control>
+			</centric-form-item>
+			<ng-container *ngIf="userIsBlocked">
+				<re-captcha formControlName="recaptcha" class="recaptcha-container"></re-captcha>
+			</ng-container>
+			<ng-container forgotPasword>
+				<div class="forgot-section">
+					<windmill-checkbox
+						formControlName="rememberMe"
+						type="type-1"
+						ariaAttributes
+						[ariaLabelTranslation]="'login.rememberMe'"
+						[label]="'login.rememberMe' | translate">
+					</windmill-checkbox>
+
+					<centric-link type="link" size="small" [innerRouterLink]="'/recover'">
+						{{ 'login.forgotPassword' | translate }}
+					</centric-link>
+				</div>
+			</ng-container>
+			<centric-button class="account-button" [disabled]="!form.valid && !autofilled">{{
+				'general.button.login' | translate
+			}}</centric-button>
+			<ng-container login>
+				<div class="account-message">
+					<p>{{ 'register.accountNotCreated' | translate }}</p>
+					<a class="pointer" href="./register">{{ 'register.registerButton' | translate }}</a>
+				</div>
+			</ng-container>
+		</form>
+	</ng-container>
+</centric-login>

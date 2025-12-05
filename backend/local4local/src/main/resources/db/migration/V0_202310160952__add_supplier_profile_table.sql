@@ -1,0 +1,21 @@
+CREATE TABLE l4l_security.supplier_profile (
+    supplier_profile_id uuid NOT NULL DEFAULT uuid_generate_v1(),
+    company_name character varying(256) NOT NULL,
+    logo bytea,
+    kvk character varying(8) NOT NULL,
+    owner_name character varying(256) NOT NULL,
+    legal_form character varying(256) NOT NULL,
+    group_name character varying(256) NOT NULL,
+    category character varying(256) NOT NULL,
+    subcategory character varying(256) NOT NULL,
+    admin_email character varying(256) NOT NULL,
+    company_address character varying(256) NOT NULL,
+    district character varying(256) NOT NULL,
+    zip_code character varying(7) NOT NULL,
+    location character varying(256) NOT NULL,
+    telephone character varying(256),
+    email character varying(256),
+    website character varying(256),
+    account_manager character varying(256) NOT NULL,
+    supplier_id uuid REFERENCES l4l_security.suppliers(id)
+);

@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "commonjs",
+		"moduleResolution": "node",
+	  	"rootDir": ".",
+	  	"forceConsistentCasingInFileNames": true,
+		"sourceMap": true,
+	  	"allowJs": true,
+	  	"checkJs": false,
+	  	"include": ["resources/**/*.ts", "tests/**/*.ts"],
+	  	"exclude": ["node_modules", "resources/**/*.spec.ts"],
+		"outDir": "../tests-out",
+		"types": ["faker", "node"]
+	}
+}

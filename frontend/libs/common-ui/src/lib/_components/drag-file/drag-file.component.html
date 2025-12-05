@@ -1,0 +1,47 @@
+<centric-upload-area
+	extraMessage="{{ 'upload.supports' | translate }}
+	{{ suportedFormats }}"
+	[message]="fileUploadDescriptionText()"
+	[buttonText]="fileUploadButtonText()"
+	[files]="[uploadedFile]"
+	[id]="'id-input-element-upload-area'"
+	[ariaLabelButtonUpload]="fileUploadButtonText()"
+	[ariaDescriptionButtonUpload]="fileUploadDescriptionText()"
+	(filesUploaded)="getUploadedFiles($event)"></centric-upload-area>
+
+<ng-container *ngIf="shouldDisplayWarning">
+	<centric-alert
+		class="alert-container"
+		[type]="'warning'"
+		[hasCloseButton]="true"
+		[ariaLabelCloseButton]="'Close'"
+		(closed)="hideWarning()">
+		<ng-container [ngSwitch]="fileWarning">
+			<ng-container *ngSwitchCase="warnings.TOO_MANY_FILES">
+				<p class="sub-message" [innerHTML]="tooManyFilesErrorMessage()"></p>
+			</ng-container>
+
+			<ng-container *ngSwitchCase="warnings.WRONG_FORMAT">
+				<p class="sub-message">
+					{{ 'upload.warningFormat' | translate: { acceptedFormats: suportedFormats } }}
+				</p>
+			</ng-container>
+		</ng-container>
+	</centric-alert>
+</ng-container>
+
+<section *ngIf="uploadedFile" class="file-section">
+	<section class="flex-row-start-start">
+		<centric-icon2 [svgIcon]="'file_r'" [size]="'48'"></centric-icon2>
+		<section class="flex-column-start">
+			<p class="message">{{ fileName }}</p>
+			<p class="sub-message">{{ fileSize | fileSizePipe }}</p>
+		</section>
+	</section>
+	<centric-button
+		ariaAttributes
+		type="icon-button-fourth"
+		iconId="trash_r"
+		[ariaLabelTranslation]="'general.button.remove'"
+		(click)="removeFile()"></centric-button>
+</section>

@@ -1,0 +1,14 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+
+:host {
+	@include flex(row, flex-start, flex-start);
+	gap: 8px;
+
+	.remaining-chips {
+		::ng-deep {
+			.centric-inner-button {
+				width: auto !important;
+			}
+		}
+	}
+}

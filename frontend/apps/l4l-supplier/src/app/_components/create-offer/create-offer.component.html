@@ -1,0 +1,258 @@
+<section mat-dialog-title>
+	<h3>
+		{{ (this.isReactivating ? 'offer.reactivateOffer' : 'offer.addOffer') | translate }}
+	</h3>
+	<button
+		ariaAttributes
+		mat-dialog-close
+		class="close-button"
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="close()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'16'"></centric-icon2>
+	</button>
+</section>
+<div mat-dialog-content>
+	<form centric-complex-form *ngIf="createOfferForm" [formGroup]="createOfferForm">
+		<centric-alert
+			*ngIf="shouldDisplayReactivationAlert()"
+			[hasCloseButton]="true"
+			(closed)="alertDismissed = true"
+			[ariaLabelCloseButton]="'general.button.close' | translate">
+			<div message>
+				{{ 'offer.reactivateAlert' | translate }}
+			</div>
+		</centric-alert>
+
+		<div class="title-group" [attr.aria-hidden]="true">{{ 'offer.offer' | translate }}</div>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'offer.title' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<windmill-input
+					frontendHtmlContentValidator
+					formControlName="title"
+					[readonly]="isReactivating"
+					[placeholder]="'offer.titlePlaceholder' | translate"
+					[maxLength]="256"
+					[hasClearIcon]="true"
+					[ariaLabelClearIcon]="'general.label.close' | translate"
+					[ariaLabel]="'offer.titlePlaceholder'"
+					[validationFunction]="validationFunctionError.bind(this, 'title', createOfferForm)">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('title', createOfferForm)">
+						<span class="centric-error-message">
+							{{ getErrorMessageFormInputs('title') }}
+						</span>
+					</ng-container>
+					<ng-container errors *ngIf="createOfferForm.get('title')?.hasError('isHTML')">
+						<span class="centric-error-message">
+							{{ 'errors.htmlContent' | translate }}
+						</span>
+					</ng-container>
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'offer.typeOfOffer' | translate }}</centric-form-label>
+			<ng-container *ngIf="updatedSource">
+				<windmill-dropdown-search
+					frontendRequiredInput
+					formControlName="offerTypeId"
+					valuePropertyName="offerTypeId"
+					displayPropertyName="offerTypeLabel"
+					dropdownPlaceholder="{{ 'offer.typeOfOfferPlaceholder' | translate }}"
+					[readonly]="isReactivating"
+					[source]="updatedSource"
+					[maxHeight]="256"
+					[hasClearIcon]="true"
+					[ariaLabelClearButtonSearchInput]="'general.label.close' | translate"
+					[ariaLabelClearButton]="'general.label.close' | translate"
+					[ariaLabel]="'offer.typeOfOfferPlaceholder'"
+					[validationFunction]="validationFunctionError.bind(this, 'typeOfOffer', createOfferForm)"
+					(valueChanged)="onValueChangeOnOfferTypes($event)"
+					(searchValueChange)="onSearchOnOfferTypes($event)">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('typeOfOffer', createOfferForm)">
+						<span class="centric-error-message">{{ getErrorMessageFormInputs('typeOfOffer') }} </span>
+					</ng-container>
+				</windmill-dropdown-search>
+			</ng-container>
+		</centric-form-item>
+
+		<div [class.hidden]="hideAmount">
+			<centric-form-item>
+				<centric-form-label>{{ amountLabel | translate }}</centric-form-label>
+				<centric-form-control frontendRequiredInput>
+					<windmill-input
+						formControlName="amount"
+						type="text"
+						[readonly]="isReactivating"
+						[maxLength]="maxLength"
+						[placeholder]="getAmountPlaceholder(selectedOfferTypeId)"
+						[suffix]="showSuffix"
+						[prefix]="showPrefix"
+						[mask]="showDecimal"
+						[ariaLabelClearIcon]="'general.label.close' | translate"
+						[ariaLabel]="'offer.amountPlaceholder'"
+						[validationFunction]="validationFunctionError.bind(this, 'amount', createOfferForm)">
+						<ng-container errors *ngIf="hasFormControlRequiredErrors('amount', createOfferForm)">
+							<span class="centric-error-message">
+								{{ getErrorMessageFormInputs('amount') }}
+							</span>
+						</ng-container>
+						<ng-container errors *ngIf="createOfferForm.get('amount')?.hasError('nonZeroAmount')">
+							<span class="centric-error-message">
+								{{ 'genericFields.amount.nonZeroAmount' | translate }}
+							</span>
+						</ng-container>
+					</windmill-input>
+				</centric-form-control>
+			</centric-form-item>
+		</div>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'general.acceptedGrants' | translate }}</centric-form-label>
+			<ng-container *ngIf="updatedGrants">
+				<windmill-dropdown-search
+					frontendRequiredInput
+					formControlName="grantsIds"
+					valuePropertyName="id"
+					displayPropertyName="title"
+					dropdownPlaceholder="{{ 'offer.acceptedGrantsPlaceholder' | translate }}"
+					[readonly]="isReactivating"
+					[source]="updatedGrants"
+					[maxHeight]="256"
+					[hasClearIcon]="true"
+					[multiple]="true"
+					[ariaLabelClearButtonSearchInput]="'general.label.close' | translate"
+					[ariaLabelClearButton]="'general.label.close' | translate"
+					[validationFunction]="validationFunctionError.bind(this, 'grantsIds', createOfferForm)"
+					(valueChanged)="onValueChangeOnCheckedGrants($event)"
+					(searchValueChange)="onSearchOnGrants($event)">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('grantsIds', createOfferForm)">
+						<span class="centric-error-message">{{ getErrorMessageFormInputs('grantsIds') }} </span>
+					</ng-container>
+				</windmill-dropdown-search>
+			</ng-container>
+		</centric-form-item>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'offer.description' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<centric-textarea2
+					formControlName="description"
+					frontendHtmlContentValidator
+					[readonly]="isReactivating"
+					[placeholder]="'offer.descriptionPlaceholder' | translate"
+					[ariaLabel]="'offer.descriptionPlaceholder'"
+					[maxLength]="1024"
+					[counterMessages]="counterMessages"
+					[ariaLabelClearIcon]="'general.label.close' | translate"
+					[validationFunction]="validationFunctionError.bind(this, 'description', createOfferForm)">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('description', createOfferForm)">
+						<span class="centric-error-message">
+							{{ getErrorMessageFormInputs('description') }}
+						</span>
+					</ng-container>
+					<ng-container errors *ngIf="createOfferForm.get('description')?.hasError('isHTML')">
+						<span class="centric-error-message">
+							{{ 'errors.htmlContent' | translate }}
+						</span>
+					</ng-container>
+				</centric-textarea2>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item-group [type]="'inline'">
+			<centric-form-item>
+				<centric-form-label>{{ 'offer.validity' | translate }}</centric-form-label>
+				<centric-form-control role="group" frontendRequiredInput>
+					<section class="validity">
+						<label class="time-label"> {{ 'general.from' | translate }} </label>
+						<windmill-date-picker
+							formControlName="startDate"
+							[id]="'id-from'"
+							[placeholder]="'general.dateFormat' | translate"
+							[ariaLabel]="'general.dateFormat' | translate"
+							[ariaLabelClearIcon]="'general.label.close' | translate"
+							[hasClearIcon]="true"
+							[validationFunction]="validationFunctionError.bind(this, 'startDate', createOfferForm)"
+							(dateChange)="onStartDateChange()">
+						</windmill-date-picker>
+
+						<label class="time-label"> {{ 'general.to' | translate }} </label>
+						<windmill-date-picker
+							formControlName="expirationDate"
+							[id]="'id-to'"
+							[placeholder]="'general.dateFormat' | translate"
+							[ariaLabel]="'general.dateFormat' | translate"
+							[hasClearIcon]="true"
+							[ariaLabelClearIcon]="'general.label.close' | translate"
+							[min]="expirationDateInit(createOfferForm.controls['startDate'].value, false)"
+							[validationFunction]="
+								validationFunctionError.bind(this, 'expirationDate', createOfferForm)
+							">
+						</windmill-date-picker>
+					</section>
+				</centric-form-control>
+				<ng-container errors *ngIf="displayDateValidityError()">
+					<div class="states-messages">
+						<span class="centric-error-message">
+							{{ getErrorMessageFormInputs('validity') }}
+						</span>
+					</div>
+				</ng-container>
+			</centric-form-item>
+		</centric-form-item-group>
+
+		<centric-form-item-group [type]="'inline'">
+			<centric-form-item class="restrictions-section">
+				<centric-form-label class="title-group">{{ 'offer.restrictions' | translate }}</centric-form-label>
+				<div class="restriction-items-section">
+					<centric-form-control role="group">
+						<windmill-checkbox
+							*ngFor="let value of restrictionsData"
+							[formControlName]="value.formControl"
+							[label]="value.label | translate"
+							[id]="value.id"
+							[testCheckboxId]="value.dataTestId">
+						</windmill-checkbox>
+					</centric-form-control>
+					<ng-container *ngFor="let field of restrictionFields">
+						<ng-container *ngIf="!shouldHideRestrictionField(field.restriction)">
+							<ng-container [ngSwitch]="field.restriction">
+								<frontend-frequency-of-use
+									*ngSwitchCase="'frequencyOfUse'"
+									[isReadonly]="isReactivating"
+									[createOfferForm]="createOfferForm"></frontend-frequency-of-use>
+								<frontend-time-slots
+									*ngSwitchCase="'timeSlots'"
+									[generalForm]="createOfferForm"
+									[clickedOutsideFieldTime]="clickedOutsideFieldTime"></frontend-time-slots>
+								<frontend-age-restriction
+									*ngSwitchCase="'ageRestriction'"
+									[isReadonly]="isReactivating"
+									[showDecimal]="showDecimal"
+									[createOfferForm]="createOfferForm"></frontend-age-restriction>
+								<frontend-price-range
+									*ngSwitchCase="'priceRange'"
+									[isReadonly]="isReactivating"
+									[createOfferForm]="createOfferForm"
+									[clickedOutsideFieldPrice]="clickedOutsideFieldPrice"
+									[showDecimal]="showDecimal"></frontend-price-range>
+							</ng-container>
+						</ng-container>
+					</ng-container>
+				</div>
+			</centric-form-item>
+		</centric-form-item-group>
+	</form>
+</div>
+<section mat-dialog-actions>
+	<centric-button ariaAttributes type="button-link-dark" (click)="close()">
+		{{ 'general.button.cancel' | translate }}
+	</centric-button>
+	<centric-button ariaAttributes [disabled]="shouldDisableSaveButton()" (click)="confirmDialog()">
+		{{ (this.isReactivating ? 'offer.reactivateOffer' : 'general.button.save') | translate }}
+	</centric-button>
+</section>

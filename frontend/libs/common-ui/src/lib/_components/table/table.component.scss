@@ -1,0 +1,68 @@
+@use '../../../../../shared-assets/_styles/checkbox-column';
+@use '../../../../../shared-assets/_styles/status-button';
+@use '../../../../../shared-assets/_styles/status';
+
+:host {
+	::ng-deep {
+		.centric-dg tbody td:not(.selection-control-not-centered) windmill-checkbox {
+			top: 0;
+
+			.windmill-checkbox:not(.has-label) {
+				position: absolute;
+				margin-top: 4px;
+				padding-top: 8px;
+			}
+		}
+
+		button.link {
+			text-decoration: none;
+		}
+
+		.danger {
+			@extend .danger;
+		}
+
+		.status-section {
+			display: flex;
+			margin-top: 4px;
+			gap: 8px;
+
+			.status-icon {
+				border-right: 1px solid var(--surface-300);
+			}
+
+			centric-icon2 {
+				margin-right: 8px;
+			}
+		}
+
+		.action-buttons {
+			display: flex;
+			gap: 16px;
+
+			button {
+				color: var(--greyscale-500) !important;
+			}
+
+			.danger {
+				@extend .danger;
+			}
+		}
+
+		table {
+			min-height: unset;
+		}
+
+		.registered {
+			gap: 8px;
+		}
+	}
+
+	.no-data {
+		height: 80%;
+	}
+}
+
+.icon-disable {
+	opacity: 0.5;
+}

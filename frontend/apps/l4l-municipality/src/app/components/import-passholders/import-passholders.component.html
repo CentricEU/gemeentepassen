@@ -1,0 +1,32 @@
+<section mat-dialog-title>
+	<h3>
+		{{ 'passholders.title' | translate }}
+	</h3>
+	<button
+		ariaAttributes
+		mat-dialog-close
+		class="close-button"
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="close()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'16'"></centric-icon2>
+	</button>
+</section>
+<section mat-dialog-content>
+	<p>{{ 'passholders.uploadDescription' | translate }}</p>
+	<frontend-drag-file
+		[permittedFormats]="acceptedFormats"
+		(fileSelected)="onFileSelected($event)"></frontend-drag-file>
+
+	<centric-link innerHref="./assets/_templates/import_passholders.csv" type="button-link" download="true">
+		{{ 'passholders.download' | translate }}
+	</centric-link>
+</section>
+<section mat-dialog-actions>
+	<centric-button type="button-link-dark" (click)="close()">
+		{{ 'general.button.cancel' | translate }}
+	</centric-button>
+	<centric-button (click)="uploadCsv()" [disabled]="isImportDisabled">
+		{{ 'general.button.import' | translate }}
+	</centric-button>
+</section>

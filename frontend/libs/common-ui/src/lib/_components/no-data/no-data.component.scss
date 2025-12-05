@@ -1,0 +1,25 @@
+@import '../../../../../shared-assets/_styles/mixins.scss';
+
+:host {
+	@include flex(column, center, center);
+	height: 100%;
+	gap: 32px;
+	padding: 24px 0;
+
+	.no-data-description {
+		@include flex(column, center, center);
+		width: 420px;
+		gap: 16px;
+		text-align: center;
+	}
+}
+
+@media only screen and (max-height: 576px) {
+	:host {
+		gap: 24px;
+
+		img {
+			height: 40vh;
+		}
+	}
+}

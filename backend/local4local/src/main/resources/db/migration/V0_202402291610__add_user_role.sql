@@ -1,0 +1,1 @@
+INSERT INTO l4l_security.role(id,name) VALUES (2,'ROLE_CITIZEN');

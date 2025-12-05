@@ -1,0 +1,34 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+
+.info-widget {
+	@include flex(row);
+	@include size(300px, 96px);
+	align-items: center;
+	padding: 16px;
+	gap: 16px;
+
+	.info-widget-icon {
+		@include size(64px, 64px);
+		@include flex(column, center);
+		background: var(--greyscale-50);
+		border-radius: 50%;
+	}
+
+	.info-widget-right {
+		text-align: left;
+
+		.info-widget-title,
+		.info-widget-value {
+			font-weight: 700;
+			color: var(--greyscale-700);
+		}
+
+		.info-widget-title {
+			font-size: 16px;
+		}
+
+		.info-widget-value {
+			font-size: 24px;
+		}
+	}
+}

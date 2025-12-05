@@ -1,0 +1,579 @@
+{
+	"general": {
+	"logout": "Log out",
+	"welcomeL4L": "Welcome to Local for Local!",
+	"hello": "Hello",
+	"password": "Password",
+	"checkbox": "Checkbox",
+	"approve": "Approve",
+	"reject": "Reject",
+	"uploadFile": "Upload file",
+	"replaceFile": "Replace file",
+	"bsn": "BSN",
+	"address": "Address",
+	"residenceCity": "Residence city",
+	"expiringDate": "Expiring date",
+	"passNumber": "Pass number",
+	"preview": "Preview",
+	"remainingItems": "Remaining items",
+	"supplier": "Supplier",
+	"valuePlaceholder": "Value",
+	"success": {
+		"title": "Congratulations",
+		"accountCreatedText": "Your account has been successfully created!",
+		"accountCreatedTextForCitizen": "Your account has been successfully created!<br>Please go to your Local for Local mobile app to log in.",
+		"recoverPasswordText": "Password recovery email sent!",
+		"confirmEmailText": "We have sent the confirmation e-mail.",
+		"passwordUpdateText": "Your password has been successfully updated!",
+		"changesSavedText": "Your changes have been saved.",
+		"offerSavedText": "Your offer has been saved."
+	},
+	"button": {
+		"close": "Close",
+		"cancel": "Cancel",
+		"import": "Import",
+		"applyChanges": "Apply changes",
+		"save": "Save",
+		"addOffer": "Add offer",
+		"addColumn": "Add column",
+		"filter": "Filter",
+		"login": "Login",
+		"sendLink": "Send me link",
+		"back": "Go back",
+		"confirm": "Confirm",
+		"remove": "Remove",
+		"view": "View",
+		"suspend": "Suspend",
+		"suspendSupplier": "Suspend supplier",
+		"reset": "Reset",
+		"saveChanges": "Save changes",
+		"applyAgain": "Apply again",
+		"download": "Download",
+		"stay": "Stay on page",
+		"understand": "I understand",
+		"delete": "Delete",
+		"sendInvite": "Send invite",
+		"assign": "Assign grant"
+	},
+	"chip": {
+		"title": "Chosen items",
+		"description": "This are the chosen items",
+		"moreButton": "Click here to see all chips"
+	},
+	"resultsPerPage": "Results per page",
+	"status": "Status",
+	"name": "Name",
+	"category": "Category",
+	"actions": "Actions",
+	"pendingRequests": "Pending requests",
+	"inviteSuppliers": "Invite suppliers",
+	"back": "Back",
+	"email": "E-mail",
+	"dateFormat": "DD/MM/YYYY",
+	"from": "From",
+	"to": "To",
+	"description": "Description",
+	"pages": {
+		"dashboard": "Dashboard",
+		"suppliers": "Suppliers",
+		"passholders": "Passholders",
+		"grants": "Grants",
+		"editProfile": "Instellingen",
+		"offers": "Offers",
+		"pendingOffers": "Pending offers",
+		"invitations": "Invitations",
+		"supplierDetails": "Details"
+	},
+	"welcome": "Welcome!",
+	"warning": "Warning",
+	"label": {
+		"close": "close",
+		"label": "label",
+		"clear": "clear"
+	},
+	"hourFormat": "00:00",
+	"weekdays": {
+		"monday": "Monday",
+		"tuesday": "Tuesday",
+		"wednesday": "Wednesday",
+		"thursday": "Thursday",
+		"friday": "Friday",
+		"saturday": "Saturday",
+		"sunday": "Sunday"
+	},
+	"timePicker": {
+		"timeFrom": "Time from input",
+		"timeTo": "Time to input",
+		"timePickerIcon": "Time picker icon",
+		"timeSlotCompareError": "Please ensure the start time precedes the end time."
+	}
+	},
+	"genericFields": {
+	"email": {
+		"requiredEmail": "E-mail is required.",
+		"validEmail": "Please enter a valid email address.",
+		"title": "E-mail address",
+		"placeholder": "Enter your e-mail address",
+		"requiredError": "E-mail address is required"
+	},
+	"password": {
+		"passwordPlaceholder": "Enter your password",
+		"confirmPassword": "Re-type password",
+		"confirmPasswordPlaceholder": "Re-type your password",
+		"confirmPasswordRequired": "Confirm password is required.",
+		"confirmPasswordMatch": "Confirm password has to match with password"
+	}
+	},
+	"modal": {
+	"manageColumns": {
+		"title": "Manage columns",
+		"description": "Select columns to display:"
+	},
+	"continueLogin": "Continue to Login"
+	},
+	"errors": {
+	"error": "Error",
+	"generic": "An error occurred. Please attempt again at a later time.",
+	"400": "The server couldn't understand the request, please review and submit a valid request.",
+	"authentication_failed": "Authentication failed. Please double-check your credentials and try again.",
+	"403": "Permission denied. Your current access level is insufficient for this operation.",
+	"404": "Oops, looks like you've hit a dead end. The resource you're after couldn't be found.",
+	"500": "Our server has encounter an internal error. Please try again at a later time.",
+	"40001": "Request failed due to validation errors. Please review and correct the provided data before resubmitting.",
+	"40002": "Password update failed. Please ensure your new password meets the specified requirements and try again.",
+	"40003": "Failed to send email. The provided email address appears to be invalid. Please double-check and try again.",
+	"40004": "Authentication failed. Please double-check your credentials and try again.",
+	"40005": "Request failed due to a violation of a unique constraint. Please ensure that the provided information is unique and try again.        ",
+	"40006": "Certain details in your request are incomplete. Please give it another try. ",
+	"40007": "ERR ADD",
+	"40008": "The entered password and the confirmed password do not match. Revise the password, update it, and attempt again.",
+	"40009": "Your attempt was unsuccessful multiple times. Please complete the ReCAPTCHA to proceed.",
+	"40010": "Please finish the ReCAPTCHA process.",
+	"40011": "Access to this action is restricted. Kindly get in touch with your administrator for assistance.",
+	"40012": "The file you uploaded is too large. Please upload a different file and try once more.",
+	"40013": "You can only initiate three password recovery attempts per day.",
+	"40014": "The link for password recovery has expired.",
+	"40015": "Your new password matches your old one. Please choose a different password.",
+	"40016": "Your login session has ended. Kindly log in again.",
+	"40017": "Your login session has ended. Kindly log in again.",
+	"40019": "Full functionality will be available once your municipal approval is complete, typically within 5 business days. Please wait for confirmation to access all features.",
+	"40020": "We could not parse the CSV file",
+	"40021": "Invalid date format in CSV file ",
+	"40027": "You have already confirmed your email.",
+	"40025": "Your account is not validated yet. Please check your email and confirm your email address to complete the registration process."
+	},
+	"alerts": {
+	"passwordAlertRequirements1": "Password must be at least 8 characters.",
+	"passwordAlertRequirements2": "Include at least one capital letter, one number and one symbol."
+	},
+	"login": {
+	"rememberMe": "Remember me",
+	"forgotPassword": "Forgot password",
+	"username": {
+		"title": "Username",
+		"placeholder": "Enter your username",
+		"requiredError": "Username is required"
+	},
+	"password": {
+		"placeholder": "Enter your password",
+		"requiredError": "Password is required"
+	}
+	},
+	"register": {
+	"registerButton": "Register",
+	"title": "Register to Local for Local!",
+	"firstName": "First name",
+	"lastName": "Last name",
+	"companyName": "Company name",
+	"kvkNumber": "KvK number",
+	"municipality": "Municipality",
+	"emailAddress": "E-mail address",
+	"firstNamePlaceholder": "Enter your first name",
+	"lastNamePlaceholder": "Enter your last name",
+	"companyNamePlaceholder": "Enter your company name",
+	"kvkNumberPlaceholder": "Enter your company KVK number",
+	"municipalityPlaceholder": "Select your municipality",
+	"emailAddressPlaceholder": "Enter your e-mail address",
+	"requiredMunicipality": "Municipality is required",
+	"accountAlreadyCreated": "Already have an account?",
+	"login": "Log in",
+	"agreements": "I agree with the",
+	"middleKeyword": " and the",
+	"privacyPolicy": "Privacy Policy",
+	"termsAndConditions": "Terms and Conditions",
+	"firstNameFormControlRequired": "First name is required.",
+	"lastNameFormControlRequired": "Last name is required.",
+	"companyFormControlRequired": "Company name is required.",
+	"kvkFormControlRequired": "KVK number is required.",
+	"passwordFormControlRequired": "Password is required.",
+	"kvkFormControlLength": "KVK number must have 8 digits",
+	"registrationSuccessful": "Registration successful!",
+	"continue": "Continue to Login",
+	"accountConfirmation": {
+		"title": "Check your e-mail!",
+		"content": "We have sent a confirmation e-mail to {{email}}. Please follow instructions in the message to confirm your account.",
+		"resendConfirmation": "Resend",
+		"validateEmailTitle": "Validate your e-mail",
+		"validateEmailDescription": "Please enter the following information to validate your e-mail:",
+		"confirmationSuccessful": "Confirmation e-mail successful!"
+	}
+	},
+	"supplierList": {
+	"welcome": "Welcome to Supplier Management",
+	"noData": "It looks like no suppliers joined the platform yet. Let's get started by inviting suppliers.",
+	"invite": "Invite suppliers",
+	"tableColumn": {
+		"district": "Province",
+		"manager": "Account manager"
+	},
+	"kvkFormControlLength": "KVK number must have 8 digits"
+	},
+	"supplierRequests": {
+	"noRequests": "No pending requests",
+	"noData": "It looks like there are no pending requests from suppliers."
+	},
+	"suppliersApproval": {
+	"reviewSuppliers": "Review supplier’s request",
+	"successfulApproval": "The request was successfully approved. The supplier has been moved from 'Pending requests' to 'Suppliers'."
+	},
+	"invitations": {
+	"welcome": "Invite new suppliers",
+	"noData": "It looks like there are no invitations left to be resent.\nLet's start inviting new suppliers.",
+	"sendingDate": "Sending date",
+	"sendAgain": "Send again"
+	},
+	"inviteSuppliers": {
+	"invitationMessage": "Invitation message",
+	"invitationMessageRequired": "Invitation message is required.",
+	"invitationDescription": "Enter invitation description",
+	"emailAlreadyInList": "This e-mail is already in the list.",
+	"emailsLimitReached": "You've reached the limit of 50 emails.",
+	"leavingWarning": "Invite suppliers process will be canceled and unsaved changes will be discarded."
+	},
+	"generalInformation": {
+	"header": "General information",
+	"legalForm": "Legal form",
+	"ownerName": "Owner name",
+	"category": "Category",
+	"commerceNumber": "Chamber of commerce number",
+	"ownerNamePlaceholder": "Enter the owner name",
+	"legalFormPlaceholder": "Select legal form",
+	"legalFormFormControlRequired": "Legal form is required",
+	"categoryPlaceholder": "Select category",
+	"commerceNumberPlaceholder": "Enter the chamber of commerce number",
+	"email": "Company administartor e-mail",
+	"uploadMessage": "You can upload <b> 1 file </b> here. You can add PNG, SVG, JPG, JPEG, files and the maximum file size accepted is 200KB.",
+	"groupPlaceholder": "Select group",
+	"group": "Group",
+	"subcategory": "Subcategory",
+	"subcategoryPlaceholder": "Select subcategory",
+	"commerceMainLocation": "Chamber of commerce main location",
+	"commercePostalAdress": "Chamber of commerce postal address",
+	"commerceMainLocationPlaceholder": "Enter the chamber of commerce main location",
+	"commercePostalAdressPlaceholder": "Enter the chamber of commerce postal address",
+	"companyNameFormControlRequired": "Company name is required.",
+	"ownerNameFormControlRequired": "Owner name is required.",
+	"groupFormControlRequired": "Group is required.",
+	"subcategoryFormControlRequired": "Subcategory is required.",
+	"commerceMainLocationFormControlRequired": "Chamber of commerce main location is required.",
+	"commercePostalAdressFormControlRequired": "Chamber of commerce postal address is required.",
+	"catgeoryFormControlRequired": "Category is required.",
+	"commerceNumberFormControlRequired": "Chamber of commerce number is required.",
+	"replaceLogo": "Replace logo",
+	"uploadLogo": "Upload logo",
+	"next": "Next",
+	"removeLogo": "Remove logo",
+	"sizeExcedeedLogo": "The file you are trying to upload exceeds the maximum allowed file size of 200KB.",
+	"companyAdminstratorEmail": "Company administrator e-mail"
+	},
+	"contactInformation": {
+	"header": "Contact information",
+	"companyBranchAddress": "Company branch address",
+	"companyBranchAddressFormControlRequired": "Company branch address is required.",
+	"companyBranchAddressPlaceholder": "Enter the supplier address",
+	"branchProvince": "Branch province",
+	"branchProvinceFormControlRequired": "Branch province is required.",
+	"branchProvincePlaceholder": "Enter the branch province",
+	"branchZip": "Branch zip code",
+	"branchZipFormControlRequired": "Branch zip code is required.",
+	"branchZipPlaceholder": "Enter the branch zip code",
+	"branchLocation": "Branch location",
+	"branchLocationFormControlRequired": "Branch location is required.",
+	"branchLocationPlaceholder": "Enter the branch location",
+	"branchTelephone": "Branch telephone",
+	"branchTelephoneFormControlRequired": "Branch telephone is required.",
+	"branchTelephonePlaceholder": "Enter the branch telephone",
+	"emailFormControlRequired": "E-mail is required.",
+	"emailPlaceholder": "Enter the supplier e-mail",
+	"website": "Website",
+	"websitePlaceholder": "Enter the supplier website",
+	"accountManager": "Account manager",
+	"accountManagerFormControlRequired": "Account manager name is required.",
+	"accountManagerPlaceholder": "Enter the account manager's name",
+	"validZipCode": "Please enter a valid branch zip code.",
+	"validTelephone": "Please enter a valid branch telephone."
+	},
+	"workingHours": {
+	"header": "Working hours",
+	"enableAllDays": "Enable all days",
+	"timeSlotsFormControlRequired": "Please complete both time slot fields.",
+	"editSchedule": "Edit schedule",
+	"setupSchedule": "Setup schedule",
+	"setupText": "Please set up your working days and hours.",
+	"toggleText": "Use the toggle to select all days."
+	},
+	"setupProfile": {
+	"setupSuccessful": "Wait for approval",
+	"success": {
+		"text": "Municipality approval typically takes up to 5 business days.<br>Please note that you won't be able to post any offers until your request has been approved."
+	},
+	"continue": "I understand",
+	"finish": "Finish set up",
+	"setup": "Set up profile",
+	"successfulInfoMessage": "Municipality approval typically takes up to 5 business days. Please note that you won't be able to post any offers until your request has been approved.",
+	"invalidZipCode": "We couldn't complete your profile setup due to an invalid zip code entered. Please ensure that the zip code you provided is accurate and try again.",
+	"invalidZipCodeEdit": "We couldn't complete your editing action due to an invalid zip code entered. Please ensure that the zip code you provided is accurate and try again."
+	},
+	"forgotPassword": {
+	"title": "Forgot your password?",
+	"description": "Please enter the following information to set a new password:",
+	"recoverSuccessfull": "Recover password successful!"
+	},
+	"changePassword": {
+	"title": "Set new password",
+	"changeSuccessull": "New password set successful!"
+	},
+	"actionButtons": {
+	"review": "Review",
+	"details": "Details",
+	"remove": "Remove",
+	"viewSupplier": "View supplier",
+	"suspendSupplier": "Suspend supplier",
+	"viewGrant": "View grant",
+	"editGrant": "Edit grant",
+	"delete": "Delete",
+	"viewPassholder": "View passholder",
+	"rejected": "Rejected"
+	},
+	"paginator": {
+	"next": "Next page",
+	"previous": "Previous page",
+	"first": "First page",
+	"last": "Last page",
+	"selectPageSize": "Select the page size",
+	"listResults": "Page size values",
+	"descriptionListResults": "Choose the page size for your results"
+	},
+	"upload": {
+	"description": "Drag and drop 1 file here.",
+	"supports": "Supports: ",
+	"warningFilesNumber": "You can only upload <b>1 file </b>",
+	"warningFormat": "Unsupported file format. Please upload only {{ acceptedFormats }} files."
+	},
+	"approvedModal": {
+	"header": "Request approved",
+	"title": "Your request was approved!",
+	"description": "Your request to join Local for Local has been approved by {{municipality}}."
+	},
+	"passholders": {
+	"noData": {
+		"title": "Welcome to Card holders Management",
+		"description": "It looks like you don't have any card holders yet. Let's get started by importing your list of card holders."
+	},
+	"import": "Import CSV file",
+	"uploadDescription": "Automatically add pass holders by importing from a CSV file.",
+	"download": "Download CSV Template",
+	"successImport": "The file was successfully imported. The passholders were loaded",
+	"assignedGrants": "Assigned grants",
+	"assignGrants": "Assign grants",
+	"grantName": "Grant name",
+	"amoungGranted": "Amount granted",
+	"delete": {
+		"title": "Delete passholder",
+		"content": "The selected passholder will be deleted </br> Deleted data cannot be recovered."
+	}
+	},
+	"grants": {
+	"noData": {
+		"title": "Welcome to Grants Management",
+		"description": "It looks like you don't have any grants yet. Let's get started by adding your first grant!"
+	},
+	"assigning": "Assigning grant",
+	"warningMessage": "Assigning grant process will be canceled and unsaved changes will be discarded.",
+	"createGrant": "Create grant",
+	"title": "Grant title",
+	"description": "Grant description",
+	"amount": "Amount",
+	"createdFor": "Grant created for",
+	"validity": "Validity",
+	"titlePlaceholder": "Enter grant title",
+	"descriptionPlaceholder": "Enter grant description",
+	"amountPlaceholder": "Enter grant amount (Euro)",
+	"titleFormControlRequired": "Grant title is required.",
+	"descriptionFormControlRequired": "Grant description is required.",
+	"amountFormControlRequired": "Amount is required.",
+	"addGrant": "Add new grant",
+	"validityFormControlRequired": "Please enter valid dates in both fields using numbers only (DD/MM/YYYY).",
+	"cardHolder": "Card holder",
+	"childrenHolder": "Children of a card holder",
+	"beneficiaries": "Beneficiaries",
+	"nrBeneficiaries": "Number of beneficiaries",
+	"editGrant": "Edit grant"
+	},
+	"offer": {
+	"noData": {
+		"title": "Welcome to Offers Management",
+		"description": "It looks like you don't have any offers yet. Let's get started by adding your first offer!"
+	},
+	"createOffer": "Add offer",
+	"addOffer": "Add new offer",
+	"offer": "Offer",
+	"title": "Listing title",
+	"targetAudience": "Target audience (created for)",
+	"acceptedGrants": "Accepted grants",
+	"acceptedGrantsPlaceholder": "Select accepted grants",
+	"titlePlaceholder": "Enter listing title",
+	"typeOfOffer": "Type of offer",
+	"typeOfOfferPlaceholder": "Select type of offer",
+	"description": "Offer description",
+	"descriptionPlaceholder": "Enter offer description",
+	"amount": "Discount amount",
+	"amountCreditPlaceholder": "Insert the credit discount amount in Euro (€)",
+	"amountPercentagePlaceholder": "Insert the discount amount in percentage %",
+	"offerCreatedFor": "Offer created for",
+	"validity": "Validity",
+	"restrictions": "Restrictions",
+	"frequencyOfUse": {
+		"label": "Frequency of use",
+		"singleUse": "Single use",
+		"daily": "Daily",
+		"weekly": "Weekly",
+		"monthly": "Monthly",
+		"yearly": "Yearly"
+	},
+	"ageRestriction": {
+		"label": "Age restriction",
+		"aboveEighteen": "Above 18 years old",
+		"aboveTwentyOne": "Above 21 years old",
+		"other": "Other",
+		"otherPlaceholder": "Type age restriction",
+		"otherLabel": "Age"
+	},
+	"timeSlots": "Time slots",
+	"priceRange": {
+		"label": "Eligible price range",
+		"minPrice": "Minimum price",
+		"maxPrice": "Maximum price",
+		"error": "Please fill in at least one price field"
+	},
+	"citizen": "Citizen",
+	"citizenWithPass": "Citizen with pass",
+	"dialogOfferGrant": {
+		"createSuccessful": "Wait for approval",
+		"mainContent": "Wait for approval",
+		"mainContentText": "You've set up an offer that allows citizens to make payments using municipal grants, which requires municipal approval. Municipality approval typically takes up to 5 business days."
+	},
+	"formRequired": {
+		"titleFormControlRequired": "Offer title is required.",
+		"descriptionFormControlRequired": "Offer description is required.",
+		"validityFormControlRequired": "Please fill in both date input fields",
+		"amountFormControlRequired": "Amount is required."
+	},
+	"types": {
+		"grant": "Grant",
+		"percentage": "Percentage",
+		"bogo": "Buy one get one",
+		"credit": "Credit"
+	},
+	"approve": {
+		"review": "Review supplier’s offer",
+		"titleLeft": "Offer information",
+		"titleRight": "Supplier information",
+		"successfulApproval": "The request was successfully approved.",
+		"information": {
+		"createdFor": "Offer created for",
+		"title": "Listing title",
+		"tyoeOfOffer": "Type of offer",
+		"acceptedGrants": "Accepted grants",
+		"description": "Offer description"
+		}
+	},
+	"timeSlotFormControlRequired": "Please fill in at least one hour field.",
+	"priceRangeCompareError": "Please ensure minimum price is less than maximum price."
+	},
+	"pendingOffer": {
+	"noData": {
+		"title": "Welcome to Pending offers",
+		"description": "It looks like there aren’t any pending offers that need to be reviewed."
+	}
+	},
+	"rejectSupplier": {
+	"error": "Reason is required",
+	"comments": "Comments",
+	"reason": "Reason for rejection",
+	"placeHolderReason": "Select the reasons for rejection",
+	"placeHolderComments": "Enter your comments here",
+	"modal": {
+		"header": "Request rejected",
+		"title": "Your request was rejected!",
+		"description": "Your request to join 'Local for Local' has been rejected at this time by {{municipality}}.<br><br><b>Rejection reason:</b> {{reason}}<br><b>Rejection details:</b> {{comments}}<br>"
+	}
+	},
+	"status": {
+	"pending": "Pending",
+	"expired": "Expired",
+	"approved": "Approved",
+	"active": "Active"
+	},
+	"dashboard": {
+	"offer": {
+		"header": "QR code",
+		"textApproved": "Display this QR code in your store for easy access to your offers.",
+		"textPending": "After municipal approval, your QR code will be displayed."
+	}
+	},
+	"group": {
+	"types": {
+		"commercial": "Commercial",
+		"public": "Public",
+		"association": "Assosciation",
+		"social": "Social"
+	}
+	},
+	"legalForm": {
+	"types": {
+		"sole": "Sole proprietorship",
+		"foundation": "Foundation",
+		"association": "Association",
+		"cooperative": "Cooperative",
+		"publicLimitedCompany": "Public limited company",
+		"privateLimitedCompany": "Private limited company",
+		"limitedPartnership": "Limited partnership",
+		"publicPartnership": "Public partnership",
+		"commercialPartnership": "Commercial partnership"
+	}
+	},
+	"category": {
+	"types": {
+		"culture": "Culture",
+		"music": "Music",
+		"foodAndDrinks": "Food & Drinks",
+		"courses": "Courses",
+		"sport": "Sport",
+		"dance": "Dance"
+	}
+	},
+	"subcategory": {
+	"types": {
+		"museums": "Museums",
+		"theatre": "Theatre",
+		"singing": "Singing"
+	}
+	},
+	"ariaDescription": {
+	"breadcrumbs": "Navigate to a page"
+	},
+	"ariaLabel": {
+	"breadcrumbs": "Navigate to a page"
+	}
+}

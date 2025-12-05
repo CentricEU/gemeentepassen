@@ -1,0 +1,1 @@
+ALTER TABLE l4l_security.deleted_users ADD COLUMN IF NOT EXISTS created_date timestamp DEFAULT now() NOT NULL;

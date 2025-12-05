@@ -1,0 +1,190 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ChangeLanguage component matches snapshot 1`] = `
+<View
+  style={
+    {
+      "alignItems": "flex-start",
+      "backgroundColor": "#F8F9FC",
+      "flex": 1,
+      "justifyContent": "flex-start",
+      "padding": 32,
+    }
+  }
+>
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "height": 40,
+        "justifyContent": "space-between",
+        "opacity": 1,
+        "width": "100%",
+      }
+    }
+    testID="button-en"
+  >
+    <View
+      style={
+        {
+          "flexDirection": "row",
+          "gap": 16,
+          "justifyContent": "flex-start",
+        }
+      }
+    >
+      <EnFlag
+        height={24}
+      />
+      <Text>
+        profile.language.en
+      </Text>
+    </View>
+    <Text
+      accessibilityElementsHidden={true}
+      importantForAccessibility="no-hide-descendants"
+      pointerEvents="none"
+      selectable={false}
+      style={
+        [
+          {
+            "backgroundColor": "transparent",
+          },
+          {
+            "color": "#086B39",
+            "fontSize": 24,
+          },
+        ]
+      }
+      testID="checked-icon"
+    >
+      □
+    </Text>
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "rgba(202, 196, 208, 1)",
+          "height": 0.5,
+        },
+        undefined,
+        false,
+        {
+          "height": 1,
+        },
+        {
+          "backgroundColor": "#CBD3E7",
+          "marginVertical": 8,
+          "width": "100%",
+        },
+      ]
+    }
+  />
+  <View
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "height": 40,
+        "justifyContent": "space-between",
+        "opacity": 1,
+        "width": "100%",
+      }
+    }
+    testID="button-nl"
+  >
+    <View
+      style={
+        {
+          "flexDirection": "row",
+          "gap": 16,
+          "justifyContent": "flex-start",
+        }
+      }
+    >
+      <NlFlag
+        height={24}
+      />
+      <Text>
+        profile.language.nl
+      </Text>
+    </View>
+  </View>
+  <View
+    style={
+      [
+        {
+          "backgroundColor": "rgba(202, 196, 208, 1)",
+          "height": 0.5,
+        },
+        undefined,
+        false,
+        {
+          "height": 1,
+        },
+        {
+          "backgroundColor": "#CBD3E7",
+          "marginVertical": 8,
+          "width": "100%",
+        },
+      ]
+    }
+  />
+</View>
+`;

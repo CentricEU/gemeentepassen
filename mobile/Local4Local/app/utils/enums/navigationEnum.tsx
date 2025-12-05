@@ -1,0 +1,14 @@
+export enum NavigationEnum {
+	home = "Home",
+	landing = "Landing",
+	register = "Register",
+	login = "Login",
+	offerDetails = "OfferDetails",
+	changeLanguage = "ChangeLanguage",
+	deleteAccount = "DeleteAccount",
+	profileScreen = "Profile",
+	deleteAccountSuccess = "DeleteAccountSuccess",
+	personalInfo = "PersonalInformation",
+	discountCode = "DiscountCode",
+	discounts = "Discounts",
+}

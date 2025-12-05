@@ -1,0 +1,3974 @@
+{
+  "version": "6.0",
+  "nxVersion": "21.6.8",
+  "pathMappings": {
+    "@frontend/app-config": [
+      "libs/app-config/src/index.ts"
+    ],
+    "@frontend/common": [
+      "libs/common/src/index.ts"
+    ],
+    "@frontend/common-ui": [
+      "libs/common-ui/src/index.ts"
+    ]
+  },
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "nonProjectFiles": [
+      {
+        "file": ".editorconfig",
+        "hash": "11532813898455409296"
+      },
+      {
+        "file": ".eslintignore",
+        "hash": "13404745306227114823"
+      },
+      {
+        "file": ".eslintrc.json",
+        "hash": "7396304315207756777"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "5628738610252882264"
+      },
+      {
+        "file": ".npmrc",
+        "hash": "16560527858302615507"
+      },
+      {
+        "file": ".prettierignore",
+        "hash": "5519981940544710039"
+      },
+      {
+        "file": ".prettierrc",
+        "hash": "10226270370372863895"
+      },
+      {
+        "file": ".vscode/extensions.json",
+        "hash": "18205131696473655863"
+      },
+      {
+        "file": "README.md",
+        "hash": "9056823292921240174"
+      },
+      {
+        "file": "apps/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "babel.config.ts",
+        "hash": "11362196907099661947"
+      },
+      {
+        "file": "jest-base.config.ts",
+        "hash": "5913998056455890381"
+      },
+      {
+        "file": "jest.config.ts",
+        "hash": "8442590255026766253"
+      },
+      {
+        "file": "jest.preset.js",
+        "hash": "7473220183190921152"
+      },
+      {
+        "file": "libs/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "libs/shared-assets/_styles/checkbox-column.scss",
+        "hash": "9179152394078783495"
+      },
+      {
+        "file": "libs/shared-assets/_styles/common-spacing.scss",
+        "hash": "18342723083346781317"
+      },
+      {
+        "file": "libs/shared-assets/_styles/common-style.scss",
+        "hash": "4243803215780559871"
+      },
+      {
+        "file": "libs/shared-assets/_styles/form.scss",
+        "hash": "9419513922753433596"
+      },
+      {
+        "file": "libs/shared-assets/_styles/full-size-pannel.scss",
+        "hash": "15016868071498635602"
+      },
+      {
+        "file": "libs/shared-assets/_styles/layout.scss",
+        "hash": "7366997672189452607"
+      },
+      {
+        "file": "libs/shared-assets/_styles/loader.scss",
+        "hash": "7989082912694999597"
+      },
+      {
+        "file": "libs/shared-assets/_styles/mixins.scss",
+        "hash": "3451943494220818772"
+      },
+      {
+        "file": "libs/shared-assets/_styles/modal-content.scss",
+        "hash": "2225309445136491948"
+      },
+      {
+        "file": "libs/shared-assets/_styles/pallete.scss",
+        "hash": "14808979136717828512"
+      },
+      {
+        "file": "libs/shared-assets/_styles/routing-container.scss",
+        "hash": "6861836751163722619"
+      },
+      {
+        "file": "libs/shared-assets/_styles/scroll.scss",
+        "hash": "11479369803074679194"
+      },
+      {
+        "file": "libs/shared-assets/_styles/status-button.scss",
+        "hash": "6621501736878969525"
+      },
+      {
+        "file": "libs/shared-assets/_styles/status.scss",
+        "hash": "17094843973901102177"
+      },
+      {
+        "file": "libs/shared-assets/_styles/typography.scss",
+        "hash": "10672108220863725440"
+      },
+      {
+        "file": "libs/shared-assets/_templates/import_passholders.csv",
+        "hash": "3012375458387665841"
+      },
+      {
+        "file": "libs/shared-assets/i18n/en-US.json",
+        "hash": "17901992024601807082"
+      },
+      {
+        "file": "libs/shared-assets/i18n/nl-NL.json",
+        "hash": "7047599180926570473"
+      },
+      {
+        "file": "libs/shared-assets/images/QR_empty.svg",
+        "hash": "11964813806451919530"
+      },
+      {
+        "file": "libs/shared-assets/images/email.svg",
+        "hash": "16127852459561225038"
+      },
+      {
+        "file": "libs/shared-assets/images/login.svg",
+        "hash": "17171680062623977832"
+      },
+      {
+        "file": "libs/shared-assets/images/map-marker.svg",
+        "hash": "13826286470304429436"
+      },
+      {
+        "file": "libs/shared-assets/images/no-location.svg",
+        "hash": "13470246234464783902"
+      },
+      {
+        "file": "libs/shared-assets/images/no_data.svg",
+        "hash": "3147129591084993513"
+      },
+      {
+        "file": "libs/shared-assets/images/rejected.svg",
+        "hash": "8057101915948760911"
+      },
+      {
+        "file": "libs/shared-assets/images/supplier-logo.png",
+        "hash": "5318686421181366604"
+      },
+      {
+        "file": "libs/shared-assets/images/tilburg-logo.png",
+        "hash": "13094556666808294833"
+      },
+      {
+        "file": "libs/shared-assets/images/verified.svg",
+        "hash": "6672842269699940350"
+      },
+      {
+        "file": "libs/shared-assets/images/wait-clock.svg",
+        "hash": "2187694926685440916"
+      },
+      {
+        "file": "libs/shared-assets/images/zoom-in.svg",
+        "hash": "11787302423815070171"
+      },
+      {
+        "file": "libs/shared-assets/images/zoom-out.svg",
+        "hash": "853236875037714128"
+      },
+      {
+        "file": "nx.json",
+        "hash": "7146444017187859966"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "10417937091872230192"
+      },
+      {
+        "file": "package.json",
+        "hash": "14117169871342883567"
+      },
+      {
+        "file": "proxy.conf.json",
+        "hash": "10900755183110281640"
+      },
+      {
+        "file": "tools/tsconfig.tools.json",
+        "hash": "11810713488198132402"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "8017856623140018816"
+      }
+    ],
+    "projectFileMap": {
+      "l4l-supplier-e2e": [
+        {
+          "file": "apps/l4l-supplier-e2e/.eslintrc.json",
+          "hash": "10295713844052597022"
+        },
+        {
+          "file": "apps/l4l-supplier-e2e/cypress.config.ts",
+          "hash": "15793059428554134741",
+          "deps": [
+            "npm:@nx/cypress",
+            "npm:cypress"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier-e2e/project.json",
+          "hash": "8718576972558468000"
+        },
+        {
+          "file": "apps/l4l-supplier-e2e/src/e2e/app.cy.ts",
+          "hash": "9625654550085028510"
+        },
+        {
+          "file": "apps/l4l-supplier-e2e/src/fixtures/example.json",
+          "hash": "9847681657966361740"
+        },
+        {
+          "file": "apps/l4l-supplier-e2e/src/support/app.po.ts",
+          "hash": "5364106453863571025"
+        },
+        {
+          "file": "apps/l4l-supplier-e2e/src/support/commands.ts",
+          "hash": "11360078958296093368"
+        },
+        {
+          "file": "apps/l4l-supplier-e2e/src/support/e2e.ts",
+          "hash": "15928825062325902088"
+        },
+        {
+          "file": "apps/l4l-supplier-e2e/tsconfig.json",
+          "hash": "13320981426062907662"
+        }
+      ],
+      "common": [
+        {
+          "file": "libs/common/.eslintrc.json",
+          "hash": "2989574737020411710"
+        },
+        {
+          "file": "libs/common/README.md",
+          "hash": "5067725685752823321"
+        },
+        {
+          "file": "libs/common/jest.config.ts",
+          "hash": "17939204402478065590"
+        },
+        {
+          "file": "libs/common/project.json",
+          "hash": "4329209659500847162"
+        },
+        {
+          "file": "libs/common/src/index.ts",
+          "hash": "1626367351340035493"
+        },
+        {
+          "file": "libs/common/src/lib/_constants/common-routing.constants.ts",
+          "hash": "9172501868095597116"
+        },
+        {
+          "file": "libs/common/src/lib/_constants/constants.ts",
+          "hash": "743677703906157737"
+        },
+        {
+          "file": "libs/common/src/lib/_directives/asterisk.directive.spec.ts",
+          "hash": "10233631705541269519",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/platform-browser"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_directives/asterisk.directive.ts",
+          "hash": "3477575706629858088",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_directives/html-input-validator.directive.spec.ts",
+          "hash": "4123390582166216306",
+          "deps": [
+            "npm:@angular/forms"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_directives/html-input-validator.directive.ts",
+          "hash": "7667539790195586675",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_directives/numerical-input.directive.spec.ts",
+          "hash": "10553333112868111848",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/platform-browser"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_directives/numerical-input.directive.ts",
+          "hash": "1376450000146892648",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_enums/action-button-icons.enum.ts",
+          "hash": "13302315683608837015"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/action-buttons.enum.ts",
+          "hash": "3857803346440344978"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/app-type.enum.ts",
+          "hash": "5288855156765863521"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/captcha.enum.ts",
+          "hash": "16232398926201628511"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/column-data-type.enum.ts",
+          "hash": "12688692821980176843"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/contact-information.enum.ts",
+          "hash": "16568149749823742995"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/dropdown-labels.enum.ts",
+          "hash": "14634058868693798689"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/file-extension.enum.ts",
+          "hash": "17806994442778646783"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/file-warning.enum.ts",
+          "hash": "3519335580034558053"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/filter-column-key.enum.ts",
+          "hash": "505298612908380349"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/filter-criteria.model.ts",
+          "hash": "6968357982054243295"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/form-initialization-type.enum.ts",
+          "hash": "15275763555955780124"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/frequency-of-use.enum.ts",
+          "hash": "8984711906831633823"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/general-info-form-filed.enum.ts",
+          "hash": "14357863904050366216"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/generic-status.enum.ts",
+          "hash": "12972956346465832234"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/grant-holder.enum.ts",
+          "hash": "14004131536595645725"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/language.enum.ts",
+          "hash": "13082096360499776767"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/persistence-error-codes.enum.ts",
+          "hash": "10048957882480337577"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/rejection-reason.enum.ts",
+          "hash": "15384831553186110222"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/roles.enum.ts",
+          "hash": "8807168899493151112"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/silent-error-codes.enum.ts",
+          "hash": "11118729977430482162"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/supplier-status.enum.ts",
+          "hash": "14751274734819834618"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/user-information.enum.ts",
+          "hash": "6300120622911111989"
+        },
+        {
+          "file": "libs/common/src/lib/_enums/week-days.enum.ts",
+          "hash": "14589681043002086594"
+        },
+        {
+          "file": "libs/common/src/lib/_guards/authentication.guard.ts",
+          "hash": "16799172655968170900",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_guards/non-auth.guard.ts",
+          "hash": "6954408966430969314",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_helpers/pass-vaildator.helper.spec.ts",
+          "hash": "5273648901273996646",
+          "deps": [
+            "npm:@angular/forms"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_helpers/pass-vaildator.helper.ts",
+          "hash": "14514522543382970357",
+          "deps": [
+            "npm:@angular/forms"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_interceptors/app-http.interceptor.spec.ts",
+          "hash": "12129161498510469135",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_interceptors/app-http.interceptor.ts",
+          "hash": "13943844082714427533",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_interceptors/error-catching.interceptor.spec.ts",
+          "hash": "13834018568211860179",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_interceptors/error-catching.interceptor.ts",
+          "hash": "3577306818558333061",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_interceptors/jwt.interceptor.spec.ts",
+          "hash": "12683802431803488759",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_interceptors/jwt.interceptor.ts",
+          "hash": "3028638210533054800",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_mocks/auth.mock.ts",
+          "hash": "7492326920031163911",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_mocks/router.mock.ts",
+          "hash": "8687000780738783308",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_models/assign-passholder-grants.model.ts",
+          "hash": "15002331314677207262"
+        },
+        {
+          "file": "libs/common/src/lib/_models/breadcrumb.model.ts",
+          "hash": "5201042582757923210"
+        },
+        {
+          "file": "libs/common/src/lib/_models/category-dto.model.ts",
+          "hash": "4394149948559123338"
+        },
+        {
+          "file": "libs/common/src/lib/_models/change-password.model.ts",
+          "hash": "4257851677016070525"
+        },
+        {
+          "file": "libs/common/src/lib/_models/checkbox-data.model.ts",
+          "hash": "4569583067539470273"
+        },
+        {
+          "file": "libs/common/src/lib/_models/contact-information.model.ts",
+          "hash": "9228395219098322142"
+        },
+        {
+          "file": "libs/common/src/lib/_models/create-user-dto.model.ts",
+          "hash": "3396236737067672158"
+        },
+        {
+          "file": "libs/common/src/lib/_models/decoded-token.model.ts",
+          "hash": "18035663857307011735"
+        },
+        {
+          "file": "libs/common/src/lib/_models/dialog-data.model.ts",
+          "hash": "7856901141506904955"
+        },
+        {
+          "file": "libs/common/src/lib/_models/dropdown-data-filter-dto.model.ts",
+          "hash": "13963292070538846256"
+        },
+        {
+          "file": "libs/common/src/lib/_models/enum-value-dto.model.ts",
+          "hash": "11207333051017161263"
+        },
+        {
+          "file": "libs/common/src/lib/_models/environment.model.ts",
+          "hash": "17551867005095819999"
+        },
+        {
+          "file": "libs/common/src/lib/_models/general-information.model.ts",
+          "hash": "14279506000559738680"
+        },
+        {
+          "file": "libs/common/src/lib/_models/generic-table-data.model.ts",
+          "hash": "1848692124095207199"
+        },
+        {
+          "file": "libs/common/src/lib/_models/grant-dto.model.ts",
+          "hash": "681983142835945468"
+        },
+        {
+          "file": "libs/common/src/lib/_models/info-widget-data.model.ts",
+          "hash": "503091722544167707"
+        },
+        {
+          "file": "libs/common/src/lib/_models/jwt-token.model.ts",
+          "hash": "7860187737842956398"
+        },
+        {
+          "file": "libs/common/src/lib/_models/offer-dto.model.ts",
+          "hash": "11028317872839274313"
+        },
+        {
+          "file": "libs/common/src/lib/_models/offer-information-dto.model.ts",
+          "hash": "5262304316524815996"
+        },
+        {
+          "file": "libs/common/src/lib/_models/offer-table-dto.model.ts",
+          "hash": "5947953029984211593"
+        },
+        {
+          "file": "libs/common/src/lib/_models/page.model.ts",
+          "hash": "2091197971273539268"
+        },
+        {
+          "file": "libs/common/src/lib/_models/paginated-data.model.ts",
+          "hash": "10982849692752332553"
+        },
+        {
+          "file": "libs/common/src/lib/_models/passholder-view-dto.model.ts",
+          "hash": "2705509363817116013"
+        },
+        {
+          "file": "libs/common/src/lib/_models/profile-dropdowns-dto.model.ts",
+          "hash": "12147616002745722906"
+        },
+        {
+          "file": "libs/common/src/lib/_models/profile_label-dto.model.ts",
+          "hash": "17961320552388228109"
+        },
+        {
+          "file": "libs/common/src/lib/_models/recover-password.model.ts",
+          "hash": "3643672471954401248"
+        },
+        {
+          "file": "libs/common/src/lib/_models/refresh-token.model.ts",
+          "hash": "5286639236893115029"
+        },
+        {
+          "file": "libs/common/src/lib/_models/reject-supplier-dto.model.ts",
+          "hash": "14077032743002452096"
+        },
+        {
+          "file": "libs/common/src/lib/_models/restrictions.model.ts",
+          "hash": "1826073689579374661"
+        },
+        {
+          "file": "libs/common/src/lib/_models/success-modal.model.ts",
+          "hash": "18155852486750196165"
+        },
+        {
+          "file": "libs/common/src/lib/_models/supplier-coordinates.model.ts",
+          "hash": "9221767428557056147"
+        },
+        {
+          "file": "libs/common/src/lib/_models/supplier-for-map-view-dto.model.ts",
+          "hash": "11848733260033323571"
+        },
+        {
+          "file": "libs/common/src/lib/_models/supplier-profile-dto.model.ts",
+          "hash": "4017710698294353497"
+        },
+        {
+          "file": "libs/common/src/lib/_models/supplier-profile.model.ts",
+          "hash": "5619964386344003920"
+        },
+        {
+          "file": "libs/common/src/lib/_models/supplier-view-dto.model.ts",
+          "hash": "1597526897255955475"
+        },
+        {
+          "file": "libs/common/src/lib/_models/table-action-button.model.ts",
+          "hash": "13142910179810486099"
+        },
+        {
+          "file": "libs/common/src/lib/_models/table-column.model.ts",
+          "hash": "5357297454712169645"
+        },
+        {
+          "file": "libs/common/src/lib/_models/table-filter-column.model.ts",
+          "hash": "5144415242262942478"
+        },
+        {
+          "file": "libs/common/src/lib/_models/tenant.model.ts",
+          "hash": "11767819526421578626"
+        },
+        {
+          "file": "libs/common/src/lib/_models/transaction-table-dto.model.ts",
+          "hash": "1235442635252867055"
+        },
+        {
+          "file": "libs/common/src/lib/_models/user-dto.model.ts",
+          "hash": "10670219529451412216"
+        },
+        {
+          "file": "libs/common/src/lib/_models/user.model.ts",
+          "hash": "15857306211311994022"
+        },
+        {
+          "file": "libs/common/src/lib/_models/working-hours.model.ts",
+          "hash": "6367761346159633761"
+        },
+        {
+          "file": "libs/common/src/lib/_services/app-loader.service.spec.ts",
+          "hash": "8297013990347225335",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/app-loader.service.ts",
+          "hash": "15897241160615393229",
+          "deps": [
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/auth.service.spec.ts",
+          "hash": "15946038525748564455",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:jsonwebtoken",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/auth.service.ts",
+          "hash": "7839623949617524708",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/breadcrumb.service.spec.ts",
+          "hash": "4509773630887838411",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/breadcrumb.service.ts",
+          "hash": "8537967980262419111",
+          "deps": [
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/captcha.service.spec.ts",
+          "hash": "5931120444594524133",
+          "deps": [
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/captcha.service.ts",
+          "hash": "10611704105070370265",
+          "deps": [
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/change-password.service.spec.ts",
+          "hash": "16779591663115582563",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/change-password.service.ts",
+          "hash": "16050388606765129950",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/email-confirmation.service.spec.ts",
+          "hash": "3861082016503912297",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/email-confirmation.service.ts",
+          "hash": "2350680878513906863",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/grant.service.spec.ts",
+          "hash": "18152020402274963880",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/grant.service.ts",
+          "hash": "864569288288550190",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/multi-language.service.spec.ts",
+          "hash": "6010313872513135963",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@ngx-translate/core",
+            "npm:ngx-cookie"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/multi-language.service.ts",
+          "hash": "10878372218812201728",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@ngx-translate/core",
+            "npm:ngx-cookie"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/pdok-service/pdok.service.spec.ts",
+          "hash": "8911784056672274244",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/pdok-service/pdok.service.ts",
+          "hash": "12597744166473162380",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/recover-password.service.spec.ts",
+          "hash": "1543012572618939103",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/recover-password.service.ts",
+          "hash": "3293558400771391756",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/sidenav.service.spec.ts",
+          "hash": "14957047221823013100",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/sidenav.service.ts",
+          "hash": "8031033292076536031",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/supplier-profile.service.spec.ts",
+          "hash": "6829711266064927454",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/platform-browser",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/supplier-profile.service.ts",
+          "hash": "16236227709803164399",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/tenant.service.spec.ts",
+          "hash": "5399735254120464982",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/tenant.service.ts",
+          "hash": "6318537058680039772",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/user-service/user.service.spec.ts",
+          "hash": "9035661408834650544",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/user-service/user.service.ts",
+          "hash": "17595702762068199102",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/working-hours/working-hours.service.spec.ts",
+          "hash": "16309025323015415866",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_services/working-hours/working-hours.service.ts",
+          "hash": "4292402628770377415",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_types/toaster-types.ts",
+          "hash": "5191267192913886002"
+        },
+        {
+          "file": "libs/common/src/lib/_util/common-util.spec.ts",
+          "hash": "8921031530013598906"
+        },
+        {
+          "file": "libs/common/src/lib/_util/common-util.ts",
+          "hash": "8429768444356146140"
+        },
+        {
+          "file": "libs/common/src/lib/_util/form.util.spec.ts",
+          "hash": "9288356158748276865",
+          "deps": [
+            "npm:@angular/forms",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_util/form.util.ts",
+          "hash": "1275268290635075740",
+          "deps": [
+            "npm:@angular/forms",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_util/jwt.util.spec.ts",
+          "hash": "14684064115740331783",
+          "deps": [
+            "npm:jsonwebtoken"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_util/jwt.util.ts",
+          "hash": "9002071431577674850",
+          "deps": [
+            "npm:jwt-decode"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/_util/mobile-browser.util.spec.ts",
+          "hash": "1853424984867703572"
+        },
+        {
+          "file": "libs/common/src/lib/_util/mobile-browser.util.ts",
+          "hash": "11631433068264644560"
+        },
+        {
+          "file": "libs/common/src/lib/_util/pdok.util.spec.ts",
+          "hash": "15240053918148895768"
+        },
+        {
+          "file": "libs/common/src/lib/_util/pdok.util.ts",
+          "hash": "1715915514089938554"
+        },
+        {
+          "file": "libs/common/src/lib/_util/regex-util.spec.ts",
+          "hash": "10292368234774547567"
+        },
+        {
+          "file": "libs/common/src/lib/_util/regex-util.ts",
+          "hash": "14719928811375552399"
+        },
+        {
+          "file": "libs/common/src/lib/_util/status.util.spec.ts",
+          "hash": "12126097605243754527"
+        },
+        {
+          "file": "libs/common/src/lib/_util/status.util.ts",
+          "hash": "15239309623895084507"
+        },
+        {
+          "file": "libs/common/src/lib/common.module.ts",
+          "hash": "966814391379372513",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/material-moment-adapter",
+            "npm:@innovation/accesibility",
+            "npm:ngx-cookie"
+          ]
+        },
+        {
+          "file": "libs/common/src/lib/date-adapter.module.ts",
+          "hash": "8999370207623653362",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/material-moment-adapter"
+          ]
+        },
+        {
+          "file": "libs/common/src/test-setup.ts",
+          "hash": "12251399325195548284",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "libs/common/tsconfig.json",
+          "hash": "841469019257536090"
+        },
+        {
+          "file": "libs/common/tsconfig.lib.json",
+          "hash": "2108299254088955687"
+        },
+        {
+          "file": "libs/common/tsconfig.spec.json",
+          "hash": "7055468745152263581"
+        }
+      ],
+      "l4l-supplier": [
+        {
+          "file": "apps/l4l-supplier/.eslintrc.json",
+          "hash": "2989574737020411710"
+        },
+        {
+          "file": "apps/l4l-supplier/jest.config.ts",
+          "hash": "5107481115920386748"
+        },
+        {
+          "file": "apps/l4l-supplier/project.json",
+          "hash": "10794832728131642043"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/age-restriction/age-restriction.component.html",
+          "hash": "7252948660272298051"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/age-restriction/age-restriction.component.scss",
+          "hash": "3380675961714684465"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/age-restriction/age-restriction.component.spec.ts",
+          "hash": "1436647047750178050",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/age-restriction/age-restriction.component.ts",
+          "hash": "6341638431048260335",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/create-offer/create-offer.component.html",
+          "hash": "8129876457810658721"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/create-offer/create-offer.component.scss",
+          "hash": "8652784807364561631"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/create-offer/create-offer.component.spec.ts",
+          "hash": "17158075102416512436",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/create-offer/create-offer.component.ts",
+          "hash": "12370037494297230375",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/discount-modal/discount-modal.component.html",
+          "hash": "3998968751668309030"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/discount-modal/discount-modal.component.spec.ts",
+          "hash": "10475289068342645662",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common-ui",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/discount-modal/discount-modal.component.ts",
+          "hash": "17443167433259831303",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/frequency-of-use/frequency-of-use.component.html",
+          "hash": "4535838601235385213"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/frequency-of-use/frequency-of-use.component.spec.ts",
+          "hash": "7744413041913018824",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/frequency-of-use/frequency-of-use.component.ts",
+          "hash": "1902662213156694483",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/generate-invoice/generate-invoice.component.html",
+          "hash": "2397719395184067267"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/generate-invoice/generate-invoice.component.spec.ts",
+          "hash": "5107159773136929792",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:moment",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/generate-invoice/generate-invoice.component.ts",
+          "hash": "3141085184448343407",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:moment"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/price-range/price-range.component.html",
+          "hash": "5880941590849395707"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/price-range/price-range.component.spec.ts",
+          "hash": "18321696696486932801",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/price-range/price-range.component.ts",
+          "hash": "15488598510869846555",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/registration-successful/registration-successful.component.html",
+          "hash": "1153388302751516156"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/registration-successful/registration-successful.component.scss",
+          "hash": "10257024687210289760"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/registration-successful/registration-successful.component.spec.ts",
+          "hash": "4571974807369241622",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/router",
+            "common",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/registration-successful/registration-successful.component.ts",
+          "hash": "5858452953169861930",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/setup-profile/setup-profile.component.html",
+          "hash": "7040800161332251932"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/setup-profile/setup-profile.component.scss",
+          "hash": "16013487207310197547"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/setup-profile/setup-profile.component.spec.ts",
+          "hash": "6130188397830108101",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@innovation/accesibility",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/setup-profile/setup-profile.component.ts",
+          "hash": "4607575343484213911",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/supplier-edit/supplier-edit.component.html",
+          "hash": "1933992946111123780"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/supplier-edit/supplier-edit.component.scss",
+          "hash": "6563715591923725006"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/supplier-edit/supplier-edit.component.spec.ts",
+          "hash": "10661826643205966646",
+          "deps": [
+            "npm:@angular/core",
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/supplier-edit/supplier-edit.component.ts",
+          "hash": "4659414217400432709",
+          "deps": [
+            "npm:@angular/core",
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/test/test.component.html",
+          "hash": "6284566281933916292"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/test/test.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/test/test.component.spec.ts",
+          "hash": "4260402031634627893",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/platform-browser",
+            "common-ui",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/test/test.component.ts",
+          "hash": "3038024150224785526",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/transactions-date-menu/transactions-date-menu.component.html",
+          "hash": "7202596983540462173"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/transactions-date-menu/transactions-date-menu.component.scss",
+          "hash": "6878688064394968339"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/transactions-date-menu/transactions-date-menu.component.spec.ts",
+          "hash": "16284088662425934158",
+          "deps": [
+            "npm:@angular/core",
+            "common-ui",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_components/transactions-date-menu/transactions-date-menu.component.ts",
+          "hash": "1023614803402791016",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/dashboard.component.html",
+          "hash": "5158042664313565930"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/dashboard.component.scss",
+          "hash": "11080658658210477776"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/dashboard.component.spec.ts",
+          "hash": "2518841352790743439",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/dashboard.component.ts",
+          "hash": "8914649444970435499",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/offers-chart-panel/offers-chart-panel.component.html",
+          "hash": "10619046503113114270"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/offers-chart-panel/offers-chart-panel.component.scss",
+          "hash": "14671646636420219884"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/offers-chart-panel/offers-chart-panel.component.spec.ts",
+          "hash": "5416796645875879156",
+          "deps": [
+            "npm:chart.js",
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/offers-chart-panel/offers-chart-panel.component.ts",
+          "hash": "6812409851491620199",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:chart.js"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/transactions-panel/transactions-panel.component.html",
+          "hash": "6675525723110354903"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/transactions-panel/transactions-panel.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/transactions-panel/transactions-panel.component.spec.ts",
+          "hash": "16683855982089539126",
+          "deps": [
+            "npm:@angular/core",
+            "common-ui",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/transactions-panel/transactions-panel.component.ts",
+          "hash": "16336567676413398897",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/used-offers-panel/used-offers-panel.component.html",
+          "hash": "13576441733280022093"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/used-offers-panel/used-offers-panel.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/used-offers-panel/used-offers-panel.component.spec.ts",
+          "hash": "12713933467040227166",
+          "deps": [
+            "npm:@angular/core",
+            "common-ui",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/dashboard/used-offers-panel/used-offers-panel.component.ts",
+          "hash": "1632311308308706184",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/offer-validation/offer-validation.component.html",
+          "hash": "16470809029880775538"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/offer-validation/offer-validation.component.scss",
+          "hash": "5518257749147784326"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/offer-validation/offer-validation.component.spec.ts",
+          "hash": "31976465271426855",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/offer-validation/offer-validation.component.ts",
+          "hash": "13063267359893759012",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/offers/offers.component.html",
+          "hash": "8546008091583370067"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/offers/offers.component.scss",
+          "hash": "3534761238320722216"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/offers/offers.component.spec.ts",
+          "hash": "108369087136434507",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/offers/offers.component.ts",
+          "hash": "16578784823338913091",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/transactions/transactions.component.html",
+          "hash": "3658544920802534806"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/transactions/transactions.component.scss",
+          "hash": "16282361245288544552"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/transactions/transactions.component.spec.ts",
+          "hash": "6232225560967967071",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/_pages/transactions/transactions.component.ts",
+          "hash": "4180199362312739755",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/app.component.html",
+          "hash": "14111212196113944623"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/app.component.scss",
+          "hash": "2087797176671619306"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/app.component.spec.ts",
+          "hash": "12928089929682259507",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/app.component.ts",
+          "hash": "15523300399161374687",
+          "deps": [
+            "npm:@angular/core",
+            "common-ui"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/app.module.ts",
+          "hash": "974166803605468595",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:ng2-charts"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/app.routes.ts",
+          "hash": "9243076469729528567",
+          "deps": [
+            "npm:@angular/router",
+            "common",
+            "common-ui"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/constants/routing.constants.ts",
+          "hash": "2073969501231646869"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/enums/create-offer-form-field.enum.ts",
+          "hash": "8860039997270181386"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/enums/file-type.enum.ts",
+          "hash": "14309950105706256046"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/enums/form-fields.enum.ts",
+          "hash": "12779776282135557309"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/enums/offer-type.enum.ts",
+          "hash": "11841590356906369928"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/enums/restriction.enum.ts",
+          "hash": "7255745260195998552"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/enums/time-interval-period.enum.ts",
+          "hash": "16368603841590380276"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/code-validation.model.ts",
+          "hash": "17235404078053337416"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/delete-offers-dto.model.ts",
+          "hash": "15674223738345363630"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/due-date.model.ts",
+          "hash": "18126903039109402362"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/filter-offer-request-dto.model.ts",
+          "hash": "4734510867677546262",
+          "deps": [
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/generate-invoice-dto.model.ts",
+          "hash": "10599512072501991817"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/month-year-entry.model.ts",
+          "hash": "11774223530408924433"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/offer-rejection-reason-dto.model.ts",
+          "hash": "8636769500273783286"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/offer-status-counts-dto.model.ts",
+          "hash": "2323170656390049628"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/offer-type-visibility.model.ts",
+          "hash": "15124429573304896188"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/offer-type.model.ts",
+          "hash": "2431716621524453061"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/reactivate-offer-dto.model.ts",
+          "hash": "8790643077350379873"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/register-supplier.model.ts",
+          "hash": "8151080400790084147"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/restriction-type.model.ts",
+          "hash": "3910392269881158415"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/restriction-value.model.ts",
+          "hash": "5023222530714771590"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/transaction-data.model.ts",
+          "hash": "3761669874211615001"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/transaction-date-menu.model.ts",
+          "hash": "1008752799397864041"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/validated-code.models.ts",
+          "hash": "5612301755183986839"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/models/validation-code-status.model.ts",
+          "hash": "4171845487484142678"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/discount-code/discount-code.service.spec.ts",
+          "hash": "8980275033194764025",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/discount-code/discount-code.service.ts",
+          "hash": "2204591056823331881",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/dropdown-data/dropdown-data.service.spec.ts",
+          "hash": "12260811404683001772",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/dropdown-data/dropdown-data.service.ts",
+          "hash": "17046471195500707685",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/invoice-service/invoice.service.spec.ts",
+          "hash": "14148285191900202753",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/invoice-service/invoice.service.ts",
+          "hash": "12494938868024583915",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/offer-service/offer.service.spec.ts",
+          "hash": "13248200407023598014",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/offer-service/offer.service.ts",
+          "hash": "17572866828801059444",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/register.service.spec.ts",
+          "hash": "6688669738834562011",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/register.service.ts",
+          "hash": "4133670483301851547",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/supplier-profile-service/setup-profile-service/setup-profile.service.spec.ts",
+          "hash": "14029697106859183847",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/supplier-profile-service/setup-profile-service/setup-profile.service.ts",
+          "hash": "3870596630603145263",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/supplier-service/supplier.service.spec.ts",
+          "hash": "10808829896937687727",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/supplier-service/supplier.service.ts",
+          "hash": "1838403588121220374",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/transactions/transaction.service.spec.ts",
+          "hash": "2001931180316751078",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/services/transactions/transaction.service.ts",
+          "hash": "4401596188559779136",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/supplier-register/supplier-register.component.html",
+          "hash": "670229992557238142"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/supplier-register/supplier-register.component.scss",
+          "hash": "12142985328937994306"
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/supplier-register/supplier-register.component.spec.ts",
+          "hash": "2458412141295365245",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@innovation/accesibility",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/supplier-register/supplier-register.component.ts",
+          "hash": "18126608745039762484",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/supplier/supplier-routing.module.ts",
+          "hash": "9037258019669784074",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/app/supplier/supplier.module.ts",
+          "hash": "16868734011655182372",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/assets/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/l4l-supplier/src/environment/environment.acceptance.ts",
+          "hash": "1912152430692297256"
+        },
+        {
+          "file": "apps/l4l-supplier/src/environment/environment.beta.ts",
+          "hash": "17800541686612996388"
+        },
+        {
+          "file": "apps/l4l-supplier/src/environment/environment.prod.ts",
+          "hash": "11816622611377535810"
+        },
+        {
+          "file": "apps/l4l-supplier/src/environment/environment.ts",
+          "hash": "10284121253899476581"
+        },
+        {
+          "file": "apps/l4l-supplier/src/favicon.ico",
+          "hash": "9303420814833116677"
+        },
+        {
+          "file": "apps/l4l-supplier/src/index.html",
+          "hash": "14906550293084714124"
+        },
+        {
+          "file": "apps/l4l-supplier/src/main.ts",
+          "hash": "16765646402059100493",
+          "deps": [
+            "npm:@angular/platform-browser-dynamic"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/src/styles.scss",
+          "hash": "7665253946153358477"
+        },
+        {
+          "file": "apps/l4l-supplier/src/test-setup.ts",
+          "hash": "12251399325195548284",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "apps/l4l-supplier/tsconfig.app.json",
+          "hash": "8758957440911079463"
+        },
+        {
+          "file": "apps/l4l-supplier/tsconfig.editor.json",
+          "hash": "2633708114503992567"
+        },
+        {
+          "file": "apps/l4l-supplier/tsconfig.json",
+          "hash": "12623038088987813124"
+        },
+        {
+          "file": "apps/l4l-supplier/tsconfig.spec.json",
+          "hash": "7055468745152263581"
+        }
+      ],
+      "common-ui": [
+        {
+          "file": "libs/common-ui/.eslintrc.json",
+          "hash": "2989574737020411710"
+        },
+        {
+          "file": "libs/common-ui/README.md",
+          "hash": "14136358609489564048"
+        },
+        {
+          "file": "libs/common-ui/jest.config.ts",
+          "hash": "11545067682935333369"
+        },
+        {
+          "file": "libs/common-ui/project.json",
+          "hash": "2444705108503805673"
+        },
+        {
+          "file": "libs/common-ui/src/index.ts",
+          "hash": "17174661282879100421"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/app-loader/app-loader.component.html",
+          "hash": "492194993743256461"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/app-loader/app-loader.component.scss",
+          "hash": "2583786327727297025"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/app-loader/app-loader.component.spec.ts",
+          "hash": "9054478570197612633",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/app-loader/app-loader.component.ts",
+          "hash": "11526671958104038183",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/breadcrumbs/breadcrumbs.component.html",
+          "hash": "4893098854043417908"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/breadcrumbs/breadcrumbs.component.scss",
+          "hash": "9362343010737425602"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/breadcrumbs/breadcrumbs.component.spec.ts",
+          "hash": "7107549995671548754",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/breadcrumbs/breadcrumbs.component.ts",
+          "hash": "2937858775756406902",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/change-password/change-password.component.html",
+          "hash": "13911214403007819821"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/change-password/change-password.component.scss",
+          "hash": "10293021162221042870"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/change-password/change-password.component.spec.ts",
+          "hash": "13199501596437280430",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "npm:@innovation/accesibility",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/change-password/change-password.component.ts",
+          "hash": "5289341462205754849",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "npm:@angular/router",
+            "common",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/chip-cell/chip-cell.component.html",
+          "hash": "10792766948145223160"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/chip-cell/chip-cell.component.scss",
+          "hash": "8464505305739041335"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/chip-cell/chip-cell.component.spec.ts",
+          "hash": "16305335753704945732",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/chip-cell/chip-cell.component.ts",
+          "hash": "8794418167943881376",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/chip-remaining-dialog/chip-remaining-dialog.component.html",
+          "hash": "10268816160891704101"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/chip-remaining-dialog/chip-remaining-dialog.component.spec.ts",
+          "hash": "938394116767998826",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/chip-remaining-dialog/chip-remaining-dialog.component.ts",
+          "hash": "17894669482097607177",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/contact-information/contact-information.component.html",
+          "hash": "7159825358949302401"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/contact-information/contact-information.component.scss",
+          "hash": "9812595520937289436"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/contact-information/contact-information.component.spec.ts",
+          "hash": "16367469962761425980",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/contact-information/contact-information.component.ts",
+          "hash": "17522805888229901819",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/custom-dialog-with-timer/custom-dialog-with-timer.component.html",
+          "hash": "16232820011701034592"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/custom-dialog-with-timer/custom-dialog-with-timer.component.spec.ts",
+          "hash": "1567851728658283667",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/custom-dialog-with-timer/custom-dialog-with-timer.component.ts",
+          "hash": "7299221078392230106",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/custom-dialog/custom-dialog.component.html",
+          "hash": "5072211780202242961"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/custom-dialog/custom-dialog.component.scss",
+          "hash": "273697948134799841"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/custom-dialog/custom-dialog.component.spec.ts",
+          "hash": "7128957529137917854",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/custom-dialog/custom-dialog.component.ts",
+          "hash": "10624035471598358977",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/drag-file/drag-file.component.html",
+          "hash": "3423754535140530773"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/drag-file/drag-file.component.scss",
+          "hash": "13095766769368755657"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/drag-file/drag-file.component.spec.ts",
+          "hash": "10081461775961661054",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/drag-file/drag-file.component.ts",
+          "hash": "11489520808955146439",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/email-action/email-action.component.html",
+          "hash": "11146183501332113908"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/email-action/email-action.component.scss",
+          "hash": "9503872922945271253"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/email-action/email-action.component.ts",
+          "hash": "15701695785732871619",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "npm:@angular/router",
+            "common",
+            "npm:@windmill/ng-windmill",
+            "npm:ng-recaptcha"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/email-action/email-action.spec.ts",
+          "hash": "1473858187061908885",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "npm:@innovation/accesibility",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/general-information/general-information.component.html",
+          "hash": "6858265160871021585"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/general-information/general-information.component.scss",
+          "hash": "10041959740106448931"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/general-information/general-information.component.spec.ts",
+          "hash": "7204180646983153830",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "npm:@innovation/accesibility",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/general-information/general-information.component.ts",
+          "hash": "12205973068863037263",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/router",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/generic-app/generic-app.component.html",
+          "hash": "6726241097755431756"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/generic-app/generic-app.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/generic-app/generic-app.component.spec.ts",
+          "hash": "14683860086411264817",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/generic-app/generic-app.component.ts",
+          "hash": "11357559829666467164",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/info-widget/info-widget.component.html",
+          "hash": "17028042816893796544"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/info-widget/info-widget.component.scss",
+          "hash": "14673613789526978616"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/info-widget/info-widget.component.spec.ts",
+          "hash": "17736791736958665486",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/info-widget/info-widget.component.ts",
+          "hash": "17797291443865976517",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/login/login.component.html",
+          "hash": "15294719730937373803"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/login/login.component.scss",
+          "hash": "16443767636147603368"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/login/login.component.spec.ts",
+          "hash": "7246139219140404759",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/router",
+            "common",
+            "npm:@innovation/accesibility",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/login/login.component.ts",
+          "hash": "3256963931367118786",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/router",
+            "common",
+            "npm:ng-recaptcha"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/logo-title/logo-title.component.html",
+          "hash": "14125160040300648564"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/logo-title/logo-title.component.scss",
+          "hash": "3842252511945650444"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/logo-title/logo-title.component.spec.ts",
+          "hash": "421107738084220192",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/logo-title/logo-title.component.ts",
+          "hash": "4023381982595576316",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/no-data/no-data.component.html",
+          "hash": "2368318142683364138"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/no-data/no-data.component.scss",
+          "hash": "10902671774179007718"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/no-data/no-data.component.spec.ts",
+          "hash": "2742624587502503616",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/no-data/no-data.component.ts",
+          "hash": "17358393396193856203",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/offer-information/offer-information.component.html",
+          "hash": "13260259861573736247"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/offer-information/offer-information.component.scss",
+          "hash": "621398731859659519"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/offer-information/offer-information.component.spec.ts",
+          "hash": "747744220640424559",
+          "deps": [
+            "npm:resize-observer-polyfill",
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/platform-browser",
+            "common",
+            "npm:@ngx-translate/core",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/offer-information/offer-information.component.ts",
+          "hash": "13884550799905736288",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "npm:@angular/material-moment-adapter",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:moment"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/sidenav/sidenav.component.html",
+          "hash": "9914099466589645426"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/sidenav/sidenav.component.scss",
+          "hash": "16969711612118684322"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/sidenav/sidenav.component.spec.ts",
+          "hash": "16849090840532256726",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/sidenav/sidenav.component.ts",
+          "hash": "3824365155563547249",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "common",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/supplier-profile-panel/supplier-profile-panel.component.html",
+          "hash": "16522898701314616504"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/supplier-profile-panel/supplier-profile-panel.component.scss",
+          "hash": "9188730683550476232"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/supplier-profile-panel/supplier-profile-panel.component.spec.ts",
+          "hash": "11931851673412014057",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/supplier-profile-panel/supplier-profile-panel.component.ts",
+          "hash": "17115907638400925319",
+          "deps": [
+            "npm:@angular/core",
+            "common"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/supplier-profile/supplier-profile.component.html",
+          "hash": "7381059390680510736"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/supplier-profile/supplier-profile.component.scss",
+          "hash": "17958565815075503442"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/supplier-profile/supplier-profile.component.spec.ts",
+          "hash": "10265001412168787501",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/supplier-profile/supplier-profile.component.ts",
+          "hash": "14406256597070874095",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/router",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/table-base/table-base.component.spec.ts",
+          "hash": "8775740141583025251",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/table-base/table-base.component.ts",
+          "hash": "6767500728485724075",
+          "deps": [
+            "npm:@angular/core",
+            "common"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/table-columns-manager/table-columns-manager.component.html",
+          "hash": "6119090725760360686"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/table-columns-manager/table-columns-manager.component.scss",
+          "hash": "6872018458883322411"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/table-columns-manager/table-columns-manager.component.spec.ts",
+          "hash": "10897065763642338023",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "common",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/table-columns-manager/table-columns-manager.component.ts",
+          "hash": "16917729166339673435",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/table/table.component.html",
+          "hash": "11111571249645384315"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/table/table.component.scss",
+          "hash": "1586895083261312678"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/table/table.component.spec.ts",
+          "hash": "3372693896866536543",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/table/table.component.ts",
+          "hash": "4516596028442923961",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/time-business-hours/time-business-hours.component.html",
+          "hash": "7429818850041353300"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/time-business-hours/time-business-hours.component.scss",
+          "hash": "8878477739663084687"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/time-business-hours/time-business-hours.component.spec.ts",
+          "hash": "5796720988895135134",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/time-business-hours/time-business-hours.component.ts",
+          "hash": "16061705849949955863",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/time-slots/time-slots.component.html",
+          "hash": "17107463271776829533"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/time-slots/time-slots.component.scss",
+          "hash": "12986110690892368888"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/time-slots/time-slots.component.spec.ts",
+          "hash": "11081817769051254816",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/time-slots/time-slots.component.ts",
+          "hash": "3932643567494614020",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/working-hours-dialog/working-hours-dialog.component.html",
+          "hash": "14221951742808104682"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/working-hours-dialog/working-hours-dialog.component.spec.ts",
+          "hash": "353192870759272088",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/working-hours-dialog/working-hours-dialog.component.ts",
+          "hash": "5022394822758051718",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/working-hours-edit/working-hours-edit.component.html",
+          "hash": "2483129509762766112"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/working-hours-edit/working-hours-edit.component.scss",
+          "hash": "10819642371678765856"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/working-hours-edit/working-hours-edit.component.spec.ts",
+          "hash": "1660113470861403578",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/working-hours-edit/working-hours-edit.component.ts",
+          "hash": "5014666970692281207",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/working-hours/working-hours.component.html",
+          "hash": "11368042990968158946"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/working-hours/working-hours.component.scss",
+          "hash": "9981235292990814000"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/working-hours/working-hours.component.spec.ts",
+          "hash": "2655441429024441096",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_components/working-hours/working-hours.component.ts",
+          "hash": "6148635376346621574",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_functions/htpp-loader.factory.ts",
+          "hash": "7176320589878693037",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@ngx-translate/http-loader"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_functions/http-loader.factory.spec.ts",
+          "hash": "545968374638715021",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@ngx-translate/http-loader"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_mocks/table-data.mock.ts",
+          "hash": "7751931374669221302",
+          "deps": [
+            "common"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_pipes/file-size.pipe.spec.ts",
+          "hash": "16105836187712672445"
+        },
+        {
+          "file": "libs/common-ui/src/lib/_pipes/file-size.pipe.ts",
+          "hash": "12980313408025484047",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_util/custom-dialog-config.spec.ts",
+          "hash": "1340665069130455566",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/_util/custom-dialog-config.ts",
+          "hash": "5195272344020155701",
+          "deps": [
+            "npm:@angular/material",
+            "common"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/common-ui.module.ts",
+          "hash": "14934344112125331212",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:ng-recaptcha"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/lib/windmil.module.ts",
+          "hash": "18088722428127777824",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "libs/common-ui/src/test-setup.ts",
+          "hash": "12251399325195548284",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "libs/common-ui/tsconfig.json",
+          "hash": "841469019257536090"
+        },
+        {
+          "file": "libs/common-ui/tsconfig.lib.json",
+          "hash": "2108299254088955687"
+        },
+        {
+          "file": "libs/common-ui/tsconfig.spec.json",
+          "hash": "7055468745152263581"
+        }
+      ],
+      "l4l-municipality-e2e": [
+        {
+          "file": "apps/l4l-municipality-e2e/.eslintrc.json",
+          "hash": "10295713844052597022"
+        },
+        {
+          "file": "apps/l4l-municipality-e2e/cypress.config.ts",
+          "hash": "15793059428554134741",
+          "deps": [
+            "npm:@nx/cypress",
+            "npm:cypress"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality-e2e/project.json",
+          "hash": "1522721922887269577"
+        },
+        {
+          "file": "apps/l4l-municipality-e2e/src/e2e/app.cy.ts",
+          "hash": "10170381368260442479"
+        },
+        {
+          "file": "apps/l4l-municipality-e2e/src/fixtures/example.json",
+          "hash": "9847681657966361740"
+        },
+        {
+          "file": "apps/l4l-municipality-e2e/src/support/app.po.ts",
+          "hash": "5364106453863571025"
+        },
+        {
+          "file": "apps/l4l-municipality-e2e/src/support/commands.ts",
+          "hash": "11360078958296093368"
+        },
+        {
+          "file": "apps/l4l-municipality-e2e/src/support/e2e.ts",
+          "hash": "15928825062325902088"
+        },
+        {
+          "file": "apps/l4l-municipality-e2e/tsconfig.json",
+          "hash": "13320981426062907662"
+        }
+      ],
+      "app-config": [
+        {
+          "file": "libs/app-config/.eslintrc.json",
+          "hash": "5933684732810231489"
+        },
+        {
+          "file": "libs/app-config/README.md",
+          "hash": "3087580161061684726"
+        },
+        {
+          "file": "libs/app-config/package.json",
+          "hash": "8748895072112640046"
+        },
+        {
+          "file": "libs/app-config/project.json",
+          "hash": "16124680540911299195"
+        },
+        {
+          "file": "libs/app-config/src/index.ts",
+          "hash": "14883930000737224189",
+          "deps": [
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "libs/app-config/tsconfig.json",
+          "hash": "17782837950579868783"
+        },
+        {
+          "file": "libs/app-config/tsconfig.lib.json",
+          "hash": "220735086202088318"
+        }
+      ],
+      "l4l-municipality": [
+        {
+          "file": "apps/l4l-municipality/.eslintrc.json",
+          "hash": "2989574737020411710"
+        },
+        {
+          "file": "apps/l4l-municipality/jest.config.ts",
+          "hash": "9243553537155687901"
+        },
+        {
+          "file": "apps/l4l-municipality/project.json",
+          "hash": "17875445019756846377"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_constants/routing.constants.ts",
+          "hash": "12684900597283059546"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_models/get-suppliers-dto.model.ts",
+          "hash": "15792442024102191325",
+          "deps": [
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_models/grant.model.ts",
+          "hash": "8273457753740326051"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_models/invitation-dto.model.ts",
+          "hash": "15420054984926571362",
+          "deps": [
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_models/invite-suppliers-dto.model.ts",
+          "hash": "3578876831518798169"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_models/passholder.model.ts",
+          "hash": "922808739305210155"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_models/reject-offer-dto.model.ts",
+          "hash": "158028600996242656"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_models/reject-supplier-dto.model.ts",
+          "hash": "12283790012630237546",
+          "deps": [
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_services/passholders.service.spec.ts",
+          "hash": "8406125562396282338",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_services/passholders.service.ts",
+          "hash": "17177860078336566395",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_services/suppliers.service.spec.ts",
+          "hash": "18400260902357661335",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_services/suppliers.service.ts",
+          "hash": "17861457673457907283",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/_util/mock.util.ts",
+          "hash": "13469158933277621951",
+          "deps": [
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/app.component.html",
+          "hash": "14111212196113944623"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/app.component.scss",
+          "hash": "2087797176671619306"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/app.component.spec.ts",
+          "hash": "12610741780986560000",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/app.component.ts",
+          "hash": "1415004624276367061",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "common-ui",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/app.module.ts",
+          "hash": "13927095618626480216",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "npm:@angular/router",
+            "app-config",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/app.routes.ts",
+          "hash": "13158615232950419148",
+          "deps": [
+            "npm:@angular/router",
+            "common",
+            "common-ui"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/app.routing.module.ts",
+          "hash": "3331789273507216180",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/active-suppliers/active-suppliers.component.html",
+          "hash": "13184884392230147242"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/active-suppliers/active-suppliers.component.spec.ts",
+          "hash": "12178866807472316835",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/active-suppliers/active-suppliers.component.ts",
+          "hash": "7886340282417244833",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/assign-grant/assign-grant.component.html",
+          "hash": "17741045224701783890"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/assign-grant/assign-grant.component.scss",
+          "hash": "16785524999659157942"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/assign-grant/assign-grant.component.spec.ts",
+          "hash": "10419436618329234931",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/assign-grant/assign-grant.component.ts",
+          "hash": "11593520891975267248",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/create-grant/create-grant/create-grant.component.html",
+          "hash": "4591631332350290984"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/create-grant/create-grant/create-grant.component.scss",
+          "hash": "10246181457471212326"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/create-grant/create-grant/create-grant.component.spec.ts",
+          "hash": "13281160968705033442",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/create-grant/create-grant/create-grant.component.ts",
+          "hash": "10252257490253202349",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/create-user-popup/create-user-popup.component.html",
+          "hash": "4556358214412054295"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/create-user-popup/create-user-popup.component.spec.ts",
+          "hash": "13886461712508896205",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/create-user-popup/create-user-popup.component.ts",
+          "hash": "3378617011334929588",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/import-passholders/import-passholders.component.html",
+          "hash": "8008357293297904234"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/import-passholders/import-passholders.component.scss",
+          "hash": "11456532533808025453"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/import-passholders/import-passholders.component.spec.ts",
+          "hash": "9757511143026333837",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/import-passholders/import-passholders.component.ts",
+          "hash": "9703938119588010129",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/invitations/invitations.component.html",
+          "hash": "5479276472874298318"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/invitations/invitations.component.scss",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/invitations/invitations.component.spec.ts",
+          "hash": "6851618362578140159",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/invitations/invitations.component.ts",
+          "hash": "7194823735873107567",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/invite-suppliers/invite-suppliers.component.html",
+          "hash": "14215879607432461145"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/invite-suppliers/invite-suppliers.component.scss",
+          "hash": "985360728727611059"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/invite-suppliers/invite-suppliers.component.spec.ts",
+          "hash": "16435793201022119898",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/invite-suppliers/invite-suppliers.component.ts",
+          "hash": "17906847883346317847",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/offer-approval-popup/offer-approval-popup.component.html",
+          "hash": "6419924360415334431"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/offer-approval-popup/offer-approval-popup.component.scss",
+          "hash": "12001616066539438540"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/offer-approval-popup/offer-approval-popup.component.spec.ts",
+          "hash": "13028185526687329412",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/offer-approval-popup/offer-approval-popup.component.ts",
+          "hash": "4973227231319414403",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/supplier-details/supplier-details.component.html",
+          "hash": "3314922850466070771"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/supplier-details/supplier-details.component.scss",
+          "hash": "14056321866192621557"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/supplier-details/supplier-details.component.spec.ts",
+          "hash": "8159101427657162176",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/router",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/supplier-details/supplier-details.component.ts",
+          "hash": "8858395785254779832",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/router",
+            "common"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/supplier-req/supplier-req.component.html",
+          "hash": "7461271031404711566"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/supplier-req/supplier-req.component.spec.ts",
+          "hash": "16829935156439661427",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/supplier-req/supplier-req.component.ts",
+          "hash": "13455456812654699273",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/supplier-review-popup/supplier-review-popup.component.html",
+          "hash": "11266831174630753570"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/supplier-review-popup/supplier-review-popup.component.scss",
+          "hash": "13825834855571387248"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/supplier-review-popup/supplier-review-popup.component.spec.ts",
+          "hash": "11469305737944210612",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/supplier-review-popup/supplier-review-popup.component.ts",
+          "hash": "16455336132070578592",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/suppliers-map/suppliers-map.component.html",
+          "hash": "10317303164808599855"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/suppliers-map/suppliers-map.component.scss",
+          "hash": "16979787384723460232"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/suppliers-map/suppliers-map.component.spec.ts",
+          "hash": "48800877693994723",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "npm:ol",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/suppliers-map/suppliers-map.component.ts",
+          "hash": "12915117321805732422",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "npm:ol"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/suppliers-table/suppliers-table.component.html",
+          "hash": "13263393539596120428"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/suppliers/suppliers.component.html",
+          "hash": "8311712340508152708"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/suppliers/suppliers.component.scss",
+          "hash": "6783079121427189460"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/suppliers/suppliers.component.spec.ts",
+          "hash": "12227725014382210909",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "npm:@angular/platform-browser",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/components/suppliers/suppliers.component.ts",
+          "hash": "4820039625983773056",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/enums/create-grant-form-field.enum.ts",
+          "hash": "5217338622725374989"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/municipality/municipality-routing.module.ts",
+          "hash": "6014038830093512612",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/router"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/municipality/municipality.module.ts",
+          "hash": "5769264115700038975",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/dashboard/dashboard.component.html",
+          "hash": "13909622816642087699"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/dashboard/dashboard.component.scss",
+          "hash": "7210591005099573779"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/dashboard/dashboard.component.spec.ts",
+          "hash": "13032693871477916188",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/platform-browser",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/dashboard/dashboard.component.ts",
+          "hash": "8121574216032791226",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/grants/grants/grants.component.html",
+          "hash": "13804715860717470699"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/grants/grants/grants.component.scss",
+          "hash": "12800655771408476016"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/grants/grants/grants.component.spec.ts",
+          "hash": "1893038393367028972",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/grants/grants/grants.component.ts",
+          "hash": "327068859052547440",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/offers-for-municipality/offers-for-municipality.component.html",
+          "hash": "13088213741877672320"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/offers-for-municipality/offers-for-municipality.component.scss",
+          "hash": "11737633913455929633"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/offers-for-municipality/offers-for-municipality.component.spec.ts",
+          "hash": "14198211994288217057",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/offers-for-municipality/offers-for-municipality.component.ts",
+          "hash": "6030805954299403572",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "common-ui",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/passholders/passholders.component.html",
+          "hash": "4202011692205549404"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/passholders/passholders.component.scss",
+          "hash": "17127351347873956354"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/passholders/passholders.component.spec.ts",
+          "hash": "16846162900451344945",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs",
+            [
+              "npm:resize-observer-polyfill",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/passholders/passholders.component.ts",
+          "hash": "7269666573276003764",
+          "deps": [
+            "npm:@angular/core",
+            "npm:@angular/material",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/user-management/user-management.component.html",
+          "hash": "3610854969687714288"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/user-management/user-management.component.scss",
+          "hash": "7057076078125503671"
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/user-management/user-management.component.spec.ts",
+          "hash": "316102347992401836",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "npm:@angular/forms",
+            "common",
+            "common-ui",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pages/user-management/user-management.component.ts",
+          "hash": "17228946889912508504",
+          "deps": [
+            "npm:@angular/core",
+            "common",
+            "npm:@ngx-translate/core",
+            "npm:@windmill/ng-windmill"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pending-offers.service.spec.ts",
+          "hash": "140421667058390638",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/app/pending-offers.service.ts",
+          "hash": "7625085809000495169",
+          "deps": [
+            "npm:@angular/common",
+            "npm:@angular/core",
+            "common",
+            "npm:rxjs"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/assets/.gitkeep",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "apps/l4l-municipality/src/environment/environment.acceptance.ts",
+          "hash": "1912152430692297256"
+        },
+        {
+          "file": "apps/l4l-municipality/src/environment/environment.beta.ts",
+          "hash": "17800541686612996388"
+        },
+        {
+          "file": "apps/l4l-municipality/src/environment/environment.prod.ts",
+          "hash": "14979109156378222456"
+        },
+        {
+          "file": "apps/l4l-municipality/src/environment/environment.ts",
+          "hash": "10284121253899476581"
+        },
+        {
+          "file": "apps/l4l-municipality/src/favicon.ico",
+          "hash": "9303420814833116677"
+        },
+        {
+          "file": "apps/l4l-municipality/src/index.html",
+          "hash": "6929862489912912147"
+        },
+        {
+          "file": "apps/l4l-municipality/src/main.ts",
+          "hash": "16765646402059100493",
+          "deps": [
+            "npm:@angular/platform-browser-dynamic"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/src/styles.scss",
+          "hash": "4145420923234447174"
+        },
+        {
+          "file": "apps/l4l-municipality/src/styles.testing.scss",
+          "hash": "12063140622475270657"
+        },
+        {
+          "file": "apps/l4l-municipality/src/test-setup.ts",
+          "hash": "12251399325195548284",
+          "deps": [
+            "npm:jest-preset-angular"
+          ]
+        },
+        {
+          "file": "apps/l4l-municipality/tsconfig.app.json",
+          "hash": "8758957440911079463"
+        },
+        {
+          "file": "apps/l4l-municipality/tsconfig.editor.json",
+          "hash": "5385901837477583406"
+        },
+        {
+          "file": "apps/l4l-municipality/tsconfig.json",
+          "hash": "12623038088987813124"
+        },
+        {
+          "file": "apps/l4l-municipality/tsconfig.spec.json",
+          "hash": "7055468745152263581"
+        }
+      ]
+    }
+  },
+  "externalNodesHash": "11444280609609937474"
+}

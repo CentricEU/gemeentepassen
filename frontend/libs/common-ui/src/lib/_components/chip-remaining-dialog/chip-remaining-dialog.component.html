@@ -1,0 +1,24 @@
+<section mat-dialog-title>
+	<h3>
+		{{ 'general.remainingItems' | translate }}
+	</h3>
+	<button
+		ariaAttributes
+		mat-dialog-close
+		class="close-button"
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="close()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'16'"></centric-icon2>
+	</button>
+</section>
+<section mat-dialog-content>
+	<centric-chips-list
+		[ariaLabel]="'general.chip.title' | translate"
+		[ariaDescription]="'general.chip.description' | translate">
+		<ng-container *ngFor="let chip of arrayOfChips">
+			<centric-chip [message]="chip[chipTitleColumn]" [hasTitle]="true" [readonly]="true" [size]="'small'">
+			</centric-chip>
+		</ng-container>
+	</centric-chips-list>
+</section>

@@ -1,0 +1,13 @@
+:host {
+
+	::ng-deep {
+		table {
+			overflow-x: hidden;
+		}
+	}
+}
+
+.assign-table-container {
+	padding: 0 !important;
+	max-height: 100% !important;
+}

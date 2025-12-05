@@ -1,0 +1,9 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins';
+
+:host {
+	display: block;
+	width: fit-content;
+	form {
+		width: fit-content;
+	}
+}

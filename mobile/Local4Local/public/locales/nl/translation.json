@@ -1,0 +1,239 @@
+{
+	"generic": {
+		"buttons": {
+			"getStarted": "Ga aan de slag",
+			"logIn": "Log in",
+			"continueDigiD": "Ga door met DigiD",
+			"continue": "Ga door",
+			"createAccount": "Maak account",
+			"viewList": "Toon de lijst",
+			"viewMap": "Toon de kaart",
+			"viewDetails": "Toon meer",
+			"cancel": "Annuleren",
+			"createNewAccount": "Maak nieuw account",
+			"done": "Klaar",
+			"saveChanges": "Wijzigingen opslaan",
+			"register": "Registreer",
+			"viewDiscounts": "...View your discounts",
+			"addApple": "...Add to Apple Wallet",
+			"addAndroid": "...Add to Google Wallet",
+			"exploreOffers": "Verken aanbiedingen"
+		},
+		"errors": {
+			"requiredField": "Dit veld is verplicht",
+			"invalidEmail": "Ongeldig e-mailadres",
+			"passwordMatch": "Wachtwoord en bevestigd wachtwoord komen niet overeen",
+			"passwordRule": "Wachtwoord moet minimaal één kleine letter, één hoofdletter, één cijfer en één speciaal teken bevatten en minimaal 8 tekens lang zijn."
+		},
+		"weekDays": {
+			"monday": "Maandag",
+			"tuesday": "Dinsdag",
+			"wednesday": "Woensdag",
+			"thursday": "Donderdag",
+			"friday": "Vrijdag",
+			"saturday": "Zaterdag",
+			"sunday": "Zondag"
+		},
+		"welcome": "Welkom terug bij Stadspassen",
+		"balance": "Balans: "
+	},
+	"navigation": {
+		"offers": "Aanbiedingen",
+		"scan": "Scannen",
+		"transactions": "Transacties",
+		"profile": "Profiel",
+		"discounts": "Kortingen"
+	},
+	"landingPage": {
+		"title": "Welkom bij Stadspassen!",
+		"description": "Wel of niet je tegoed gebruiken? De aanbiedingen van onze leverancier zijn mogelijk interessant."
+	},
+	"getStartedPage": {
+		"title": "Ga aan de slag",
+		"titleDescription": "Kies een optie hieronder en ga aan de slag"
+	},
+	"registerPage": {
+		"createAccount": "Maak een account",
+		"createAccountDescription": "Het duurt maar een paar minuten om een account te maken",
+		"createPassword": "Maak een wachtwoord aan",
+		"createPasswordDescription": "Met je e-mail en wachtwoord log je in.",
+		"registerForm": {
+			"firstName": "Voornaam",
+			"firstNamePlaceholder": "Vul je voornaam in",
+			"lastName": "Achternaam",
+			"lastNamePlaceholder": "Vul je achternaam in",
+			"passId": "Pas ID",
+			"passIdPlaceholder": "Vul je pas ID in",
+			"email": "E-mail",
+			"emailPlaceholder": "Vul je e-mail adres in",
+			"password": "Wachtwoord",
+			"passwordPlaceholder": "Vul je wachtwoord in",
+			"retypePassword": "Herhaal je wachtwoord",
+			"retypePasswordPlaceholder": "Herhaal je wachtwoord"
+		},
+		"uniqueEmailError": "Dit e-mailadres is al gebruikt voor registratie. Gebruik alstublieft een andere.",
+		"passnumberAlreadyUsedOrInvalid": "...This pass ID has already been used for registration or is invalid. Please use a different one.",
+		"register": "Registreer",
+		"registrationDialog": {
+			"description": "We hebben een bevestiging gestuurd naar <b>{{email}}</b>.<br>Volg de instructies in het bericht op om je account te bevestigen.",
+			"buttonText": "Stuur opnieuw",
+			"title": "Check je e-mail!"
+		},
+		"resendEmailError": "Je hebt je e-mail al bevestigd."
+	},
+	"loginPage": {
+		"title": "Inloggen",
+		"wrongCredentials": "Je e-mail of wachtwoord is niet goed.",
+		"requestError": "Er is een fout opgetreden bij het inloggen. Probeer het later opnieuw.",
+		"accountNotConfirmed": "Je account is nog niet gevalideerd. Controleer je e-mail en bevestig je e-mailadres om het registratieproces te voltooien.",
+		"account": "Heb je geen account?",
+		"captchaError": "Uw poging was meerdere keren onsuccesvol. Voltooi de ReCAPTCHA om door te gaan."
+	},
+	"offersPage": {
+		"title": "Aanbiedingen",
+		"offerTypes": "Type aanbieding",
+		"seeAll": "Bekijk allemaal",
+		"chipList": {
+			"all": "Alle kortingen",
+			"credit": "Tegoed",
+			"bogo": "Koop één, krijg één gratis",
+			"percentage": "Percentage",
+			"grant": "Regeling",
+			"freeEntry": "Gratis toegang"
+		},
+		"offerGroup": "Aanbiedingengroep ({{number}})",
+		"availableWith": "Beschikbaar vanaf {{startDate}}"
+	},
+	"offerDetailsPage": {
+		"title": "Aanbieding details",
+		"restrictions": "Beperkingen",
+		"getOffer": "Ontvang aanbieding",
+		"description": "Omschrijving",
+		"validFrom": "Geldig formulier",
+		"validity": "{{startDate}} tot {{endDate}}",
+		"acceptedGrants": "Toegestane regelingens",
+		"bogo": "Koop één, krijg één gratis",
+		"amount": "Hoeveelheid korting",
+		"frecquency": "Gebruiksfrequentie",
+		"timeSlots": "Tijdsloten",
+		"hourValidity": "Van {{startHour}} tot {{endHour}}",
+		"ageRestriction": "Leeftijdsbeperking",
+		"above": "Ouder dan {{years}} jaar",
+		"price": "Prijs",
+		"priceRange": "Minimum €{{startPrice}} - Maximum €{{endPrice}}",
+		"successMessage": "Je hebt dit aanbod succesvol gebruikt.",
+		"seeDiscountCode": "...See the discount code",
+		"inactive": "Deze aanbieding is nog niet beschikbaar. Kijk terug op {{startDate}}!"
+	},
+	"termsAndConditions": {
+		"textDescription1": "Door je aan te melden ga je akkoord met onze ",
+		"textDescription2": "Gebruiksvoorwaarden",
+		"textDescription3": "en ",
+		"textDescription4": "Privacybeleid.",
+		"question": "Heb je al een account?",
+		"logIn": "Log in"
+	},
+	"actionCard": {
+		"noPass": "Ik heb geen pas",
+		"pass": "Ik heb een pas"
+	},
+	"offerRestriction": {
+		"alreadyUsedToday": "Je hebt dit aanbod vandaag al gebruikt.",
+		"alreadyUsed": "Je hebt dit aanbod al gebruikt.",
+		"alreadyUsedYear": "Je hebt dit aanbod dit jaar al gebruikt.",
+		"alreadyUsedMonth": "Je hebt dit aanbod deze maand al gebruikt.",
+		"alreadyUsedWeek": "Je hebt dit aanbod deze week al gebruikt.",
+		"timeSlotsWarning": "Dit aanbod is alleen geldig tussen {{startHour}} en {{endHour}}.",
+		"offerUsed": "aanbod gedbruikt",
+		"notAvailableNow": "Nu niet beschikbaar"
+	},
+	"profile": {
+		"personalInfo": "Persoonlijke informatie",
+		"myCode": "Mijn code",
+		"changePassword": "Verander password",
+		"changeLanguage": "Verander taal",
+		"communicationPref": "Contactvoorkeuren",
+		"logout": "Uitloggen",
+		"deleteAccount": "Verwijder account",
+		"logoutModal": {
+			"title": "Weet je het zeker",
+			"description": "Log later opnieuw in."
+		},
+		"language": {
+			"en": "Engels",
+			"nl": "Nederlands"
+		}
+	},
+	"store": {
+		"open": "Open",
+		"closed": "Dicht",
+		"opensAt": "• Gaat open op {{day}} om {{hour}}",
+		"closesAt": "• Sluit om {{hour}}",
+		"bankHolidaysWarning": "De openingstijden kunnen variëren. Neem contact op met de leverancier."
+	},
+	"category": {
+		"types": {
+			"culture": "Cultuur",
+			"music": "Muziek",
+			"foodAndDrinks": "Eten en drinken",
+			"courses": "Cursussen",
+			"sport": "Sport",
+			"dance": "Dans"
+		}
+	},
+	"dayOfWeek": {
+		"1": "Maandag",
+		"2": "Dinsdag",
+		"3": "Woensdag",
+		"4": "Donderdag",
+		"5": "Vrijdag",
+		"6": "Zaterdag",
+		"7": "Zondag"
+	},
+	"deleteAccount": {
+		"sorryMessage": "We vinden het jammer dat je gaat!",
+		"descritpion": "Dit proces verwijdert je account definitief. We kunnen je gegevens daarna niet meer terughalen, maar je kunt wel opnieuw een account maken.",
+		"selectReasons": "Selecteer de reden(en) waarom je je account verwijdert:",
+		"successfullyDeleted": "Account succesvol verwijderd",
+		"successfullyDeletedMessage": "Je account en data zijn succesvol verwijderd!",
+		"reasons": {
+			"noLongerUsing": "Ik gebruik de app niet meer",
+			"notUseful": "Ik vind de app niet nuttig",
+			"safetyConcerns": "Ik maak me zorgen om de veiligheid",
+			"privacyConcerns": "Ik maak me zorgen om de privacy",
+			"other": "Andere reden"
+		}
+	},
+	"personalInformation": {
+		"address": "Adres",
+		"addressPlaceholder": "Vul je adres in",
+		"phoneNumber": "Telefoonnummer",
+		"phoneNumberPlaceholder": "Vul je telefoonnummer in"
+	},
+	"offer": {
+		"types": {
+			"freeEntry": "Gratis toegang",
+			"percentage": "Percentage",
+			"bogo": "...BOGO",
+			"credit": "Tegoed",
+			"grant": "Regeling"
+		},
+		"offerType": "Type aanbieding: ",
+		"expirationDate": "...Expiration date: ",
+		"useCode": "...You’ll need this code to use it in store."
+	},
+	"discounts": {
+		"noDiscountsTitle": "Welkom bij je kortingen",
+		"noDiscountsDescription": "Het lijkt erop dat je nog geen kortingen hebt. Verken aanbiedingen om je kortingen te krijgen!",
+		"activeDiscounts": "Actieve",
+		"expiredDiscounts": "Verlopen",
+		"noExpiredDiscounts": "Je hebt geen verlopen kortingen.",
+		"noActiveDiscounts": "Je hebt geen actieve kortingen.\nVerken aanbiedingen om je kortingen te krijgen!",
+		"expirationDate": "Verloopt:",
+		"discount": "korting"
+	},
+	"search": {
+		"searchBarTextOffer": "Zoek naar aanbieding",
+		"searchBarTextDiscounts": "Zoek naar kortingen"
+	}
+}

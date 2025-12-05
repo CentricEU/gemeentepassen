@@ -1,0 +1,96 @@
+<section mat-dialog-title>
+	<h3>{{ 'createUser.title' | translate }}</h3>
+	<button
+		class="close-button"
+		ariaAttributes
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="close()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+	</button>
+</section>
+<section mat-dialog-content>
+	<form centric-complex-form [formGroup]="createUserForm">
+		<centric-form-item>
+			<centric-form-label>
+				{{ 'genericFields.firstName.title' | translate }}
+			</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<windmill-input
+					ariaAttributes
+					frontendHtmlContentValidator
+					formControlName="firstName"
+					[placeholder]="'createUser.firstNamePlaceholder' | translate"
+					[maxLength]="256"
+					[ariaLabelTranslation]="'createUser.firstNamePlaceholder'"
+					[validationFunction]="validationFunctionError.bind(this, 'firstName', createUserForm)">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('firstName', createUserForm)">
+						<span class="centric-error-message">
+							{{ 'genericFields.firstName.requiredError' | translate }}
+						</span>
+					</ng-container>
+					<ng-container errors *ngIf="createUserForm.get('firstName')?.hasError('isHTML')">
+						<span class="centric-error-message">
+							{{ 'errors.htmlContent' | translate }}
+						</span>
+					</ng-container>
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+		<centric-form-item>
+			<centric-form-label>
+				{{ 'genericFields.lastName.title' | translate }}
+			</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<windmill-input
+					ariaAttributes
+					frontendHtmlContentValidator
+					formControlName="lastName"
+					[placeholder]="'createUser.lastNamePlaceholder' | translate"
+					[maxLength]="256"
+					[ariaLabelTranslation]="'createUser.lastNamePlaceholder'"
+					[validationFunction]="validationFunctionError.bind(this, 'lastName', createUserForm)">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('lastName', createUserForm)">
+						<span class="centric-error-message">
+							{{ 'genericFields.lastName.requiredError' | translate }}
+						</span>
+					</ng-container>
+					<ng-container errors *ngIf="createUserForm.get('lastName')?.hasError('isHTML')">
+						<span class="centric-error-message">
+							{{ 'errors.htmlContent' | translate }}
+						</span>
+					</ng-container>
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+		<centric-form-item>
+			<centric-form-label>
+				{{ 'genericFields.email.title' | translate }}
+			</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<windmill-input
+					ariaAttributes
+					formControlName="email"
+					type="email"
+					[placeholder]="'createUser.emailPlaceholder' | translate"
+					[ariaLabelTranslation]="'createUser.emailPlaceholder'"
+					[maxLength]="256"
+					[validationFunction]="validationFunctionError.bind(this, 'email', createUserForm)">
+					<ng-container errors *ngIf="validationFunctionError('email', createUserForm)">
+						<span class="centric-error-message">
+							{{ getEmailErrorMessage(createUserForm) | translate }}
+						</span>
+					</ng-container>
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+	</form>
+</section>
+<section mat-dialog-actions>
+	<centric-button ariaAttributes type="button-link-dark" (click)="close()">
+		{{ 'general.button.cancel' | translate }}
+	</centric-button>
+	<centric-button ariaAttributes (click)="createUser()" [disabled]="!createUserForm.valid">
+		{{ 'createUser.title' | translate }}
+	</centric-button>
+</section>

@@ -1,0 +1,80 @@
+package nl.centric.innovation.local4local.repository;
+
+import nl.centric.innovation.local4local.dto.OfferTransactionInvoiceDto;
+import nl.centric.innovation.local4local.dto.OfferTransactionTableDto;
+import nl.centric.innovation.local4local.entity.OfferTransaction;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Repository
+public interface OfferTransactionRepository extends JpaRepository<OfferTransaction, UUID> {
+
+    String FIND_DISTINCT_YEARS_QUERY = "SELECT DISTINCT YEAR(o.createdDate) FROM OfferTransaction o " +
+            "WHERE o.discountCode.offer.supplier.id = :supplierId AND YEAR(o.createdDate) < YEAR(CURRENT_DATE) ORDER BY YEAR(o.createdDate) DESC";
+
+    String COUNT_MONTH_YEAR_TRANSACTIONS_BY_SUPPLIER_ID = "SELECT COUNT(ot) FROM OfferTransaction ot WHERE " +
+            "ot.discountCode.offer.supplier.id = :supplierId AND MONTH(ot.createdDate) = :month AND YEAR(ot.createdDate) = :year";
+
+    String FIND_OFFER_TRANSACTIONS_BY_MONTH_AND_YEAR_ORDERED_DESC =
+            "SELECT new nl.centric.innovation.local4local.dto.OfferTransactionTableDto( " +
+                    "    ph.passNumber, " +
+                    "    CONCAT(u.firstName, ' ', u.lastName), " +
+                    "    ot.amount, " +
+                    "    function('to_char', ot.createdDate, 'DD/MM/YYYY')," +
+                    "    function('to_char', ot.createdDate, 'HH24:MI') " +
+                    ") " +
+                    "FROM OfferTransaction ot " +
+                    "JOIN ot.discountCode dc " +
+                    "JOIN User u ON u.id = dc.userId " +
+                    "JOIN Passholder ph ON ph.user.id = u.id " +
+                    "WHERE dc.offer.supplier.id = :supplierId " +
+                    "  AND MONTH(ot.createdDate) = :month " +
+                    "  AND YEAR(ot.createdDate) = :year " +
+                    "ORDER BY ot.createdDate DESC";
+
+    String FIND_OFFER_TRANSACTIONS_FOR_INVOICE_BY_MONTH_AND_YEAR_ORDERED_DESC =
+            """
+                        SELECT new nl.centric.innovation.local4local.dto.OfferTransactionInvoiceDto(
+                            ph.passNumber,
+                            ot)
+                        FROM OfferTransaction ot
+                        JOIN User u ON u.id = ot.discountCode.userId
+                        JOIN Passholder ph ON ph.user.id = u.id
+                        WHERE ot.discountCode.offer.supplier.id = :supplierId
+                        AND ot.createdDate BETWEEN :startDate AND :endDate
+                        ORDER BY ot.createdDate DESC
+                    """;
+
+    Optional<OfferTransaction> findFirstByDiscountCode_UserIdAndDiscountCode_OfferIdOrderByCreatedDateDesc(UUID userId, UUID offerId);
+
+    List<OfferTransaction> findAllByDiscountCode_Offer_SupplierIdOrderByCreatedDateDesc(UUID supplierId);
+
+    @Query(FIND_DISTINCT_YEARS_QUERY)
+    List<Integer> findDistinctYearByCreatedDateDesc(@Param("supplierId") UUID supplierId);
+
+    @Query(COUNT_MONTH_YEAR_TRANSACTIONS_BY_SUPPLIER_ID)
+    Integer countMonthYearTransactionsBySupplierId(@Param("supplierId") UUID supplierId, @Param("month") Integer month,
+                                                   @Param("year") Integer year);
+
+    Integer countByDiscountCodeOfferSupplierId(@Param("supplierId") UUID supplierId);
+
+    @Query(FIND_OFFER_TRANSACTIONS_BY_MONTH_AND_YEAR_ORDERED_DESC)
+    List<OfferTransactionTableDto> findTransactionsByMonthAndYear(@Param("supplierId") UUID supplierId,
+                                                                  @Param("month") Integer month, @Param("year") Integer year, Pageable pageable);
+
+
+    @Query(FIND_OFFER_TRANSACTIONS_FOR_INVOICE_BY_MONTH_AND_YEAR_ORDERED_DESC)
+    List<OfferTransactionInvoiceDto> findTransactionsByMonthAndYear(
+            @Param("supplierId") UUID supplierId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+}
+

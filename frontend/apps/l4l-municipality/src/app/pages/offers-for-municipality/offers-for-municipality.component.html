@@ -1,0 +1,47 @@
+<ng-container *ngIf="isDataExisting; else noData">
+	<frontend-table
+		#offersMunicipalityTable
+		class="table-pannel"
+		[columns]="allColumns"
+		[columnWithChips]="'grants'"
+		[typeOfT]="typeOfModal"
+		[shouldDisplayButtonForChips]="false"
+		[showFooter]="true"
+		[showHeader]="!isSupplierAvailable"
+		[listLength]="dataCount"
+		(actionButtonClicked)="onActionButtonClicked($event)"
+		(loadDataEvent)="loadData($event)">
+		<ng-container>
+			<span class="left-container">{{ 'general.pages.pendingOffers' | translate }} </span>
+			<section class="right-container">
+				<centric-button
+					ariaAttributes
+					type="button-theme"
+					iconId="filter_b"
+					[ariaLabelTranslation]="'general.button.filter'">
+					{{ 'general.button.filter' | translate }}
+				</centric-button>
+			</section>
+		</ng-container>
+	</frontend-table>
+</ng-container>
+
+<ng-template #noData>
+	<centric-panel
+		class="no-offers-data"
+		[class.full-height]="!!supplierId"
+		[class.table-pannel]="isSupplierAvailable"
+		[class.full-size-panel]="true"
+		[showFooter]="false"
+		[header]="!isSupplierAvailable">
+		<ng-container panel-header>
+			<span class="left-container">{{ 'general.pages.pendingOffers' | translate }} </span>
+		</ng-container>
+		<ng-container panel-content>
+			<frontend-no-data
+				[noDataTitle]="'pendingOffer.noData.title'"
+				[noDataDescription]="'pendingOffer.noData.description'">
+			</frontend-no-data>
+		</ng-container>
+	</centric-panel>
+</ng-template>

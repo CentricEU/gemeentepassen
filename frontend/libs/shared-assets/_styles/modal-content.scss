@@ -1,0 +1,10 @@
+@import 'mixins.scss';
+
+:host {
+	::ng-deep {
+		mat-dialog-container [mat-dialog-content] {
+			@include flex(column, center, flex-start);
+			gap: 16px;
+		}
+	}
+}

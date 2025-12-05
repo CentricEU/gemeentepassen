@@ -1,0 +1,234 @@
+<form
+	centric-complex-form
+	class="grid-form"
+	[class.editable]="!isReadonly"
+	[formGroup]="generalInformationForm"
+	(change)="updateLocalStorage()"
+	(keydown.enter)="handleEnterKey($event)">
+	<centric-form-item>
+		<centric-form-label>{{ 'register.companyName' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+			<windmill-input
+				ariaAttributes
+				formControlName="companyName"
+				[ariaLabelTranslation]="'register.companyNamePlaceholder'"
+				[readonly]="true">
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+	<centric-form-item>
+		<centric-form-label>{{ 'register.kvkNumber' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+			<windmill-input
+				ariaAttributes
+				formControlName="kvkNumber"
+				[ariaLabelTranslation]="'register.kvkNumberPlaceholder'"
+				[readonly]="true">
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+	<ng-container *ngIf="shouldDisplayUploadLogo()">
+		<centric-form-item class="full-width">
+			<div class="button-style">
+				<input
+					#fileUpload
+					ariaAttributes
+					type="file"
+					class="hidden"
+					accept=".png, .svg, .jpg, .jpeg"
+					(click)="fileInputClick($event)"
+					(change)="onFileSelected($event)" />
+				<centric-button type="button-theme" class="upload-button" (click)="fileUpload.click()">
+					{{ logoUploadText() }}</centric-button
+				>
+				<ng-container *ngIf="fileName">
+					<centric-icon2
+						windmill-tooltip
+						class="generic-color-icon pointer"
+						[size]="'24'"
+						[svgIcon]="'trash_b'"
+						[tooltipText]="'generalInformation.removeLogo' | translate"
+						[tooltipColor]="'tooltipSurfaceColor'"
+						(click)="removeLogo()"></centric-icon2>
+				</ng-container>
+				<span
+					class="upload-text generic-color-text"
+					[innerHTML]="fileName ? fileName : ('generalInformation.uploadMessage' | translate)"></span>
+			</div>
+			<ng-container *ngIf="isSizeExceeded">
+				<span class="upload-text error-message"> {{ 'generalInformation.sizeExcedeedLogo' | translate }}</span>
+			</ng-container>
+		</centric-form-item>
+	</ng-container>
+	<centric-form-item>
+		<centric-form-label>{{ 'generalInformation.ownerName' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+			<windmill-input
+				ariaAttributes
+				frontendHtmlContentValidator
+				formControlName="ownerName"
+				[placeholder]="'generalInformation.ownerNamePlaceholder' | translate"
+				[maxLength]="256"
+				[hasClearIcon]="true"
+				[readonly]="isReadonly"
+				[ariaLabelClearIcon]="'generalInformation.ownerNamePlaceholder'"
+				[ariaLabelTranslation]="'generalInformation.ownerNamePlaceholder'"
+				[validationFunction]="validationFunctionError.bind(this, 'ownerName', generalInformationForm)">
+				<ng-container errors *ngIf="hasFormControlRequiredErrors('ownerName', generalInformationForm)">
+					<span class="centric-error-message">
+						{{ getErrorMessageGeneralFormInputs('ownerName') }}
+					</span>
+				</ng-container>
+				<ng-container errors *ngIf="generalInformationForm.get('ownerName')?.hasError('isHTML')">
+					<span class="centric-error-message">
+						{{ 'errors.htmlContent' | translate }}
+					</span>
+				</ng-container>
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+
+	<centric-form-item>
+		<centric-form-label>{{ 'general.email' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+			<windmill-input
+				ariaAttributes
+				formControlName="adminEmail"
+				[readonly]="true"
+				[ariaLabelTranslation]="'register.emailAddressPlaceholder'">
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+
+	<centric-form-item>
+		<centric-form-label>{{ 'generalInformation.legalForm' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+			<ng-container *ngIf="updatedLegalFormsSource">
+				<windmill-dropdown-search
+					ariaAttributes
+					formControlName="legalForm"
+					dropdownPlaceholder="{{ 'generalInformation.legalFormPlaceholder' | translate }}"
+					valuePropertyName="id"
+					displayPropertyName="label"
+					[source]="updatedLegalFormsSource"
+					[hasClearIcon]="true"
+					[readonly]="isReadonly"
+					[maxHeight]="256"
+					[ariaLabelClearButtonSearchInput]="'general.label.close' | translate"
+					[ariaLabelClearButton]="'general.label.close' | translate"
+					[ariaLabelTranslation]="'generalInformation.legalFormPlaceholder'"
+					[validationFunction]="validationFunctionError.bind(this, 'legalForm', generalInformationForm)"
+					(valueChanged)="onValueChangeDropdowndId($event, 'legalForm')"
+					(searchValueChange)="
+						onSearchValueChanged(
+							updatedLegalFormsSource,
+							$event,
+							'label',
+							dropdownLabelTypes.legalFormLabel
+						)
+					">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('legalForm', generalInformationForm)">
+						<span class="centric-error-message">{{ getErrorMessageGeneralFormInputs('legalForm') }} </span>
+					</ng-container>
+				</windmill-dropdown-search>
+			</ng-container>
+		</centric-form-control>
+	</centric-form-item>
+
+	<centric-form-item>
+		<centric-form-label>{{ 'generalInformation.group' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+			<ng-container *ngIf="updatedGroupsSource">
+				<windmill-dropdown-search
+					ariaAttributes
+					formControlName="group"
+					dropdownPlaceholder="{{ 'generalInformation.groupPlaceholder' | translate }}"
+					valuePropertyName="id"
+					displayPropertyName="label"
+					[source]="updatedGroupsSource"
+					[hasClearIcon]="true"
+					[readonly]="isReadonly"
+					[maxHeight]="256"
+					[ariaLabelClearButtonSearchInput]="'general.label.close' | translate"
+					[ariaLabelClearButton]="'general.label.close' | translate"
+					[ariaLabelTranslation]="'generalInformation.groupPlaceholder'"
+					[validationFunction]="validationFunctionError.bind(this, 'group', generalInformationForm)"
+					(valueChanged)="onValueChangeDropdowndId($event, 'group')"
+					(searchValueChange)="
+						onSearchValueChanged(dropdownSourceGroups, $event, 'label', dropdownLabelTypes.groupLabel)
+					">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('group', generalInformationForm)">
+						<span class="centric-error-message">{{ getErrorMessageGeneralFormInputs('group') }} </span>
+					</ng-container>
+				</windmill-dropdown-search>
+			</ng-container>
+		</centric-form-control>
+	</centric-form-item>
+
+	<centric-form-item>
+		<centric-form-label>{{ 'generalInformation.category' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+			<ng-container *ngIf="updatedCategoriesSource">
+				<windmill-dropdown-search
+					ariaAttributes
+					formControlName="category"
+					dropdownPlaceholder="{{ 'generalInformation.categoryPlaceholder' | translate }}"
+					valuePropertyName="id"
+					displayPropertyName="categoryLabel"
+					[source]="updatedCategoriesSource"
+					[hasClearIcon]="true"
+					[readonly]="isReadonly"
+					[maxHeight]="256"
+					[ariaLabelClearButtonSearchInput]="'general.label.close' | translate"
+					[ariaLabelClearButton]="'general.label.close' | translate"
+					[ariaLabelTranslation]="'generalInformation.categoryPlaceholder'"
+					[validationFunction]="validationFunctionError.bind(this, 'category', generalInformationForm)"
+					(valueChanged)="onValueChangeDropdowndId($event, 'category')"
+					(searchValueChange)="
+						onSearchValueChanged(
+							dropdownSourceCategories,
+							$event,
+							'categoryLabel',
+							dropdownLabelTypes.categoryLabel
+						)
+					">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('category', generalInformationForm)">
+						<span class="centric-error-message">{{ getErrorMessageGeneralFormInputs('category') }} </span>
+					</ng-container>
+				</windmill-dropdown-search>
+			</ng-container>
+		</centric-form-control>
+	</centric-form-item>
+
+	<centric-form-item>
+		<centric-form-label>{{ 'generalInformation.subcategory' | translate }}</centric-form-label>
+		<centric-form-control>
+			<ng-container *ngIf="updatedSubcategoriesSource">
+				<windmill-dropdown-search
+					ariaAttributes
+					[class.disabled]="isReadonly"
+					formControlName="subcategory"
+					dropdownPlaceholder="{{ 'generalInformation.subcategoryPlaceholder' | translate }}"
+					valuePropertyName="id"
+					displayPropertyName="label"
+					[source]="updatedSubcategoriesSource"
+					[hasClearIcon]="true"
+					[maxHeight]="256"
+					[readonly]="isReadonly"
+					[ariaLabelClearButtonSearchInput]="'general.label.close' | translate"
+					[ariaLabelClearButton]="'general.label.close' | translate"
+					[ariaLabelTranslation]="'generalInformation.subcategoryPlaceholder'"
+					(valueChanged)="onValueChangeDropdowndId($event, 'subcategory')"
+					(searchValueChange)="
+						onSearchValueChanged(
+							dropdownSourceSubcategories,
+							$event,
+							'label',
+							dropdownLabelTypes.subcategoryLabel
+						)
+					">
+				</windmill-dropdown-search>
+			</ng-container>
+		</centric-form-control>
+	</centric-form-item>
+</form>

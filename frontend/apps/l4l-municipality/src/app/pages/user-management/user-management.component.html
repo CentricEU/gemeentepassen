@@ -1,0 +1,17 @@
+<centric-panel class="table-pannel" [class.full-size-panel]="!isDataExisting()">
+	<ng-container panel-header>
+		<span class="left-container">{{ 'general.pages.userManagement' | translate }} </span>
+		<ng-container *ngIf="isDataExisting()"> </ng-container>
+	</ng-container>
+	<ng-container panel-content>
+		<ng-container *ngIf="isDataExisting(); else noData"> </ng-container>
+	</ng-container>
+</centric-panel>
+
+<ng-template #noData>
+	<frontend-no-data [noDataTitle]="'userManagement.welcome'" [noDataDescription]="'userManagement.noData'">
+		<centric-button type="button-default" iconId="plus_b" (click)="openCreateUserDialog()">
+			{{ 'createUser.title' | translate }}
+		</centric-button>
+	</frontend-no-data>
+</ng-template>

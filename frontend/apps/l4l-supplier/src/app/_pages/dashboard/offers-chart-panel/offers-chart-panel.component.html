@@ -1,0 +1,38 @@
+<centric-panel [shadow]="true">
+	<ng-container panel-header>
+		<div>
+			<span class="line-clamp-1">{{ 'general.pages.offers' | translate }}</span>
+			<windmill-combo-button
+				[menuItems]="dropdownData"
+				[contentType]="'dropdown'"
+				[dropdownButtonText]="activeTimePeriod | translate"
+				[dropdownType]="'uncontained-greyscale'"
+				(menuItemSelected)="onTimePeriodChange($event)">
+			</windmill-combo-button>
+		</div>
+	</ng-container>
+
+	<ng-container panel-content>
+		<ng-container *ngIf="offersCount; else noOffers">
+			<p>{{ 'dashboard.offers.textOffersExist' | translate: { offersCount: offersCount } }}</p>
+			<div class="outer-chart-container">
+				<div class="inner-chart-container">
+					<canvas
+						baseChart
+						[type]="'pie'"
+						[data]="chartData"
+						[options]="chartOptions"
+						(chartClick)="onChartClick($event)">
+					</canvas>
+				</div>
+			</div>
+		</ng-container>
+
+		<ng-template #noOffers>
+			<p>{{ 'dashboard.offers.textNoOffers' | translate }}</p>
+			<div class="empty-chart-container">
+				<div class="empty-chart"></div>
+			</div>
+		</ng-template>
+	</ng-container>
+</centric-panel>

@@ -1,0 +1,15 @@
+.active {
+	color: var(--status-success-500);
+}
+
+.pending {
+	color: var(--status-warning-700);
+}
+
+.expired {
+	color: var(--greyscale-400);
+}
+
+.rejected {
+	color: var(--status-danger-500);
+}

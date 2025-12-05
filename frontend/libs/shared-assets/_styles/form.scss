@@ -1,0 +1,19 @@
+@import '../../shared-assets/_styles/mixins.scss';
+
+.grid-form {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	column-gap: 20px;
+
+	&.editable {
+		grid-template-columns: 1fr 1fr;
+	}
+	centric-form-item.full-width {
+		grid-column: 1/-1;
+	}
+}
+
+.validity {
+	@include flex(row, flex-start, center);
+	gap: 32px;
+}

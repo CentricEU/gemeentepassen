@@ -1,0 +1,10 @@
+{
+	"supplier": {
+	"username": "automation_supplier@centric.eu",
+	"password": "Password.5"
+	},
+	"municipality": {
+	"username": "automation_municipality@centric.eu",
+	"password": "Password.5"
+	}
+}

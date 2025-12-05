@@ -1,0 +1,15 @@
+@import '../../../../../shared-assets/_styles/mixins.scss';
+
+.columns-section {
+	@include flex(column);
+	flex-wrap: wrap;
+	max-height: 340px;
+
+	div {
+		width: fit-content;
+	}
+}
+
+.modal-description {
+	margin-top: 0;
+}

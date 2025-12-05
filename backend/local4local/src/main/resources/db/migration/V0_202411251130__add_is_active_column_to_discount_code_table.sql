@@ -1,0 +1,1 @@
+ALTER TABLE l4l_global.discount_code ADD COLUMN is_active BOOLEAN DEFAULT TRUE NOT NULL;

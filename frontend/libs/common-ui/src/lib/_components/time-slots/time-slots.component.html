@@ -1,0 +1,74 @@
+<form [formGroup]="generalForm">
+	<centric-form-item-group [type]="'inline'">
+		<centric-form-item>
+			<centric-form-label>{{ 'offer.timeSlots' | translate }}</centric-form-label>
+			<centric-form-control role="group" frontendRequiredInput>
+				<section class="validity">
+					<label class="time-label"> {{ 'general.from' | translate }} </label>
+					<centric-input-timepicker2
+						formControlName="timeFrom"
+						[ariaLabel]="'general.timePicker.timeFrom' | translate"
+						[ariaLabelTimepickerIcon]="'general.timePicker.timePickerIcon' | translate"
+						[id]="'id-time-from'"
+						[placeholder]="'general.hourFormat' | translate"
+						[hasClearIcon]="true"
+						[ariaLabelClearIcon]="'general.button.close'"
+						[validationFunction]="
+							validationFunctionErrorMinFieldCompleted.bind(
+								this,
+								'timeFrom',
+								'timeTo',
+								clickedOutsideFieldTime,
+								generalForm
+							)
+						"
+						(ngModelChange)="
+							onRestrictionTypeChange(generalForm, 'timeFrom', 'timeTo', 'timeSlots', $event)
+						">
+					</centric-input-timepicker2>
+
+					<label class="time-label"> {{ 'general.to' | translate }} </label>
+					<centric-input-timepicker2
+						formControlName="timeTo"
+						[ariaLabel]="'general.timePicker.timeTo' | translate"
+						[ariaLabelTimepickerIcon]="'general.timePicker.timePickerIcon' | translate"
+						[id]="'id-time-to'"
+						[placeholder]="'general.hourFormat' | translate"
+						[hasClearIcon]="true"
+						[ariaLabelClearIcon]="'general.button.close'"
+						[validationFunction]="
+							validationFunctionErrorMinFieldCompleted.bind(
+								this,
+								'timeFrom',
+								'timeTo',
+								clickedOutsideFieldTime,
+								generalForm
+							)
+						"
+						(ngModelChange)="
+							onRestrictionTypeChange(generalForm, 'timeFrom', 'timeTo', 'timeSlots', $event)
+						">
+					</centric-input-timepicker2>
+				</section>
+			</centric-form-control>
+			<ng-container
+				errors
+				*ngIf="
+					shouldDisplayDoubleFieldValidityError(generalForm, 'timeFrom', 'timeTo', clickedOutsideFieldTime)
+				">
+				<div class="states-messages">
+					<span class="centric-error-message">
+						{{ getErrorMessageForTimeSlots(false) }}
+					</span>
+				</div>
+			</ng-container>
+			<ng-container errors *ngIf="shouldDisplayCompareError(generalForm, 'timeFrom', 'timeTo', 'timeSlots')">
+				<div class="states-messages">
+					<span class="centric-error-message">
+						{{ getErrorMessageForTimeSlots(true) }}
+					</span>
+				</div>
+			</ng-container>
+		</centric-form-item>
+	</centric-form-item-group>
+</form>

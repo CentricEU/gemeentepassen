@@ -1,0 +1,30 @@
+<ng-container *ngIf="shouldDisplayButton">
+	<centric-button
+		type="icon-button-secondary"
+		[size]="'small'"
+		[iconId]="'list-bullet_search_rb'"
+		[ariaLabel]="'Search items'"
+		(click)="openDialogWithTable([row])">
+	</centric-button>
+</ng-container>
+
+<centric-chips-list
+	[ariaLabel]="'general.chip.title' | translate"
+	[ariaDescription]="'general.chip.description' | translate">
+	<ng-container *ngFor="let chip of arrayOfChips">
+		<centric-chip [message]="chip['title']" [hasTitle]="true" [readonly]="true" [size]="'small'"> </centric-chip>
+	</ng-container>
+
+	<ng-container *ngIf="remainingChips && remainingChips > 0">
+		<centric-button
+			role="listitem"
+			type="icon-button-secondary"
+			class="remaining-chips"
+			size="small"
+			[ariaLabel]="'general.chip.moreButton' | translate"
+			[ariaDescription]="'general.chip.moreButton' | translate"
+			(click)="openDialogWithTable([row])">
+			+{{ remainingChips }}
+		</centric-button>
+	</ng-container>
+</centric-chips-list>

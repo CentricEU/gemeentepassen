@@ -1,0 +1,4 @@
+name,address,bsn,passNumber,expiringDate,residenceCity
+Automation Test 01,De Vang 108,12345678,12987654,02/02/2026,Leidschendam
+Automation Test 02,Nico Werkmanstraat 129,12345678,12987654,02/02/2026,Hengelo
+Automation Test 03,Jacob van Lennepkade 181,12345678,12987654,02/02/2026,Amsterdam

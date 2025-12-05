@@ -1,0 +1,77 @@
+<centric-mat-tab-group
+	[theme]="2"
+	[selectedIndex]="0"
+	[class.full-size-panel]="isFullSize()"
+	(selectedTabChange)="tabChanged($event)">
+	<ng-container tab-group-buttons *ngIf="shouldDisplayManageColumns()">
+		<centric-button
+			ariaAttributes
+			windmill-tooltip
+			class="item"
+			type="icon-button-fourth-dark"
+			iconId="slider-vert_b"
+			size="small"
+			tooltipColor="dark-grey"
+			tooltipPosition="left"
+			[ariaLabelTranslation]="'modal.manageColumns.title'"
+			[tooltipText]="'modal.manageColumns.title' | translate"
+			(click)="manageColumns()"></centric-button>
+	</ng-container>
+	<ng-container tab-group-buttons *ngIf="shouldDisplayInviteSuppliers()">
+		<centric-button type="button-default" iconId="plus_b" size="small" (click)="openInviteSuppliersModal()">
+			{{ 'general.inviteSuppliers' | translate }}
+		</centric-button>
+	</ng-container>
+
+	<centric-mat-tab>
+		<ng-container tab-label>
+			<centric-icon2 [svgIcon]="'shop_b'" [size]="'20'"></centric-icon2>
+			<span>{{ 'general.pages.suppliers' | translate }}</span>
+		</ng-container>
+		<ng-container *ngIf="shouldDisplaySuppliersTable(); else noData">
+			<frontend-active-suppliers [dataCount]="suppliersCount" #activeSuppliers> </frontend-active-suppliers>
+		</ng-container>
+	</centric-mat-tab>
+	<centric-mat-tab>
+		<ng-container tab-label>
+			<centric-icon2 [svgIcon]="'bell-clock_b'" [size]="'20'"></centric-icon2>
+
+			<span
+				centric-badge
+				badgeValue="1"
+				badgeSize="small"
+				[badgeHidden]="!shouldDisplayRequestsTable()"
+				[badgeOverlap]="false"
+				>{{ 'general.pendingRequests' | translate }}</span
+			>
+		</ng-container>
+
+		<ng-container *ngIf="shouldDisplayRequestsTable(); else noData">
+			<frontend-supplier-req
+				(countSuppliersEvent)="updateSuppliersNumber($event.count, $event.actionType)"
+				[dataCount]="requestsCount"></frontend-supplier-req>
+		</ng-container>
+	</centric-mat-tab>
+	<centric-mat-tab>
+		<ng-container tab-label>
+			<centric-icon2 [svgIcon]="'envelope_send_bb'" [size]="'20'"></centric-icon2>
+			<span>{{ 'general.pages.invitations' | translate }}</span>
+		</ng-container>
+		<ng-container *ngIf="shouldDisplayInvitationsTable(); else noData">
+			<frontend-invitations
+				#invitations
+				[dataCount]="invitationsCount"
+				(countInvitationsEvent)="getInvitationsCount()"></frontend-invitations>
+		</ng-container>
+	</centric-mat-tab>
+</centric-mat-tab-group>
+
+<ng-template #noData>
+	<frontend-no-data class="full-height" [noDataTitle]="noDataTitle" [noDataDescription]="noDataDescription">
+		<ng-container *ngIf="tabIndex !== 1">
+			<centric-button type="button-default" iconId="plus_b" (click)="openInviteSuppliersModal()">
+				{{ 'general.inviteSuppliers' | translate }}
+			</centric-button>
+		</ng-container>
+	</frontend-no-data>
+</ng-template>

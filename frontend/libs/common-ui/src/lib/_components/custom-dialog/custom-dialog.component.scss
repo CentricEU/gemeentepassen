@@ -1,0 +1,36 @@
+@import '../../../../../shared-assets/_styles/mixins.scss';
+
+:host {
+	centric-icon2 {
+		color: var(--status-success-500);
+	}
+
+	img {
+		height: 80px;
+	}
+
+	.warning {
+		background-color: var(--status-warning-500);
+	}
+
+	p,
+	h4 {
+		text-align: center;
+	}
+
+	.main-content {
+		@include flex(column);
+		gap: 16px;
+	}
+}
+
+:host ::ng-deep {
+	mat-dialog-container [mat-dialog-content] {
+		@include flex(column, center, center);
+		gap: 16px;
+	}
+}
+
+.image {
+	@include size(100%, 200px);
+}

@@ -1,0 +1,61 @@
+<table centric-dg [dataSource]="data" class="checkbox-table">
+	<ng-container *ngFor="let col of displayedColumns; trackBy: columnName" centricColumnDef="{{ col['property'] }}">
+		<ng-container *ngIf="col.value === 'checkbox'">
+			<th
+				ariaAttributes
+				centric-header-cell
+				[ariaLabelTranslation]="'general.checkbox'"
+				[ariaLabelTranslation]="'general.checkbox'"
+				*centricHeaderCellDef>
+				<windmill-checkbox
+					class="demo-checkbox"
+					[indeterminate]="indeterminateSelect"
+					(ngModelChange)="onSelectAllCheckboxClick()"
+					[(ngModel)]="selectAll">
+				</windmill-checkbox>
+			</th>
+		</ng-container>
+		<th centric-header-cell *centricHeaderCellDef>
+			<span class="cell-content-ellipsis"> {{ col['columnLabel'] | translate }}</span>
+		</th>
+		<td centric-cell *centricCellDef="let row; index as i">
+			<ng-container *ngIf="col['value'] === 'checkbox'">
+				<windmill-checkbox
+					ariaAttributes
+					class="demo-checkbox"
+					[ariaLabelTranslation]="'general.checkbox'"
+					[(ngModel)]="data[i].selected"
+					(ngModelChange)="updateSelectAll()">
+				</windmill-checkbox>
+			</ng-container>
+			<ng-container *ngIf="col['value'] !== 'actions'; else actions">
+				<span class="cell-content-ellipsis"> {{ row[col['value']] }}</span>
+			</ng-container>
+
+			<ng-template #actions>
+				<centric-button
+					ariaAttributes
+					class="item"
+					type="icon-button-fourth-dark"
+					iconId="visibility-on_b"
+					size="small"
+					tooltipColor="dark-grey"
+					tooltipPosition="above"
+					[ariaLabelTranslation]="'general.button.view'"></centric-button>
+
+				<centric-button
+					ariaAttributes
+					class="item"
+					type="icon-button-fourth-dark"
+					iconId="circle-pause_b"
+					size="small"
+					tooltipColor="dark-grey"
+					tooltipPosition="above"
+					[ariaLabelTranslation]="'general.button.suspend'"></centric-button>
+			</ng-template>
+		</td>
+	</ng-container>
+
+	<tr centric-header-row *centricHeaderRowDef="fixedContentCols"></tr>
+	<tr centric-row *centricRowDef="let row; columns: fixedContentCols"></tr>
+</table>

@@ -1,0 +1,44 @@
+<ng-container *ngIf="!shouldDisplaySuccessfulDialog; else successfulRegistration">
+	<centric-forgot-password class="forgot-password-pattern">
+		<ng-container title>
+			<frontend-logo-title [title]="title"></frontend-logo-title>
+			<hr class="forgot-password-divider" />
+		</ng-container>
+		<ng-container form>
+			<form centric-complex-form class="form-forgot-password" [formGroup]="form" (ngSubmit)="sendEmail()">
+				<p class="description">{{ description | translate }}</p>
+
+				<centric-form-item appearance="outline">
+					<centric-form-label> {{ 'genericFields.email.title' | translate }} </centric-form-label>
+					<centric-form-control frontendRequiredInput>
+						<windmill-input
+							ariaAttributes
+							formControlName="email"
+							[hasClearIcon]="true"
+							[ariaLabelClearIcon]="'genericFields.email.placeholder' | translate"
+							[placeholder]="'genericFields.email.placeholder' | translate"
+							[validationFunction]="validationFunctionError.bind(this, 'email', form)"
+							[ariaLabelTranslation]="'genericFields.email.placeholder'">
+							<ng-container errors *ngIf="validationFunctionError('email', form)">
+								<span class="centric-error-message">{{ getEmailErrorMessage(form) | translate }}</span>
+							</ng-container>
+						</windmill-input>
+					</centric-form-control>
+				</centric-form-item>
+				<ng-container *ngIf="!isConfirmationEmailComponent()">
+					<re-captcha formControlName="recaptcha" class="recaptcha-container"></re-captcha>
+					<centric-button class="back-button" type="button-theme" (click)="navigateToLogin()">{{
+						'general.button.back' | translate
+					}}</centric-button>
+				</ng-container>
+				<centric-button class="form-button" [disabled]="!form.valid">{{
+					'general.button.sendLink' | translate
+				}}</centric-button>
+			</form>
+		</ng-container>
+	</centric-forgot-password>
+</ng-container>
+
+<ng-template #successfulRegistration>
+	<section class="background-cover"></section>
+</ng-template>

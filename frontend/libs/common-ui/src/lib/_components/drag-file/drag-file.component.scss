@@ -1,0 +1,25 @@
+@import '../../../../../../libs/shared-assets/_styles/mixins.scss';
+
+:host {
+	@include flex(column, center, center);
+	gap: 16px;
+	width: 100%;
+}
+
+.file-section {
+	@include flex(row, space-between, center);
+	border-radius: 8px;
+	width: 100%;
+	gap: 8px;
+	padding: 12px 8px;
+	border: 1px solid var(--surface-300);
+
+	button {
+		color: var(--greyscale-500);
+	}
+}
+
+centric-upload-area,
+.alert-container {
+	width: 100%;
+}

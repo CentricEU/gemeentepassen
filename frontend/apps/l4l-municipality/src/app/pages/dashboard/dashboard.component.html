@@ -1,0 +1,25 @@
+<div class="metrics-section">
+	<div class="widgets-section">
+		<frontend-info-widget
+			*ngFor="let widget of widgetsData"
+			[title]="widget.title | translate"
+			[value]="widget.value"
+			[icon]="widget.icon">
+		</frontend-info-widget>
+	</div>
+	<centric-card [shadow]="true" class="transactions-section">
+		<centric-card-header>
+			<div centric-card-title>{{ 'dashboard.transactions.title' | translate }}</div>
+		</centric-card-header>
+		<div centric-card-content></div>
+	</centric-card>
+</div>
+
+<centric-card [shadow]="true">
+	<centric-card-header>
+		<div centric-card-title>{{ 'dashboard.map.title' | translate }}</div>
+	</centric-card-header>
+	<div centric-card-content>
+		<frontend-suppliers-map></frontend-suppliers-map>
+	</div>
+</centric-card>

@@ -1,0 +1,6 @@
+table.selectable {
+	::ng-deep td:nth-child(1),
+	th:nth-child(1) {
+		width: 48px !important;
+	}
+}

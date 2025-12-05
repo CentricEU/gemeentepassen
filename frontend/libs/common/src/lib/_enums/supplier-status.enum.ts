@@ -1,0 +1,6 @@
+export enum SupplierStatus {
+	APPROVED = 'APPROVED',
+	REJECTED = 'REJECTED',
+	PENDING = 'PENDING',
+	CREATED = 'CREATED',
+}

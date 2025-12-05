@@ -1,0 +1,67 @@
+@import '../../../../../libs/shared-assets/_styles/mixins';
+
+$background-image: '/assets/images/login.svg';
+
+:host {
+	::ng-deep {
+		.centric-register-wrapper .register-template-content {
+			@include size(580px);
+
+			.form-register-template {
+				max-height: 440px;
+				overflow-y: auto;
+			}
+		}
+
+		.centric-register-wrapper {
+			@extend .background-cover;
+
+			.register-template-content {
+				.form-register-template {
+					padding: 32px;
+				}
+
+				.register-agreement {
+					gap: 8px;
+
+					.agreement-message {
+						padding-top: 0;
+
+						a {
+							color: var(--status-success-500);
+						}
+					}
+				}
+			}
+		}
+
+		.centric-complex-form centric-form-item centric-form-label label,
+		.centric-complex-form {
+			display: inline-flex;
+		}
+	}
+
+	.title {
+		margin: 0 !important;
+	}
+
+}
+
+.l4l-logo {
+	@include size(156px, 64px);
+}
+
+.form-header {
+	@include size(100%);
+	@include flex(column, center, center);
+	padding: 32px 0 32px 0;
+}
+
+.form-header {
+	border-bottom: 1px solid var(--surface-300);
+}
+
+.background-cover {
+	@include size(100%, 100%);
+	@include background-image($background-image, cover, no-repeat, center);
+}

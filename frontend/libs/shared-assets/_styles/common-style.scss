@@ -1,0 +1,147 @@
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import '@windmill/windmill/a11y-themes/AA/green-light.css';
+@import '@windmill/windmill/src/lib/assets/base/fonts';
+@import './pallete.scss';
+@import './mixins.scss';
+@import './layout.scss';
+@import './scroll.scss';
+@import './typography.scss';
+
+$login-image: '/assets/images/login.svg';
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.required-asterisk {
+	color: var(--status-danger-500);
+	font-weight: bold;
+}
+
+.routing-container {
+	@include flex;
+	height: 100%;
+}
+
+.inside-routing-container {
+	@include size(100%);
+	background: var(--surface-100);
+	-webkit-overflow-scrolling: touch;
+	overflow-y: auto;
+
+	&.active {
+		@include size(calc(100% - 78px));
+	}
+}
+
+.hidden {
+	display: none;
+}
+
+body {
+	overflow: hidden;
+}
+
+html,
+body {
+	@include size(100%, 100%);
+}
+
+.generic-color-icon {
+	color: var(--greyscale-500) !important;
+}
+
+.icon-button-fourth,
+.link {
+	@extend .generic-color-icon;
+}
+
+.generic-color-text {
+	color: var(--greyscale-400);
+}
+
+.error-message {
+	color: var(--status-danger-500);
+}
+
+.background-cover {
+	@include size(100%, 100%);
+	@include background-image($login-image, cover, no-repeat, center);
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.form-header {
+	@include size(100%);
+	padding: 16px 0px;
+	border-bottom: 1px solid var(--surface-100);
+}
+
+.form-section {
+	@include flex(column);
+	gap: 16px;
+}
+
+.half-width {
+	@include flex(column);
+	gap: 16px;
+	flex: 1;
+}
+
+.time-label {
+	min-width: fit-content;
+	height: 20px;
+	font-size: 14px;
+}
+
+.table-scroll {
+	table {
+		height: 100%;
+	}
+
+	tbody {
+		overflow: scroll;
+	}
+}
+
+.full-height {
+	height: 100%;
+}
+
+.semi-bold {
+	font-weight: 600;
+}
+
+.common-radius {
+	border-radius: 8px;
+}
+
+.account-message {
+	@include flex(row, center, center);
+	gap: 16px;
+
+	a {
+		color: var(--a11y-theme-500);
+		text-decoration: none;
+		font-weight: 600;
+	}
+
+	p {
+		color: var(--greyscale-900);
+	}
+}
+
+.account-button {
+	margin-bottom: 32px !important;
+}
+
+.img-fit {
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: contain;
+	object-fit: contain;
+}

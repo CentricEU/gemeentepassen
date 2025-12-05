@@ -1,0 +1,1 @@
+ALTER TABLE l4l_security.login_attempt ADD UNIQUE (remote_addr)

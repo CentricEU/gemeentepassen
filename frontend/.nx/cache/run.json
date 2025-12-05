@@ -1,0 +1,21 @@
+{
+  "run": {
+    "command": "nx serve l4l-municipality --open --proxy-config proxy.conf.json",
+    "startTime": "2025-11-26T15:10:34.290Z",
+    "endTime": "2025-11-26T15:10:45.103Z",
+    "inner": false
+  },
+  "tasks": [
+    {
+      "taskId": "l4l-municipality:serve:development",
+      "target": "serve",
+      "projectName": "l4l-municipality",
+      "hash": "4142948562218084699",
+      "startTime": "2025-11-26T15:10:34.315Z",
+      "endTime": "2025-11-26T15:10:45.097Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 1
+    }
+  ]
+}
