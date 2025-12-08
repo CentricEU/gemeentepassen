@@ -44,6 +44,7 @@ Before starting, ensure you have the following installed on your machine:
 
 1. Create a new database named `l4l`.
 2. Insert the first user (replace your email and tenant ID). Password is `'Password1!'`:
+   You can find the tenant_id in l4l_security/tenants.
 
 ```sql
 INSERT INTO l4l_security."user"(
