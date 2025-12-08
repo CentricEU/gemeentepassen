@@ -43,7 +43,9 @@ Before starting, ensure you have the following installed on your machine:
 ### 1️⃣ Database Setup
 
 1. Create a new database named `l4l`.
-2. Insert the first user (replace your email and tenant ID). Password is `'Password1!'`:
+2. Install PostGIS Spatial Extension and PostgreSQL Server.
+3.Run Backend to execute migrations. 
+3. Insert the first user (replace your email and tenant ID). Password is `'Password1!'`:
 
 ```sql
 INSERT INTO l4l_security."user"(
@@ -55,7 +57,7 @@ VALUES ( 'your_email@example.com',
 
 For password generator you can use: https://bcrypt-generator.com.
 
-3. Insert a role for the user (replace `user_id` with the ID of the newly created user):
+4. Insert a role for the user (replace `user_id` with the ID of the newly created user):
 
 ```sql
 INSERT INTO l4l_security.user_role(
