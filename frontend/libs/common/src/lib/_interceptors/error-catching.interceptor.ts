@@ -2,7 +2,7 @@ import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { ActiveToast, ToastrService } from '@windmill/ng-windmill';
+import { ActiveToast, ToastrService } from '@windmill/ng-windmill/toastr';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, concatMap, filter, finalize, take } from 'rxjs/operators';
 
@@ -12,6 +12,7 @@ import { PersistentErrorCode } from '../_enums/persistence-error-codes.enum';
 import { SilentErrorCode } from '../_enums/silent-error-codes.enum';
 import { AuthService } from '../_services/auth.service';
 import { CaptchaService } from '../_services/captcha.service';
+import { SKIP_ERROR_TOASTER } from '../_util/http-context-token';
 
 @Injectable()
 export class ErrorCatchingInterceptor implements HttpInterceptor {
@@ -27,7 +28,9 @@ export class ErrorCatchingInterceptor implements HttpInterceptor {
 		private authService: AuthService,
 		private router: Router,
 		private captchaService: CaptchaService,
-	) {}
+	) {
+		this.subscribeToLogout();
+	}
 
 	intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
 		return next.handle(request).pipe(
@@ -36,7 +39,7 @@ export class ErrorCatchingInterceptor implements HttpInterceptor {
 				const SilentErrorCodes = Object.values(SilentErrorCode);
 
 				// If the error is silent, we don't want to show a toast
-				if (SilentErrorCodes.includes(customErrorCode)) {
+				if (SilentErrorCodes.includes(customErrorCode) || error.error instanceof Blob) {
 					return throwError(() => error);
 				} else if (error instanceof ErrorEvent) {
 					this.showToast('generic');
@@ -68,7 +71,13 @@ export class ErrorCatchingInterceptor implements HttpInterceptor {
 			case 40017:
 				return this.handleUnauthorized(request, next);
 			case 40019:
+				if (this.router.url === '/?reapply=true') {
+					break;
+				}
 				this.router.navigate([commonRoutingConstants.login]);
+				break;
+			case 40040:
+				this.router.navigate([commonRoutingConstants.dashboard]);
 				break;
 			default:
 				break;
@@ -92,6 +101,14 @@ export class ErrorCatchingInterceptor implements HttpInterceptor {
 		}
 
 		if (!this.shownErrorCodes.has(customErrorCode)) {
+			if (customErrorCode === 40040) {
+				return throwError(() => error);
+			}
+
+			if (request.context.get(SKIP_ERROR_TOASTER)) {
+				return throwError(() => error);
+			}
+
 			this.showToast(customErrorCode.toString());
 			this.shownErrorCodes.add(customErrorCode);
 		}
@@ -134,7 +151,6 @@ export class ErrorCatchingInterceptor implements HttpInterceptor {
 		}
 
 		this.isRefreshingToken = true;
-
 		// Reset here so that the following requests wait until the token
 		// comes back from the refreshToken call.
 		this.tokenRefreshedSubject.next(false);
@@ -167,7 +183,7 @@ export class ErrorCatchingInterceptor implements HttpInterceptor {
 			: req;
 	}
 
-	private showToast(message: string, isError: boolean = true): ActiveToast<unknown> | null {
+	private showToast(message: string, isError = true): ActiveToast<unknown> | null {
 		const toastType = isError ? 'error' : 'info';
 		const toasterMessage = this.translateService.instant(`errors.${message}`);
 
@@ -178,6 +194,12 @@ export class ErrorCatchingInterceptor implements HttpInterceptor {
 			tapToDismiss: true,
 			timeOut: 8000,
 			extendedTimeOut: 8000,
+		});
+	}
+
+	private subscribeToLogout(): void {
+		this.authService.logoutObservable.subscribe(() => {
+			this.shownErrorCodes.delete(40019);
 		});
 	}
 }

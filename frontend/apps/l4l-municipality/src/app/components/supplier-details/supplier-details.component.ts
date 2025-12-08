@@ -1,35 +1,35 @@
-import { Location } from '@angular/common';
-import { Component } from '@angular/core';
-import { MatTabChangeEvent } from '@angular/material/tabs';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { commonRoutingConstants } from '@frontend/common';
+import { WindmillTabComponent } from '@windmill/ng-windmill/tabs';
 
 @Component({
 	selector: 'frontend-supplier-details',
 	templateUrl: './supplier-details.component.html',
 	styleUrls: ['./supplier-details.component.scss'],
+	standalone: false,
 })
-export class SupplierDetailsComponent {
+export class SupplierDetailsComponent implements OnInit {
 	public supplierId: string;
 	public tabIndex = 0;
 
 	constructor(
 		private route: ActivatedRoute,
-		private location: Location,
+		private router: Router,
 	) {}
 
 	public ngOnInit(): void {
 		this.subscribeToRouteParam();
 	}
 
-	public tabChanged(event: MatTabChangeEvent): void {
+	public tabChanged(event: WindmillTabComponent): void {
 		this.tabIndex = event.index;
 		if (!this.supplierId) {
 			return;
 		}
 		const computedLocation =
 			this.tabIndex === 0 ? commonRoutingConstants.supplierDetails : commonRoutingConstants.supplierOffers;
-		this.location.go(computedLocation.replace(':id', this.supplierId));
+		this.router.navigate([computedLocation.replace(':id', this.supplierId)], { replaceUrl: false });
 	}
 
 	private subscribeToRouteParam(): void {

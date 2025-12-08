@@ -1,13 +1,13 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins.scss';
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
 
 :host {
-	@include flex(column, center, center);
+	@include mixins.flex(column, center, center);
 	gap: 16px;
 	width: 100%;
 }
 
 .file-section {
-	@include flex(row, space-between, center);
+	@include mixins.flex(row, space-between, center);
 	border-radius: 8px;
 	width: 100%;
 	gap: 8px;

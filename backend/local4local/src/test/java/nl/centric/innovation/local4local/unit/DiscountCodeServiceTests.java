@@ -4,6 +4,8 @@ import lombok.SneakyThrows;
 import nl.centric.innovation.local4local.dto.CodeValidationRequestDto;
 import nl.centric.innovation.local4local.dto.CodeValidationResponseDto;
 import nl.centric.innovation.local4local.dto.DiscountCodeViewDto;
+import nl.centric.innovation.local4local.entity.Benefit;
+import nl.centric.innovation.local4local.entity.CitizenBenefit;
 import nl.centric.innovation.local4local.entity.DiscountCode;
 import nl.centric.innovation.local4local.entity.Offer;
 import nl.centric.innovation.local4local.entity.OfferTransaction;
@@ -15,9 +17,11 @@ import nl.centric.innovation.local4local.entity.User;
 import nl.centric.innovation.local4local.enums.FrequencyOfUse;
 import nl.centric.innovation.local4local.enums.GenericStatusEnum;
 import nl.centric.innovation.local4local.exceptions.DtoValidateException;
+import nl.centric.innovation.local4local.repository.BenefitRepository;
 import nl.centric.innovation.local4local.repository.DiscountCodeRepository;
 import nl.centric.innovation.local4local.repository.OfferRepository;
 import nl.centric.innovation.local4local.repository.OfferTransactionRepository;
+import nl.centric.innovation.local4local.service.impl.CitizenBenefitService;
 import nl.centric.innovation.local4local.service.impl.DiscountCodeService;
 import nl.centric.innovation.local4local.service.impl.OfferService;
 import nl.centric.innovation.local4local.service.impl.OfferTransactionService;
@@ -44,13 +48,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.lenient;
+import  static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
 class DiscountCodeServiceTests {
@@ -62,7 +66,10 @@ class DiscountCodeServiceTests {
     private OfferRepository offerRepository;
 
     @Mock
-    private OfferTransactionRepository offerTransactionRepository;
+    private BenefitRepository benefitRepository;
+
+    @Mock
+    private CitizenBenefitService citizenBenefitService;
 
     @Mock
     private PrincipalService principalService;
@@ -86,15 +93,34 @@ class DiscountCodeServiceTests {
     private Offer offer;
 
     private UUID supplierId;
+    private Benefit benefit;
 
     @BeforeEach
-    public void setup() {
-        userId = UUID.randomUUID();
-        offerId = UUID.randomUUID();
+    void setup() {
         supplierId = UUID.randomUUID();
-        offer = new Offer();
-        offer.setId(offerId);
 
+        // Setup Benefit
+        benefit = new Benefit();
+        benefit.setId(UUID.randomUUID());
+        benefit.setAmount(200.0);
+
+        // Setup Offer
+        offer = new Offer();
+        OfferType offerType = new OfferType();
+        offerType.setOfferTypeId(1);
+        offer.setId(UUID.randomUUID());
+        offer.setOfferType(new OfferType());
+        offer.setBenefit(benefit);
+        offer.setStatus(GenericStatusEnum.ACTIVE);
+        offer.setOfferType(offerType);
+        offer.setActive(true);
+        offer.setAmount(200.0);
+
+        // Setup DiscountCode
+        discountCode = new DiscountCode();
+        discountCode.setCode("VALID123");
+        discountCode.setIsActive(true);
+        discountCode.setOffer(offer);
     }
 
     @Test
@@ -108,39 +134,6 @@ class DiscountCodeServiceTests {
 
         // Then
         assertThrows(DtoValidateException.class, () -> discountCodeService.validateAndProcessDiscountCode(new CodeValidationRequestDto(invalidCode, "12:00:00", amount)));
-    }
-
-    @Test
-    @SneakyThrows
-    void GivenValidDiscountCodeWithAmount_WhenValidateAndProcessDiscountCodeWithAmount_ThenExpectSuccess() {
-        // Given
-        String validCode = "JV12A";
-        double amount = 100.0;
-        offer.setId(offerId);
-        offer.setStatus(GenericStatusEnum.ACTIVE);
-        offer.setActive(true);
-        offer.setAmount(20.0);
-        OfferType offerType = new OfferType();
-        offerType.setOfferTypeId(1);
-        offer.setOfferType(offerType);
-
-        DiscountCode discountCode = new DiscountCode();
-        discountCode.setCode(validCode);
-        discountCode.setIsActive(true);
-        discountCode.setOffer(offer);
-
-        when(principalService.getSupplierId()).thenReturn(supplierId);
-        when(discountCodeRepository.findByCodeIgnoreCaseAndIsActiveTrueAndOfferSupplierId(validCode, supplierId)).thenReturn(Optional.of(discountCode)).thenReturn(Optional.of(discountCode));
-        doNothing().when(offerTransactionService).saveTransaction(any(DiscountCode.class), any(Double.class), any(LocalDateTime.class));
-
-        // When
-        CodeValidationResponseDto result = discountCodeService.validateAndProcessDiscountCode(new CodeValidationRequestDto(validCode, "01/27/2025, 17:50:50", amount));
-
-        // Then
-        assertNotNull(result);
-        assertEquals(validCode, result.code());
-        lenient().when(discountCodeRepository.findByCodeIgnoreCaseAndIsActiveTrueAndOfferSupplierId(validCode, supplierId)).thenReturn(Optional.of(discountCode));
-        verify(offerTransactionService, times(1)).saveTransaction(any(DiscountCode.class), any(Double.class), any(LocalDateTime.class));
     }
 
     @Test
@@ -244,6 +237,7 @@ class DiscountCodeServiceTests {
                 .build());
         offer.setOfferType(OfferType.builder().build());
         offer.setExpirationDate(LocalDate.now());
+        offer.setTitle("Special Offer");
 
         DiscountCode discountCode = new DiscountCode();
         discountCode.setCode("JV12A");
@@ -258,38 +252,6 @@ class DiscountCodeServiceTests {
         DiscountCodeViewDto result = discountCodeService.getDiscountCode(offerId);
 
         assertNotNull(result);
-    }
-
-    @Test
-    @SneakyThrows
-    void GivenValidDiscountCode_WhenValidateDiscountCode_ThenExpectSuccess() {
-        // Given
-        String validCode = "JV12A";
-
-        offer.setId(offerId);
-        offer.setStatus(GenericStatusEnum.ACTIVE);
-        OfferType offerType = new OfferType(0, "test");
-        offer.setOfferType(offerType);
-        offer.setActive(true);
-
-        DiscountCode discountCode = new DiscountCode();
-        discountCode.setCode(validCode);
-        discountCode.setIsActive(true);
-        discountCode.setOffer(offer);
-
-        when(principalService.getSupplierId()).thenReturn(supplierId);
-        when(discountCodeRepository.findByCodeIgnoreCaseAndIsActiveTrueAndOfferSupplierId(validCode, supplierId)).thenReturn(Optional.of(discountCode));
-
-        doNothing().when(offerTransactionService).saveTransaction(any(DiscountCode.class), any(Double.class), any(LocalDateTime.class));
-
-        // When
-        CodeValidationResponseDto result = discountCodeService.validateAndProcessDiscountCode(new CodeValidationRequestDto(validCode, "01/27/2025, 17:50:50", null));
-
-        // Then
-        assertNotNull(result);
-        assertEquals(validCode, result.code());
-        verify(discountCodeRepository, times(1)).findByCodeIgnoreCaseAndIsActiveTrueAndOfferSupplierId(validCode, supplierId);
-        verify(offerTransactionService, times(1)).saveTransaction(any(DiscountCode.class), any(Double.class), any(LocalDateTime.class));
     }
 
     @Test
@@ -452,6 +414,7 @@ class DiscountCodeServiceTests {
         activeOffer.setOfferType(OfferType.builder().build());
         activeOffer.setStatus(GenericStatusEnum.ACTIVE);
         activeOffer.setExpirationDate(LocalDate.now().plusDays(1));
+        activeOffer.setTitle("Active Offer");
         DiscountCode activeDiscountCode = new DiscountCode();
         activeDiscountCode.setCode("ABC123");
         activeDiscountCode.setIsActive(true);
@@ -464,6 +427,7 @@ class DiscountCodeServiceTests {
                 .build());
         inactiveOffer.setOfferType(OfferType.builder().build());
         inactiveOffer.setExpirationDate(LocalDate.now().minusDays(1));
+        inactiveOffer.setTitle("Inactive Offer"); // Set non-null title
         DiscountCode inactiveDiscountCode = new DiscountCode();
         inactiveDiscountCode.setCode("ABC124");
         inactiveDiscountCode.setIsActive(false);
@@ -482,6 +446,52 @@ class DiscountCodeServiceTests {
         Assertions.assertEquals(1, result.get("inactive").size());
         Assertions.assertTrue(result.get("active").get(0).isActive());
         Assertions.assertFalse(result.get("inactive").get(0).isActive());
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenValidDiscountCode_WhenValidateAndProcessDiscountCode_ThenExpectSuccess() {
+        // Given
+        double adjustedAmount = 50.0;
+        UUID benefitId = UUID.randomUUID();
+        CitizenBenefit citizenBenefit = CitizenBenefit.builder().benefit(benefit).amount(200.0).build();
+
+        when(citizenBenefitService.getCitizenBenefitByUserIdAndBenefit(any(), any())).thenReturn(citizenBenefit);
+
+        when(principalService.getSupplierId()).thenReturn(supplierId);
+        when(discountCodeRepository.findByCodeIgnoreCaseAndIsActiveTrueAndOfferSupplierId("VALID123", supplierId))
+                .thenReturn(Optional.of(discountCode));
+        when(benefitRepository.findById(benefit.getId())).thenReturn(Optional.of(benefit));
+
+        doNothing().when(offerTransactionService).saveTransaction(any(DiscountCode.class), any(Double.class), any(LocalDateTime.class));
+        // When
+        CodeValidationResponseDto result = discountCodeService.validateAndProcessDiscountCode(
+                new CodeValidationRequestDto("VALID123", "01/27/2025, 12:00:00", adjustedAmount));
+
+        // Then
+        assertNotNull(result);
+        assertEquals("VALID123", result.code());
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenSpecialOfferAndEligible_WhenValidateAndProcessDiscountCode_ThenReturnOfferDetails() {
+        String code = "VALID123";
+        String now = "01/27/2025, 12:00:00";
+        CitizenBenefit citizenBenefit = CitizenBenefit.builder().amount(200.0).build();
+        // Mocks
+        when(principalService.getSupplierId()).thenReturn(supplierId);
+        when(discountCodeRepository.findByCodeIgnoreCaseAndIsActiveTrueAndOfferSupplierId(code, supplierId))
+                .thenReturn(Optional.of(discountCode));
+        when(benefitRepository.findById(discountCode.getOffer().getBenefit().getId()))
+                .thenReturn(Optional.of(benefit));
+
+        when(citizenBenefitService.getCitizenBenefitByUserIdAndBenefit(any(), any())).thenReturn(citizenBenefit);
+        // Call - amount null -> treated as ZERO_AMOUNT -> not a custom amount
+        CodeValidationResponseDto response = discountCodeService.validateAndProcessDiscountCode(new CodeValidationRequestDto(code, now, null));
+
+        // Expectation: special offer branch returns DTO with offer details (code preserved)
+        assertEquals("VALID123", response.code());
     }
 
 }

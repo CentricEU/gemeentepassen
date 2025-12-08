@@ -1,0 +1,10 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
+@use '../../shared/styles/apply-for-pass-common.scss';
+
+:host {
+	.benefit-list {
+		@include mixins.flex(column);
+		gap: 32px;
+		padding-top: 12px;
+	}
+}

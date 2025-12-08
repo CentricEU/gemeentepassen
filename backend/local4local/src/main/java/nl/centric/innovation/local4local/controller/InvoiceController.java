@@ -1,3 +1,4 @@
+//[PDF Invoice] This controller class is no longer used, but kept for reference or future use
 package nl.centric.innovation.local4local.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +33,7 @@ public class InvoiceController {
     )
     public ResponseEntity<byte[]> generateInvoice(
             @Valid @RequestBody InvoiceDto invoiceDto,
-            @CookieValue(value = "language", defaultValue = "nl-NL") String language
+            @CookieValue(value = "language_supplier", defaultValue = "nl-NL") String language
     ) {
         byte[] pdfData = invoiceService.generateInvoice(invoiceDto, language);
 

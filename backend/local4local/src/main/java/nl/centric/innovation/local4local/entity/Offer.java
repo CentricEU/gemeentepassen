@@ -40,11 +40,10 @@ import nl.centric.innovation.local4local.enums.GenericStatusEnum;
 @AllArgsConstructor
 @TypeDef(name = "pgsql_enum", typeClass = PostgreSQLEnumType.class)
 @NamedEntityGraph(
-        name = "include-grants-supplier-graph",
+        name = "include-supplier-graph",
         attributeNodes = {
-                @NamedAttributeNode("grants"),
-                @NamedAttributeNode("supplier")
-
+                @NamedAttributeNode("supplier"),
+                @NamedAttributeNode("benefit")
         }
 )
 @NamedEntityGraph(
@@ -54,10 +53,9 @@ import nl.centric.innovation.local4local.enums.GenericStatusEnum;
         }
 )
 @NamedEntityGraph(
-        name = "include-grants-supplier-restriction-profile-graph",
+        name = "include-supplier-restriction-profile-graph",
         attributeNodes = {
                 @NamedAttributeNode(value = "supplier", subgraph = "profile"),
-                @NamedAttributeNode("grants"),
                 @NamedAttributeNode("restriction")
         },
         subgraphs = {
@@ -90,13 +88,13 @@ public class Offer extends BaseEntity {
     @Column(name = "expiration_date")
     private LocalDate expirationDate;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(schema = "l4l_global", name = "offer_grants", joinColumns = @JoinColumn(name = "offer_id"), inverseJoinColumns = @JoinColumn(name = "grant_id"))
-    private Set<Grant> grants;
-    
     @ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "supplier_id")
-	private Supplier supplier;
+    @JoinColumn(name = "benefit_id")
+    private Benefit benefit;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "status")
@@ -117,7 +115,7 @@ public class Offer extends BaseEntity {
     private boolean isActive;
 
     public static Offer offerRequestDtoToEntity(OfferRequestDto offerRequestDto, OfferType offerType, Supplier supplier,
-                                                Set<Grant> grants) {
+                                                Benefit benefit) {
         return Offer.builder()
                 .title(offerRequestDto.title())
                 .citizenOfferType("CITIZEN_WITH_PASS")
@@ -128,7 +126,7 @@ public class Offer extends BaseEntity {
                 .expirationDate(offerRequestDto.expirationDate())
                 .status(GenericStatusEnum.PENDING)
                 .supplier(supplier)
-                .grants(grants)
+                .benefit(benefit)
                 .coordinates(supplier.getProfile().getCoordinates())
                 .coordinatesString(supplier.getProfile().getCoordinatesString())
                 .isActive(true)

@@ -10,6 +10,7 @@ import { CustomDialogComponent } from '../custom-dialog/custom-dialog.component'
 	selector: 'frontend-custom-dialog-with-timer',
 	templateUrl: './custom-dialog-with-timer.component.html',
 	styleUrls: [],
+	standalone: false,
 })
 export class CustomDialogWithTimerComponent extends CustomDialogComponent implements OnInit, OnDestroy {
 	public isCustomDialogWithButton = true;

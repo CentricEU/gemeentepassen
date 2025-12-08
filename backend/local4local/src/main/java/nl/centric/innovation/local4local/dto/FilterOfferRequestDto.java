@@ -9,4 +9,5 @@ import java.util.UUID;
 public record FilterOfferRequestDto(
         GenericStatusEnum status,
         Integer offerTypeId,
-        UUID grantId) { }
+        UUID benefitId) {
+}

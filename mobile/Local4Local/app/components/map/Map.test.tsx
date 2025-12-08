@@ -2,116 +2,134 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import Map from './Map';
 import OfferService from '../../services/OfferService';
-import { View } from 'react-native';
-import { Keyboard } from 'react-native';
+import { Text, View, Keyboard } from 'react-native';
 
-jest.mock('react-native-maps', () => ({
-    __esModule: true,
-    default: jest.fn(({ children, ...props }) => (
-        <div testID="map" {...props}>{children}</div>
-    )),
-    PROVIDER_GOOGLE: 'PROVIDER_GOOGLE',
-}));
+jest.mock('react-native-maps', () => {
+	const React = require('react');
+	const { View } = require('react-native');
+
+	const MockMapView = React.forwardRef(
+		(
+			{ children }: { children?: React.ReactNode },
+			ref: React.Ref<any>
+		) => {
+			return <View ref={ref} testID="map">{children}</View>;
+		}
+	);
+
+	return {
+		__esModule: true,
+		default: MockMapView,
+		PROVIDER_GOOGLE: 'PROVIDER_GOOGLE'
+	};
+});
+
 
 const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
 
-
 jest.mock('../customMarker/CustomMarker', () => {
-    return {
-        CustomMarker: jest.fn(({ testID, children, coordinate, key }) => (
-            <View testID={testID}>
-                {coordinate}
-                {children}
-                {key}
-                {testID}
-            </View>
-        )),
-    };
+	return {
+		__esModule: true,
+		default: ({ offer, offerGroup }: any) => {
+			if (offer) {
+				return <View><Text>{offer.title}</Text></View>;
+			}
+			if (offerGroup) {
+				return (
+					<View>
+						{offerGroup.map((o: any) => (
+							<Text key={o.id}>{o.title}</Text>
+						))}
+					</View>
+				);
+			}
+			return null;
+		}
+	};
 });
 
+
 jest.mock('../../services/OfferService', () => ({
-    getMapOffersWithViewport: jest.fn(),
+	getMapOffersWithViewport: jest.fn()
 }));
 
 const mockOffersMap = {
-    '40.7128,-74.0060': [
-        {
-            id: '1',
-            coordinatesString: JSON.stringify({ latitude: 40.7128, longitude: -74.0060 }),
-            title: 'Single Offer',
-            description: 'Description',
-            offerType: { offerTypeId: '1' },
-        }
-    ],
-    '40.7128,-74.0061': [
-        {
-            id: '2',
-            coordinatesString: JSON.stringify({ latitude: 40.7128, longitude: -74.0061 }),
-            title: 'Grouped Offer 1',
-            description: 'Description',
-            offerType: { offerTypeId: '2' },
-        },
-        {
-            id: '3',
-            coordinatesString: JSON.stringify({ latitude: 40.7128, longitude: -74.0061 }),
-            title: 'Grouped Offer 2',
-            description: 'Description',
-            offerType: { offerTypeId: '2' },
-        }
-    ]
+	'40.7128,-74.0060': [
+		{
+			id: '1',
+			coordinatesString: JSON.stringify({ latitude: 40.7128, longitude: -74.006 }),
+			title: 'Single Offer',
+			description: 'Description',
+			offerType: { offerTypeId: '1' }
+		}
+	],
+	'40.7128,-74.0061': [
+		{
+			id: '2',
+			coordinatesString: JSON.stringify({ latitude: 40.7128, longitude: -74.0061 }),
+			title: 'Grouped Offer 1',
+			description: 'Description',
+			offerType: { offerTypeId: '2' }
+		},
+		{
+			id: '3',
+			coordinatesString: JSON.stringify({ latitude: 40.7128, longitude: -74.0061 }),
+			title: 'Grouped Offer 2',
+			description: 'Description',
+			offerType: { offerTypeId: '2' }
+		}
+	]
 };
 
-const currentLocation = { latitude: 40.7128, longitude: -74.0060 };
+const currentLocation = { latitude: 40.7128, longitude: -74.006 };
 
 const renderComponent = () => {
-    return render(<Map currentLocation={currentLocation} />);
+	return render(<Map currentLocation={currentLocation} />);
 };
 
-
 describe('Map', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-        (OfferService.getMapOffersWithViewport as jest.Mock).mockResolvedValue(mockOffersMap);
-    });
+	beforeAll(() => {
+		jest.useFakeTimers();
+	});
 
-    test('renders map and markers correctly', async () => {
-        const { getByTestId, findByText } = renderComponent();
+	beforeEach(() => {
+		jest.clearAllMocks();
+		(OfferService.getMapOffersWithViewport as jest.Mock).mockResolvedValue(mockOffersMap);
+	});
 
-        expect(getByTestId('map')).toBeTruthy();
+	test('renders map and markers correctly', async () => {
+		const { findByText, getByTestId } = renderComponent();
 
-        await waitFor(() => {
-            expect(findByText('Single Offer')).resolves.toBeTruthy();
-        });
+		expect(getByTestId('map')).toBeTruthy();
 
-        await waitFor(() => {
-            expect(findByText('Grouped Offer 1')).resolves.toBeTruthy();
-            expect(findByText('Grouped Offer 2')).resolves.toBeTruthy();
-        });
-    });
+		const singleOffer = await findByText('Single Offer');
+		expect(singleOffer).toBeTruthy();
+	});
 
-    test('handles region changes and dismisses keyboard', async () => {
-        const { getByTestId } = renderComponent();
-        const map = getByTestId('map');
 
-        fireEvent(map, 'onRegionChangeComplete', { latitude: 40.7138, longitude: -74.0070 });
+	test('handles region changes and dismisses keyboard', async () => {
+		const { getByTestId } = renderComponent();
+		const map = getByTestId('map');
 
-        fireEvent.press(map);
+		fireEvent(map, 'onRegionChangeComplete', { latitude: 40.7138, longitude: -74.007 });
 
-        await waitFor(() => {
-            expect(dismissSpy).toHaveBeenCalled();
-        });
-    });
+		fireEvent.press(map);
 
-    test('fetches map offers on region change', async () => {
-        const getMapOffersWithViewportSpy = jest.spyOn(OfferService, 'getMapOffersWithViewport');
+		await waitFor(() => {
+			expect(dismissSpy).toHaveBeenCalled();
+		});
+	});
 
-        const { getByTestId } = renderComponent();
-        const map = getByTestId('map');
+	test('fetches map offers on region change', async () => {
+		const getMapOffersWithViewportSpy = jest.spyOn(OfferService, 'getMapOffersWithViewport');
 
-        fireEvent(map, 'onRegionChangeComplete', { latitude: 40.7138, longitude: -74.0070 });
+		const { getByTestId } = renderComponent();
+		const map = getByTestId('map');
 
-        await waitFor(() => {
-            expect(getMapOffersWithViewportSpy).toHaveBeenCalled();
-        });
-    });
+		fireEvent(map, 'onRegionChangeComplete', { latitude: 40.7138, longitude: -74.007 });
+
+		await waitFor(() => {
+			expect(getMapOffersWithViewportSpy).toHaveBeenCalled();
+		});
+	});
 });

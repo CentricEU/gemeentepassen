@@ -1,19 +1,21 @@
-@import '../../shared-assets/_styles/mixins.scss';
+@use '../../shared-assets/_styles/mixins.scss' as mixins;
 
 .grid-form {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 	column-gap: 20px;
+	margin-top: 16px;
 
 	&.editable {
 		grid-template-columns: 1fr 1fr;
 	}
+
 	centric-form-item.full-width {
 		grid-column: 1/-1;
 	}
 }
 
 .validity {
-	@include flex(row, flex-start, center);
+	@include mixins.flex(row, flex-start, center);
 	gap: 32px;
 }

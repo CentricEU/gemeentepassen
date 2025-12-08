@@ -1,24 +1,24 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
 
 :host {
 	display: block;
 	width: 100%;
 	.working-hours {
-		@include flex(row, space-between, center);
+		@include mixins.flex(row, space-between, center);
 	}
 
 	.setup-schedule {
-		@include flex(row, start, center);
+		@include mixins.flex(row, start, center);
 		gap: 16px;
 		margin-top: 16px;
 	}
 
 	.container {
-		@include flex(column);
+		@include mixins.flex(column);
 	}
 
 	.days-data-panel {
-		@include flex(row, start, center);
+		@include mixins.flex(row, start, center);
 		gap: 64px;
 	}
 

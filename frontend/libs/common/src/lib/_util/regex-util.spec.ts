@@ -50,4 +50,29 @@ describe('RegexUtil', () => {
 		expect(RegexUtil.telephoneRegexPattern.test(validTelephone)).toBe(true);
 		expect(RegexUtil.telephoneRegexPattern.test(invalidTelephone)).toBe(false);
 	});
+
+	describe('dutchBicRegexPattern', () => {
+		it.each([
+			['valid Dutch BIC (8 characters)', 'ABNANL2A', true],
+			['valid Dutch BIC (11 characters)', 'ABNANL2AXXX', true],
+			['non-NL BIC (invalid)', 'DEUTDEFF', false],
+			['lowercase BIC (invalid)', 'abnanl2a', false],
+			['too short BIC (invalid)', 'ABNANL', false],
+			['BIC with special characters (invalid)', 'ABNA!L2AXXX', false],
+		])('should %s', (_, bic, expected) => {
+			expect(RegexUtil.dutchBicRegexPattern.test(bic)).toBe(expected);
+		});
+	});
+
+	describe('dutchIbanRegexPattern', () => {
+		it.each([
+			['valid Dutch IBAN', 'NL91ABNA0417164300', true],
+			['invalid country code', 'DE91ABNA0417164300', false],
+			['too short IBAN', 'NL91ABNA0417', false],
+			['non-uppercase characters', 'nl91abna0417164300', false],
+			['IBAN with spaces (invalid)', 'NL91 ABNA 0417 1643 00', false],
+		])('should %s', (_, iban, expected) => {
+			expect(RegexUtil.dutchIbanRegexPattern.test(iban)).toBe(expected);
+		});
+	});
 });

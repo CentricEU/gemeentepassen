@@ -8,7 +8,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AuthService, MockRouter, PdokService, PdokUtil, SupplierCoordinates } from '@frontend/common';
+import { AuthService, MockRouter, PdokService, PdokUtil, SupplierCoordinates, SupplierStatus } from '@frontend/common';
 import { ContactInformation, GeneralInformation, UserDto, UserService } from '@frontend/common';
 import {
 	ContactInformationComponent,
@@ -18,7 +18,9 @@ import {
 } from '@frontend/common-ui';
 import { AriaAttributesDirective } from '@innovation/accesibility';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CentricStepperModule, DialogService, ToastrService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { CentricStepperModule } from '@windmill/ng-windmill/stepper';
+import { ToastrService } from '@windmill/ng-windmill/toastr';
 import { of } from 'rxjs';
 import { Observable } from 'rxjs';
 
@@ -46,6 +48,9 @@ describe('SetupProfileComponent', () => {
 		group: '0',
 		category: '0',
 		subcategory: '0',
+		bic: 'ABNANL2A',
+		iban: 'NL91ABNA0417164300',
+		cashierEmails: '',
 	};
 
 	const contactInformationForm: ContactInformation = {
@@ -85,12 +90,27 @@ describe('SetupProfileComponent', () => {
 			apiPath: '/api',
 		};
 
+		const userMock: UserDto = {
+			companyName: 'company',
+			hasStatusUpdate: false,
+			kvkNumber: '12345678',
+			email: 'email',
+			supplierId: 'supplierId',
+			isProfileSet: true,
+			isApproved: true,
+			status: SupplierStatus.APPROVED,
+			firstName: 'firstName',
+			lastName: 'lastName',
+		};
+
 		const mockUserService = {
-			userInformationObservable: {
-				subscribe: jest.fn(),
-			},
+			userInformationObservable: { subscribe: jest.fn() },
 			addUserInformation: jest.fn(),
 		};
+
+		Object.defineProperty(mockUserService, 'userInformation', {
+			get: () => userMock,
+		});
 
 		global.structuredClone = jest.fn((val) => {
 			return JSON.parse(JSON.stringify(val));
@@ -120,7 +140,7 @@ describe('SetupProfileComponent', () => {
 			providers: [
 				{ provide: MatDialogRef, useValue: dialogRef },
 				{ provide: DialogService, useValue: dialogService },
-				{ provide: UserService, userValue: mockUserService },
+				{ provide: UserService, useValue: mockUserService },
 				{ provide: SetupProfileService, useValue: serviceMock },
 				{ provide: MAT_DIALOG_DATA, useValue: mockDialogData },
 				{ provide: AuthService, useValue: authServiceMock },
@@ -182,33 +202,35 @@ describe('SetupProfileComponent', () => {
 		component.contactInformationForm?.setValue(contactInformationForm);
 		component.generalInformationForm?.setValue(generalInformationForm);
 
+		component.generalInformationForm.get('subcategory')?.setValue('0');
+		component.generalInformationForm.get('subcategory')?.enable();
+
 		const supplierProfile = component['mapSupplierProfile']();
 
-		const createWorkingHour = (day: number) => ({
-			closeTime: '00:00:00',
-			day,
-			id: undefined,
-			isChecked: false,
-			openTime: '00:00:00',
-		});
+		const workingHours = component.workingHoursEdit.mapWorkingHours();
 
-		const workingHours = Array.from({ length: 7 }, (_, index) => createWorkingHour(index + 1));
+		const { companyName, adminEmail, kvkNumber, ...restGeneralInformationForm } = generalInformationForm;
 
-		const object = {
-			...generalInformationForm,
+		const supplierProfilePatchDto = {
+			...restGeneralInformationForm,
 			...contactInformationForm,
+			legalForm: parseInt(generalInformationForm.legalForm, 10),
+			group: parseInt(generalInformationForm.group, 10),
+			category: parseInt(generalInformationForm.category, 10),
+			subcategory: parseInt(generalInformationForm.subcategory, 10),
 			supplierId: component['supplierId'],
 			workingHours,
+			cashierEmails: [],
 		};
 
-		const objectToTest: any = object;
+		const expected = {
+			companyName: generalInformationForm.companyName,
+			adminEmail: generalInformationForm.adminEmail,
+			kvkNumber: generalInformationForm.kvkNumber,
+			supplierProfilePatchDto,
+		};
 
-		objectToTest.legalForm = parseInt(object.legalForm, 10);
-		objectToTest.group = parseInt(object.group, 10);
-		objectToTest.category = parseInt(object.category, 10);
-		objectToTest.subcategory = parseInt(object.subcategory, 10);
-
-		expect(supplierProfile).toEqual(object);
+		expect(supplierProfile).toEqual(expected);
 	});
 
 	it('should update user information', async () => {
@@ -244,21 +266,21 @@ describe('SetupProfileComponent', () => {
 			latitude: 44.4268,
 		};
 
-		const displayApprovalWaitingPopupSpy = jest.spyOn(component as any, 'displayApprovalWaitingPopup');
-		const removeLogoSpy = jest.spyOn(component as any, 'removeLocalStorageData');
+		const displayApprovalWaitingPopupSpy = jest.spyOn<any, any>(component, 'displayApprovalWaitingPopup');
+		const removeLogoSpy = jest.spyOn<any, any>(component, 'removeLocalStorageData');
 
 		jest.spyOn(pdokService, 'getCoordinateFromAddress').mockReturnValue(of(mockPdokData));
 		jest.spyOn(PdokUtil, 'getCoordinatesFromPdok').mockReturnValue(mockCoordinates);
 
 		component.saveSupplierSetupProfile();
 
-		expect(dialogRef.close).toBeCalled();
+		expect(dialogRef.close).toHaveBeenCalled();
 
 		expect(pdokService.getCoordinateFromAddress).toHaveBeenCalled();
 		expect(PdokUtil.getCoordinatesFromPdok).toHaveBeenCalledWith(mockPdokData);
 
-		expect(displayApprovalWaitingPopupSpy).toBeCalled();
-		expect(removeLogoSpy).toBeCalled();
+		expect(displayApprovalWaitingPopupSpy).toHaveBeenCalled();
+		expect(removeLogoSpy).toHaveBeenCalled();
 	});
 
 	it('should display error toaster when numFound is falsy', () => {
@@ -276,12 +298,12 @@ describe('SetupProfileComponent', () => {
 
 		component.saveSupplierSetupProfile();
 
-		expect(dialogRef.close).toBeCalled();
+		expect(dialogRef.close).toHaveBeenCalled();
 
 		expect(pdokService.getCoordinateFromAddress).toHaveBeenCalled();
-		expect(displayErrorToasterSpy).toBeCalled();
-		expect(displayApprovalWaitingPopupSpy).not.toBeCalled();
-		expect(removeLogoSpy).not.toBeCalled();
+		expect(displayErrorToasterSpy).toHaveBeenCalled();
+		expect(displayApprovalWaitingPopupSpy).not.toHaveBeenCalled();
+		expect(removeLogoSpy).not.toHaveBeenCalled();
 	});
 
 	it('should call authService.logout() on logout', fakeAsync(() => {
@@ -330,12 +352,18 @@ describe('SetupProfileComponent', () => {
 
 	it('should go to the next step', () => {
 		const nextSpy = jest.spyOn(component.horizontalStepper, 'next');
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		jest.spyOn(component as any, 'scrollToTop').mockImplementation(() => {});
+
 		component.goToNextStep();
 		expect(nextSpy).toHaveBeenCalled();
 	});
 
 	it('should go to the previous step', () => {
 		const previousSpy = jest.spyOn(component.horizontalStepper, 'previous');
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		jest.spyOn(component as any, 'scrollToTop').mockImplementation(() => {});
+
 		component.goToPreviousStep();
 		expect(previousSpy).toHaveBeenCalled();
 	});
@@ -385,6 +413,7 @@ describe('SetupProfileComponent', () => {
 			jest.spyOn(component.contactInformationForm, 'valid', 'get').mockReturnValue(contactFormValid);
 			jest.spyOn(component.generalInformationForm, 'valid', 'get').mockReturnValue(generalFormValid);
 			jest.spyOn(component.workingHoursEdit, 'isFormValid').mockReturnValue(workingHourEditFormValid);
+			jest.spyOn(component.generalInformation as any, 'isCashierEmailsFieldValid', 'get').mockReturnValue(true);
 			expect(component.shouldShowFinishButton()).toBe(expected);
 		});
 	});
@@ -408,17 +437,35 @@ describe('SetupProfileComponent', () => {
 	it('should map supplier profile correctly', () => {
 		component.contactInformationForm.setValue(contactInformationForm);
 		component.generalInformationForm.setValue(generalInformationForm);
+
+		component.generalInformationForm.get('subcategory')?.setValue('0');
+		component.generalInformationForm.get('subcategory')?.enable();
+
 		const supplierProfile = component['mapSupplierProfile']();
-		expect(supplierProfile).toEqual({
+
+		const workingHours = component.workingHoursEdit.mapWorkingHours();
+		const { companyName, adminEmail, kvkNumber, ...restGeneralInformationForm } = generalInformationForm;
+
+		const supplierProfilePatchDto = {
+			...restGeneralInformationForm,
 			...contactInformationForm,
-			...generalInformationForm,
 			legalForm: parseInt(generalInformationForm.legalForm, 10),
 			group: parseInt(generalInformationForm.group, 10),
 			category: parseInt(generalInformationForm.category, 10),
 			subcategory: parseInt(generalInformationForm.subcategory, 10),
 			supplierId: component['supplierId'],
-			workingHours: component.workingHoursEdit.mapWorkingHours(),
-		});
+			workingHours,
+			cashierEmails: [],
+		};
+
+		const expected = {
+			companyName: generalInformationForm.companyName,
+			adminEmail: generalInformationForm.adminEmail,
+			kvkNumber: generalInformationForm.kvkNumber,
+			supplierProfilePatchDto,
+		};
+
+		expect(supplierProfile).toEqual(expected);
 	});
 
 	it('should update user information', () => {
@@ -436,6 +483,63 @@ describe('SetupProfileComponent', () => {
 		const toastrServiceSpy = jest.spyOn(toastrService, 'error');
 		component['displayErrorToaster']();
 		expect(toastrServiceSpy).toHaveBeenCalled();
+	});
+
+	it('should call scrollToTop when goToNextStep is called', () => {
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		const scrollSpy = jest.spyOn(component as any, 'scrollToTop').mockImplementation(() => {});
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		jest.spyOn(component.horizontalStepper, 'next').mockImplementation(() => {});
+		component.goToNextStep();
+		expect(scrollSpy).toHaveBeenCalled();
+	});
+
+	it('should call scrollToTop when goToPreviousStep is called', () => {
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		const scrollSpy = jest.spyOn(component as any, 'scrollToTop').mockImplementation(() => {});
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
+		jest.spyOn(component.horizontalStepper, 'previous').mockImplementation(() => {});
+		component.goToPreviousStep();
+		expect(scrollSpy).toHaveBeenCalled();
+	});
+
+	it('should return true for shouldShowNextButton if selectedIndex < 2', () => {
+		component.horizontalStepper.selectedIndex = 1;
+		expect(component.shouldShowNextButton()).toBe(true);
+	});
+
+	it('should call reloadCurrentRoute on logout', () => {
+		const reloadSpy = jest.spyOn(component['navigationService'], 'reloadCurrentRoute');
+		component.logout();
+		expect(reloadSpy).toHaveBeenCalled();
+	});
+
+	it('should call detectChanges in ngAfterViewInit', () => {
+		const detectChangesSpy = jest.spyOn(component['cdr'], 'detectChanges');
+		component.generalInformation = {
+			generalInformationForm: component.generalInformationForm,
+			isCashierEmailsFieldValid: true,
+			cashierEmailsList: [],
+		} as any;
+		component.contactInformation = {
+			contactInformationForm: component.contactInformationForm,
+		} as any;
+		component.ngAfterViewInit();
+		expect(detectChangesSpy).toHaveBeenCalled();
+	});
+
+	it('should call scrollTo on scrollToTop if container exists', () => {
+		const scrollMock = jest.fn();
+		document.body.innerHTML = `<div mat-dialog-content></div>`;
+		const container = document.querySelector('div[mat-dialog-content]') as HTMLElement;
+		container.scrollTo = scrollMock;
+		component['scrollToTop']();
+		expect(scrollMock).toHaveBeenCalledWith({ top: 0 });
+	});
+
+	it('should not throw if scrollToTop called and container does not exist', () => {
+		document.body.innerHTML = ``;
+		expect(() => component['scrollToTop']()).not.toThrow();
 	});
 
 	it.each([
@@ -457,10 +561,27 @@ describe('SetupProfileComponent', () => {
 		(expected, contactValid, generalValid, step, workingHoursValid) => {
 			component.contactInformationForm.setErrors(contactValid ? null : { invalid: true });
 			component.generalInformationForm.setErrors(generalValid ? null : { invalid: true });
+			jest.spyOn(component.generalInformation as any, 'isCashierEmailsFieldValid', 'get').mockReturnValue(true);
 			component.horizontalStepper.selectedIndex = Number(step);
 			jest.spyOn(component.workingHoursEdit, 'isFormValid').mockReturnValue(workingHoursValid);
 
 			expect(component.shouldShowFinishButton()).toBe(expected);
+		},
+	);
+
+	it.each([
+		[true, true, true],
+		[false, false, false],
+		[false, true, false],
+		[false, false, false],
+	])(
+		'should return %s when generalInformationForm.valid=%s and cashierEmailsFieldValid=%s',
+		(expected, generalFormValid, cashierEmailsFieldValid) => {
+			jest.spyOn(component.generalInformationForm, 'valid', 'get').mockReturnValue(generalFormValid);
+			jest.spyOn(component.generalInformation as any, 'isCashierEmailsFieldValid', 'get').mockReturnValue(
+				cashierEmailsFieldValid,
+			);
+			expect(component.isFirstStepValid).toBe(expected);
 		},
 	);
 });

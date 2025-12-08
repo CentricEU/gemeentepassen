@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
 	AuthService,
 	Breadcrumb,
@@ -12,18 +12,19 @@ import {
 	PdokUtil,
 	SupplierCoordinates,
 	SupplierProfile,
-	SupplierProfileDto,
+	SupplierProfilePatchDto,
 	SupplierProfileService,
 	UserInfo,
 } from '@frontend/common';
 import { TranslateService } from '@ngx-translate/core';
-import { ToastrService } from '@windmill/ng-windmill';
+import { ToastrService } from '@windmill/ng-windmill/toastr';
 import { of, switchMap, tap } from 'rxjs';
 
 @Component({
 	selector: 'frontend-supplier-profile',
 	templateUrl: './supplier-profile.component.html',
 	styleUrls: ['./supplier-profile.component.scss'],
+	standalone: false,
 })
 export class SupplierProfileComponent implements OnInit, OnDestroy {
 	@ViewChild('fileUpload') fileUpload: ElementRef;
@@ -66,6 +67,7 @@ export class SupplierProfileComponent implements OnInit, OnDestroy {
 
 	constructor(
 		private readonly toastrService: ToastrService,
+		private readonly router: Router,
 		private translateService: TranslateService,
 		private breadcrumbService: BreadcrumbService,
 		private route: ActivatedRoute,
@@ -94,16 +96,20 @@ export class SupplierProfileComponent implements OnInit, OnDestroy {
 		console.log('Should be implemented');
 	}
 
-	public saveChanges(): void {
+	public saveChanges(isRejectedStatus: boolean): void {
 		const toastText = this.translateService.instant('general.success.changesSavedText');
 		const supplierProfileDto = this.mapSupplierProfile();
 
-		this.updateSupplierProfile(supplierProfileDto, toastText);
+		this.updateSupplierProfile(supplierProfileDto, toastText, isRejectedStatus);
 	}
 
-	private updateSupplierProfile(supplierProfileDto: SupplierProfileDto, toastText: string): void {
+	private updateSupplierProfile(
+		supplierProfilePatchDto: SupplierProfilePatchDto,
+		toastText: string,
+		isRejectedStatus: boolean,
+	): void {
 		this.pdokService
-			.getCoordinateFromAddress(supplierProfileDto.branchLocation, supplierProfileDto.branchZip)
+			.getCoordinateFromAddress(supplierProfilePatchDto.branchLocation, supplierProfilePatchDto.branchZip)
 			.pipe(
 				switchMap((data) => {
 					if (!data.response.numFound) {
@@ -112,11 +118,23 @@ export class SupplierProfileComponent implements OnInit, OnDestroy {
 					}
 
 					const coordinates: SupplierCoordinates = PdokUtil.getCoordinatesFromPdok(data);
-					supplierProfileDto.latlon = coordinates;
+					supplierProfilePatchDto.latlon = coordinates;
 
-					return this.supplierProfileService.updateSupplierProfile(supplierProfileDto).pipe(
+					if (!isRejectedStatus) {
+						return this.supplierProfileService.updateSupplierProfile(supplierProfilePatchDto).pipe(
+							tap(() => {
+								this.toastrService.success(toastText, '', { toastBackground: 'toast-light' });
+								this.initialContactInformationForm = structuredClone(this.contactInformationForm.value);
+								this.initialGeneralInformationForm = structuredClone(this.generalInformationForm.value);
+							}),
+						);
+					}
+
+					return this.supplierProfileService.reapplySupplierProfile(supplierProfilePatchDto).pipe(
 						tap(() => {
-							this.toastrService.success(toastText, '', { toastBackground: 'toast-light' });
+							this.router.navigate([commonRoutingConstants.dashboard], {
+								queryParams: { reapply: true },
+							});
 							this.initialContactInformationForm = structuredClone(this.contactInformationForm.value);
 							this.initialGeneralInformationForm = structuredClone(this.generalInformationForm.value);
 						}),
@@ -234,12 +252,20 @@ export class SupplierProfileComponent implements OnInit, OnDestroy {
 		});
 	}
 
-	private mapSupplierProfile(): SupplierProfileDto {
-		const { legalForm, group, category, subcategory, ...generalInformationFormValue }: GeneralInformation =
-			this.generalInformationForm.value;
+	private mapSupplierProfile(): SupplierProfilePatchDto {
+		const {
+			legalForm,
+			group,
+			category,
+			subcategory,
+			adminEmail,
+			kvkNumber,
+			companyName,
+			...generalInformationFormValue
+		}: GeneralInformation = this.generalInformationForm.value;
 		const contactInformationFormValue = this.contactInformationForm.value;
 
-		const supplierProfileDto: SupplierProfileDto = {
+		const supplierProfileDto: SupplierProfilePatchDto = {
 			...contactInformationFormValue,
 			...generalInformationFormValue,
 			legalForm: parseInt(legalForm, 10),

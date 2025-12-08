@@ -1,7 +1,7 @@
 <centric-alert *ngIf="shouldDisplayInfoMessage">
 	<div message>{{ 'setupProfile.successfulInfoMessage' | translate }}</div>
 </centric-alert>
-<div class="welcome">{{ 'general.welcome' | translate }}</div>
+<div class="welcome bold">{{ 'general.welcome' | translate: { name: userFirstName } }}</div>
 
 <div class="dashboard-container">
 	<centric-panel class="add-offer-section" [header]="false" [shadow]="true">
@@ -19,7 +19,7 @@
 					{{ 'dashboard.addOfferDescription' | translate }}
 				</p>
 				<centric-button
-					type="button-default"
+					type="high-emphasis-theme"
 					iconId="plus_r"
 					[disabled]="shouldDisableAddOfferButton"
 					(click)="addOffer()">
@@ -28,8 +28,38 @@
 			</section>
 		</ng-container>
 	</centric-panel>
-
-	<frontend-transactions-panel></frontend-transactions-panel>
-	<frontend-used-offers-panel></frontend-used-offers-panel>
-	<frontend-offers-chart-panel></frontend-offers-chart-panel>
+	<!-- <centric-panel class="qr-code-panel" [shadow]="true">
+		<ng-container panel-header>
+			<span>{{ 'dashboard.qrCode.header' | translate }}</span>
+		</ng-container>
+		<ng-container panel-content>
+			<p>{{ qrTranslationLabel | translate }}</p>
+			<img [src]="qrImageUrl" alt="QR Code" />
+			<ng-container *ngIf="!qrHasEmptyState">
+				<centric-button
+					ariaAttributes
+					size="small"
+					type="outlined-theme"
+					iconId="arrow-down_r"
+					(click)="downloadQrCodeImage()">
+					{{ 'general.button.download' | translate }}
+				</centric-button>
+			</ng-container>
+		</ng-container>
+	</centric-panel> -->
+	<ng-container *ngIf="areRequestLoaded">
+		<frontend-transactions-panel
+			[skipErrorToaster]="skipErrorToaster"
+			[isSupplierActive]="!shouldDisplayInfoMessage"></frontend-transactions-panel>
+		<frontend-offers-chart-panel
+			class="used-offer-chart"
+			[skipErrorToaster]="skipErrorToaster"
+			[isUsedOfferChart]="true"
+			[isSupplierActive]="!shouldDisplayInfoMessage"></frontend-offers-chart-panel>
+		<frontend-offers-chart-panel
+			class="offer-chart"
+			[skipErrorToaster]="skipErrorToaster"
+			[isUsedOfferChart]="false"
+			[isSupplierActive]="!shouldDisplayInfoMessage"></frontend-offers-chart-panel>
+	</ng-container>
 </div>

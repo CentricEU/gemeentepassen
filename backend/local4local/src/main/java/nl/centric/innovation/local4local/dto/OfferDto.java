@@ -3,6 +3,7 @@ package nl.centric.innovation.local4local.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.NonNull;
+import nl.centric.innovation.local4local.entity.Benefit;
 import nl.centric.innovation.local4local.entity.Offer;
 
 import java.time.LocalDate;
@@ -21,8 +22,7 @@ public record OfferDto(@NonNull UUID id,
                        @NonNull Integer offerTypeId,
                        @NonNull LocalDate startDate,
                        @NonNull LocalDate expirationDate,
-                       @JsonInclude(JsonInclude.Include.NON_NULL)
-                       Set<GrantViewDto> grants,
+                       @NonNull BenefitLightDto benefit,
                        RestrictionViewDto restrictionRequestDto
 ) {
     public static OfferDto entityToOfferDto(Offer offer) {
@@ -36,7 +36,7 @@ public record OfferDto(@NonNull UUID id,
                 .startDate(offer.getStartDate())
                 .expirationDate(offer.getExpirationDate())
                 .restrictionRequestDto(offer.getRestriction() != null ? entityToRestrictionViewDto(offer.getRestriction()) : null)
-                .grants(offer.getGrants().stream().map(GrantViewDto::entityToGrantViewDto).collect(Collectors.toSet()))
+                .benefit(BenefitLightDto.entityToBenefitTableDto(offer.getBenefit()))
                 .build();
     }
 }

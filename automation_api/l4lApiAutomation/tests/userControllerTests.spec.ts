@@ -1,25 +1,30 @@
-import test, { expect } from "@playwright/test";
-import { User } from "../serviceApi/controllers/user";
-import { ApiFactory } from "../utils/apiFactory";
-import { GetToken } from "../serviceApi/tokenApi";
-import { StatusCodes } from "../utils/status-codes.enum";
+import test, { expect } from '@playwright/test';
+import { UserController } from '../controllers/userController';
+import { ApiFactory } from '../serviceApi/apiFactory';
+import { StatusCodes } from '../utils/status-codes.enum';
+import { safeJsonParse } from '../utils/jsonHelper';
+import { getUserById } from '../db/queries/userQueries';
+import { AssertHelper } from '../utils/assertHelper';
 
-let userController : User;
-let token: GetToken;
+let userController: UserController;
 
-test.beforeAll(async() => {
-    userController = await ApiFactory.getUserApi();
-    token = await ApiFactory.getToken();    
+test.beforeAll(async () => {
+	userController = await ApiFactory.getUserApi();
 });
 
-test.describe("User Controller Tests", () => {
-    test("Get User", async() => {
-        const response = await userController.getUser("0a4c0246-6c82-4f11-9d66-40d43735e591");
-        expect(response.status()).toBe(StatusCodes.OK);
-    });
+test.describe('User Controller Tests', () => {
+	test('Get User', async () => {
+		const id = process.env.USER_SUPPLIER_ID;
+		const response = await userController.getUser(id);
+		expect(response.status()).toBe(StatusCodes.OK);
+		const responseBody = safeJsonParse(await response.text());
+		const getUserQuery = await getUserById(id);
 
-    test("Get Confirmation Account", async() => {
-        const response = await userController.getConfirmAccount(process.env.TOKEN);
-        expect(response.status()).toBe(StatusCodes.OK);
-    });
+		AssertHelper.compareData(responseBody, getUserQuery[0]);
+	});
+
+	test('Get Confirmation Account', async () => {
+		const response = await userController.getConfirmAccount(process.env.TOKEN);
+		expect(response.status()).toBe(StatusCodes.OK);
+	});
 });

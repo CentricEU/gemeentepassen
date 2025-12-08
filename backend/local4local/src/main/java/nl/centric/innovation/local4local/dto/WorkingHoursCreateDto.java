@@ -2,8 +2,6 @@ package nl.centric.innovation.local4local.dto;
 
 import lombok.Builder;
 
-import java.util.UUID;
-
 @Builder
 public record WorkingHoursCreateDto(
         Integer day,

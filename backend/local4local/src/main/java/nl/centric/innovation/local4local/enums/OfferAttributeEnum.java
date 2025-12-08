@@ -10,7 +10,7 @@ public enum OfferAttributeEnum {
     SUPPLIER("supplier"),
     ID("id"),
     IS_ACTIVE("isActive"),
-    GRANTS("grants");
+    BENEFIT("benefit");
 
     private final String attributeName;
 

@@ -7,6 +7,7 @@ import {
 	commonRoutingConstants,
 	ModalData,
 	RejectSupplierDto,
+	SupplierRejectionService,
 	SupplierStatus,
 	SupplierViewDto,
 	TenantService,
@@ -15,7 +16,8 @@ import {
 	UserService,
 } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
-import { DialogService } from '@windmill/ng-windmill';
+import { TranslateService } from '@ngx-translate/core';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 
 import { SetupProfileComponent } from '../../_components/setup-profile/setup-profile.component';
 import { OfferService } from '../../services/offer-service/offer.service';
@@ -25,12 +27,19 @@ import { SupplierService } from '../../services/supplier-service/supplier.servic
 	selector: 'frontend-dashboard',
 	templateUrl: './dashboard.component.html',
 	styleUrls: ['./dashboard.component.scss'],
+	standalone: false,
 })
 export class DashboardComponent implements OnInit {
 	public shouldDisplayInfoMessage = false;
 	public isProfileSet = false;
 	public supplierRejectionInformation: RejectSupplierDto;
 	public supplierLogoSrc: SafeUrl;
+	public qrTranslationLabel: string;
+	public qrImageUrl: SafeUrl;
+	public qrHasEmptyState = true;
+	public skipErrorToaster = false;
+	public areRequestLoaded = false;
+	private qrObjectUrl: string;
 
 	public get extractSupplierId(): string {
 		return this.authService.extractSupplierInformation(UserInfo.SupplierId) as string;
@@ -42,8 +51,14 @@ export class DashboardComponent implements OnInit {
 	private supplier: SupplierViewDto;
 	private userInfoData: UserDto;
 
+	public get userFirstName(): string {
+		return this.userInfoData?.firstName || '';
+	}
+
 	constructor(
 		private readonly dialogService: DialogService,
+		private readonly supplierRejectionService: SupplierRejectionService,
+		private readonly translateService: TranslateService,
 		private router: Router,
 		private offerService: OfferService,
 		private supplierService: SupplierService,
@@ -62,17 +77,34 @@ export class DashboardComponent implements OnInit {
 		this.offerService.shouldOpenOfferPopup = true;
 	}
 
+	// public downloadQrCodeImage(): void {
+	// 	const link = document.createElement('a');
+	// 	link.href = this.qrObjectUrl;
+	// 	link.download = 'QR-L4L.png';
+	// 	document.body.appendChild(link);
+	// 	link.click();
+	// 	document.body.removeChild(link);
+	// }
+
+	// private fetchQrCodeImage(): void {
+	// 	this.supplierService.getQRCodeImage().subscribe((blob) => {
+	// 		this.qrObjectUrl = URL.createObjectURL(blob);
+	// 		this.qrImageUrl = this.sanitizer.bypassSecurityTrustUrl(this.qrObjectUrl);
+	// 		this.qrHasEmptyState = false;
+	// 	});
+	// }
+
 	private openSetupProfileModal(): void {
 		this.dialogService
 			.message(SetupProfileComponent, {
 				id: 'accessible-first-dialog',
 				panelClass: 'setup-profile',
 				width: '80%',
-				closeOnNavigation: false,
+				disableClose: true,
 				data: {
 					mainContent: 'general.success.title',
 					secondContent: 'general.success.text',
-					acceptButtonType: 'button-success',
+					acceptButtonType: 'high-emphasis-success',
 					acceptButtonText: 'register.continue',
 				},
 			})
@@ -89,6 +121,7 @@ export class DashboardComponent implements OnInit {
 		if (!userId) {
 			return;
 		}
+
 		this.initUserInformationData(userId);
 
 		const supplierId = this.extractSupplierId;
@@ -113,13 +146,27 @@ export class DashboardComponent implements OnInit {
 			if (this.userInfoData.status === SupplierStatus.REJECTED) {
 				this.initSupplierRejectionInformation(this.userInfoData.supplierId);
 			}
+
+			//this.initializeQrCode(data.isApproved);
 		});
 	}
 
+	// private initializeQrCode(isApproved: boolean): void {
+	// 	if (isApproved) {
+	// 		this.qrTranslationLabel = 'dashboard.qrCode.textApproved';
+	// 		this.fetchQrCodeImage();
+	// 		return;
+	// 	}
+
+	// 	this.qrImageUrl = '/assets/images/QR_empty.svg';
+	// 	this.qrTranslationLabel = 'dashboard.qrCode.textPending';
+	// }
+
 	private initSupplierRejectionInformation(supplierId: string): void {
-		this.supplierService.getSupplierRejectionInformation(supplierId)?.subscribe((data) => {
+		this.supplierRejectionService.getSupplierRejectionInformation(supplierId)?.subscribe((data) => {
 			this.supplierRejectionInformation = data;
 			this.supplierRejectionInformation.tenantName = this.tenantService.tenant?.name;
+			this.supplierRejectionInformation.reason = data.reasonLabel;
 			this.initSupplierInformation(supplierId, false);
 		});
 	}
@@ -127,33 +174,80 @@ export class DashboardComponent implements OnInit {
 	private checkIfShouldDisplayInfoMessage(data: UserDto): void {
 		const isProfileSet = this.isProfileSet || data.isProfileSet;
 
-		if (!data.isApproved && isProfileSet) {
+		if (!data.isApproved && isProfileSet && data.status !== SupplierStatus.REJECTED) {
 			this.shouldDisplayInfoMessage = true;
 			return;
 		}
 	}
 
 	private initSupplierInformation(userId: string, isApprovalModal: boolean): void {
-		this.supplierService.getSupplierById(userId).subscribe((data) => {
-			this.supplier = data;
+		this.supplierService.getSupplierById(userId).subscribe((supplier) => {
+			this.supplier = supplier;
 
-			if (data.logo) {
-				this.setLogo(data.logo);
+			if (supplier.logo) {
+				this.setLogo(supplier.logo);
 			}
 
-			if (!data.hasStatusUpdate) {
+			if (!supplier.hasStatusUpdate) {
+				this.areRequestLoaded = true;
 				return;
 			}
 
-			if (data.status === SupplierStatus.APPROVED && isApprovalModal) {
-				this.openApprovalModal();
-				return;
-			}
+			this.handleSupplierStatus(supplier, isApprovalModal);
+		});
+	}
 
-			if (data.status === SupplierStatus.REJECTED && !isApprovalModal) {
-				this.openRejectionModal();
+	private handleSupplierStatus(supplier: SupplierViewDto, isApprovalModal: boolean): void {
+		const { status } = supplier;
+
+		if (status === SupplierStatus.APPROVED && isApprovalModal) {
+			this.areRequestLoaded = true;
+			this.openApprovalModal();
+			return;
+		}
+
+		if (status === SupplierStatus.PENDING && isApprovalModal) {
+			this.areRequestLoaded = true;
+			this.checkReapplyQueryParamAndDisplayPendingModal();
+			return;
+		}
+
+		if (status === SupplierStatus.REJECTED && !isApprovalModal) {
+			this.areRequestLoaded = true;
+			this.openRejectionModal();
+		}
+	}
+
+	private checkReapplyQueryParamAndDisplayPendingModal(): void {
+		this.router.routerState.root.queryParams.subscribe((params) => {
+			if (params['reapply'] === 'true') {
+				this.displayApprovalWaitingPopup();
 			}
 		});
+	}
+
+	private displayApprovalWaitingPopup(): void {
+		const approvalWaitingModalData = new ModalData(
+			'setupProfile.setupSuccessful',
+			'setupProfile.setupSuccessful',
+			'setupProfile.success.text',
+			'general.button.cancel',
+			'setupProfile.continue',
+			false,
+			'success',
+			'theme',
+			'wait-clock.svg',
+		);
+
+		this.dialogService
+			.message(CustomDialogComponent, CustomDialogConfigUtil.createMessageModal(approvalWaitingModalData))
+			?.afterClosed()
+			.subscribe(() => {
+				this.router.navigate([], {
+					queryParams: { reapply: null },
+					queryParamsHandling: 'merge',
+				});
+			});
 	}
 
 	private setLogo(logoUrl: string): void {
@@ -179,6 +273,8 @@ export class DashboardComponent implements OnInit {
 	}
 
 	private openRejectionModal(): void {
+		this.skipErrorToaster = true;
+
 		const config = this.createDialogConfig(SupplierStatus.REJECTED);
 		this.dialogService
 			.message(CustomDialogComponent, config)
@@ -186,9 +282,13 @@ export class DashboardComponent implements OnInit {
 			.subscribe((data) => {
 				this.resetHasStatusUpdate();
 				if (data) {
-					//TODO: Add functionality in the future
+					this.reapplySupplierProfile();
 				}
 			});
+	}
+
+	private reapplySupplierProfile(): void {
+		this.router.navigate([commonRoutingConstants.editProfile]);
 	}
 
 	private createDialogConfig(status: string): MatDialogConfig {
@@ -196,11 +296,12 @@ export class DashboardComponent implements OnInit {
 			? this.supplierRejectionInformation?.comments
 			: '-';
 		const tenantName = this.userInfoData?.tenantName ? this.userInfoData?.tenantName : '';
+		const reason = this.supplierRejectionInformation?.reason?.toString?.();
 
 		const data = {
 			comments: comments,
 			tenantName: tenantName,
-			reason: this.supplierRejectionInformation?.reason.toString(),
+			reason: reason ? this.translateService.instant(reason) : '-',
 			email: '',
 		};
 

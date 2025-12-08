@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { WindmillModule } from '@frontend/common-ui';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { of } from 'rxjs';
 
 import { AppModule } from '../../app.module';
@@ -124,5 +124,37 @@ describe('DiscountModalComponent', () => {
 
 			expect(component.hasNonZeroAmountError()).toBe(expected);
 		});
+	});
+
+	it('should close the dialog with error payload when validateCode errors', () => {
+		const mockErrorPayload = { message: 'Invalid code' };
+		const mockError = { error: mockErrorPayload };
+
+		const mockValidatedCode = { code: 'ERR123' };
+		component.data = {
+			validatedCode: mockValidatedCode as any,
+			discountType: 'Fixed',
+		};
+
+		component.discountForm.get('amount')?.setValue(25);
+
+		jest.spyOn(discountCodeService, 'validateCode').mockReturnValue({
+			subscribe: (callbacks: any) => {
+				if (callbacks && callbacks.error) {
+					callbacks.error(mockError);
+				}
+			},
+		} as any);
+
+		const closeSpy = jest.spyOn(component, 'close');
+
+		component.applyDiscount();
+
+		expect(discountCodeService.validateCode).toHaveBeenCalledWith({
+			code: mockValidatedCode.code,
+			currentTime: expect.any(String),
+			amount: 25,
+		});
+		expect(closeSpy).toHaveBeenCalledWith(mockError.error);
 	});
 });

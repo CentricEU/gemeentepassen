@@ -5,12 +5,19 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { WarningDialogData } from '@frontend/common';
 import { CustomDialogComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import DOMPurify from 'dompurify';
 import { of } from 'rxjs';
 
 import { MunicipalitySupplierService } from '../../_services/suppliers.service';
 import { AppModule } from '../../app.module';
 import { InviteSuppliersComponent } from './invite-suppliers.component';
+
+jest.mock('dompurify', () => ({
+	default: {
+		sanitize: jest.fn((value: any) => value),
+	},
+}));
 
 describe('InviteSuppliersComponent', () => {
 	let component: InviteSuppliersComponent;
@@ -36,6 +43,8 @@ describe('InviteSuppliersComponent', () => {
 			alert: jest.fn(),
 			afterClosed: jest.fn(() => of(true)),
 		};
+
+		(DOMPurify.sanitize as jest.Mock).mockImplementation((value: any) => value);
 
 		suppliersServiceMock = {
 			inviteSuppliers: jest.fn(() =>
@@ -110,9 +119,9 @@ describe('InviteSuppliersComponent', () => {
 			autoFocus: true,
 			data: {
 				acceptButtonText: 'general.button.cancel',
-				acceptButtonType: 'button-warning',
+				acceptButtonType: 'high-emphasis-warning',
 				cancelButtonText: 'general.button.stay',
-				cancelButtonType: 'button-link-dark',
+				cancelButtonType: 'ghost-greyscale',
 				comments: '',
 				disableClosing: false,
 				fileName: '',

@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import nl.centric.innovation.local4local.dto.AssignPassholderGrantsDto;
 import nl.centric.innovation.local4local.service.impl.PassholderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import nl.centric.innovation.local4local.dto.PassholderViewDto;
-import nl.centric.innovation.local4local.entity.Passholder;
 import nl.centric.innovation.local4local.entity.Role;
 import nl.centric.innovation.local4local.exceptions.CsvManipulationException;
 import nl.centric.innovation.local4local.exceptions.DtoValidateException;
@@ -35,16 +36,27 @@ public class PassholderController {
 
     private final PassholderService passholderService;
 
+    @Operation(
+            summary = "Upload Passholders CSV",
+            description = "Upload a CSV file containing passholder data to create multiple passholders at once."
+    )
     @PostMapping(value = "/upload")
     @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
-    public ResponseEntity<List<Passholder>> uploadFile(@RequestPart("file") MultipartFile file)
+    public ResponseEntity<Void> uploadFile(
+            @RequestPart("file") MultipartFile file,
+            @NotNull(message = "Citizen group id must not be null") @RequestParam UUID citizenGroupId)
             throws CsvManipulationException, DtoValidateException {
-        List<Passholder> savedPassholders = passholderService.saveFromCSVFile(file);
-        return ResponseEntity.ok(savedPassholders);
+        passholderService.saveFromCSVFile(file, citizenGroupId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @Operation(
+            summary = "Update Passholder",
+            description = "Update the details of an existing passholder."
+    )
     @PutMapping
     @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    // Todo: change to PatchMapping and create another dto for partial updates
     public ResponseEntity<Void> updatePassholder(@Valid @RequestBody PassholderViewDto passholder)
             throws DtoValidateException {
 
@@ -52,15 +64,10 @@ public class PassholderController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/assign")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
-    public ResponseEntity<Void> assignGrants(@Valid @RequestBody AssignPassholderGrantsDto assignPassholderGrantsDto)
-            throws DtoValidateException {
-
-        passholderService.assignPassholders(assignPassholderGrantsDto);
-        return ResponseEntity.ok().build();
-    }
-
+    @Operation(
+            summary = "Delete Passholder",
+            description = "Delete a passholder by their unique identifier."
+    )
     @DeleteMapping("/{passholderId}")
     @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
     public ResponseEntity<Void> deletePassholder(@PathVariable("passholderId") UUID passholderId)
@@ -70,6 +77,10 @@ public class PassholderController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(
+            summary = "Get All Passholders",
+            description = "Retrieve a paginated list of all passholders."
+    )
     @GetMapping()
     @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
     public ResponseEntity<List<PassholderViewDto>> getAllByTenantId(@RequestParam(defaultValue = "0") Integer page,
@@ -78,6 +89,10 @@ public class PassholderController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(
+            summary = "Count All Passholders",
+            description = "Get the total count of all passholders."
+    )
     @GetMapping("/count")
     @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
     public ResponseEntity<Integer> countAllByTenantId() {

@@ -7,7 +7,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { GenericStatusEnum, GrantHolder } from '@frontend/common';
+import { GenericStatusEnum } from '@frontend/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { WindmillModule } from '../../windmil.module';
@@ -45,7 +45,7 @@ describe('OfferInformationComponent', () => {
 			citizenOfferType: [''],
 			title: [''],
 			offerTypeId: [''],
-			acceptedGrants: [''],
+			acceptedBenefit: [''],
 			description: [''],
 			startDate: [''],
 			expirationDate: [''],
@@ -55,28 +55,15 @@ describe('OfferInformationComponent', () => {
 			citizenOfferType: 'CITIZEN_WITH_PASS',
 			title: 'Test Offer',
 			offerType: 'Test Offer Type',
-			grants: [
-				{
-					title: 'Grant 1',
-					description: 'description',
-					amount: 12,
-					createFor: GrantHolder.PASS_OWNER,
-					startDate: new Date(),
-					expirationDate: new Date(),
-					selected: true,
-					isCheckboxDisabled: false,
-				},
-				{
-					title: 'Grant 2',
-					description: 'description',
-					amount: 12,
-					createFor: GrantHolder.PASS_OWNER,
-					startDate: new Date(),
-					expirationDate: new Date(),
-					selected: true,
-					isCheckboxDisabled: false,
-				},
-			],
+			benefit: {
+				name: 'Benefit 1',
+				description: 'Benefit Description',
+				startDate: new Date('2023-01-01'),
+				expirationDate: new Date('2023-12-31'),
+				citizenGroupIds: [],
+				amount: 10,
+			},
+			benefitName: 'Benefit 1',
 			description: 'Test Description',
 			startDate: new Date('2024-02-12'),
 			expirationDate: new Date('2024-02-15'),
@@ -102,19 +89,27 @@ describe('OfferInformationComponent', () => {
 		expect(formValues.citizenOfferType).toBe('offer.citizenWithPass');
 		expect(formValues.title).toBe('Test Offer');
 		expect(formValues.offerTypeId).toBe('Test Offer Type');
-		expect(formValues.acceptedGrants).toBe('Grant 1, Grant 2');
+		expect(formValues.acceptedBenefit).toBe('Benefit 1');
 		expect(formValues.description).toBe('Test Description');
 		expect(datePipe.transform(formValues.startDate, 'yyyy-MM-dd')).toBe('2024-02-12');
 		expect(datePipe.transform(formValues.expirationDate, 'yyyy-MM-dd')).toBe('2024-02-15');
 	});
 
-	describe('getAcceptedGrants', () => {
-		it('should return an empty string when offer.grants is undefined', () => {
+	describe('getAcceptedBenefit', () => {
+		it('should return an empty string when offer.benefit is undefined', () => {
 			const offer = {
 				citizenOfferType: 'CITIZEN_WITH_PASS',
 				title: 'Test Offer',
 				offerType: 'Test Offer Type',
-				grants: undefined,
+				benefit: {
+					name: '',
+					description: 'Benefit Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2023-12-31'),
+					citizenGroupIds: [],
+					amount: 10,
+				},
+				benefitName: 'Benefit 1',
 				description: 'Test Description',
 				startDate: new Date('2024-02-12'),
 				expirationDate: new Date('2024-02-15'),
@@ -124,7 +119,7 @@ describe('OfferInformationComponent', () => {
 				isCheckboxDisabled: false,
 				validity: 'test',
 			};
-			const result = component['getAcceptedGrants'](offer);
+			const result = component['getAcceptedBenefit'](offer);
 			expect(result).toBe('');
 		});
 
@@ -133,28 +128,15 @@ describe('OfferInformationComponent', () => {
 				citizenOfferType: 'CITIZEN_WITH_PASS',
 				title: 'Test Offer',
 				offerType: 'Test Offer Type',
-				grants: [
-					{
-						title: 'Grant 1',
-						description: 'description',
-						amount: 12,
-						createFor: GrantHolder.PASS_OWNER,
-						startDate: new Date(),
-						expirationDate: new Date(),
-						selected: true,
-						isCheckboxDisabled: false,
-					},
-					{
-						title: 'Grant 2',
-						description: 'description',
-						amount: 12,
-						createFor: GrantHolder.PASS_OWNER,
-						startDate: new Date(),
-						expirationDate: new Date(),
-						selected: true,
-						isCheckboxDisabled: false,
-					},
-				],
+				benefit: {
+					name: 'Benefit 1',
+					description: 'Benefit Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2023-12-31'),
+					citizenGroupIds: [],
+					amount: 10,
+				},
+				benefitName: 'Benefit 1',
 				description: 'Test Description',
 				startDate: new Date('2024-02-12'),
 				expirationDate: new Date('2024-02-15'),
@@ -165,8 +147,8 @@ describe('OfferInformationComponent', () => {
 				validity: 'test',
 			};
 
-			const result = component['getAcceptedGrants'](offer);
-			expect(result).toBe('Grant 1, Grant 2');
+			const result = component['getAcceptedBenefit'](offer);
+			expect(result).toBe('Benefit 1');
 		});
 
 		it('should handle empty titles gracefully', () => {
@@ -174,28 +156,15 @@ describe('OfferInformationComponent', () => {
 				citizenOfferType: 'CITIZEN_WITH_PASS',
 				title: 'Test Offer',
 				offerType: 'Test Offer Type',
-				grants: [
-					{
-						title: '',
-						description: 'description',
-						amount: 12,
-						createFor: GrantHolder.PASS_OWNER,
-						startDate: new Date(),
-						expirationDate: new Date(),
-						selected: true,
-						isCheckboxDisabled: false,
-					},
-					{
-						title: 'Grant 2',
-						description: 'description',
-						amount: 12,
-						createFor: GrantHolder.PASS_OWNER,
-						startDate: new Date(),
-						expirationDate: new Date(),
-						selected: true,
-						isCheckboxDisabled: false,
-					},
-				],
+				benefit: {
+					name: 'Benefit 1',
+					description: 'Benefit Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2023-12-31'),
+					citizenGroupIds: [],
+					amount: 10,
+				},
+				benefitName: 'Benefit 1',
 				description: 'Test Description',
 				startDate: new Date('2024-02-12'),
 				expirationDate: new Date('2024-02-15'),
@@ -206,8 +175,28 @@ describe('OfferInformationComponent', () => {
 				validity: 'test',
 			};
 
-			const result = component['getAcceptedGrants'](offer);
-			expect(result).toBe(', Grant 2');
+			const result = component['getAcceptedBenefit'](offer);
+			expect(result).toBe('Benefit 1');
+		});
+
+		it('should return empty string when offer.benefit is null', () => {
+			const offer = {
+				...component.offer,
+				benefit: null as any,
+			};
+
+			const result = component['getAcceptedBenefit'](offer);
+			expect(result).toBe('');
+		});
+
+		it('should return empty string when offer.benefit is undefined', () => {
+			const offer = {
+				...component.offer,
+				benefit: undefined as any,
+			};
+
+			const result = component['getAcceptedBenefit'](offer);
+			expect(result).toBe('');
 		});
 	});
 });

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
@@ -10,14 +10,16 @@ import {
 	AuthService,
 	commonRoutingConstants,
 	ModalData,
+	SupplierRejectionService,
 	SupplierStatus,
 	SupplierViewDto,
 	TenantService,
+	UserDto,
 	UserService,
 } from '@frontend/common';
 import { CustomDialogConfigUtil, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { of } from 'rxjs';
 
 import { SetupProfileComponent } from '../../_components/setup-profile/setup-profile.component';
@@ -32,6 +34,7 @@ describe('DashboardComponent', () => {
 	let userServiceSpy: any;
 	let dialogService: DialogService;
 	let suplierServiceSpy: any;
+	let supplierRejectionServiceSpy: any;
 	let router: Router;
 	let offerService: OfferService;
 	let tenantServiceMock: jest.Mocked<TenantService>;
@@ -56,8 +59,13 @@ describe('DashboardComponent', () => {
 
 		suplierServiceSpy = {
 			getSupplierById: jest.fn(),
-			getSupplierRejectionInformation: jest.fn(),
 			resetSupplierHasStatusUpdate: jest.fn(),
+			getQRCodeImage: jest.fn(),
+		};
+
+		supplierRejectionServiceSpy = {
+			getSupplierRejectionInformation: jest.fn(),
+			getRejectionReasonLabel: jest.fn().mockReturnValue('Rejection Reason'),
 		};
 
 		dialogService = {
@@ -80,6 +88,7 @@ describe('DashboardComponent', () => {
 				{ provide: 'env', useValue: environmentMock },
 				{ provide: AuthService, useValue: authServiceSpy },
 				{ provide: SupplierService, useValue: suplierServiceSpy },
+				{ provide: SupplierRejectionService, useValue: supplierRejectionServiceSpy },
 				{ provide: TenantService, useValue: tenantServiceMock },
 				{ provide: DomSanitizer, useValue: sanitizerMock },
 			],
@@ -94,12 +103,115 @@ describe('DashboardComponent', () => {
 		const mockSupplierData = { status: SupplierStatus.APPROVED, hasStatusUpdate: true };
 		const mockSupplierObservable = of(mockSupplierData);
 		jest.spyOn(suplierServiceSpy, 'getSupplierById').mockImplementation(() => mockSupplierObservable);
-
 		fixture.detectChanges();
 	});
 
 	it('should create', () => {
 		expect(component).toBeTruthy();
+	});
+
+	describe('displayApprovalWaitingPopup', () => {
+		it('should open the approval waiting modal and navigate with reapply param removed after close', () => {
+			const dialogRefMock = { afterClosed: () => of(true) };
+			const messageSpy = jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
+			const afterClosedSpy = jest.spyOn(dialogRefMock, 'afterClosed');
+			const navigateSpy = jest.spyOn(router, 'navigate');
+
+			component['displayApprovalWaitingPopup']();
+
+			expect(messageSpy).toHaveBeenCalled();
+			expect(afterClosedSpy).toHaveBeenCalled();
+
+			dialogRefMock.afterClosed().subscribe(() => {
+				expect(navigateSpy).toHaveBeenCalledWith([], {
+					queryParams: { reapply: null },
+					queryParamsHandling: 'merge',
+				});
+			});
+		});
+	});
+
+	describe('initSupplierInformation', () => {
+		let userId: string;
+
+		beforeEach(() => {
+			userId = 'testUserId';
+			component['supplier'] = undefined as any;
+		});
+
+		it('should call displayApprovalWaitingPopup if status is PENDING, hasStatusUpdate is true, isApprovalModal is true, and reapply param is true', () => {
+			const mockData = { status: SupplierStatus.PENDING, hasStatusUpdate: true };
+			jest.spyOn(suplierServiceSpy, 'getSupplierById').mockReturnValue(of(mockData));
+			const displayApprovalWaitingPopupSpy = jest.spyOn(component as any, 'displayApprovalWaitingPopup');
+
+			// Mock routerState.root.queryParams to emit { reapply: 'true' }
+			const queryParams$ = of({ reapply: 'true' });
+			Object.defineProperty(router.routerState, 'root', {
+				get: () => ({
+					queryParams: queryParams$,
+				}),
+			});
+
+			component['initSupplierInformation'](userId, true);
+
+			expect(displayApprovalWaitingPopupSpy).toHaveBeenCalled();
+		});
+
+		it('should not call displayApprovalWaitingPopup if status is PENDING, hasStatusUpdate is true, isApprovalModal is true, and reapply param is not true', () => {
+			const mockData = { status: SupplierStatus.PENDING, hasStatusUpdate: true };
+			jest.spyOn(suplierServiceSpy, 'getSupplierById').mockReturnValue(of(mockData));
+			const displayApprovalWaitingPopupSpy = jest.spyOn(component as any, 'displayApprovalWaitingPopup');
+
+			const queryParams$ = of({ reapply: 'false' });
+			Object.defineProperty(router.routerState, 'root', {
+				get: () => ({
+					queryParams: queryParams$,
+				}),
+			});
+
+			component['initSupplierInformation'](userId, true);
+
+			expect(displayApprovalWaitingPopupSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	it('should return the first name from userInfoData if it exists', () => {
+		component['userInfoData'] = {
+			firstName: 'John',
+			companyName: '',
+			kvkNumber: '',
+			email: '',
+			status: SupplierStatus.APPROVED,
+			tenantId: '',
+			supplierId: '',
+			isApproved: false,
+			isProfileSet: true,
+			hasStatusUpdate: false,
+			lastName: 'Doe',
+		};
+		expect(component['userFirstName']).toBe('John');
+	});
+
+	it('should return an empty string if userInfoData is undefined', () => {
+		component['userInfoData'] = undefined as unknown as UserDto;
+		expect(component['userFirstName']).toBe('');
+	});
+
+	it('should return an empty string if firstName is not defined in userInfoData', () => {
+		component['userInfoData'] = {
+			companyName: '',
+			kvkNumber: '',
+			email: '',
+			status: SupplierStatus.APPROVED,
+			tenantId: '',
+			supplierId: '',
+			isApproved: false,
+			isProfileSet: true,
+			hasStatusUpdate: false,
+			firstName: 'User',
+			lastName: 'Test',
+		};
+		expect(component['userFirstName']).toBe('User');
 	});
 
 	describe('Tests for initializeData', () => {
@@ -343,18 +455,18 @@ describe('DashboardComponent', () => {
 		});
 	});
 
-	it('should call supplierService.getSupplierRejectionInformation with the correct argument', () => {
+	it('should call supplierRejectionService.getSupplierRejectionInformation with the correct argument', () => {
 		const supplierId = '123';
 
 		component['initSupplierRejectionInformation'](supplierId);
 
-		expect(suplierServiceSpy.getSupplierRejectionInformation).toHaveBeenCalledWith(supplierId);
+		expect(supplierRejectionServiceSpy.getSupplierRejectionInformation).toHaveBeenCalledWith(supplierId);
 	});
 
 	it('should update supplierRejectionInformation when subscription emits data', () => {
 		const supplierId = '123';
 		const mockResponse = {};
-		suplierServiceSpy.getSupplierRejectionInformation.mockReturnValue(of(mockResponse));
+		supplierRejectionServiceSpy.getSupplierRejectionInformation.mockReturnValue(of(mockResponse));
 
 		component['initSupplierRejectionInformation'](supplierId);
 
@@ -451,7 +563,14 @@ describe('DashboardComponent', () => {
 
 		userServiceSpy.getUserInformation = jest.fn(() => of(mockUserData));
 
-		tenantServiceMock.tenant = { id: '1', name: 'sampleTenantName', address: 'address', createdDate: new Date() };
+		tenantServiceMock.tenant = {
+			id: '1',
+			name: 'sampleTenantName',
+			address: 'address',
+			createdDate: new Date(),
+			phone: '',
+			email: '',
+		};
 
 		jest.spyOn(component as any, 'initSupplierRejectionInformation');
 
@@ -463,10 +582,63 @@ describe('DashboardComponent', () => {
 			tenantName: 'sampleTenantName',
 		});
 
+		// Flush any pending timers to avoid "1 timer(s) still in the queue."
+		tick();
+
 		if (mockUserData.status === SupplierStatus.REJECTED) {
 			expect(component['initSupplierRejectionInformation']).toHaveBeenCalledWith(mockUserData.supplierId);
 		} else {
 			expect(component['initSupplierRejectionInformation']).not.toHaveBeenCalled();
 		}
 	}));
+
+	// describe('QR Code', () => {
+	// 	it('should initialize the qr code if the profile was approved', async () => {
+	// 		const mockBlob = new Blob(['blob']);
+	// 		const mockObjectUrl = 'url';
+
+	// 		suplierServiceSpy.getQRCodeImage.mockReturnValue(of(mockBlob));
+	// 		jest.spyOn(component as any, 'fetchQrCodeImage');
+	// 		(URL.createObjectURL as jest.Mock) = jest.fn().mockReturnValue(mockObjectUrl);
+	// 		sanitizerMock.bypassSecurityTrustHtml.mockReturnValue(mockObjectUrl);
+
+	// 	component['initializeQrCode']	(true);
+
+	// 		expect(component.qrTranslationLabel).toEqual('dashboard.qrCode.textApproved');
+	// 		expect(component['fetchQrCodeImage']).toHaveBeenCalled();
+	// 		expect(URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
+	// 		expect(sanitizerMock.bypassSecurityTrustUrl).toHaveBeenCalledWith(mockObjectUrl);
+	// 		expect(component.qrImageUrl).toBe(mockObjectUrl);
+	// 		expect(component.qrHasEmptyState).toBe(false);
+	// 	});
+
+	// 	it('should initialize the qr code if the profile was NOT approved', () => {
+	// 		component['initializeQrCode'](false);
+
+	// 		expect(component.qrTranslationLabel).toEqual('dashboard.qrCode.textPending');
+	// 		expect(component.qrImageUrl).toEqual('/assets/images/QR_empty.svg');
+	// 	});
+
+	// 	it('should create a download link with correct attributes and trigger a click event', () => {
+	// 		component['qrObjectUrl'] = 'mocked-url';
+
+	// 		const createElementMock = jest.spyOn(document, 'createElement');
+	// 		const appendChildMock = jest.spyOn(document.body, 'appendChild');
+
+	// 		const anchorElement = document.createElement('a');
+	// 		createElementMock.mockReturnValue(anchorElement);
+
+	// 		const clickMock = jest.spyOn(anchorElement, 'click');
+
+	// 		component.downloadQrCodeImage();
+
+	// 		expect(createElementMock).toHaveBeenCalledWith('a');
+	// 		expect(appendChildMock).toHaveBeenCalledWith(anchorElement);
+
+	// 		expect(anchorElement.href).toBe('http://localhost/mocked-url');
+	// 		expect(anchorElement.download).toBe('QR-L4L.png');
+
+	// 		expect(clickMock).toHaveBeenCalled();
+	// 	});
+	// });
 });

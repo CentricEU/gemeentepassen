@@ -4,7 +4,7 @@ export class WarningDialogData {
 	reason: string;
 	email: string;
 
-	constructor(comments: string = '-', tenantName: string = '', reason: string = '', email: string = '') {
+	constructor(comments = '-', tenantName = '', reason = '', email = '') {
 		this.comments = comments;
 		this.tenantName = tenantName;
 		this.reason = reason;

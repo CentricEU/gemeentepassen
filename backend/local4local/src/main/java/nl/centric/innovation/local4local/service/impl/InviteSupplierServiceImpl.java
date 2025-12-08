@@ -10,8 +10,8 @@ import nl.centric.innovation.local4local.entity.User;
 import nl.centric.innovation.local4local.exceptions.DtoValidateException;
 import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
 import nl.centric.innovation.local4local.repository.InviteSupplierRepository;
+import nl.centric.innovation.local4local.repository.TenantRepository;
 import nl.centric.innovation.local4local.service.interfaces.EmailService;
-import nl.centric.innovation.local4local.service.interfaces.TenantService;
 import nl.centric.innovation.local4local.util.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -35,7 +35,7 @@ public class InviteSupplierServiceImpl {
     private final InviteSupplierRepository inviteSupplierRepository;
     private final UserService userService;
     private final EmailService emailService;
-    private final TenantService tenantService;
+    private final TenantRepository tenantRepository;
     private final PrincipalService principalService;
 
     @Value("${error.constraint.tooMany}")
@@ -87,7 +87,7 @@ public class InviteSupplierServiceImpl {
             throw new DtoValidateException(errorEntityValidate);
         }
 
-        Optional<Tenant> tenant = tenantService.findByTenantId(tenantId());
+        Optional<Tenant> tenant = tenantRepository.findById(tenantId());
 
         if (tenant.isEmpty()) {
             throw new DtoValidateNotFoundException(errorEntityNotFound);
@@ -125,7 +125,7 @@ public class InviteSupplierServiceImpl {
 
     private void sendInviteEmail(String email, InviteSupplierDto inviteSupplierDto, Tenant tenant, String language) {
         String tenantName = tenant.getName();
-        String url = baseURL + "/register";
+        String url = baseURL + "/register/" + tenant.getId();
         emailService.sendSupplierInviteEmail(url, StringUtils.getLanguageForLocale(language), tenantName, email, inviteSupplierDto.message());
     }
 

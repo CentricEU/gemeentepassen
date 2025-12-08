@@ -1,0 +1,103 @@
+<!--[PDF Invoice] This component is no longer used, but kept for reference or future use -->
+<section mat-dialog-title>
+	<h3>
+		{{ 'transactions.generateInvoice.title' | translate }}
+	</h3>
+	<button
+		ariaAttributes
+		class="close-button"
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="close()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'16'"></centric-icon2>
+	</button>
+</section>
+<div mat-dialog-content>
+	<form centric-complex-form [formGroup]="generateInvoiceForm">
+		<p>{{ 'transactions.generateInvoice.description' | translate }}</p>
+		<centric-form-item>
+			<centric-form-label>{{ 'transactions.generateInvoice.invoiceNumber' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<windmill-input
+					ariaAttributes
+					ariaLabelClearIcon
+					formControlName="invoiceNumber"
+					[placeholder]="'transactions.generateInvoice.invoiceNumber' | translate"
+					[maxLength]="256"
+					[hasClearIcon]="true"
+					[ariaLabelTranslation]="'transactions.generateInvoice.invoiceNumber'"
+					[validationFunction]="validationFunctionError.bind(this, 'invoiceNumber', generateInvoiceForm)">
+					<ng-container errors *ngIf="validationFunctionError('invoiceNumber', generateInvoiceForm)">
+						<span class="centric-error-message">
+							{{ getInvoiceNumberErrorMessage() | translate }}
+						</span>
+					</ng-container>
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'general.month' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<windmill-input
+					ariaAttributes
+					formControlName="month"
+					[placeholder]="'general.month' | translate"
+					[readonly]="true"
+					[ariaLabelTranslation]="'general.month'">
+				</windmill-input>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'transactions.generateInvoice.issueDate' | translate }}</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<windmill-date-picker
+					formControlName="issueDate"
+					[placeholder]="'general.dateFormat' | translate"
+					[hasClearIcon]="true"
+					[ariaLabel]="'issueDate'"
+					[ariaLabelClearIcon]="'general.label.close' | translate"
+					[validationFunction]="validationFunctionError.bind(this, 'issueDate', generateInvoiceForm)">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('issueDate', generateInvoiceForm)">
+						<span class="centric-error-message"
+							>{{ 'transactions.generateInvoice.issueDateRequired' | translate }}
+						</span>
+					</ng-container>
+				</windmill-date-picker>
+			</centric-form-control>
+		</centric-form-item>
+
+		<centric-form-item>
+			<centric-form-label>{{ 'transactions.generateInvoice.dueDate' | translate }}</centric-form-label>
+			<windmill-dropdown-search
+				frontendRequiredInput
+				ariaAttributes
+				formControlName="dueDate"
+				displayPropertyName="name"
+				valuePropertyName="id"
+				dropdownPlaceholder="{{ 'transactions.generateInvoice.dueDate' | translate }}"
+				[source]="updatedDueDateSource"
+				[hasClearIcon]="true"
+				[ariaLabelClearButtonSearchInput]="'general.label.close' | translate"
+				[ariaLabelClearButton]="'general.label.close' | translate"
+				[ariaLabelTranslation]="'transactions.generateInvoice.dueDate'"
+				[validationFunction]="validationFunctionError.bind(this, 'dueDate', generateInvoiceForm)"
+				(searchValueChange)="onSearchValueChanged($event)">
+				<ng-container errors *ngIf="hasFormControlRequiredErrors('dueDate', generateInvoiceForm)">
+					<span class="centric-error-message"
+						>{{ 'transactions.generateInvoice.dueDateRequired' | translate }}
+					</span>
+				</ng-container>
+			</windmill-dropdown-search>
+		</centric-form-item>
+	</form>
+</div>
+<section mat-dialog-actions>
+	<centric-button ariaAttributes type="ghost-greyscale" (click)="close()">
+		{{ 'general.button.cancel' | translate }}
+	</centric-button>
+	<centric-button ariaAttributes [disabled]="!isFormValid()" (click)="generateInvoice()">
+		{{ 'transactions.generateInvoice.title' | translate }}
+	</centric-button>
+</section>

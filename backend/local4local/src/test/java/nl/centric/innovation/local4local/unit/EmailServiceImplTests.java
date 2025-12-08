@@ -1,5 +1,6 @@
 package nl.centric.innovation.local4local.unit;
 
+import static nl.centric.innovation.local4local.util.Constants.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -12,6 +13,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.Locale;
 
+import nl.centric.innovation.local4local.service.impl.MailTemplateBuilderImpl;
+import nl.centric.innovation.local4local.util.MailUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,14 +41,17 @@ import nl.centric.innovation.local4local.util.MailTemplate;
 
 @ExtendWith(MockitoExtension.class)
 public class EmailServiceImplTests {
-    @InjectMocks
-    private EmailServiceImpl emailService;
     @Mock
     private AmazonSimpleEmailService amazonEmailService;
 
     @Mock
-    private MailTemplateBuilder mailTemplateBuilder;
+    private MailTemplateBuilderImpl mailTemplateBuilder;
 
+    private MailUtils mailUtils;
+
+    private EmailServiceImpl emailService;
+
+    @Mock
     private SendEmailRequest expectedRequest;
 
     @BeforeEach
@@ -55,7 +61,11 @@ public class EmailServiceImplTests {
         messageSource.setBasenames("i18n/messages");
         messageSource.setUseCodeAsDefaultMessage(true);
 
-        ReflectionTestUtils.setField(emailService, "messageSource", messageSource);
+        mailUtils = new MailUtils(messageSource, amazonEmailService);
+        emailService = new EmailServiceImpl(
+                mailTemplateBuilder,
+                mailUtils
+        );
     }
 
     @Test
@@ -88,7 +98,7 @@ public class EmailServiceImplTests {
                 .build();
 
         // When
-        String textContent = ReflectionTestUtils.invokeMethod(emailService, "buildTemplateText", mailTemplate);
+        String textContent = ReflectionTestUtils.invokeMethod(mailUtils, "buildTemplateText", mailTemplate);
 
         // Then
         assertNotNull(textContent);
@@ -220,13 +230,13 @@ public class EmailServiceImplTests {
                 .withDestination(new Destination().withToAddresses(toAddr))
                 .withMessage(new Message()
                         .withBody(new Body()
-                                .withHtml(new Content().withCharset(EmailServiceImpl.UTF_8).withData(htmlContent))
-                                .withText(new Content().withCharset(EmailServiceImpl.UTF_8).withData(textContent)))
-                        .withSubject(new Content().withCharset(EmailServiceImpl.UTF_8).withData(subject)))
+                                .withHtml(new Content().withCharset(UTF_8).withData(htmlContent))
+                                .withText(new Content().withCharset(UTF_8).withData(textContent)))
+                        .withSubject(new Content().withCharset(UTF_8).withData(subject)))
                 .withSource(fromAddr);
 
         // When
-        emailService.sendEmail(fromAddr, toAddr, subject, htmlContent, textContent);
+        mailUtils.sendEmail(fromAddr, toAddr, subject, htmlContent, textContent);
 
         // Then
         verify(amazonEmailService).sendEmail(expectedRequest);
@@ -299,7 +309,7 @@ public class EmailServiceImplTests {
         doThrow(MessageRejectedException.class).when(amazonEmailService).sendEmail(any(SendEmailRequest.class));
 
         // When
-        emailService.sendEmail(fromAddr, toAddr, subject, htmlContent, textContent);
+        mailUtils.sendEmail(fromAddr, toAddr, subject, htmlContent, textContent);
     }
 
     @Test
@@ -333,6 +343,44 @@ public class EmailServiceImplTests {
 
         // When
         emailService.sendEmailAfterUserCreated(url, language, toAddress);
+
+        // Then
+        verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
+        verify(amazonEmailService, times(1)).sendEmail(any());
+    }
+
+    @Test
+    void GivenValidInformation_WhenSendNoCategoryEmail_ThenExpectAmazonEmailServiceToBeCalled() {
+        // Given
+        String url = "http://example.com";
+        String toAddress = "to@example.com";
+        String language = "en";
+        String message = "Test message";
+        String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
+
+        when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
+        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+
+        // Act
+        emailService.sendNoCategoryEmail(url, toAddress, language, message);
+
+        // Assert
+        verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
+        verify(amazonEmailService, times(1)).sendEmail(any());
+    }
+
+    @Test
+    void GivenValidInformation_WhenSendEmailAfterCashierCreated_ThenExpectAmazonEmailServiceToBeCalled() {
+        //Given
+        String url = "http://example.com";
+        String toAddress = "to@example.com";
+        String language = "en";
+        String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
+        when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
+        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+
+        // When
+        emailService.sendEmailAfterCashierCreated(url, language, toAddress);
 
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());

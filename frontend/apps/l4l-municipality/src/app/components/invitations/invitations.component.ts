@@ -11,7 +11,8 @@ import {
 } from '@frontend/common';
 import { TableBaseComponent, TableComponent } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService, ToastrService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { ToastrService } from '@windmill/ng-windmill/toastr';
 
 import { InvitationDto } from '../../_models/invitation-dto.model';
 import { MunicipalitySupplierService } from '../../_services/suppliers.service';
@@ -21,6 +22,7 @@ import { InviteSuppliersComponent } from '../invite-suppliers/invite-suppliers.c
 	selector: 'frontend-invitations',
 	templateUrl: './invitations.component.html',
 	styleUrls: ['./invitations.component.scss'],
+	standalone: false,
 })
 export class InvitationsComponent extends TableBaseComponent implements OnInit, OnChanges {
 	@ViewChild('invitationTable') invitationTable: TableComponent<InvitationDto>;

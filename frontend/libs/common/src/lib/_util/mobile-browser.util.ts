@@ -1,3 +1,5 @@
+import { Environment } from '../_models/environment.model';
+
 export class MobileBrowserUtil {
 	public static isMobile(): boolean {
 		const userAgent: string = navigator.userAgent || navigator.vendor || (window as any)['opera'];
@@ -11,7 +13,12 @@ export class MobileBrowserUtil {
 		);
 	}
 
-	public static openMobileApp(param: string): void {
-		window.location.href = `localforlocal://${param}`;
+	public static openMobileApp(environment: Environment, param: string): void {
+		window.location.href = `${environment.prefixes}${param}`;
+	}
+
+	public static isAndroid(): boolean {
+		const userAgent: string = navigator.userAgent || navigator.vendor || (window as any)['opera'];
+		return /android/i.test(userAgent);
 	}
 }

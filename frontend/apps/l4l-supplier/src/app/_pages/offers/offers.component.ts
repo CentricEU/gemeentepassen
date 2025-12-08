@@ -4,6 +4,8 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import {
 	ActionButtonIcons,
 	ActionButtons,
+	BenefitDto,
+	BenefitService,
 	Breadcrumb,
 	BreadcrumbService,
 	ColumnDataType,
@@ -13,8 +15,6 @@ import {
 	FilterColumnKey,
 	FilterCriteria,
 	GenericStatusEnum,
-	GrantDto,
-	GrantService,
 	ModalData,
 	OfferTableDto,
 	PaginatedData,
@@ -23,15 +23,10 @@ import {
 	TableFilterColumn,
 	WarningDialogData,
 } from '@frontend/common';
-import {
-	ChipRemainingDialogComponent,
-	CustomDialogComponent,
-	CustomDialogConfigUtil,
-	TableBaseComponent,
-	TableComponent,
-} from '@frontend/common-ui';
+import { CustomDialogComponent, CustomDialogConfigUtil, TableBaseComponent, TableComponent } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService, ToastrService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { ToastrService } from '@windmill/ng-windmill/toastr';
 import { forkJoin, Observable } from 'rxjs';
 
 import { CreateOfferComponent } from '../../_components/create-offer/create-offer.component';
@@ -46,22 +41,19 @@ import { OfferService } from '../../services/offer-service/offer.service';
 	selector: 'frontend-offers',
 	templateUrl: './offers.component.html',
 	styleUrls: ['./offers.component.scss'],
+	standalone: false,
 })
 export class OffersComponent extends TableBaseComponent implements OnInit, OnDestroy {
 	@ViewChild('offersTable') offersTable: TableComponent<OfferTableDto>;
 
 	public allFilterColumns: TableFilterColumn[];
-	public availableGrants: EnumValueDto[] = [];
+	public availableBenefits: EnumValueDto[] = [];
 	public dropdownsData: DropdownDataFilterDto;
 	public areOffersSelected = false;
 	public filterDto: FilterOfferRequestDto;
 
 	public get isDataExisting(): boolean {
 		return this.dataCount > 0;
-	}
-
-	public get typeOfModal() {
-		return ChipRemainingDialogComponent;
 	}
 
 	public get paginatedData(): PaginatedData<OfferTableDto> {
@@ -79,14 +71,14 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 		private toastrService: ToastrService,
 		private translateService: TranslateService,
 		private dropdownDataService: DropdownDataService,
-		private grantService: GrantService,
+		private benefitService: BenefitService,
 		private route: ActivatedRoute,
 	) {
 		super();
 	}
 
 	public ngOnInit(): void {
-		this.initOfferTypeAndGrants();
+		this.initOfferTypeAndBenefits();
 		this.shouldOpenOffersPopup();
 		this.countOffers();
 		this.initBreadcrumbs();
@@ -148,17 +140,16 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 			new TableColumn('checkbox', 'checkbox', 'checkbox', true, true, ColumnDataType.DEFAULT, true),
 			new TableColumn('general.status', 'status', 'status', true, true, ColumnDataType.STATUS),
 			new TableColumn('offer.title', 'title', 'title', true, true),
+			new TableColumn('offer.typeOfOffer', 'offerType', 'offerType', true, false, ColumnDataType.TRANSLATION),
 			new TableColumn(
-				'offer.targetAudience',
-				'citizenOfferType',
-				'citizenOfferType',
+				'general.acceptedBenefit',
+				'benefitName',
+				'benefitName',
 				true,
 				false,
-				ColumnDataType.TRANSLATION,
+				ColumnDataType.DEFAULT,
 			),
-			new TableColumn('offer.typeOfOffer', 'offerType', 'offerType', true, false, ColumnDataType.TRANSLATION),
-			new TableColumn('general.acceptedGrants', 'grants', 'grants', true, false, ColumnDataType.CHIPS),
-			new TableColumn('offer.validity', 'validity', 'validity', true, false),
+			new TableColumn('genericFields.validity.label', 'validity', 'validity', true, false),
 			new TableColumn('general.actions', 'actions', 'actions', true, true, ColumnDataType.DEFAULT, true),
 		];
 	}
@@ -234,6 +225,7 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 			isCheckboxDisabled: element.status === GenericStatusEnum.ACTIVE,
 			citizenOfferType: 'offer.citizenWithPass',
 			actionButtons: this.createActionButtons(element.status),
+			benefitName: element.benefit.name,
 		}));
 
 		this.offersTable.afterDataLoaded(dataWithActions);
@@ -311,22 +303,22 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 	}
 
 	private createFilterOfferRequestDto(filters: FilterCriteria): FilterOfferRequestDto {
-		const { statusFilter, offerTypeFilter, grantsFilter } = filters;
+		const { statusFilter, offerTypeFilter, benefitFilter } = filters;
 
 		return new FilterOfferRequestDto(
 			statusFilter as GenericStatusEnum,
 			offerTypeFilter as number,
-			grantsFilter as string,
+			benefitFilter as string,
 		);
 	}
 
-	private getRequestsObservable(): Observable<(GrantDto[] | DropdownDataFilterDto | EnumValueDto[] | null)[]> {
-		const requests = [this.dropdownDataService.getAllDropdownsData(), this.grantService.getAllGrants(false)];
+	private getRequestsObservable(): Observable<(BenefitDto[] | DropdownDataFilterDto | EnumValueDto[] | null)[]> {
+		const requests = [this.dropdownDataService.getAllDropdownsData(), this.benefitService.getAllBenefits()];
 
 		return forkJoin(requests);
 	}
 
-	private initOfferTypeAndGrants(): void {
+	private initOfferTypeAndBenefits(): void {
 		this.getRequestsObservable().subscribe((data) => {
 			if (!data) {
 				return;
@@ -346,23 +338,23 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 				value: this.translateService.instant(status.value),
 			}));
 
-			this.initializeGrants(data[1] as GrantDto[]);
+			this.initializeBenefits(data[1] as BenefitDto[]);
 			this.initFilterColumnsData();
 		});
 	}
 
-	private initializeGrants(data: GrantDto[]): void {
+	private initializeBenefits(data: BenefitDto[]): void {
 		if (!Array.isArray(data)) {
 			return;
 		}
 
-		this.availableGrants = this.convertGrantsToEnumValueDto(data);
+		this.availableBenefits = this.convertBenefitsToEnumValueDto(data);
 	}
 
-	private convertGrantsToEnumValueDto(grants: GrantDto[]): EnumValueDto[] {
-		return grants.map((grant) => {
-			const id = grant.id || '';
-			const title = grant.title || '';
+	private convertBenefitsToEnumValueDto(benefits: BenefitDto[]): EnumValueDto[] {
+		return benefits.map((benefit) => {
+			const id = benefit.id || '';
+			const title = benefit.name || '';
 			return new EnumValueDto(id, title);
 		});
 	}
@@ -420,7 +412,7 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 			'general.button.cancel',
 			'general.button.delete',
 			false,
-			'alert',
+			'danger',
 			'danger',
 			'',
 			data,
@@ -467,24 +459,18 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 
 	private createActionButtons(status: GenericStatusEnum): TableActionButton[] {
 		const actionButtons = [
-			new TableActionButton(
-				ActionButtons.visibilityIcon,
-				'actionButtons.details',
-				false,
-				'',
-				ActionButtonIcons.uncontained,
-			),
+			// new TableActionButton(
+			// 	ActionButtons.visibilityIcon,
+			// 	'actionButtons.details',
+			// 	false,
+			// 	'',
+			// 	ActionButtonIcons.uncontained,
+			// ),
 		];
 
 		if (status === GenericStatusEnum.ACTIVE) {
 			actionButtons.push(
-				new TableActionButton(
-					ActionButtons.circlePause,
-					'actionButtons.suspend',
-					false,
-					'',
-					ActionButtonIcons.uncontained,
-				),
+				new TableActionButton(ActionButtons.minusCircle, '', false, '', ActionButtonIcons.uncontained),
 			);
 		} else {
 			actionButtons.push(
@@ -526,13 +512,12 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 			{ key: FilterColumnKey.CHECKBOX, data: [] },
 			{ key: FilterColumnKey.STATUS, data: this.dropdownsData.statuses, translationKey: 'general.status' },
 			{ key: FilterColumnKey.TITLE, data: [] },
-			{ key: FilterColumnKey.CITIZEN_OFFER_TYPE, data: [] },
 			{
 				key: FilterColumnKey.OFFER_TYPE,
 				data: this.dropdownsData.offerTypes,
 				translationKey: 'offer.typeOfOffer',
 			},
-			{ key: FilterColumnKey.GRANTS, data: this.availableGrants, translationKey: 'general.acceptedGrants' },
+			{ key: FilterColumnKey.BENEFITS, data: this.availableBenefits, translationKey: 'offer.types.benefit' },
 			{ key: FilterColumnKey.VALIDITY, data: [] },
 			{ key: FilterColumnKey.ACTIONS, data: [] },
 		];

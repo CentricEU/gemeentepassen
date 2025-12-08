@@ -1,22 +1,26 @@
-import { trackPromise } from "react-promise-tracker";
-import { apiPath } from "../utils/constants/api";
-import { AUTH_HEADER } from "../utils/constants/headers";
-import { UseOfferDto } from "../utils/models/UseOfferDto";
-import { OfferMobileListDto } from "../utils/types/offerMobileListDto";
-import { OffersMapDto } from "../utils/types/offerMapDto";
-import { Region } from "react-native-maps";
-import DateUtils from "../utils/DateUtils";
+import { trackPromise } from 'react-promise-tracker';
+import { AUTH_HEADER } from '../utils/constants/headers';
+import { UseOfferDto } from '../utils/models/UseOfferDto';
+import { OfferMobileListDto } from '../utils/types/offerMobileListDto';
+import { OffersMapDto } from '../utils/types/offerMapDto';
+import { Region } from 'react-native-maps';
+import DateUtils from '../utils/DateUtils';
+import { MINIMUM_SEARCH_KEYWORD_LENGTH } from '../utils/constants/constants';
+import api from '../utils/auth/api-interceptor';
+import { StatusCode } from '../utils/enums/statusCode.enum';
 
 class OfferService {
 	static async getMapOffersWithViewport(
-		region: Region
+		region: Region,
+		offerType: number,
+		searchKeyword?: string
 	): Promise<OffersMapDto> {
 		try {
 			const HEADERS_WITH_AUTH = await AUTH_HEADER();
 
 			const requestObj = {
-				method: "GET",
-				headers: HEADERS_WITH_AUTH,
+				method: 'GET',
+				headers: HEADERS_WITH_AUTH
 			};
 
 			const minLatitude = region.latitude - region.latitudeDelta / 2;
@@ -30,16 +34,20 @@ class OfferService {
 				minLongitude: minLongitude.toString(),
 				maxLongitude: maxLongitude.toString(),
 				currentDay: DateUtils.getCurrentDay(),
+				offerType: offerType.toString()
 			});
 
-			const response = await trackPromise(fetch(`${apiPath}/offers/map-with-viewport?${params.toString()}`, requestObj));
-			const offersMap: OffersMapDto = await response.json();
+			if (searchKeyword && searchKeyword.length >= MINIMUM_SEARCH_KEYWORD_LENGTH) {
+				params.append('searchKeyword', searchKeyword);
+			}
+
+			const response = await trackPromise(api.get(`/offers/map-with-viewport?${params.toString()}`, requestObj));
+
+			const offersMap: OffersMapDto = await response.data;
 
 			Object.entries(offersMap).forEach(([coordinates, offers]) => {
 				offers.forEach((offer) => {
-					offer.coordinatesString = JSON.parse(
-						offer.coordinatesString as string
-					);
+					offer.coordinatesString = JSON.parse(offer.coordinatesString as string);
 				});
 			});
 
@@ -54,77 +62,82 @@ class OfferService {
 		try {
 			const HEADERS_WITH_AUTH = await AUTH_HEADER();
 
-			const requestObj = {
-				method: "POST",
-				headers: HEADERS_WITH_AUTH,
-				body: JSON.stringify(data),
-			};
+			const response = await trackPromise(
+				api.post('/offers/use', data, {
+					headers: HEADERS_WITH_AUTH
+				})
+			);
 
-
-			const response = await trackPromise(fetch(`${apiPath}/offers/use`, requestObj));
-			if (!response.ok) {
-				throw Error(response.status.toString());
+			if (response.status !== StatusCode.NoContent) {
+				throw new Error(`Server error: ${response.status}`);
 			}
 
 			return response;
-		} catch (error) {
-			throw error;
+		} catch (error: any) {
+			throw error.response.data;
 		}
 	}
 
-	static async getFullOffer(
-		offerId: string,
-		latitude: string,
-		longitude: string
-	) {
+	static async getFullOffer(offerId: string, latitude: string, longitude: string) {
 		try {
 			const HEADERS_WITH_AUTH = await AUTH_HEADER();
 
 			const requestObj = {
-				method: "GET",
-				headers: HEADERS_WITH_AUTH,
+				method: 'GET',
+				headers: HEADERS_WITH_AUTH
 			};
 
 			const params = new URLSearchParams({
 				latitude,
 				longitude,
-				currentDay: DateUtils.getCurrentDay(),
+				currentDay: DateUtils.getCurrentDay()
 			});
 
+			const response = await trackPromise(api.get(`/offers/details/${offerId}?${params.toString()}`, requestObj));
 
-			const response = await trackPromise(fetch(`${apiPath}/offers/details/${offerId}?${params.toString()}`, requestObj));
-
-			if (!response.ok) {
+			if (response.status !== StatusCode.Ok) {
 				throw Error(response.status.toString());
 			}
 
-			return response.json();
+			return response.data;
 		} catch (error) {
 			throw error;
 		}
 	}
-
 	static async getOffers(
 		currentPage: number,
 		latitude: number,
-		longitude: number
+		longitude: number,
+		offerType: number,
+		searchKeyword?: string
 	): Promise<OfferMobileListDto[]> {
 		try {
 			const HEADERS_WITH_AUTH = await AUTH_HEADER();
 
 			const requestObj = {
-				method: "GET",
-				headers: HEADERS_WITH_AUTH,
+				method: 'GET',
+				headers: HEADERS_WITH_AUTH
 			};
 
-			const response = await trackPromise(
-				fetch(
-					`${apiPath}/offers/list?page=${currentPage}&latitude=${latitude}&longitude=${longitude}&currentDay=${DateUtils.getCurrentDay()}`,
-					requestObj
-				)
-			);
+			const params = new URLSearchParams({
+				page: currentPage.toString(),
+				latitude: latitude.toString(),
+				longitude: longitude.toString(),
+				currentDay: DateUtils.getCurrentDay(),
+				offerType: offerType.toString()
+			});
 
-			const offers: OfferMobileListDto[] = await response.json();
+			if (searchKeyword && searchKeyword.length >= MINIMUM_SEARCH_KEYWORD_LENGTH) {
+				params.append('searchKeyword', searchKeyword);
+			}
+
+			const response = await trackPromise(api.get(`/offers/list?${params.toString()}`, requestObj));
+
+			if (response.status !== StatusCode.Ok) {
+				throw new Error(`Error fetching offers: ${response.statusText}`);
+			}
+
+			const offers: OfferMobileListDto[] = await response.data;
 
 			offers.forEach((offer: any) => {
 				offer.coordinatesString = JSON.parse(offer.coordinatesString);
@@ -133,6 +146,39 @@ class OfferService {
 			return offers;
 		} catch (error) {
 			console.error(error);
+			return [];
+		}
+	}
+
+	static async searchOffersByKeyword(searchKeyword: string): Promise<string[]> {
+		if (searchKeyword.length < MINIMUM_SEARCH_KEYWORD_LENGTH) {
+			throw new Error('Search keyword must have at least 3 characters');
+		}
+
+		if (searchKeyword.length > 100) {
+			throw new Error('Search keyword must have at maximum 100 characters');
+		}
+
+		const HEADERS_WITH_AUTH = await AUTH_HEADER();
+
+		const requestObj = {
+			method: 'GET',
+			headers: HEADERS_WITH_AUTH
+		};
+
+		try {
+			const response = await trackPromise(
+				api.get(`/offers/search?searchKeyword=${encodeURIComponent(searchKeyword)}`, requestObj)
+			);
+
+			if (response.status !== StatusCode.Ok) {
+				throw Error(response.status.toString());
+			}
+
+			const data = await response.data;
+			return data;
+		} catch (error) {
+			console.error('Error searching offers:', error);
 			return [];
 		}
 	}

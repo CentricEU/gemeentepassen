@@ -1,4 +1,4 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
 
 :host {
 	::ng-deep {
@@ -10,7 +10,7 @@
 	}
 
 	form {
-		@include flex(column);
+		@include mixins.flex(column);
 		gap: 12px;
 	}
 }

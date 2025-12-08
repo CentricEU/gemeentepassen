@@ -4,15 +4,10 @@
 		[ariaLabelCloseButton]="'general.button.close' | translate"
 		[(opened)]="opened">
 		<section sidenav-header class="sidenav-header-section">
-			<img
-				src="/assets/images/tilburg-logo.png"
-				alt="Logo image"
-				class="pointer"
-				(click)="navigateToDashboard()" />
-			<h2 class="title">{{ tenantName }}</h2>
+			<img src="{{ tenantLogo }}" alt="Logo image" class="pointer" (click)="navigateToDashboard()" />
 		</section>
 		<section sidenav-footer>
-			<centric-button iconId="logout-arrow_r" type="button-link" (click)="logout()">
+			<centric-button iconId="logout-arrow_r" type="ghost-theme" (click)="logout()">
 				{{ 'general.logout' | translate }}
 			</centric-button>
 		</section>

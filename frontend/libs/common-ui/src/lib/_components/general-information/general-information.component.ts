@@ -1,28 +1,33 @@
-import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
 	CategoryDto,
+	CommonUtil,
 	DropdownLabel,
 	FILE_SIZE_THRESHOLD,
 	FormInitializationType,
 	FormUtil,
 	GeneralInfoFormFields,
 	GeneralInformation,
+	IbanMatchesBicValidator,
 	ProfileDropdownsDto,
 	ProfileLabelDto,
+	RegexUtil,
 	SupplierProfile,
 	SupplierProfileService,
 	UserDto,
 	UserService,
 } from '@frontend/common';
 import { TranslateService } from '@ngx-translate/core';
+import { ValidatorService } from 'angular-iban';
 import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'frontend-general-information',
 	templateUrl: './general-information.component.html',
 	styleUrls: ['./general-information.component.scss'],
+	standalone: false,
 })
 export class GeneralInformationComponent implements OnInit, OnDestroy {
 	@Input() isReadonly = false;
@@ -50,8 +55,16 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 	public selectedCategory: string;
 	public isSizeExceeded = false;
 
+	public emailError: string;
+	public cashierEmailsList = new Set<string>();
 	private userInformationData: UserDto;
 	private localStorageData: GeneralInformation = new GeneralInformation();
+
+	private readonly formBuilder = inject(FormBuilder);
+	private readonly translateService = inject(TranslateService);
+	private readonly userService = inject(UserService);
+	private readonly router = inject(Router);
+	private readonly supplierProfileService = inject(SupplierProfileService);
 
 	private userInformationSubscription: Subscription;
 
@@ -59,13 +72,12 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 		return DropdownLabel;
 	}
 
-	constructor(
-		private formBuilder: FormBuilder,
-		private translateService: TranslateService,
-		private userService: UserService,
-		private router: Router,
-		private supplierProfileService: SupplierProfileService,
-	) {}
+	public get isCashierEmailsFieldValid(): boolean {
+		if (this.isReadonly || this.isEditProfileComponent) {
+			return true;
+		}
+		return this.cashierEmailsList.size > 0;
+	}
 
 	public ngOnInit(): void {
 		this.loadInitialData();
@@ -103,7 +115,6 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 				return this.translateService.instant('generalInformation.commercePostalAdressFormControlRequired');
 			case GeneralInfoFormFields.legalform:
 				return this.translateService.instant('generalInformation.legalFormFormControlRequired');
-
 			default: {
 				return null;
 			}
@@ -207,7 +218,7 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 		this.updateLocalStorage();
 	}
 
-	public shouldDisplayUploadLogo(): boolean {
+	public isCreateSupplierProfile(): boolean {
 		return !this.isReadonly && !this.isEditProfileComponent;
 	}
 
@@ -217,31 +228,91 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 		return disallowedCategoryIds.includes(event) || isEmptyState;
 	}
 
+	public handleKeydown(event: KeyboardEvent): void {
+		if (CommonUtil.isEnterOrSpace(event.key)) {
+			event.preventDefault();
+			this.handleKeyPressed();
+			return;
+		}
+		const inputText = this.generalInformationForm.get('cashierEmails')?.value;
+		if (!inputText || inputText.length === 0) {
+			this.emailError = '';
+		}
+	}
+
+	public removeEmailFromList(email: string): void {
+		this.cashierEmailsList.delete(email);
+		this.updateCashiersOnLocalStorage();
+	}
+
+	private updateCashiersOnLocalStorage(): void {
+		localStorage.setItem('generalInformationCashiers', JSON.stringify([...this.cashierEmailsList]));
+	}
+
+	private handleKeyPressed(): void {
+		const emailRegex = RegexUtil.emailRegexPattern;
+		const email = this.generalInformationForm.get('cashierEmails')?.value;
+
+		if (!email || !emailRegex.test(email)) {
+			this.emailError = 'genericFields.email.validEmail';
+			return;
+		}
+
+		if (this.cashierEmailsList.has(email)) {
+			this.emailError = 'inviteSuppliers.emailAlreadyInList';
+			return;
+		}
+		this.cashierEmailsList.add(email);
+		this.updateCashiersOnLocalStorage();
+		this.emailError = '';
+		this.generalInformationForm.controls['cashierEmails'].setValue('');
+	}
+
 	private resetFormValue(controlName: string, value?: string): void {
 		this.generalInformationForm.get(controlName)?.reset(value);
 	}
 
 	private initForm(enumValue: FormInitializationType, data?: SupplierProfile): void {
-		this.generalInformationForm = this.formBuilder.group({
-			logo: [this.getFieldValue('logo', enumValue, data)],
-			ownerName: [this.getFieldValue('ownerName', enumValue, data), [Validators.required]],
-			legalForm: [this.getFieldValue('legalForm', enumValue, data), [Validators.required]],
-			category: [this.getFieldValue('category', enumValue, data), [Validators.required]],
-			kvkNumber: [
-				this.getFieldValue('kvkNumber', enumValue, data, this.userInformationData),
-				[Validators.required],
-			],
-			companyName: [
-				this.getFieldValue('companyName', enumValue, data, this.userInformationData),
-				[Validators.required],
-			],
-			adminEmail: [
-				this.getFieldValue(this.checkFormControlName(enumValue), enumValue, data, this.userInformationData),
-				[Validators.required],
-			],
-			group: [this.getFieldValue('group', enumValue, data), [Validators.required]],
-			subcategory: [this.getFieldValue('subcategory', enumValue, data)],
-		});
+		this.generalInformationForm = this.formBuilder.group(
+			{
+				logo: [this.getFieldValue('logo', enumValue, data)],
+				ownerName: [
+					this.getFieldValue('ownerName', enumValue, data, this.userInformationData),
+					[Validators.required],
+				],
+				legalForm: [this.getFieldValue('legalForm', enumValue, data), [Validators.required]],
+				category: [this.getFieldValue('category', enumValue, data), [Validators.required]],
+				kvkNumber: [
+					this.getFieldValue('kvkNumber', enumValue, data, this.userInformationData),
+					[Validators.required],
+				],
+				companyName: [
+					this.getFieldValue('companyName', enumValue, data, this.userInformationData),
+					[Validators.required],
+				],
+				adminEmail: [
+					this.getFieldValue(this.checkFormControlName(enumValue), enumValue, data, this.userInformationData),
+					[Validators.required],
+				],
+				group: [this.getFieldValue('group', enumValue, data), [Validators.required]],
+				subcategory: [this.getFieldValue('subcategory', enumValue, data)],
+				iban: [
+					this.getFieldValue('iban', enumValue, data),
+					[
+						Validators.required,
+						ValidatorService.validateIban,
+						Validators.pattern(RegexUtil.dutchIbanRegexPattern),
+					],
+				],
+				bic: [this.getFieldValue('bic', enumValue, data), [Validators.pattern(RegexUtil.dutchBicRegexPattern)]],
+				cashierEmails: [''],
+			},
+			{
+				validators: [IbanMatchesBicValidator],
+			},
+		);
+
+		this.disableSubcategoryField(parseInt(this.selectedCategory));
 	}
 
 	private getFieldValue(
@@ -254,6 +325,12 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 			case FormInitializationType.EMPTY:
 				return enumValue === FormInitializationType.EMPTY ? null : '';
 			case FormInitializationType.LOCAL_STORAGE:
+				if (field === 'ownerName') {
+					return this.localStorageData[field]
+						? this.localStorageData[field]
+						: `${this.userInformationData['firstName']} ${this.userInformationData['lastName']}`;
+				}
+
 				return userInfo ? this.userInformationData[field] : this.localStorageData[field];
 			case FormInitializationType.DATABASE:
 				return data?.[field];
@@ -280,7 +357,7 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 
 	private initLocalStorageData(): void {
 		const localStorageFormData = localStorage.getItem('generalFormInformation');
-
+		this.initLocalStorageCashiers();
 		if (!localStorageFormData) {
 			return;
 		}
@@ -290,12 +367,24 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 		this.fileName = this.localStorageData.fileName;
 	}
 
+	private initLocalStorageCashiers(): void {
+		const localStorageCashiers = localStorage.getItem('generalInformationCashiers');
+		if (!localStorageCashiers) {
+			return;
+		}
+
+		try {
+			this.cashierEmailsList = new Set<string>(JSON.parse(localStorageCashiers));
+		} catch (e) {
+			this.cashierEmailsList = new Set<string>();
+		}
+	}
+
 	private getSupplierProfileInformation(): void {
 		this.supplierProfileService.supplierProfileInformationObservable.subscribe((data) => {
 			if (!data) {
 				return;
 			}
-
 			this.setupProfileForm(data);
 		});
 
@@ -304,12 +393,22 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	private setupCashierEmails(supplierId: string): void {
+		this.userService.getCashierEmailsForSupplier(supplierId).subscribe((data) => {
+			if (!data) {
+				return;
+			}
+			this.cashierEmailsList = new Set<string>(data);
+		});
+	}
+
 	private setupProfileForm(profileInformation: SupplierProfile): void {
 		this.selectedCategory = profileInformation.category;
 		this.createSubcategories(parseInt(this.selectedCategory));
 		this.initForm(FormInitializationType.DATABASE, profileInformation);
 		this.disableSubcategoryField(parseInt(this.selectedCategory));
 		this.generalInformationEvent.emit(this.generalInformationForm);
+		this.setupCashierEmails(profileInformation.supplierId as string);
 	}
 
 	private loadInitialData(): void {

@@ -124,7 +124,7 @@ export default function SupplierInfo({ name, logo, address, workingHours, catego
 		<>
 			<View style={styles.supplierDetails}>
 				<SupplierLogoCard logo={logo} />
-				<View>
+				<View style={{ flex: 1 }}>
 					<Text style={styles.supplierName}>{name}</Text>
 					<Text style={styles.supplierCategory}>{t(category)}</Text>
 				</View>

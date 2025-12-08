@@ -1,4 +1,4 @@
-@import '../../../../../../libs/shared-assets/_styles/full-size-pannel';
+@use '../../../../../../libs/shared-assets/_styles/full-size-pannel';
 
 :host {
 	::ng-deep {
@@ -14,8 +14,6 @@
 			.centric-panel-container {
 				height: 100vh;
 				max-height: calc(100vh - 80px);
-				border-radius: 0;
-				border: none;
 			}
 		}
 	}

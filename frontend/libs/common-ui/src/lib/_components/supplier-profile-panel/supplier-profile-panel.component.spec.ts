@@ -56,6 +56,8 @@ describe('SupplierInformationPanelComponent', () => {
 		group: '0',
 		category: '0',
 		subcategory: '0',
+		bic: 'ABNANL2A',
+		iban: 'NL91ABNA0417164300',
 	};
 
 	const contactInformationForm: ContactInformation = {
@@ -184,6 +186,18 @@ describe('SupplierInformationPanelComponent', () => {
 				invalidGeneralInformationForm,
 			);
 			expect(component.shouldDisableFinishButton()).toBe(true);
+		});
+	});
+
+	describe('actionButtonText', () => {
+		it('should return "general.button.reapply" when isRejectedStatus is true', () => {
+			component.isRejectedStatus = true;
+			expect(component.actionButtonText).toBe('general.button.reapply');
+		});
+
+		it('should return "general.button.saveChanges" when isRejectedStatus is false', () => {
+			component.isRejectedStatus = false;
+			expect(component.actionButtonText).toBe('general.button.saveChanges');
 		});
 	});
 });

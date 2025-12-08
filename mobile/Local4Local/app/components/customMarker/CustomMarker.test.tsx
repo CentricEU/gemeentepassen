@@ -60,6 +60,9 @@ describe('CustomMarker', () => {
         jest.clearAllMocks();
     });
 
+    beforeAll(() => {
+        jest.useFakeTimers();
+    });
 
     test('logs error when getFullOffer fails', async () => {
         const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
@@ -74,7 +77,7 @@ describe('CustomMarker', () => {
 
         consoleErrorSpy.mockRestore();
     });
-    
+
     test('renders a single offer marker', () => {
         const { getByTestId } = renderComponent({ offer: mockOffer });
 
@@ -97,7 +100,7 @@ describe('CustomMarker', () => {
             expect(mockSetOfferState).toHaveBeenCalledWith({
                 offerGroup: mockOfferGroup,
                 isDisplayed: true,
-              });
+            });
         });
     });
 

@@ -1,13 +1,36 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AppType, AuthService, CaptchaService, CaptchaStatus, FormUtil, Role } from '@frontend/common';
-import { RecaptchaComponent } from 'ng-recaptcha';
+import { AppType, AuthService, CaptchaService, CaptchaStatus, CommonL4LModule, FormUtil, Role } from '@frontend/common';
+import { TranslateModule } from '@ngx-translate/core';
+import { CentricButtonModule } from '@windmill/ng-windmill/button';
+import { WindmillCheckboxModule } from '@windmill/ng-windmill/checkbox';
+import { CentricLinkModule } from '@windmill/ng-windmill/link';
+import { RecaptchaComponent, RecaptchaFormsModule, RecaptchaModule } from 'ng-recaptcha-2';
+
+import { WindmillModule } from '../../windmil.module';
+import { LogoTitleComponent } from '../logo-title/logo-title.component';
 
 @Component({
 	selector: 'frontend-login',
 	templateUrl: './login.component.html',
 	styleUrls: ['./login.component.scss'],
+	standalone: true,
+	imports: [
+		CommonModule,
+		CommonL4LModule,
+		FormsModule,
+		ReactiveFormsModule,
+		TranslateModule,
+		CentricButtonModule,
+		WindmillCheckboxModule,
+		CentricLinkModule,
+		RecaptchaModule,
+		RecaptchaFormsModule,
+		WindmillModule,
+		LogoTitleComponent,
+	],
 })
 export class LoginComponent implements OnInit {
 	public form: FormGroup;
@@ -41,6 +64,10 @@ export class LoginComponent implements OnInit {
 			return;
 		}
 		this.performLogin();
+	}
+
+	public get shouldDisplayRegister(): boolean {
+		return this.appLoginPage !== AppType.municipality;
 	}
 
 	public performLogin(): void {

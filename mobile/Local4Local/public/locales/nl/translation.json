@@ -10,20 +10,30 @@
 			"viewMap": "Toon de kaart",
 			"viewDetails": "Toon meer",
 			"cancel": "Annuleren",
+			"close": "Sluiten",
 			"createNewAccount": "Maak nieuw account",
 			"done": "Klaar",
 			"saveChanges": "Wijzigingen opslaan",
 			"register": "Registreer",
-			"viewDiscounts": "...View your discounts",
-			"addApple": "...Add to Apple Wallet",
-			"addAndroid": "...Add to Google Wallet",
-			"exploreOffers": "Verken aanbiedingen"
+			"viewDiscounts": "Bekijk je kortingen",
+			"addApple": "Toevoegen aan Apple Wallet",
+			"addAndroid": "Toevoegen aan Google Wallet",
+			"exploreOffers": "Verken aanbiedingen",
+			"ok": "OK",
+			"confirm": "Bevestigen",
+			"back": "Terug",
+			"backToLogin": "Terug naar inloggen"
 		},
 		"errors": {
 			"requiredField": "Dit veld is verplicht",
 			"invalidEmail": "Ongeldig e-mailadres",
 			"passwordMatch": "Wachtwoord en bevestigd wachtwoord komen niet overeen",
-			"passwordRule": "Wachtwoord moet minimaal één kleine letter, één hoofdletter, één cijfer en één speciaal teken bevatten en minimaal 8 tekens lang zijn."
+			"passwordRule": "Wachtwoord moet minimaal één kleine letter, één hoofdletter, één cijfer en één speciaal teken bevatten en minimaal 8 tekens lang zijn.",
+			"unauthorized": "Je sessie is verlopen. Log opnieuw in.",
+			"requestError": "There is an error in processing your request. Please try again later.",
+			"roleNotAllowed": "Dit e-mailadres is niet gemachtigd om deze applicatie te gebruiken.",
+			"mailRequirementsNotMet": "Het verzenden van de e-mail is mislukt. Het opgegeven e-mailadres lijkt ongeldig te zijn. Controleer dit en probeer het opnieuw.",
+			"notFound": "De gevraagde bron is niet gevonden."
 		},
 		"weekDays": {
 			"monday": "Maandag",
@@ -34,19 +44,31 @@
 			"saturday": "Zaterdag",
 			"sunday": "Zondag"
 		},
-		"welcome": "Welkom terug bij Stadspassen",
-		"balance": "Balans: "
+		"frecquency": {
+			"singleUse": "Eenmalig",
+			"daily": "Dagelijks",
+			"weekly": "Wekelijks",
+			"monthly": "Maandelijks",
+			"yearly": "Jaarlijks"
+		},
+		"welcome": "Welkom terug bij Gemeentepassen",
+		"balance": "Balans: ",
+		"status": {
+			"active": "Actief",
+			"expired": "Verlopen"
+		}
 	},
 	"navigation": {
 		"offers": "Aanbiedingen",
-		"scan": "Scannen",
 		"transactions": "Transacties",
 		"profile": "Profiel",
-		"discounts": "Kortingen"
+		"discounts": "Kortingen",
+		"benefits": "Voordelen",
+		"discountCode": "Kortingscode"
 	},
 	"landingPage": {
-		"title": "Welkom bij Stadspassen!",
-		"description": "Wel of niet je tegoed gebruiken? De aanbiedingen van onze leverancier zijn mogelijk interessant."
+		"title": "Welkom bij Gemeentepassen!",
+		"description": "Of je je voordelen nu gebruikt of niet, je kunt profiteren van onze aanbiedingen van leveranciers."
 	},
 	"getStartedPage": {
 		"title": "Ga aan de slag",
@@ -72,10 +94,10 @@
 			"retypePasswordPlaceholder": "Herhaal je wachtwoord"
 		},
 		"uniqueEmailError": "Dit e-mailadres is al gebruikt voor registratie. Gebruik alstublieft een andere.",
-		"passnumberAlreadyUsedOrInvalid": "...This pass ID has already been used for registration or is invalid. Please use a different one.",
+		"passnumberAlreadyUsedOrInvalid": "Deze pas-ID is al gebruikt voor registratie of is ongeldig. Gebruik een andere pas-ID.",
 		"register": "Registreer",
 		"registrationDialog": {
-			"description": "We hebben een bevestiging gestuurd naar <b>{{email}}</b>.<br>Volg de instructies in het bericht op om je account te bevestigen.",
+			"description": "We hebben een bevestiging gestuurd naar **{{email}}**.\nVolg de instructies in het bericht op om je account te bevestigen.",
 			"buttonText": "Stuur opnieuw",
 			"title": "Check je e-mail!"
 		},
@@ -86,6 +108,7 @@
 		"wrongCredentials": "Je e-mail of wachtwoord is niet goed.",
 		"requestError": "Er is een fout opgetreden bij het inloggen. Probeer het later opnieuw.",
 		"accountNotConfirmed": "Je account is nog niet gevalideerd. Controleer je e-mail en bevestig je e-mailadres om het registratieproces te voltooien.",
+		"accountDeactivated": "Je account is gedeactiveerd. Neem contact op met de klantenservice voor hulp.",
 		"account": "Heb je geen account?",
 		"captchaError": "Uw poging was meerdere keren onsuccesvol. Voltooi de ReCAPTCHA om door te gaan."
 	},
@@ -97,12 +120,16 @@
 			"all": "Alle kortingen",
 			"credit": "Tegoed",
 			"bogo": "Koop één, krijg één gratis",
-			"percentage": "Percentage",
-			"grant": "Regeling",
-			"freeEntry": "Gratis toegang"
+			"freeEntry": "Gratis toegang/Product",
+			"percentage": "Korting"
 		},
 		"offerGroup": "Aanbiedingengroep ({{number}})",
-		"availableWith": "Beschikbaar vanaf {{startDate}}"
+		"availableWith": "Beschikbaar {{startDate}}",
+		"noResultsFound": "Geen resultaten komen overeen.",
+		"noResultsDescription": "Geen aanbiedingen komen overeen met je geselecteerde criteria.",
+		"seeAllOffers": "Bekijk alle aanbiedingen",
+		"noOffersYetTitle": "Nog geen aanbiedingen beschikbaar",
+		"noOffersYetDescription": "We wachten nog op leveranciers om hun aanbiedingen toe te voegen. Kom snel terug om te kijken!"
 	},
 	"offerDetailsPage": {
 		"title": "Aanbieding details",
@@ -111,7 +138,7 @@
 		"description": "Omschrijving",
 		"validFrom": "Geldig formulier",
 		"validity": "{{startDate}} tot {{endDate}}",
-		"acceptedGrants": "Toegestane regelingens",
+		"acceptedBenefit": "Toegestane voordeel",
 		"bogo": "Koop één, krijg één gratis",
 		"amount": "Hoeveelheid korting",
 		"frecquency": "Gebruiksfrequentie",
@@ -120,16 +147,17 @@
 		"ageRestriction": "Leeftijdsbeperking",
 		"above": "Ouder dan {{years}} jaar",
 		"price": "Prijs",
-		"priceRange": "Minimum €{{startPrice}} - Maximum €{{endPrice}}",
+		"priceRange": "Minimaal €{{startPrice}} - Maximaal €{{endPrice}}",
 		"successMessage": "Je hebt dit aanbod succesvol gebruikt.",
-		"seeDiscountCode": "...See the discount code",
-		"inactive": "Deze aanbieding is nog niet beschikbaar. Kijk terug op {{startDate}}!"
+		"seeDiscountCode": "Bekijk de kortingscode",
+		"inactive": "Deze aanbieding is nog niet beschikbaar. Kijk terug op {{startDate}}!",
+		"useOfferError": "Er is een fout opgetreden bij het gebruiken van de aanbieding. Probeer het later opnieuw.",
+		"passExpired": "Je pas is verlopen en kan niet worden gebruikt voor deze aanbieding.",
+		"benefitExpired": "Dit voordeel is verlopen en kan niet worden verzilverd."
 	},
 	"termsAndConditions": {
 		"textDescription1": "Door je aan te melden ga je akkoord met onze ",
 		"textDescription2": "Gebruiksvoorwaarden",
-		"textDescription3": "en ",
-		"textDescription4": "Privacybeleid.",
 		"question": "Heb je al een account?",
 		"logIn": "Log in"
 	},
@@ -156,7 +184,7 @@
 		"logout": "Uitloggen",
 		"deleteAccount": "Verwijder account",
 		"logoutModal": {
-			"title": "Weet je het zeker",
+			"title": "Weet je het zeker?",
 			"description": "Log later opnieuw in."
 		},
 		"language": {
@@ -212,21 +240,18 @@
 	},
 	"offer": {
 		"types": {
-			"freeEntry": "Gratis toegang",
-			"percentage": "Percentage",
-			"bogo": "...BOGO",
-			"credit": "Tegoed",
-			"grant": "Regeling"
+			"freeEntry": "Gratis toegang/Product",
+			"percentage": "Korting",
+			"bogo": "Koop één, krijg één gratis",
+			"credit": "Tegoed"
 		},
 		"offerType": "Type aanbieding: ",
-		"expirationDate": "...Expiration date: ",
-		"useCode": "...You’ll need this code to use it in store."
+		"expirationDate": "Vervaldatum: ",
+		"useCode": "Je hebt deze code nodig om het in de winkel te gebruiken."
 	},
 	"discounts": {
 		"noDiscountsTitle": "Welkom bij je kortingen",
 		"noDiscountsDescription": "Het lijkt erop dat je nog geen kortingen hebt. Verken aanbiedingen om je kortingen te krijgen!",
-		"activeDiscounts": "Actieve",
-		"expiredDiscounts": "Verlopen",
 		"noExpiredDiscounts": "Je hebt geen verlopen kortingen.",
 		"noActiveDiscounts": "Je hebt geen actieve kortingen.\nVerken aanbiedingen om je kortingen te krijgen!",
 		"expirationDate": "Verloopt:",
@@ -234,6 +259,164 @@
 	},
 	"search": {
 		"searchBarTextOffer": "Zoek naar aanbieding",
-		"searchBarTextDiscounts": "Zoek naar kortingen"
+		"searchBarTextDiscounts": "Zoek naar kortingen",
+		"searchBarTextTransactions": "Zoek naar transacties",
+		"gettingStarted": "Aan de slag!",
+		"searchHistory": "Je zoekgeschiedenis verschijnt hier.",
+		"recent": "Recent",
+		"minimumCharactersWarning": "Voer minstens 3 tekens in om te zoeken."
+	},
+	"months": {
+		"01": "Januari",
+		"02": "Februari",
+		"03": "Maart",
+		"04": "April",
+		"05": "Mei",
+		"06": "Juni",
+		"07": "Juli",
+		"08": "Augustus",
+		"09": "September",
+		"10": "Oktober",
+		"11": "November",
+		"12": "December"
+	},
+	"transactions": {
+		"noTransactionsTitle": "Nog geen transacties.",
+		"noTransactionsDescription": "Zodra je de app begint te gebruiken, verschijnt je activiteit hier.",
+		"noTransactionsThisMonth": "Geen transacties deze maand."
+	},
+	"map": {
+		"locationDisabledTitle": "Schakel locatie toegang in via instellingen.",
+		"locationDisabledMessage": "Je locatie kon niet worden opgehaald."
+	},
+	"benefits": {
+		"noBenefitsTitle": "Welkom bij je voordelen",
+		"noBenefitsDescription": "Uw voordelen verschijnen hier zodra ze door de gemeente zijn toegewezen.",
+		"noExpiredBenefits": "Je hebt geen verlopen voordelen.",
+		"noActiveBenefits": "Je hebt geen actieve voordelen.",
+		"validUntil": "Geldig tot",
+		"usage": "Gebruik",
+		"remainingAmount": "{{amount}} resterend"
+	},
+	"forgotPassword": {
+		"hyperlink": "Wachtwoord vergeten",
+		"title": "Wachtwoord vergeten?",
+		"description": "Vul de volgende informatie in om een nieuw wachtwoord in te stellen.",
+		"send": "Stuur mij een link",
+		"captcha": "Captcha: \"Ik ben geen robot\" type",
+		"emailPlaceholder": "Vul je e-mailadres in",
+		"recoveryExceedLimit": "Je kunt per dag maximaal drie wachtwoordherstelaanvragen doen.",
+		"dialog": {
+			"description": "We hebben je een e-mail gestuurd met een link om je wachtwoord te resetten.",
+			"title": "Controleer je inbox",
+			"dialogTitle": "E-mail succesvol verzonden!"
+		}
+	},
+	"changePassword": {
+		"title": "Stel nieuw wachtwoord in",
+		"sameAsOldPassword": "Je nieuwe wachtwoord kan niet hetzelfde zijn als je oude wachtwoord.",
+		"tokenExpiredError": "De link om je wachtwoord te resetten is verlopen. Vraag een nieuwe aan.",
+		"dialog": {
+			"description": "Je wachtwoord is succesvol gewijzigd!",
+			"title": "Gefeliciteerd!",
+			"dialogTitle": "Wachtwoord succesvol gewijzigd!",
+			"buttonText": "Doorgaan naar inloggen"
+		}
+	},
+	"privacy": {
+		"title": "Privacyverklaring",
+		"intro": {
+			"paragraph_1": "Wij zien het beschermen van persoonsgegevens als een zeer belangrijk onderdeel van onze bedrijfsvoering en dienstverlening. Het beschermen van deze gegevens ligt aan de basis van onze betrouwbaarheid als leverancier en partner. Met persoonsgegevens bedoelen we in dit geval: alle informatie over een geïdentificeerde en/of identificeerbare natuurlijke persoon.",
+			"paragraph_2": "In deze privacyverklaring leest je welke persoonsgegevens wij van je verzamelen. Wij verzamelen deze gegevens omdat we met je een overeenkomst hebben of in contact zijn over onze diensten en producten.",
+			"paragraph_3": "Via deze verklaring krijgt je informatie over:",
+			"item_1": "waarom wij persoonsgegevens verwerken",
+			"item_2": "hoelang wij persoonsgegevens bewaren",
+			"item_3": "hoe je de door ons bewaarde persoonsgegevens kunt inzien en aanpassen",
+			"item_4": "hoe je persoonsgegevens bij ons zijn beveiligd"
+		},
+		"promises": {
+			"title": "Onze privacybeloften",
+			"subtitle": "Onze privacybeloften zijn te vangen in de volgende vuistregels:",
+			"purpose": {
+				"title": "Doelbepaling en doelbinding",
+				"description": "Wij gebruiken alleen persoonsgegevens voor uitdrukkelijk omschreven en gerechtvaardigde doeleinden."
+			},
+			"basis": {
+				"title": "Grondslag",
+				"description": "Wij baseren de verwerking van persoonsgegevens op een van de wettelijke grondslagen."
+			},
+			"minimization": {
+				"title": "Dataminimalisatie",
+				"description": "Wij zorgen dat bij de verwerking van persoonsgegevens dat de hoeveelheid gegevens beperkt blijft."
+			},
+			"transparency": {
+				"title": "Transparantie",
+				"description": "Wij leggen aan betrokkenen, zoals burgers, leveranciers en medewerkers van de gemeente, transparant verantwoording af over het gebruik van hun persoonsgegevens."
+			},
+			"safety": {
+				"title": "Veiligheid",
+				"description": "Wij nemen privacy serieus. Bij iedere keuze die wij maken, nemen wij maatregelen om de privacy zo goed mogelijk te beschermen."
+			}
+		},
+		"security": {
+			"title": "Beveiliging persoonsgegevens",
+			"description": "Wij doen ons uiterste best om zorgvuldig met persoonsgegevens om te gaan. Ook doen wij alles om deze gegevens te beveiligen tegen verlies en/of enige vorm van onrechtmatig gebruik of onrechtmatige verwerking. Daarbij gebruiken wij passende technische en organisatorische maatregelen. Denk bijvoorbeeld aan de laatste innovaties op het gebied van security. Als wij je persoonsgegevens met derden moet delen om haar taken uit te voeren, sluiten wij hiervoor verwerkersovereenkomsten af."
+		},
+		"breach": {
+			"title": "Inbreuk op de beveiliging",
+			"paragraph_1": "Is er ondanks al onze inspanningen sprake van een inbreuk op de beoogde beveiliging? Dan handelen we dit incident af volgens de hiervoor opgestelde interne procedure. Uiteraard doen wij er in dat geval alles aan om de gevolgen van de inbreuk zo beperkt mogelijk te houden.",
+			"paragraph_2": "Vormt de inbreuk een privacyrisico, dan melden wij dit bij de Autoriteit Persoonsgegevens. Als het wenselijk is, en in ieder geval wanneer de wet dit vereist, informeren wij ook de betrokkenen over de inbreuk."
+		},
+		"rights": {
+			"title": "Wat zijn je rechten?",
+			"subtitle": "Conform de Algemene Verordening Gegevensbescherming heeft je onderstaande rechten als het gaat om het gebruik van je persoonsgegevens:",
+			"access": {
+				"title": "Inzage",
+				"description": "U hebt het recht om de persoonsgegevens die wij van je verwerken in te zien."
+			},
+			"correction": {
+				"title": "Rectificatie en aanvulling",
+				"description": "U hebt het recht om persoonsgegevens die wij van je verwerken te laten wijzigen."
+			},
+			"forgotten": {
+				"title": "Vergetelheid",
+				"description": "U hebt het recht om je persoonsgegevens door ons te laten verwijderen."
+			},
+			"portability": {
+				"title": "Dataportabiliteit",
+				"description": "U hebt het recht om persoonsgegevens over te laten dragen van ons naar een andere partij."
+			},
+			"restriction": {
+				"title": "Beperking van de verwerking",
+				"description": "U hebt het recht om minder gegevens te laten verwerken door ons."
+			},
+			"automated": {
+				"title": "Geautomatiseerde besluitvorming en profilering",
+				"description": "U hebt het recht op een menselijke blik bij besluiten die wij nemen (in tegenstelling tot geautomatiseerde besluitvorming)."
+			},
+			"objection": {
+				"title": "Bezwaar",
+				"description": "U hebt het recht bij ons bezwaar te maken tegen een gegevensverwerking."
+			}
+		},
+		"contact": {
+			"title": "Hoe oefent je je rechten uit?",
+			"description": "Wij nemen de privacy van je persoonsgegevens zeer serieus. Daarom hebben wij een privacy officer aangesteld die al je vragen over privacyrechten behandelt.",
+			"cta": "U kunt contact opnemen met onze privacy officer via: "
+		},
+		"complaint": {
+			"title": "Het recht om een klacht in te dienen bij de toezichthoudende autoriteit",
+			"description": "Wij gaan zo transparant en zorgvuldig mogelijk met je gegevens om. Als je toch een klacht heeft over de verwerking van je gegevens, verzoeken wij je eerst contact op te nemen met onze privacy officer. Dit kan door een bericht te sturen naar info@Gemeentepassen.eu. Wij doen vervolgens ons uiterste best om je klacht op te lossen. Mocht je het onverhoopt niet eens zijn met de genomen maatregel, dan kunt je zich wenden tot de Autoriteit Persoonsgegevens."
+		},
+		"info_sheet": {
+			"title": "Informatieblad per verwerking",
+			"subtitle": "Wij kiezen ervoor om naast de privacyverklaring voor specifieke verwerkingen/onderdelen een informatieblad op te stellen. Dit informatieblad gaat voor een verwerking specifiek in op de volgende deelonderwerpen:",
+			"item_1": "Waarom gebruiken wij je persoonsgegevens?",
+			"item_2": "Welke soorten persoonsgegevens verwerken wij?",
+			"item_3": "Wie heeft toegang tot je persoonsgegevens?",
+			"item_4": "Wat is de juridische grondslag voor de verwerking van je persoonsgegevens?",
+			"item_5": "Hoelang bewaren wij je persoonsgegevens?",
+			"item_6": "Welke beveiligingsmaatregelen zijn er getroffen?"
+		}
 	}
 }

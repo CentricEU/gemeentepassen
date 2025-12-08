@@ -1,11 +1,13 @@
 import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
+import path = require('path/win32');
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
-require('dotenv').config({ path: `.env.${process.env.ENVIRONMENT}` });
-dotenv.config();
+
+const env = process.env.ENV || 'development';
+dotenv.config({ path: path.resolve(__dirname, `.env.${env}`) });
 
 export default defineConfig({
   testDir: './tests',
@@ -15,27 +17,23 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-
-  globalSetup: require.resolve("./global-setup"),
   
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  reporter: [
+    ['junit', { outputFile: 'test-results/junit/results.xml' }],
+  ],
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-     baseURL: 'https://api.stadspassen.eu/api/',
+     baseURL: process.env.BASE_URL,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     extraHTTPHeaders: {
-      "Content-Type":'application/json',
-      "Accept":'application/json',
-      "Authorization":'Bearer '+ process.env.TOKEN
+      "Accept": "application/json"
     }
-  }
- 
+    }
   /* Run your local dev server before starting the tests */
   // webServer: {
   //   command: 'npm run start',

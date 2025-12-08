@@ -18,7 +18,8 @@ public record DiscountCodeViewDto(@NonNull String companyName,
 
                                   @NonNull Boolean isActive,
                                   String companyLogo,
-                                  Double amount
+                                  Double amount,
+                                  @NonNull String offerTitle
 ) {
 
     public static DiscountCodeViewDto of(DiscountCode discountCode) {
@@ -31,6 +32,7 @@ public record DiscountCodeViewDto(@NonNull String companyName,
                 .companyLogo(supplier.getProfile().getLogo())
                 .amount(discountCode.getOffer().getAmount())
                 .isActive(isDiscountCodeActive(discountCode))
+                .offerTitle(discountCode.getOffer().getTitle())
                 .build();
     }
 

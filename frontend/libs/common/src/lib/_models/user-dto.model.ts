@@ -10,5 +10,7 @@ export class UserDto {
 	public hasStatusUpdate: boolean;
 	public isApproved: boolean;
 	public tenantName?: string;
+	public firstName: string;
+	public lastName: string;
 	[key: string]: string | boolean | undefined;
 }

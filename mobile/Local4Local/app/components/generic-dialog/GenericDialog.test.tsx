@@ -1,9 +1,10 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, act } from '@testing-library/react-native';
 import { Provider } from 'react-native-paper';
 import GenericDialog from './GenericDialog';
 
 jest.mock('../../assets/icons/email.svg', () => 'EmailIcon');
+jest.useFakeTimers();
 
 describe('GenericDialog', () => {
     const mockOnButtonPress = jest.fn();
@@ -18,6 +19,7 @@ describe('GenericDialog', () => {
 
     afterEach(() => {
         jest.clearAllMocks();
+        jest.clearAllTimers();
     });
 
     it('renders correctly', () => {
@@ -26,6 +28,12 @@ describe('GenericDialog', () => {
                 <GenericDialog {...defaultProps} />
             </Provider>
         );
+
+
+
+        act(() => {
+            jest.advanceTimersByTime(1000);
+        });
 
         expect(queryByText('Test description')).toBeDefined();
         expect(queryByText('Test Button (60s)')).toBeDefined();
@@ -37,6 +45,10 @@ describe('GenericDialog', () => {
                 <GenericDialog {...defaultProps} visible={false} />
             </Provider>
         );
+
+        act(() => {
+            jest.runAllTimers();
+        });
 
 
         expect(queryByText('Test title')).toBeNull();

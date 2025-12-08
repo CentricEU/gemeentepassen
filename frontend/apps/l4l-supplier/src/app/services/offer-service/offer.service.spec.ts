@@ -1,9 +1,8 @@
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { GenericStatusEnum, OfferTableDto } from '@frontend/common';
+import { GenericStatusEnum, OfferTableDto, TimeIntervalPeriod } from '@frontend/common';
 
-import { TimeIntervalPeriod } from '../../enums/time-interval-period.enum';
 import { DeleteOffersDto } from '../../models/delete-offers-dto.model';
 import { FilterOfferRequestDto } from '../../models/filter-offer-request-dto.model';
 import { OfferRejectionReasonDto } from '../../models/offer-rejection-reason-dto.model';
@@ -17,13 +16,13 @@ describe('OfferService', () => {
 	const environmentMock = {
 		production: false,
 		envName: 'dev',
-		apiPath: '/api'
+		apiPath: '/api',
 	};
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
 			imports: [HttpClientModule, HttpClientTestingModule],
-			providers: [OfferService, { provide: 'env', useValue: environmentMock }]
+			providers: [OfferService, { provide: 'env', useValue: environmentMock }],
 		});
 		service = TestBed.inject(OfferService);
 		httpMock = TestBed.inject(HttpTestingController);
@@ -41,7 +40,8 @@ describe('OfferService', () => {
 			offerTypeId: 3,
 			amount: 50,
 			startDate: new Date('2021-01-01'),
-			expirationDate: new Date('2021-12-31')
+			expirationDate: new Date('2021-12-31'),
+			benefitId: 'benefit-123',
 		};
 
 		service.createOffer(offerData).subscribe((response) => {
@@ -116,7 +116,7 @@ describe('OfferService', () => {
 		const reactivateOfferDto: ReactivateOfferDto = {
 			offerId: '19',
 			startDate: new Date(),
-			expirationDate: new Date()
+			expirationDate: new Date(),
 		};
 
 		service.reactivateOffer(reactivateOfferDto).subscribe((response) => {
@@ -132,7 +132,7 @@ describe('OfferService', () => {
 		const filterOfferRequestDto: FilterOfferRequestDto = {
 			status: GenericStatusEnum.ACTIVE,
 			offerTypeId: 1,
-			grantId: '100'
+			benefitId: '100',
 		};
 		const page = 1;
 		const size = 10;
@@ -149,7 +149,7 @@ describe('OfferService', () => {
 				request.url === `${environmentMock.apiPath}/offers/filter` &&
 				request.params.get('status') === filterOfferRequestDto.status &&
 				offerTypeId === filterOfferRequestDto.offerTypeId.toString() &&
-				request.params.get('grantId') === filterOfferRequestDto.grantId &&
+				request.params.get('benefitId') === filterOfferRequestDto.benefitId &&
 				request.params.get('pageIndex') === page.toString() &&
 				request.params.get('pageSize') === size.toString()
 			);
@@ -163,7 +163,7 @@ describe('OfferService', () => {
 		const filterOfferRequestDto: FilterOfferRequestDto = {
 			status: GenericStatusEnum.ACTIVE,
 			offerTypeId: 1,
-			grantId: '100'
+			benefitId: '100',
 		};
 
 		const mockCount = 5;
@@ -178,7 +178,7 @@ describe('OfferService', () => {
 				request.url === `${environmentMock.apiPath}/offers/filter/count` &&
 				request.params.get('status') === filterOfferRequestDto.status &&
 				offerTypeId === filterOfferRequestDto.offerTypeId.toString() &&
-				request.params.get('grantId') === filterOfferRequestDto.grantId
+				request.params.get('benefitId') === filterOfferRequestDto.benefitId
 			);
 		});
 		expect(req.request.method).toBe('GET');
@@ -186,11 +186,11 @@ describe('OfferService', () => {
 		req.flush(mockCount);
 	});
 
-	it('should send a GET request to fetch filtered offers with empty grantId', () => {
+	it('should send a GET request to fetch filtered offers with empty benefitId', () => {
 		const filterOfferRequestDto: FilterOfferRequestDto = {
 			status: GenericStatusEnum.ACTIVE,
 			offerTypeId: 1,
-			grantId: ''
+			benefitId: '',
 		};
 		const page = 1;
 		const size = 10;
@@ -207,7 +207,7 @@ describe('OfferService', () => {
 				request.url === `${environmentMock.apiPath}/offers/filter` &&
 				request.params.get('status') === filterOfferRequestDto.status &&
 				offerTypeId === filterOfferRequestDto.offerTypeId.toString() &&
-				request.params.get('grantId') === filterOfferRequestDto.grantId &&
+				request.params.get('benefitId') === filterOfferRequestDto.benefitId &&
 				request.params.get('pageIndex') === page.toString() &&
 				request.params.get('pageSize') === size.toString()
 			);
@@ -221,7 +221,7 @@ describe('OfferService', () => {
 		const filterOfferRequestDto: FilterOfferRequestDto = {
 			status: '' as GenericStatusEnum,
 			offerTypeId: 1,
-			grantId: '100'
+			benefitId: '100',
 		};
 
 		const mockCount = 5;
@@ -236,7 +236,7 @@ describe('OfferService', () => {
 				request.url === `${environmentMock.apiPath}/offers/filter/count` &&
 				request.params.get('status') === filterOfferRequestDto.status &&
 				offerTypeId === filterOfferRequestDto.offerTypeId.toString() &&
-				request.params.get('grantId') === filterOfferRequestDto.grantId
+				request.params.get('benefitId') === filterOfferRequestDto.benefitId
 			);
 		});
 		expect(req.request.method).toBe('GET');
@@ -244,11 +244,11 @@ describe('OfferService', () => {
 		req.flush(mockCount);
 	});
 
-	it('should send a GET request to count filtered offers with undefined offerTypeId and grantId', () => {
+	it('should send a GET request to count filtered offers with undefined offerTypeId and benefitId', () => {
 		const filterOfferRequestDto: FilterOfferRequestDto = {
 			status: GenericStatusEnum.ACTIVE,
 			offerTypeId: undefined as any,
-			grantId: undefined as any
+			benefitId: undefined as any,
 		};
 
 		const mockCount = 10;
@@ -259,16 +259,16 @@ describe('OfferService', () => {
 
 		const req = httpMock.expectOne((request) => {
 			const offerTypeId = request.params.get('offerTypeId');
-			const grantId = request.params.get('grantId');
+			const benefitId = request.params.get('benefitId');
 
 			const offerTypeIdShouldNotBePresent = offerTypeId === undefined || offerTypeId === null;
-			const grantIdShouldNotBePresent = grantId === undefined;
+			const benefitIdShouldNotBePresent = benefitId === undefined;
 
 			return (
 				request.url === `${environmentMock.apiPath}/offers/filter/count` &&
 				request.params.get('status') === filterOfferRequestDto.status &&
 				(!offerTypeIdShouldNotBePresent ? offerTypeId === '' : true) &&
-				(!grantIdShouldNotBePresent ? grantId === '' : true)
+				(!benefitIdShouldNotBePresent ? benefitId === '' : true)
 			);
 		});
 		expect(req.request.method).toBe('GET');
@@ -276,11 +276,11 @@ describe('OfferService', () => {
 		req.flush(mockCount);
 	});
 
-	it('should send a GET request to fetch filtered offers with undefined offerTypeId and grantId', () => {
+	it('should send a GET request to fetch filtered offers with undefined offerTypeId and benefitId', () => {
 		const filterOfferRequestDto: FilterOfferRequestDto = {
 			status: GenericStatusEnum.ACTIVE,
 			offerTypeId: undefined as any,
-			grantId: undefined as any
+			benefitId: undefined as any,
 		};
 
 		const page = 1;
@@ -293,16 +293,16 @@ describe('OfferService', () => {
 
 		const req = httpMock.expectOne((request) => {
 			const offerTypeId = request.params.get('offerTypeId');
-			const grantId = request.params.get('grantId');
+			const benefitId = request.params.get('benefitId');
 
 			const offerTypeIdShouldNotBePresent = offerTypeId === undefined || offerTypeId === null;
-			const grantIdShouldNotBePresent = grantId === undefined;
+			const benefitIdShouldNotBePresent = benefitId === undefined;
 
 			return (
 				request.url === `${environmentMock.apiPath}/offers/filter` &&
 				request.params.get('status') === filterOfferRequestDto.status &&
 				(!offerTypeIdShouldNotBePresent ? offerTypeId === '' : true) &&
-				(!grantIdShouldNotBePresent ? grantId === '' : true) &&
+				(!benefitIdShouldNotBePresent ? benefitId === '' : true) &&
 				request.params.get('pageIndex') === page.toString() &&
 				request.params.get('pageSize') === size.toString()
 			);
@@ -329,7 +329,7 @@ describe('OfferService', () => {
 		const filterOfferRequestDto: FilterOfferRequestDto = {
 			status: undefined as any,
 			offerTypeId: 1,
-			grantId: '100'
+			benefitId: '100',
 		};
 		const page = 1;
 		const size = 10;
@@ -347,7 +347,7 @@ describe('OfferService', () => {
 				request.url === `${environmentMock.apiPath}/offers/filter` &&
 				status === '' &&
 				offerTypeId === filterOfferRequestDto.offerTypeId.toString() &&
-				request.params.get('grantId') === filterOfferRequestDto.grantId &&
+				request.params.get('benefitId') === filterOfferRequestDto.benefitId &&
 				request.params.get('pageIndex') === page.toString() &&
 				request.params.get('pageSize') === size.toString()
 			);
@@ -361,7 +361,7 @@ describe('OfferService', () => {
 		const filterOfferRequestDto: FilterOfferRequestDto = {
 			status: null as any,
 			offerTypeId: 1,
-			grantId: '100'
+			benefitId: '100',
 		};
 		const page = 1;
 		const size = 10;
@@ -379,7 +379,7 @@ describe('OfferService', () => {
 				request.url === `${environmentMock.apiPath}/offers/filter` &&
 				status === '' &&
 				offerTypeId === filterOfferRequestDto.offerTypeId.toString() &&
-				request.params.get('grantId') === filterOfferRequestDto.grantId &&
+				request.params.get('benefitId') === filterOfferRequestDto.benefitId &&
 				request.params.get('pageIndex') === page.toString() &&
 				request.params.get('pageSize') === size.toString()
 			);
@@ -393,10 +393,10 @@ describe('OfferService', () => {
 		const mockOfferCounts = {
 			activeCount: 5,
 			expiredCount: 5,
-			pendingCount: 5
+			pendingCount: 5,
 		};
 
-		service.getOfferCountsByStatus(TimeIntervalPeriod.MONTHLY).subscribe((response) => {
+		service.getOfferCountsByStatus(TimeIntervalPeriod.MONTHLY, true).subscribe((response) => {
 			expect(response).toEqual(mockOfferCounts);
 		});
 

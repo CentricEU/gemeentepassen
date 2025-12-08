@@ -1,6 +1,6 @@
 <centric-login class="login-pattern">
 	<ng-container title>
-		<frontend-logo-title [title]="'general.welcomeL4L'"></frontend-logo-title>
+		<frontend-logo-title [title]="'general.welcomeL4L'" [isVerticalOrientation]="true"></frontend-logo-title>
 	</ng-container>
 	<ng-container form>
 		<form
@@ -57,7 +57,7 @@
 						[label]="'login.rememberMe' | translate">
 					</windmill-checkbox>
 
-					<centric-link type="link" size="small" [innerRouterLink]="'/recover'">
+					<centric-link type="uncontained-theme" size="small" [innerRouterLink]="'/recover'">
 						{{ 'login.forgotPassword' | translate }}
 					</centric-link>
 				</div>
@@ -65,7 +65,7 @@
 			<centric-button class="account-button" [disabled]="!form.valid && !autofilled">{{
 				'general.button.login' | translate
 			}}</centric-button>
-			<ng-container login>
+			<ng-container *ngIf="shouldDisplayRegister" login>
 				<div class="account-message">
 					<p>{{ 'register.accountNotCreated' | translate }}</p>
 					<a class="pointer" href="./register">{{ 'register.registerButton' | translate }}</a>

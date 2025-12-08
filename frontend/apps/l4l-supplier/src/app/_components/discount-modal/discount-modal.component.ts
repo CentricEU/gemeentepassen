@@ -11,6 +11,7 @@ import { DiscountCodeService } from '../../services/discount-code/discount-code.
 	selector: 'frontend-discount-modal',
 	templateUrl: './discount-modal.component.html',
 	styleUrls: [],
+	standalone: false,
 })
 export class DiscountModalComponent implements OnInit {
 	public validationFunctionError = FormUtil.validationFunctionError;
@@ -50,8 +51,13 @@ export class DiscountModalComponent implements OnInit {
 			amount,
 		};
 
-		this.discountCodeService.validateCode(codeValidation).subscribe((result) => {
-			this.close(result);
+		this.discountCodeService.validateCode(codeValidation).subscribe({
+			next: (result) => {
+				this.close(result);
+			},
+			error: (err) => {
+				this.close(err.error);
+			},
 		});
 	}
 

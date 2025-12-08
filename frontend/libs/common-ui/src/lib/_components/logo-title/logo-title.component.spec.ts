@@ -9,8 +9,7 @@ describe('LogoTitleComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [LogoTitleComponent],
-			imports: [TranslateModule.forRoot()],
+			imports: [TranslateModule.forRoot(), LogoTitleComponent],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(LogoTitleComponent);

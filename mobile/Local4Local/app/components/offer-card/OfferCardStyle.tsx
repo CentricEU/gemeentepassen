@@ -59,13 +59,15 @@ const styles = StyleSheet.create({
 		lineHeight: 20,
 	},
 	footerContainer: {
-		flexDirection: "row-reverse",
+		flexDirection: "row",
+		flexWrap: "wrap",
 		justifyContent: "space-between",
 		alignItems: "center",
 		marginTop: 8,
 	},
 	detailsButton: {
 		margin: 4,
+		marginLeft: "auto",
 	},
 });
 

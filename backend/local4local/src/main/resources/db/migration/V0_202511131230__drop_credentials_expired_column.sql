@@ -1,0 +1,1 @@
+ALTER TABLE l4l_security.user DROP COLUMN credentials_expired;

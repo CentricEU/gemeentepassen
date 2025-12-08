@@ -54,6 +54,32 @@
 		</centric-form-item>
 
 		<centric-form-item>
+			<centric-form-label>{{ 'general.acceptedBenefit' | translate }}</centric-form-label>
+			<ng-container *ngIf="updatedBenefits">
+				<windmill-dropdown-search
+					frontendRequiredInput
+					formControlName="benefitId"
+					valuePropertyName="id"
+					displayPropertyName="name"
+					dropdownPlaceholder="{{ 'offer.acceptedBenefitsPlaceholder' | translate }}"
+					[readonly]="isReactivating"
+					[source]="updatedBenefits"
+					[maxHeight]="256"
+					[hasClearIcon]="true"
+					[multiple]="false"
+					[ariaLabelClearButtonSearchInput]="'general.label.close' | translate"
+					[ariaLabelClearButton]="'general.label.close' | translate"
+					[validationFunction]="validationFunctionError.bind(this, 'benefitId', createOfferForm)"
+					(valueChanged)="onValueChangeOnCheckedBenefits($event)"
+					(searchValueChange)="onSearchOnBenefits($event)">
+					<ng-container errors *ngIf="hasFormControlRequiredErrors('benefitId', createOfferForm)">
+						<span class="centric-error-message">{{ getErrorMessageFormInputs('benefitId') }} </span>
+					</ng-container>
+				</windmill-dropdown-search>
+			</ng-container>
+		</centric-form-item>
+
+		<centric-form-item>
 			<centric-form-label>{{ 'offer.typeOfOffer' | translate }}</centric-form-label>
 			<ng-container *ngIf="updatedSource">
 				<windmill-dropdown-search
@@ -105,36 +131,18 @@
 								{{ 'genericFields.amount.nonZeroAmount' | translate }}
 							</span>
 						</ng-container>
+						<ng-container errors *ngIf="createOfferForm.get('amount')?.hasError('nonMaxBenefitAmount')">
+							<span class="centric-error-message">
+								{{
+									'genericFields.amount.nonMaxBenefitAmountValidator'
+										| translate: { amount: benefitAmount }
+								}}
+							</span>
+						</ng-container>
 					</windmill-input>
 				</centric-form-control>
 			</centric-form-item>
 		</div>
-
-		<centric-form-item>
-			<centric-form-label>{{ 'general.acceptedGrants' | translate }}</centric-form-label>
-			<ng-container *ngIf="updatedGrants">
-				<windmill-dropdown-search
-					frontendRequiredInput
-					formControlName="grantsIds"
-					valuePropertyName="id"
-					displayPropertyName="title"
-					dropdownPlaceholder="{{ 'offer.acceptedGrantsPlaceholder' | translate }}"
-					[readonly]="isReactivating"
-					[source]="updatedGrants"
-					[maxHeight]="256"
-					[hasClearIcon]="true"
-					[multiple]="true"
-					[ariaLabelClearButtonSearchInput]="'general.label.close' | translate"
-					[ariaLabelClearButton]="'general.label.close' | translate"
-					[validationFunction]="validationFunctionError.bind(this, 'grantsIds', createOfferForm)"
-					(valueChanged)="onValueChangeOnCheckedGrants($event)"
-					(searchValueChange)="onSearchOnGrants($event)">
-					<ng-container errors *ngIf="hasFormControlRequiredErrors('grantsIds', createOfferForm)">
-						<span class="centric-error-message">{{ getErrorMessageFormInputs('grantsIds') }} </span>
-					</ng-container>
-				</windmill-dropdown-search>
-			</ng-container>
-		</centric-form-item>
 
 		<centric-form-item>
 			<centric-form-label>{{ 'offer.description' | translate }}</centric-form-label>
@@ -145,10 +153,31 @@
 					[readonly]="isReactivating"
 					[placeholder]="'offer.descriptionPlaceholder' | translate"
 					[ariaLabel]="'offer.descriptionPlaceholder'"
-					[maxLength]="1024"
-					[counterMessages]="counterMessages"
 					[ariaLabelClearIcon]="'general.label.close' | translate"
-					[validationFunction]="validationFunctionError.bind(this, 'description', createOfferForm)">
+					[validationFunction]="validationFunctionError.bind(this, 'description', createOfferForm)"
+					(textareaValueChanged)="
+						characterLimitMessageService.onTextareaValueChanged($event, maxTextAreaLength)
+					"
+					(clearValue)="characterLimitMessageService.onClearValue(maxTextAreaLength)">
+					@if (!characterLimitMessageService.isOverCharacterLimit) {
+						<ng-container hints>
+							<span class="centric-hint-message">
+								{{
+									characterLimitMessageService.messageKey
+										| translate: { count: characterLimitMessageService.messageCount }
+								}}
+							</span>
+						</ng-container>
+					} @else {
+						<ng-container errors>
+							<span class="centric-error-message">
+								{{
+									characterLimitMessageService.messageKey
+										| translate: { count: characterLimitMessageService.messageCount }
+								}}
+							</span>
+						</ng-container>
+					}
 					<ng-container errors *ngIf="hasFormControlRequiredErrors('description', createOfferForm)">
 						<span class="centric-error-message">
 							{{ getErrorMessageFormInputs('description') }}
@@ -165,7 +194,7 @@
 
 		<centric-form-item-group [type]="'inline'">
 			<centric-form-item>
-				<centric-form-label>{{ 'offer.validity' | translate }}</centric-form-label>
+				<centric-form-label>{{ 'genericFields.validity.label' | translate }}</centric-form-label>
 				<centric-form-control role="group" frontendRequiredInput>
 					<section class="validity">
 						<label class="time-label"> {{ 'general.from' | translate }} </label>
@@ -177,6 +206,8 @@
 							[ariaLabelClearIcon]="'general.label.close' | translate"
 							[hasClearIcon]="true"
 							[validationFunction]="validationFunctionError.bind(this, 'startDate', createOfferForm)"
+							[min]="getInitDateMin()"
+							[max]="getExpirationDateMax(true)"
 							(dateChange)="onStartDateChange()">
 						</windmill-date-picker>
 
@@ -189,6 +220,7 @@
 							[hasClearIcon]="true"
 							[ariaLabelClearIcon]="'general.label.close' | translate"
 							[min]="expirationDateInit(createOfferForm.controls['startDate'].value, false)"
+							[max]="getExpirationDateMax()"
 							[validationFunction]="
 								validationFunctionError.bind(this, 'expirationDate', createOfferForm)
 							">
@@ -249,7 +281,7 @@
 	</form>
 </div>
 <section mat-dialog-actions>
-	<centric-button ariaAttributes type="button-link-dark" (click)="close()">
+	<centric-button ariaAttributes type="ghost-greyscale" (click)="close()">
 		{{ 'general.button.cancel' | translate }}
 	</centric-button>
 	<centric-button ariaAttributes [disabled]="shouldDisableSaveButton()" (click)="confirmDialog()">

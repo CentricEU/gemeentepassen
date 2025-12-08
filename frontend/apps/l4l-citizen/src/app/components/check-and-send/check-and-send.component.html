@@ -1,0 +1,92 @@
+<section mat-dialog-content>
+	<form centric-complex-form [formGroup]="checkAndSendFormGroup">
+		<centric-alert [type]="'warning'" [attr.aria-hidden]="!isStepActive">
+			<div message [innerHTML]="'checkAndSend.info' | translate"></div>
+		</centric-alert>
+
+		<centric-form-item-group class="l4l-form-item-group">
+			<div class="header">
+				<p class="generic-color-text bold">{{ 'confirmIdentity.personalInformation' | translate }}</p>
+			</div>
+			<centric-form-item-group class="information-group">
+				@for (field of inputFields.slice(0, 4); track field) {
+					<centric-form-item class="information-item">
+						<section class="form-field">
+							<centric-form-label [attrFor]="field.id">
+								{{ field.labelKey | translate }}
+							</centric-form-label>
+							<centric-form-control>
+								<windmill-input
+									ariaAttributes
+									[formControlName]="field.controlName"
+									[id]="field.id"
+									[name]="field.name"
+									[readonly]="true">
+								</windmill-input>
+							</centric-form-control>
+						</section>
+					</centric-form-item>
+				}
+			</centric-form-item-group>
+		</centric-form-item-group>
+
+		<centric-form-item-group class="l4l-form-item-group">
+			<div class="header">
+				<p class="generic-color-text bold">{{ 'contactInformation.header' | translate }}</p>
+			</div>
+			<centric-form-item-group class="information-group">
+				@for (field of inputFields.slice(4, 6); track field) {
+					<centric-form-item class="information-item">
+						<section class="form-field">
+							<centric-form-label [attrFor]="field.id">
+								{{ field.labelKey | translate }}
+							</centric-form-label>
+							<centric-form-control>
+								<windmill-input
+									ariaAttributes
+									[formControlName]="field.controlName"
+									[id]="field.id"
+									[name]="field.name"
+									[readonly]="true">
+								</windmill-input>
+							</centric-form-control>
+						</section>
+					</centric-form-item>
+				}
+			</centric-form-item-group>
+		</centric-form-item-group>
+		<app-eligible-benefits></app-eligible-benefits>
+
+		<centric-form-item-group class="l4l-form-item-group" tabindex="0">
+			<div class="header">
+				<p class="generic-color-text bold">{{ 'checkAndSend.documentsUploaded' | translate }}</p>
+			</div>
+			@if (filesAdded && filesAdded.length > 0) {
+				<ul class="uploaded-files-list">
+					@for (file of filesAdded; let idx = $index; track file) {
+						<li class="uploaded-file-item">
+							<span id="file-{{ idx }}" class="file-name ellipsis">{{ idx + 1 }}. {{ file.name }}</span>
+						</li>
+					}
+				</ul>
+			}
+		</centric-form-item-group>
+
+		<centric-form-item-group class="l4l-form-item-group">
+			<div class="header" id="additionalInformation-title">
+				<p class="generic-color-text bold">{{ 'additionalInformation.title' | translate }}</p>
+			</div>
+			<centric-form-item class="section-content">
+				<centric-textarea2
+					ariaAttributes
+					[id]="'id-textarea-message'"
+					[formControlName]="'additionalMessage'"
+					[ariaLabelledby]="'additionalInformation-title'"
+					[readonly]="true"
+					[rows]="checkAndSendFormGroup.get('additionalMessage')?.value === '' ? 1 : 4"
+					[placeholder]="'additionalInformation.writeMessage' | translate">
+				</centric-textarea2>
+			</centric-form-item>
+		</centric-form-item-group>
+	</form>
+</section>

@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { AppType } from '@frontend/common';
 import { GenericAppComponent } from '@frontend/common-ui';
-import { CustomRoutes } from '@windmill/ng-windmill';
+import { CustomRoutes } from '@windmill/ng-windmill/sidenav';
 
 @Component({
 	selector: 'frontend-root',
 	templateUrl: './app.component.html',
 	styleUrls: ['./app.component.scss'],
+	standalone: false,
 })
 export class AppComponent extends GenericAppComponent {
 	public override applicationType = AppType.municipality;
@@ -17,6 +18,11 @@ export class AppComponent extends GenericAppComponent {
 				icon: 'layout-grid_b',
 				path: 'dashboard',
 				name: this.translateService.instant('general.pages.dashboard'),
+			},
+			{
+				icon: 'hand-euro-coin_b',
+				path: 'benefits',
+				name: this.translateService.instant('general.pages.benefits'),
 			},
 			{
 				icon: 'shop_b',
@@ -34,19 +40,24 @@ export class AppComponent extends GenericAppComponent {
 				name: this.translateService.instant('general.pages.suppliers'),
 			},
 			{
-				icon: 'coins_b',
-				path: 'grants',
-				name: this.translateService.instant('general.pages.grants'),
-			},
-			{
 				icon: 'id-card_b',
 				path: 'passholders',
 				name: this.translateService.instant('general.pages.passholders'),
 			},
 			{
+				icon: 'hand-card_b',
+				path: 'transactions',
+				name: this.translateService.instant('general.pages.transactions'),
+			},
+			{
 				icon: 'person_person_br',
 				path: 'user-management',
 				name: this.translateService.instant('general.pages.userManagement'),
+			},
+			{
+				icon: 'settings_b',
+				path: 'profile',
+				name: this.translateService.instant('general.pages.profile'),
 			},
 		];
 	}

@@ -1,5 +1,5 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
-@import '../../../../../../libs/shared-assets/_styles/pallete';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+@use '../../../../../../libs/shared-assets/_styles/pallete';
 
 :host {
 	width: 100%;
@@ -10,8 +10,8 @@
 }
 
 .image-section {
-	@include pos(relative);
-	@include size(156px, 132px);
+	@include mixins.pos(relative);
+	@include mixins.size(156px, 132px);
 	max-height: 132px;
 	background-repeat: no-repeat;
 	background-position: center center;
@@ -26,7 +26,7 @@
 }
 
 .address-section {
-	@include flex(column);
+	@include mixins.flex(column);
 	gap: 4px;
 }
 
@@ -35,9 +35,9 @@
 }
 
 .edit-logo {
-	@include pos(absolute, $t: 8px, $r: 8px);
-	@include size(32px, 32px);
-	@include flex(column, center, center);
+	@include mixins.pos(absolute, $t: 8px, $r: 8px);
+	@include mixins.size(32px, 32px);
+	@include mixins.flex(column, center, center);
 	border-radius: 8px;
 	padding: 8px;
 	background: var(--greyscale-0);
@@ -48,9 +48,9 @@
 }
 
 .generic-square {
-	@include pos(relative);
-	@include flex(column, center, center);
-	@include size(156px, 132px);
+	@include mixins.pos(relative);
+	@include mixins.flex(column, center, center);
+	@include mixins.size(156px, 132px);
 	border-radius: 8px;
 	background: var(--greyscale-50);
 

@@ -9,7 +9,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { WarningDialogData } from '@frontend/common';
 import { CustomDialogComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CentricToastrModule, DialogService, ToastrService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { CentricToastrModule, ToastrService } from '@windmill/ng-windmill/toastr';
 import { of } from 'rxjs';
 
 import { RejectOfferDto } from '../../_models/reject-offer-dto.model';
@@ -189,9 +190,9 @@ describe('OfferApprovalPopupComponent', () => {
 				autoFocus: true,
 				data: {
 					acceptButtonText: 'general.button.cancel',
-					acceptButtonType: 'button-warning',
+					acceptButtonType: 'high-emphasis-warning',
 					cancelButtonText: 'general.button.stay',
-					cancelButtonType: 'button-link-dark',
+					cancelButtonType: 'ghost-greyscale',
 					comments: '',
 					disableClosing: false,
 					fileName: '',

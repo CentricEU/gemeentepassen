@@ -8,12 +8,16 @@
 	"targets": {
 		"build": {
 			"executor": "@angular-devkit/build-angular:browser",
-			"outputs": ["{options.outputPath}"],
+			"outputs": [
+				"{options.outputPath}"
+			],
 			"options": {
 				"outputPath": "dist/apps/l4l-supplier",
 				"index": "apps/l4l-supplier/src/index.html",
 				"main": "apps/l4l-supplier/src/main.ts",
-				"polyfills": ["zone.js"],
+				"polyfills": [
+					"zone.js"
+				],
 				"tsConfig": "apps/l4l-supplier/tsconfig.app.json",
 				"assets": [
 					"apps/l4l-supplier/src/favicon.ico",
@@ -24,7 +28,9 @@
 						"output": "/assets/"
 					}
 				],
-				"styles": ["apps/l4l-supplier/src/styles.scss"],
+				"styles": [
+					"apps/l4l-supplier/src/styles.scss"
+				],
 				"scripts": []
 			},
 			"configurations": {
@@ -80,7 +86,7 @@
 						{
 							"type": "initial",
 							"maximumWarning": "2mb",
-							"maximumError": "12mb"
+							"maximumError": "13mb"
 						},
 						{
 							"type": "anyComponentStyle",
@@ -116,10 +122,10 @@
 			"executor": "@angular-devkit/build-angular:dev-server",
 			"configurations": {
 				"production": {
-					"browserTarget": "l4l-supplier:build:production"
+					"buildTarget": "l4l-supplier:build:production"
 				},
 				"development": {
-					"browserTarget": "l4l-supplier:build:development"
+					"buildTarget": "l4l-supplier:build:development"
 				}
 			},
 			"defaultConfiguration": "development"
@@ -131,15 +137,22 @@
 			}
 		},
 		"lint": {
-			"executor": "@nx/linter:eslint",
-			"outputs": ["{options.outputFile}"],
+			"executor": "@nx/eslint:lint",
+			"outputs": [
+				"{options.outputFile}"
+			],
 			"options": {
-				"lintFilePatterns": ["apps/l4l-supplier/**/*.ts", "apps/l4l-supplier/**/*.html"]
+				"lintFilePatterns": [
+					"apps/l4l-supplier/**/*.ts",
+					"apps/l4l-supplier/**/*.html"
+				]
 			}
 		},
 		"test": {
 			"executor": "@nx/jest:jest",
-			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"outputs": [
+				"{workspaceRoot}/coverage/{projectRoot}"
+			],
 			"options": {
 				"jestConfig": "apps/l4l-supplier/jest.config.ts",
 				"passWithNoTests": true

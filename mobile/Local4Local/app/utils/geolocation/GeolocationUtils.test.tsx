@@ -103,7 +103,7 @@ describe('GeolocationUtils', () => {
             await GeolocationUtils.watchCurrentLocation(setLocation);
             expect(Alert.alert).toHaveBeenCalledWith(
                 'Permission denied',
-                'Without your permission, Stadspassen can not access your location.',
+                'Without your permission, Gemeentepassen App can not access your location.',
                 [{ text: 'Try Again', onPress: expect.any(Function) }]
             );
         });

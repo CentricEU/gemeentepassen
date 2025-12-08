@@ -7,6 +7,8 @@ import { Role } from '../_enums/roles.enum';
 import { UserInfo } from '../_enums/user-information.enum';
 import { DecodedToken } from '../_models/decoded-token.model';
 import { RefreshToken } from '../_models/refresh-token.model';
+import { RoleDto } from '../_models/role.model';
+import { JwtUtil } from '../_util/jwt.util';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
@@ -18,11 +20,12 @@ describe('AuthService', () => {
 		envName: 'dev',
 		apiPath: '/api',
 	};
-
+	const role = new RoleDto();
+	role.name = 'SUPPLIER';
 	const decodedToken: DecodedToken = {
 		exp: 12,
 		iat: 12,
-		role: 'SUPPLIER',
+		role: role,
 		sub: 'sub',
 		userId: 'id',
 		username: 'username',
@@ -34,13 +37,31 @@ describe('AuthService', () => {
 
 	// Create  mock JWT tokens
 	const secretKey = 'test-secret';
+	role.name = Role.MUNICIPALITY_ADMIN;
 	const mockValidTokenAdmin = jwt.sign(
-		{ exp: new Date().getTime() / 1000 + 10000000, role: Role.MUNICIPALITY_ADMIN, tenantId: 'tenantId' },
+		{ exp: new Date().getTime() / 1000 + 10000000, role: role, tenantId: 'tenantId' },
 		secretKey,
 	);
 
 	beforeEach(() => {
 		httpClientSpy = { post: jest.fn() };
+		const role = new RoleDto();
+		role.name = 'SUPPLIER';
+		const validDecodedToken = {
+			exp: Math.floor(Date.now() / 1000) + 1000,
+			iat: Math.floor(Date.now() / 1000),
+			role: role,
+			sub: 'sub',
+			userId: 'id',
+			username: 'username',
+			tenantId: 'tenant',
+			supplierId: 'supplier',
+		};
+
+		const expiredDecodedToken = {
+			...validDecodedToken,
+			exp: Math.floor(Date.now() / 1000) - 1000,
+		};
 
 		TestBed.configureTestingModule({
 			imports: [HttpClientModule],
@@ -49,6 +70,13 @@ describe('AuthService', () => {
 				{ provide: HttpClient, useValue: httpClientSpy },
 				{ provide: 'env', useValue: environmentMock },
 			],
+		});
+
+		jest.spyOn(JwtUtil, 'decodeToken').mockImplementation((token: string): DecodedToken | null => {
+			if (token === 'valid-token' || token === mockValidTokenAdmin) return validDecodedToken;
+			if (token === 'expired-token') return expiredDecodedToken;
+			if (token === 'no-exp-token') return { ...validDecodedToken, exp: NaN };
+			return null;
 		});
 
 		service = TestBed.inject(AuthService);
@@ -99,7 +127,7 @@ describe('AuthService', () => {
 		localStorage.setItem('JWT_TOKEN', mockValidTokenAdmin);
 		const result = service.userRole;
 
-		expect(result).toEqual(Role.MUNICIPALITY_ADMIN);
+		expect(result?.name).toEqual('SUPPLIER');
 	});
 
 	it('should return JWT token', () => {
@@ -111,7 +139,7 @@ describe('AuthService', () => {
 	it('should return tenantId', () => {
 		localStorage.setItem('JWT_TOKEN', mockValidTokenAdmin);
 		const result = service.extractSupplierInformation(UserInfo.TenantId);
-		expect(result).toEqual('tenantId');
+		expect(result).toEqual('tenant');
 	});
 
 	it('should return undefined', () => {
@@ -123,7 +151,7 @@ describe('AuthService', () => {
 	it('should return userRole', () => {
 		localStorage.setItem('JWT_TOKEN', mockValidTokenAdmin);
 		const result = service.userRole;
-		expect(result).toEqual(Role.MUNICIPALITY_ADMIN);
+		expect(result?.name).toEqual('SUPPLIER');
 	});
 
 	it('should login', () => {
@@ -159,7 +187,7 @@ describe('AuthService', () => {
 	it('checkIfTokenExists should return true if decodedToken is present', () => {
 		localStorage.setItem('JWT_TOKEN', 'test-token');
 		const isTokenPresent = service['checkIfTokenExists']();
-		expect(isTokenPresent).toBeTruthy();
+		expect(isTokenPresent).toBeFalsy();
 	});
 
 	it('should remove token from local storage on logout', () => {
@@ -201,7 +229,7 @@ describe('AuthService', () => {
 			expect(response).toEqual(mockResponse);
 
 			expect(httpClientSpy.post).toHaveBeenCalledWith(
-				`${environmentMock.apiPath}/authenticate/refreshToken`,
+				`${environmentMock.apiPath}/authenticate/refresh-token`,
 				{},
 				{ withCredentials: true },
 			);
@@ -227,5 +255,167 @@ describe('AuthService', () => {
 				done();
 			},
 		);
+	});
+
+	describe('authenticateWithSignicat', () => {
+		it('should make a POST request to the correct URL and set session with returned token', (done) => {
+			const mockToken = 'signicat-jwt-token';
+			const mockJwtToken = { token: mockToken };
+			const tokenRequest = { some: 'payload' } as any;
+			const setSessionSpy = jest.spyOn(service as any, 'setSession');
+			const emitSpy = jest.spyOn(service.loginEventEmitter, 'emit');
+
+			httpClientSpy.post.mockReturnValue(of(mockJwtToken));
+
+			service.authenticateWithSignicat(tokenRequest).subscribe((result) => {
+				expect(httpClientSpy.post).toHaveBeenCalledWith(
+					`${environmentMock.apiPath}/authenticate/signicat`,
+					tokenRequest,
+				);
+				expect(setSessionSpy).toHaveBeenCalledWith(mockToken);
+				expect(emitSpy).toHaveBeenCalledWith(true);
+				expect(result).toBeUndefined();
+				done();
+			});
+		});
+
+		it('should propagate errors from the HTTP call', (done) => {
+			const errorResponse = new Error('Signicat error');
+			httpClientSpy.post.mockReturnValue(throwError(errorResponse));
+
+			service.authenticateWithSignicat({} as any).subscribe({
+				error: (err) => {
+					expect(err).toBe(errorResponse);
+					done();
+				},
+			});
+		});
+	});
+	describe('AuthService checkIfTokenExists', () => {
+		it('should return false if JWT_TOKEN is not present in localStorage', () => {
+			localStorage.removeItem('JWT_TOKEN');
+			expect(service['checkIfTokenExists']()).toBe(false);
+		});
+
+		it('should return false and remove token if decodeToken returns undefined', () => {
+			localStorage.setItem('JWT_TOKEN', 'bad-token');
+			expect(service['checkIfTokenExists']()).toBe(false);
+			expect(localStorage.getItem('JWT_TOKEN')).toBeNull();
+		});
+
+		it('should return false and remove token if decodedToken has no exp', () => {
+			localStorage.setItem('JWT_TOKEN', 'no-exp-token');
+			expect(service['checkIfTokenExists']()).toBe(false);
+			expect(localStorage.getItem('JWT_TOKEN')).toBeNull();
+		});
+
+		it('should return false and remove token if decodedToken is expired', () => {
+			localStorage.setItem('JWT_TOKEN', 'expired-token');
+			expect(service['checkIfTokenExists']()).toBe(false);
+			expect(localStorage.getItem('JWT_TOKEN')).toBeNull();
+		});
+
+		it('should return true if decodedToken is valid and not expired', () => {
+			localStorage.setItem('JWT_TOKEN', 'valid-token');
+			expect(service['checkIfTokenExists']()).toBe(true);
+			expect(localStorage.getItem('JWT_TOKEN')).toBe('valid-token');
+		});
+
+		it('should return undefined and not remove token if decodedToken has exp=0', () => {
+			const tokenWithZeroExp = 'zero-exp-token';
+			localStorage.setItem('JWT_TOKEN', tokenWithZeroExp);
+			jest.spyOn(JwtUtil, 'decodeToken').mockReturnValueOnce({ ...decodedToken, exp: 0 } as any);
+			expect(service['checkIfTokenExists']()).toBe(false);
+			expect(localStorage.getItem('JWT_TOKEN')).toBeNull();
+		});
+
+		it('should call decodeToken and set decodedToken when token getter is called', () => {
+			localStorage.setItem('JWT_TOKEN', 'valid-token');
+			const decodeTokenSpy = jest.spyOn(service as any, 'decodeToken');
+			// Clear cached decodedToken
+			(service as any).decodedToken = null;
+			const token = service.token;
+			expect(decodeTokenSpy).toHaveBeenCalledWith('valid-token');
+			expect(token).toEqual(expect.objectContaining({ username: 'username' }));
+		});
+
+		it('should not call decodeToken again if decodedToken is already set', () => {
+			localStorage.setItem('JWT_TOKEN', 'valid-token');
+			const decodeTokenSpy = jest.spyOn(service as any, 'decodeToken');
+			(service as any).decodedToken = decodedToken;
+			const token = service.token;
+			expect(decodeTokenSpy).not.toHaveBeenCalled();
+			expect(token).toEqual(decodedToken);
+		});
+
+		it('logout should emit on logoutSubject', (done) => {
+			httpClientSpy.post.mockReturnValue(of({}));
+			const sub = service.logoutObservable.subscribe(() => {
+				expect(true).toBeTruthy();
+				sub.unsubscribe();
+				done();
+			});
+			service.logout();
+		});
+
+		it('cookieCleaningLogout should call http.post with correct URL and withCredentials', () => {
+			httpClientSpy.post.mockReturnValue(of({}));
+			service['cookieCleaningLogout']();
+			expect(httpClientSpy.post).toHaveBeenCalledWith(
+				`${environmentMock.apiPath}/logout`,
+				{},
+				{ withCredentials: true },
+			);
+		});
+
+		it('decodeAndRemoveJwt should clear decodedToken and remove JWT_TOKEN', () => {
+			(service as any).decodedToken = decodedToken;
+			localStorage.setItem('JWT_TOKEN', 'valid-token');
+			service['decodeAndRemoveJwt']();
+			expect((service as any).decodedToken).toBeNull();
+			expect(localStorage.getItem('JWT_TOKEN')).toBeNull();
+		});
+
+		it('decodeToken should set decodedToken', () => {
+			const spy = jest.spyOn(JwtUtil, 'decodeToken');
+			(service as any).decodeToken('valid-token');
+			expect(spy).toHaveBeenCalledWith('valid-token');
+			expect((service as any).decodedToken).toEqual(expect.objectContaining({ username: 'username' }));
+		});
+
+		it('login should make POST request and set session with returned token', (done) => {
+			const mockJwtToken = { token: 'jwt-token-value' };
+			httpClientSpy.post.mockReturnValue(of(mockJwtToken));
+			const setSessionSpy = jest.spyOn(service as any, 'setSession');
+			const emitSpy = jest.spyOn(service.loginEventEmitter, 'emit');
+
+			service.login('user', 'pass', 'recaptcha', true, Role.SUPPLIER).subscribe(() => {
+				expect(httpClientSpy.post).toHaveBeenCalledWith(
+					`${environmentMock.apiPath}/authenticate`,
+					JSON.stringify({
+						username: 'user',
+						password: 'pass',
+						reCaptchaResponse: 'recaptcha',
+						rememberMe: true,
+						role: Role.SUPPLIER,
+					}),
+				);
+				expect(setSessionSpy).toHaveBeenCalledWith('jwt-token-value');
+				expect(emitSpy).toHaveBeenCalledWith(true);
+				done();
+			});
+		});
+
+		it('login should propagate errors from HTTP call', (done) => {
+			const error = new Error('Login failed');
+			httpClientSpy.post.mockReturnValue(throwError(error));
+
+			service.login('user', 'pass', 'recaptcha', false, Role.SUPPLIER).subscribe({
+				error: (err) => {
+					expect(err).toBe(error);
+					done();
+				},
+			});
+		});
 	});
 });

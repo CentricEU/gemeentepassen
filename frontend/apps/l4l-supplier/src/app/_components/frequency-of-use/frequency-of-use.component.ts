@@ -6,6 +6,7 @@ import { FormUtil, FrequencyOfUse } from '@frontend/common';
 	selector: 'frontend-frequency-of-use',
 	templateUrl: './frequency-of-use.component.html',
 	styleUrls: [],
+	standalone: false,
 })
 export class FrequencyOfUseComponent {
 	@Input() createOfferForm: FormGroup;

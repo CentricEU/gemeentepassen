@@ -1,12 +1,6 @@
-<ng-container [formGroup]="hoursForm">
+<ng-container *ngIf="isEnabledControl?.value" [formGroup]="hoursForm">
 	<centric-form-item-group [type]="'inline'">
-		<centric-form-control class="day-checkbox">
-			<windmill-checkbox
-				formControlName="isEnabled"
-				[label]="'general.weekdays.' + day | translate"
-				[id]="dayUppercase">
-			</windmill-checkbox>
-		</centric-form-control>
+		<span class="day-label">{{ 'general.weekdays.' + day | translate }}</span>
 		<ng-container formGroupName="schedule">
 			<centric-form-item>
 				<centric-form-control role="group">

@@ -1,3 +1,4 @@
+//[PDF Invoice] This record is no longer used, but kept for reference or future use
 package nl.centric.innovation.local4local.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

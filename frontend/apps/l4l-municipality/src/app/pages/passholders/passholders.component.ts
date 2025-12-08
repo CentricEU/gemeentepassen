@@ -1,11 +1,12 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialogConfig } from '@angular/material/dialog';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Router } from '@angular/router';
 import {
 	ActionButtonIcons,
 	ActionButtons,
 	Breadcrumb,
 	BreadcrumbService,
+	CitizenGroupsService,
 	ColumnDataType,
 	commonRoutingConstants,
 	ModalData,
@@ -17,45 +18,44 @@ import {
 } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil, TableBaseComponent, TableComponent } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService, ToastrService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { ToastrService } from '@windmill/ng-windmill/toastr';
 
 import { PassholdersService } from '../../_services/passholders.service';
-import { AssignGrantComponent } from '../../components/assign-grant/assign-grant.component';
 import { ImportPassholdersComponent } from '../../components/import-passholders/import-passholders.component';
 
 @Component({
 	selector: 'frontend-passholders',
 	templateUrl: './passholders.component.html',
 	styleUrls: ['./passholders.component.scss'],
+	standalone: false,
 })
 export class PassholdersComponent extends TableBaseComponent implements OnInit, OnDestroy {
 	@ViewChild('passholdersTable') passholdersTable: TableComponent<PassholderViewDto>;
 
+	public showCreateCitizenGroupState = true;
 	public isMultipleSelect = false;
-
-	private assignGrantsDialogRef: MatDialogRef<AssignGrantComponent>;
-
-	public get typeOfModal() {
-		return AssignGrantComponent;
-	}
 
 	public get isDataExisting(): boolean {
 		return this.dataCount > 0;
 	}
 
-	constructor(
-		private dialogService: DialogService,
-		private breadcrumbService: BreadcrumbService,
-		private passholderService: PassholdersService,
-		private readonly toastrService: ToastrService,
-		private translateService: TranslateService,
-	) {
+	private readonly breadcrumbService = inject(BreadcrumbService);
+	private readonly dialogService = inject(DialogService);
+	private readonly translateService = inject(TranslateService);
+	private readonly toastrService = inject(ToastrService);
+	private readonly passholderService = inject(PassholdersService);
+	private readonly citizenGroupsService = inject(CitizenGroupsService);
+	private readonly router = inject(Router);
+
+	constructor() {
 		super();
 	}
 
 	public ngOnInit(): void {
 		this.countPassholders();
 		this.initBreadcrumbs();
+		this.getCitizenGroupsCount();
 	}
 
 	public ngOnDestroy(): void {
@@ -83,6 +83,10 @@ export class PassholdersComponent extends TableBaseComponent implements OnInit, 
 		this.passholdersTable.manageColumns();
 	}
 
+	public goToProfilePage(): void {
+		this.router.navigate([commonRoutingConstants.profile]);
+	}
+
 	public loadData(event: PaginatedData<PassholderViewDto>): void {
 		this.passholderService.getPassholders(event.currentIndex, event.pageSize).subscribe((data) => {
 			this.afterDataLoaded(data);
@@ -91,14 +95,13 @@ export class PassholdersComponent extends TableBaseComponent implements OnInit, 
 
 	public initializeColumns(): void {
 		this.allColumns = [
-			new TableColumn('checkbox', 'checkbox', 'checkbox', true, true, ColumnDataType.DEFAULT, true),
-			new TableColumn('general.name', 'name', 'name', true, false),
+			new TableColumn('general.name', 'name', 'name', true, true),
 			new TableColumn('general.bsn', 'bsn', 'bsn', true, false),
 			new TableColumn('general.address', 'address', 'address', true, false),
 			new TableColumn('general.residenceCity', 'residenceCity', 'residenceCity', true, false),
-			new TableColumn('general.expiringDate', 'expiringDate', 'expiringDate', true, false),
-			new TableColumn('general.passNumber', 'passNumber', 'passNumber', true, false),
-			new TableColumn('passholders.assignedGrants', 'grants', 'grants', true, true, ColumnDataType.CHIPS),
+			new TableColumn('general.expiringDate', 'expiringDate', 'expiringDate', true, false, ColumnDataType.DATE),
+			new TableColumn('general.passNumber', 'passNumber', 'passNumber', true, true),
+			new TableColumn('general.citizenGroup', 'citizenGroupName', 'citizenGroupName', true, false),
 			new TableColumn(
 				'general.registered',
 				'isRegistered',
@@ -130,13 +133,13 @@ export class PassholdersComponent extends TableBaseComponent implements OnInit, 
 		const dataWithActions = data.map((element) => ({
 			...element,
 			actionButtons: [
-				new TableActionButton(
-					ActionButtons.visibilityIcon,
-					'actionButtons.viewPassholder',
-					false,
-					'',
-					ActionButtonIcons.uncontained,
-				),
+				// new TableActionButton(
+				// 	ActionButtons.visibilityIcon,
+				// 	'actionButtons.viewPassholder',
+				// 	false,
+				// 	'',
+				// 	ActionButtonIcons.uncontained,
+				// ),
 				new TableActionButton(
 					ActionButtons.trashIcon,
 					'actionButtons.delete',
@@ -148,34 +151,6 @@ export class PassholdersComponent extends TableBaseComponent implements OnInit, 
 		}));
 
 		this.passholdersTable.afterDataLoaded(dataWithActions);
-	}
-
-	public assignMultipleGrants(): void {
-		this.assignGrantsDialogRef = this.dialogService.prompt(this.typeOfModal, {
-			disableClose: false,
-			data: {
-				chipTitleColumn: 'title',
-				parentRecord: this.getSelectedPassholders(),
-				isMultipleAssign: true,
-			},
-		}) as MatDialogRef<AssignGrantComponent>;
-
-		if (!this.assignGrantsDialogRef) {
-			return;
-		}
-
-		this.assignGrantsDialogRef.afterClosed().subscribe((success) => {
-			if (!success) {
-				return;
-			}
-
-			this.passholdersTable.deselectAllCheckboxes();
-			this.loadData(this.passholdersTable.paginatedData);
-		});
-	}
-
-	private getSelectedPassholders(): PassholderViewDto[] {
-		return this.passholdersTable.currentDisplayedPage.filter((item) => item.selected);
 	}
 
 	private countPassholders(): void {
@@ -206,7 +181,7 @@ export class PassholdersComponent extends TableBaseComponent implements OnInit, 
 			'general.button.cancel',
 			'general.button.delete',
 			false,
-			'alert',
+			'danger',
 			'danger',
 			'',
 			data,
@@ -234,5 +209,13 @@ export class PassholdersComponent extends TableBaseComponent implements OnInit, 
 					this.countPassholders();
 				});
 			});
+	}
+
+	private getCitizenGroupsCount(): void {
+		this.citizenGroupsService.countCitizenGroups().subscribe((count) => {
+			if (count > 0) {
+				this.showCreateCitizenGroupState = false;
+			}
+		});
 	}
 }

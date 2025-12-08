@@ -40,8 +40,26 @@ export default {
 		]
 	},
 	transformIgnorePatterns: [
-		'node_modules/(?!.*\\.mjs$|ol/|ol/source|ol|quick-lru|lodash-es|color-(space|parse|rgba|name)/)'
-	],
+  'node_modules/(?!' +
+    '@angular' +
+	'|@windmill' +
+    '|@innovation' +
+    '|@ngx-translate' +
+    '|ngx-cookie' +
+    '|angular-oauth2-oidc' +
+    '|ng2-charts' +
+    '|chart\\.js' +
+    '|chartjs-plugin-datalabels' +
+    '|jwt-decode' +
+    '|ngx-mask' +
+    '|ng-recaptcha' +
+    '|angular-iban' +
+    '|ol' +
+    '|quick-lru' +
+    '|lodash-es' +
+    '|color-(space|parse|rgba|name)' +
+  ')'
+],
 	snapshotSerializers: [
 		'jest-preset-angular/build/serializers/no-ng-attributes',
 		'jest-preset-angular/build/serializers/ng-snapshot',

@@ -7,7 +7,7 @@ import nl.centric.innovation.local4local.entity.User;
 import nl.centric.innovation.local4local.exceptions.TokenRefreshException;
 import nl.centric.innovation.local4local.repository.RefreshTokenRepository;
 import nl.centric.innovation.local4local.repository.UserRepository;
-import nl.centric.innovation.local4local.service.impl.RefreshTokenServiceImpl;
+import nl.centric.innovation.local4local.service.impl.RefreshTokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,9 +32,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class RefreshTokenServiceImplTests {
+class RefreshTokenServiceImplTests {
     @InjectMocks
-    private RefreshTokenServiceImpl refreshTokenService;
+    private RefreshTokenService refreshTokenService;
 
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
@@ -52,7 +52,7 @@ public class RefreshTokenServiceImplTests {
     }
 
     @Test
-    public void GivenValidToken_WhenFindByToken_ThenExpectRefreshToken() {
+    void GivenValidToken_WhenFindByToken_ThenExpectRefreshToken() {
         // Given
         String token = "sampleToken";
         RefreshToken expectedToken = new RefreshToken();
@@ -68,7 +68,7 @@ public class RefreshTokenServiceImplTests {
     }
 
     @Test
-    public void GivenUser_WhenCreatingRefreshToken_ThenExpectRefreshToken() {
+    void GivenUser_WhenCreatingRefreshToken_ThenExpectRefreshToken() {
         // Given
         User user = new User(); // Create a user as needed
 
@@ -82,7 +82,7 @@ public class RefreshTokenServiceImplTests {
     }
 
     @Test
-    public void GivenValidRefreshTokenRequest_WhenRefreshToken_ThenExpectSuccess() {
+    void GivenValidRefreshTokenRequest_WhenRefreshToken_ThenExpectSuccess() {
         // Given
         String validRefreshToken = "validRefreshToken";
 
@@ -103,7 +103,7 @@ public class RefreshTokenServiceImplTests {
     }
 
     @Test
-    public void GivenInexistingRefreshToken_WhenRefreshToken_ThenExpectTokenRefreshException() {
+    void GivenInexistingRefreshToken_WhenRefreshToken_ThenExpectTokenRefreshException() {
         // Given
         String invalidRefreshToken = "invalidRefreshToken";
 
@@ -115,7 +115,7 @@ public class RefreshTokenServiceImplTests {
     }
 
     @Test
-    public void GivenExpiredTokenRequest_WhenRefreshToken_ThenExpectSuccess() {
+    void GivenExpiredTokenRequest_WhenRefreshToken_ThenExpectSuccess() {
         // Given
         String validRefreshToken = "validRefreshToken";
 
@@ -132,7 +132,7 @@ public class RefreshTokenServiceImplTests {
     }
 
     @Test
-    public void GivenValidToken_WhenDeleteByToken_ThenExpectDeletedUser() {
+    void GivenValidToken_WhenDeleteByToken_ThenExpectDeletedUser() {
         // Given
         String validRefreshToken = "validRefreshToken";
 
@@ -145,7 +145,7 @@ public class RefreshTokenServiceImplTests {
 
 
     @Test
-    public void GivenUserAndRefreshTokenExpired_WhenCreatingRefreshToken_ThenExpectRefreshToken() {
+    void GivenUserAndRefreshTokenExpired_WhenCreatingRefreshToken_ThenExpectRefreshToken() {
         // Given
         User user = new User();
         user.setId(UUID.randomUUID());// Create a user as needed
@@ -166,7 +166,7 @@ public class RefreshTokenServiceImplTests {
     }
 
     @Test
-    public void GivenUserAndRefreshTokenValid_WhenCreatingRefreshToken_ThenExpectRefreshToken() {
+    void GivenUserAndRefreshTokenValid_WhenCreatingRefreshToken_ThenExpectRefreshToken() {
         // Given
         User user = new User();
         user.setId(UUID.randomUUID());// Create a user as needed

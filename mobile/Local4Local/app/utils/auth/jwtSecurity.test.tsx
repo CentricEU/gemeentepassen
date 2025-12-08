@@ -11,8 +11,8 @@ jest.mock('react-native-crypto-js', () => ({
     AES: {
         encrypt: jest.fn().mockReturnValue('encryptedToken'),
         decrypt: jest.fn().mockReturnValue({
-            words: [], 
-            sigBytes: 0, 
+            words: [],
+            sigBytes: 0,
             toString: jest.fn().mockReturnValue('decryptedToken')
         }),
     },
@@ -21,8 +21,8 @@ jest.mock('react-native-crypto-js', () => ({
 
 describe('storeToken', () => {
     it('should store token in AsyncStorage', async () => {
-        await storeToken('token');
-        expect(AsyncStorage.setItem).toHaveBeenCalledWith('jwt_token', 'encryptedToken');
+        await storeToken('token', true);
+        expect(AsyncStorage.setItem).toHaveBeenCalledWith('accessToken', 'encryptedToken');
     });
 
     it('should handle error during token storage', async () => {
@@ -32,7 +32,7 @@ describe('storeToken', () => {
 
         const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation();
 
-        await storeToken('token');
+        await storeToken('token', true);
 
         expect(consoleErrorMock).toHaveBeenCalledWith('Error storing token:', new Error(errorMessage));
 
@@ -44,7 +44,7 @@ describe('retrieveToken', () => {
     it('should return undefined if no token found', async () => {
         (AsyncStorage.getItem as jest.MockedFunction<typeof AsyncStorage.getItem>).mockResolvedValueOnce(null);
 
-        const token = await retrieveToken();
+        const token = await retrieveToken(true);
 
         expect(token).toBeUndefined();
     });
@@ -52,7 +52,7 @@ describe('retrieveToken', () => {
     it('should return undefined if no token found', async () => {
         (AsyncStorage.getItem as jest.MockedFunction<typeof AsyncStorage.getItem>).mockResolvedValueOnce(null);
 
-        const token = await retrieveToken();
+        const token = await retrieveToken(true);
 
         expect(token).toBeUndefined();
     });
@@ -63,20 +63,20 @@ describe('retrieveToken', () => {
 
         const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation();
 
-        const token = await retrieveToken();
+        const token = await retrieveToken(true);
 
         expect(consoleErrorMock).toHaveBeenCalledWith('Error retrieving token:', new Error(errorMessage));
         expect(token).toBeUndefined();
 
         consoleErrorMock.mockRestore();
     });
-    
+
 });
 
 describe('clearToken', () => {
     it('should clear token from AsyncStorage', async () => {
-        await clearToken();
-        expect(AsyncStorage.removeItem).toHaveBeenCalledWith('jwt_token');
+        await clearToken(true);
+        expect(AsyncStorage.removeItem).toHaveBeenCalledWith('accessToken');
     });
 
     it('should handle error during token clearing', async () => {
@@ -85,7 +85,7 @@ describe('clearToken', () => {
 
         const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation();
 
-        await clearToken();
+        await clearToken(true);
 
         expect(consoleErrorMock).toHaveBeenCalledWith('Error clearing token:', new Error(errorMessage));
 

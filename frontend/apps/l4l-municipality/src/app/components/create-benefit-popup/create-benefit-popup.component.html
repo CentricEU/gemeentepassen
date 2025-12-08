@@ -1,0 +1,228 @@
+<section mat-dialog-title>
+	<h3>{{ 'createBenefit.title' | translate }}</h3>
+	<button
+		class="close-button"
+		ariaAttributes
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="close()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+	</button>
+</section>
+<section mat-dialog-content>
+	<form centric-complex-form [formGroup]="createBenefitForm">
+		<centric-form-item-group class="l4l-form-item-group">
+			<div class="title-group">{{ 'generalInformation.header' | translate }}</div>
+			<centric-form-item>
+				<centric-form-label [attrFor]="'benefit-name-id'">
+					{{ 'createBenefit.name' | translate }}
+				</centric-form-label>
+				<centric-form-control frontendRequiredInput>
+					<windmill-input
+						ariaAttributes
+						frontendHtmlContentValidator
+						formControlName="benefitName"
+						[id]="'benefit-name-id'"
+						[ariaLabelClearIcon]="'general.label.clear' | translate"
+						[hasClearIcon]="true"
+						[placeholder]="'createBenefit.namePlaceholder' | translate"
+						[maxLength]="64"
+						[ariaDescribedby]="
+							createBenefitForm.get('benefitName')?.errors &&
+							createBenefitForm.get('benefitName')?.touched
+								? 'benefit-name-error'
+								: ''
+						"
+						[validationFunction]="validationFunctionError.bind(this, 'benefitName', createBenefitForm)">
+						@if (hasFormControlRequiredErrors('benefitName', createBenefitForm)) {
+							<ng-container errors>
+								<span class="centric-error-message" [attr.id]="'benefit-name-error'">
+									{{ 'createBenefit.nameFormControlRequired' | translate }}
+								</span>
+							</ng-container>
+						}
+						@if (createBenefitForm.get('benefitName')?.hasError('isHTML')) {
+							<ng-container errors>
+								<span class="centric-error-message" [attr.id]="'benefit-name-error'">
+									{{ 'errors.htmlContent' | translate }}
+								</span>
+							</ng-container>
+						}
+					</windmill-input>
+				</centric-form-control>
+			</centric-form-item>
+
+			<centric-form-item>
+				<centric-form-label [attrFor]="'benefit-description-id'">
+					{{ 'general.description' | translate }}
+				</centric-form-label>
+				<centric-form-control frontendRequiredInput>
+					<centric-textarea2
+						ariaAttributes
+						frontendHtmlContentValidator
+						formControlName="benefitDescription"
+						[id]="'benefit-description-id'"
+						[ariaLabelClearIcon]="'general.label.clear' | translate"
+						[placeholder]="'createBenefit.descriptionPlaceholder' | translate"
+						[ariaDescribedby]="
+							createBenefitForm.get('benefitDescription')?.errors &&
+							createBenefitForm.get('benefitDescription')?.touched
+								? 'benefit-description-error'
+								: ''
+						"
+						[validationFunction]="
+							validationFunctionError.bind(this, 'benefitDescription', createBenefitForm)
+						"
+						(textareaValueChanged)="characterLimitMessageService.onTextareaValueChanged($event, maxLength)"
+						(clearValue)="characterLimitMessageService.onClearValue(maxLength)">
+						@if (!characterLimitMessageService.isOverCharacterLimit) {
+							<ng-container hints>
+								<span class="centric-hint-message">
+									{{
+										characterLimitMessageService.messageKey
+											| translate: { count: characterLimitMessageService.messageCount }
+									}}
+								</span>
+							</ng-container>
+						} @else {
+							<ng-container errors>
+								<span class="centric-error-message" [attr.id]="'benefit-description-error'">
+									{{
+										characterLimitMessageService.messageKey
+											| translate: { count: characterLimitMessageService.messageCount }
+									}}
+								</span>
+							</ng-container>
+						}
+						@if (hasFormControlRequiredErrors('benefitDescription', createBenefitForm)) {
+							<ng-container errors>
+								<span class="centric-error-message" [attr.id]="'benefit-description-error'">
+									{{ 'createBenefit.descriptionFormControlRequired' | translate }}
+								</span>
+							</ng-container>
+						}
+						@if (createBenefitForm.get('benefitDescription')?.hasError('isHTML')) {
+							<ng-container errors>
+								<span class="centric-error-message" [attr.id]="'benefit-description-error'">
+									{{ 'errors.htmlContent' | translate }}
+								</span>
+							</ng-container>
+						}
+					</centric-textarea2>
+				</centric-form-control>
+			</centric-form-item>
+
+			<centric-form-item>
+				<centric-form-label [attrFor]="'benefit-amount-id'">{{
+					'general.amount' | translate
+				}}</centric-form-label>
+				<centric-form-control frontendRequiredInput>
+					<windmill-input
+						ariaAttributes
+						ariaLabelClearIcon
+						mask="separator.2"
+						formControlName="amount"
+						[id]="'benefit-amount-id'"
+						[placeholder]="'createBenefit.amountPlaceholder' | translate"
+						[decimalMarker]="','"
+						[maxLength]="10"
+						[hasClearIcon]="true"
+						[ariaLabelTranslation]="'createBenefit.amountPlaceholder'"
+						[ariaDescribedby]="
+							createBenefitForm.get('amount')?.errors && createBenefitForm.get('amount')?.touched
+								? 'benefit-amount-error'
+								: ''
+						"
+						[validationFunction]="validationFunctionError.bind(this, 'amount', createBenefitForm)">
+						@if (hasFormControlRequiredErrors('amount', createBenefitForm)) {
+							<ng-container errors>
+								<span class="centric-error-message" [attr.id]="'benefit-amount-error'">
+									{{ 'genericFields.amount.amountFormControlRequired' | translate }}
+								</span>
+							</ng-container>
+						}
+					</windmill-input>
+				</centric-form-control>
+			</centric-form-item>
+
+			<centric-form-item-group [type]="'inline'">
+				<centric-form-item>
+					<centric-form-label [attrFor]="'benefit-validity-id'">{{
+						'genericFields.validity.label' | translate
+					}}</centric-form-label>
+					<centric-form-control [id]="'benefit-validity-id'" role="group" frontendRequiredInput>
+						<section class="validity">
+							<label for="benefitStartDate" class="time-label"> {{ 'general.from' | translate }} </label>
+							<windmill-date-picker
+								id="benefit-start-date-id"
+								name="benefitStartDate"
+								formControlName="startDate"
+								(dateChange)="onStartDateChange()"
+								[placeholder]="'general.dateFormat' | translate"
+								[hasClearIcon]="true"
+								[ariaLabel]="'general.from' | translate"
+								[ariaLabelClearIcon]="'general.label.close' | translate"
+								[validationFunction]="
+									validationFunctionError.bind(this, 'startDate', createBenefitForm)
+								">
+							</windmill-date-picker>
+
+							<label for="benefitExpirationDate" class="time-label">
+								{{ 'general.to' | translate }}
+							</label>
+							<windmill-date-picker
+								id="benefit-expiration-date-id"
+								name="benefitExpirationDate"
+								formControlName="expirationDate"
+								[placeholder]="'general.dateFormat' | translate"
+								[hasClearIcon]="true"
+								[ariaLabel]="'general.to' | translate"
+								[min]="expirationDateInit(createBenefitForm.controls['startDate'].value, isEditable)"
+								[ariaLabelClearIcon]="'general.label.close' | translate"
+								[validationFunction]="
+									validationFunctionError.bind(this, 'expirationDate', createBenefitForm)
+								">
+							</windmill-date-picker>
+						</section>
+					</centric-form-control>
+					@if (displayValidityError()) {
+						<ng-container errors>
+							<span class="centric-error-message" [attr.id]="'validity-type-error'"
+								>{{ 'genericFields.validity.validityFormControlRequired' | translate }}
+							</span>
+						</ng-container>
+					}
+				</centric-form-item>
+			</centric-form-item-group>
+		</centric-form-item-group>
+		<centric-form-item-group>
+			<div class="title-group">{{ 'citizenGroup.eligibilityCriteriaTitle' | translate }}</div>
+			<centric-form-item>
+				<centric-form-label [attr.id]="'idCheckboxCitizenGroups'" class="eligibility-criteria-label">
+					{{ 'createBenefit.citizenGroups' | translate }}
+				</centric-form-label>
+				<centric-form-control frontendRequiredInput class="citizen-group-block">
+					<div role="group" [attr.aria-labelledby]="'idCheckboxCitizenGroups'">
+						@for (i of citizenGroupsData; track i) {
+							<windmill-checkbox
+								class="citizen-group-block citizen-group-checkbox"
+								[formControlName]="i.formControl"
+								[label]="i.label"
+								[id]="i.id"
+								[testCheckboxId]="i.dataTestId">
+							</windmill-checkbox>
+						}
+					</div>
+				</centric-form-control>
+			</centric-form-item>
+		</centric-form-item-group>
+	</form>
+</section>
+<section mat-dialog-actions>
+	<centric-button ariaAttributes type="ghost-greyscale" (click)="close()">
+		{{ 'general.button.cancel' | translate }}
+	</centric-button>
+	<centric-button ariaAttributes (click)="createNewBenefit()" [disabled]="isSaveDisabled">
+		{{ 'general.button.save' | translate }}
+	</centric-button>
+</section>

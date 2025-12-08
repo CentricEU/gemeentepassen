@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { commonRoutingConstants, MobileBrowserUtil, ModalData } from '@frontend/common';
+import { commonRoutingConstants, Environment, MobileBrowserUtil, ModalData } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { map } from 'rxjs/operators';
 
 @Component({
 	selector: 'frontend-registration-successful',
 	templateUrl: './registration-successful.component.html',
 	styleUrls: ['./registration-successful.component.scss'],
+	standalone: false,
 })
 export class RegistrationSuccessfulComponent implements OnInit {
 	public isCitizen: boolean;
@@ -19,6 +20,7 @@ export class RegistrationSuccessfulComponent implements OnInit {
 		private readonly dialogService: DialogService,
 		private readonly router: Router,
 		private readonly route: ActivatedRoute,
+		@Inject('env') private environment: Environment,
 	) {}
 
 	public ngOnInit(): void {
@@ -86,7 +88,7 @@ export class RegistrationSuccessfulComponent implements OnInit {
 		if (!response) return;
 
 		if (this.isMobile) {
-			MobileBrowserUtil.openMobileApp('Login');
+			MobileBrowserUtil.openMobileApp(this.environment, 'Login');
 			return;
 		}
 		this.navigateToLogin();

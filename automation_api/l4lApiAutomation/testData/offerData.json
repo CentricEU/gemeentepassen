@@ -1,0 +1,18 @@
+{
+	"title": "Automation API Offer Data",
+	"description": "This is a test offer created for automation purposes.",
+	"citizenOfferType": "CITIZEN_WITH_PASS",
+	"offerTypeId": 1,
+	"startDate": "2025-07-01",
+	"expirationDate": "2030-07-31",
+	"amount": 54,
+	"grantsIds": ["558d44a9-abbd-48f1-a29b-03d01e611080"],
+	"restrictionRequestDto": {
+		"frequencyOfUse": "SINGLE_USE",
+		"timeFrom": "2025-07-23T00:00:00.000Z",
+		"timeTo": "2025-07-23T23:00:00.000Z",
+		"ageRestriction": 18,
+		"minPrice": 1,
+		"maxPrice": 200
+	}
+}

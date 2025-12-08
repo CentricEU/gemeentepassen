@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 	selector: 'frontend-drag-file',
 	templateUrl: './drag-file.component.html',
 	styleUrls: ['./drag-file.component.scss'],
+	standalone: false,
 })
 export class DragFileComponent {
 	@Input() permittedFormats: FileExtension[];
@@ -43,11 +44,8 @@ export class DragFileComponent {
 	}
 
 	public fileUploadDescriptionText(): string {
-		return this.translateService.instant('upload.description');
-	}
-
-	public tooManyFilesErrorMessage(): string {
-		return this.translateService.instant('upload.warningFilesNumber');
+		const translationLabel = this.uploadedFile ? 'upload.descriptionReplace' : 'upload.description';
+		return this.translateService.instant(translationLabel);
 	}
 
 	public getUploadedFiles(filesSelected: File[]): void {

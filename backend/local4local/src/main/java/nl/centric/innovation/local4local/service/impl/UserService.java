@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -14,10 +15,14 @@ import javax.mail.internet.InternetAddress;
 import javax.servlet.http.HttpServletResponse;
 
 import lombok.RequiredArgsConstructor;
+import nl.centric.innovation.local4local.authentication.JwtUtil;
 import nl.centric.innovation.local4local.dto.CitizenViewDto;
 import nl.centric.innovation.local4local.dto.CreateUserDto;
 import nl.centric.innovation.local4local.dto.RegisterCitizenUserDto;
 
+import nl.centric.innovation.local4local.dto.SetupPasswordDTO;
+import nl.centric.innovation.local4local.dto.SetupPasswordValidateDTO;
+import nl.centric.innovation.local4local.dto.UserTableDto;
 import nl.centric.innovation.local4local.entity.DeletedUser;
 import nl.centric.innovation.local4local.entity.LoginAttempt;
 import nl.centric.innovation.local4local.entity.Passholder;
@@ -40,6 +45,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -63,6 +72,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @PropertySource({"classpath:errorcodes.properties"})
 public class UserService {
+
+    public static final String ORDER_CRITERIA = "createdDate";
 
     private final UserRepository userRepository;
 
@@ -89,6 +100,8 @@ public class UserService {
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
     private final DeletedUserRepository deletedUserRepository;
+
+    private final JwtUtil jwtUtil;
 
     @Value("${error.account.tokenExpired}")
     private String confirmationTokenExpired;
@@ -137,8 +150,17 @@ public class UserService {
     @Value("${local4local.municipality.server.name}")
     private String baseMunicipalityUrl;
 
+    @Value("${local4local.citizen.server.name}")
+    private String baseCitizenUrl;
+
     @Value("${error.role.notAllowed}")
     private String errorRoleNotAllowed;
+
+    @Value("${error.account.notConfirmed}")
+    private String accountNotConfirmed;
+
+    @Value("${error.user.deactivated}")
+    private String errorAccountDeactivated;
 
     private static final int ATTEMPTS_LIMIT = 3;
 
@@ -169,7 +191,7 @@ public class UserService {
     }
 
     public UserViewDto save(User user) {
-        return ModelConverter.entityToUserViewDto(userRepository.save(user));
+        return UserViewDto.entityToUserViewDtoSupplier(userRepository.save(user));
     }
 
     @Transactional
@@ -192,12 +214,18 @@ public class UserService {
         return ModelConverter.entityToCitizenViewDto(savedUser);
     }
 
-    public List<User> findAllBySupplierId(UUID supplierId) {
-        return userRepository.findAllBySupplierId(supplierId);
+    public List<User> findAllSuppliersBySupplierId(UUID supplierId) {
+        Role supplierRole = roleRepository.findByName(Role.ROLE_SUPPLIER).orElseThrow(() -> new IllegalArgumentException("Role not found"));
+        return userRepository.findAllBySupplierIdAndRole(supplierId, supplierRole);
+    }
+
+    public List<User> findAllCashiersBySupplierId(UUID supplierId) {
+        Role supplierRole = roleRepository.findByName(Role.ROLE_CASHIER).orElseThrow(() -> new IllegalArgumentException("Role not found"));
+        return userRepository.findAllBySupplierIdAndRole(supplierId, supplierRole);
     }
 
     public String[] getEmailsBySupplierId(UUID supplierId) {
-        List<User> supplierUsers = findAllBySupplierId(supplierId);
+        List<User> supplierUsers = findAllSuppliersBySupplierId(supplierId);
         return supplierUsers.stream().map(User::getUsername).toArray(String[]::new);
     }
 
@@ -208,7 +236,12 @@ public class UserService {
             throw new DtoValidateNotFoundException(errorEntityNotFound);
         }
 
-        return ModelConverter.entityToUserViewDto(user.get());
+        if (isRoleSupplier(user.get()) || isRoleCashier(user.get())) {
+            return UserViewDto.entityToUserViewDtoSupplier(user.get());
+        }
+
+        return UserViewDto.entityToUserViewDtoMunicipality(user.get());
+
     }
 
     public void recoverPassword(RecoverPasswordDTO recoverPasswordDTO, String remoteAddress, String language)
@@ -218,7 +251,15 @@ public class UserService {
 
         User user = getUserByEmail(recoverPasswordDTO.email());
 
-        if(!user.getRole().getName().equals(recoverPasswordDTO.role())) {
+        if (!user.getIsEnabled()) {
+            throw new DtoValidateException(accountNotConfirmed);
+        }
+
+        if(!user.isActive() && user.getRole().getName().equals(Role.ROLE_CITIZEN)) {
+            throw new DtoValidateException(errorAccountDeactivated);
+        }
+
+        if (!user.getRole().getName().equals(recoverPasswordDTO.role())) {
             throw new DtoValidateException(errorRoleNotAllowed);
         }
 
@@ -253,6 +294,43 @@ public class UserService {
         userRepository.save(updatedUser);
         rp.get().setIsActive(false);
         recoverPasswordService.save(rp.get());
+    }
+
+
+    public void setupPassword(SetupPasswordDTO setupPasswordDTO)
+            throws DtoValidateException, PasswordSameException {
+
+        Optional<User> user = userRepository.findByUsernameIgnoreCase(setupPasswordDTO.username());
+
+        if (user.isEmpty()) {
+            throw new DtoValidateNotFoundException(errorEntityNotFound);
+        }
+
+        if (!user.get().getPassword().equals(setupPasswordDTO.token())) {
+            throw new DtoValidateException(errorEntityValidate);
+        }
+
+        if (!isPasswordValid(setupPasswordDTO.password())) {
+            throw new DtoValidateException(errorPasswordRequirements);
+        }
+
+        if (bCryptPasswordEncoder.matches(user.get().getPassword(), setupPasswordDTO.password())) {
+            throw new PasswordSameException(errorSamePassword);
+        }
+
+        user.get().setPassword(bCryptPasswordEncoder.encode(setupPasswordDTO.password()));
+        user.get().setIsEnabled(true);
+        userRepository.save(user.get());
+    }
+
+    public Boolean validateToken(SetupPasswordValidateDTO setupPasswordValidateDTO) throws DtoValidateException {
+        Optional<User> user = userRepository.findByUsernameIgnoreCase(setupPasswordValidateDTO.username());
+
+        if (user.isEmpty()) {
+            throw new DtoValidateNotFoundException(errorEntityNotFound);
+        }
+
+        return user.get().getPassword().equalsIgnoreCase(setupPasswordValidateDTO.token());
     }
 
     public void confirmRegistration(String token, HttpServletResponse response) throws IOException {
@@ -317,14 +395,77 @@ public class UserService {
         User userToCreate = User.createUserToEntity(createUserDto, principalService.getTenantId(), token);
         userToCreate.setRole(roleRepository.findByName(Role.ROLE_MUNICIPALITY_ADMIN).get());
 
+        String username = userToCreate.getUsername();
+
         try {
             userRepository.save(userToCreate);
         } catch (DataIntegrityViolationException e) {
             throw new DtoValidateException(errorEmailAlreadyUsed);
         }
 
-        String url = baseMunicipalityUrl + "/set-password/" + token;
+        String url = baseMunicipalityUrl + "/set-password/" + token + "/" + username;
         emailService.sendEmailAfterUserCreated(url, nl.centric.innovation.local4local.util.StringUtils.getLanguageForLocale(language), userToCreate.getUsername());
+    }
+
+    public List<UserTableDto> getAllAdminsByTenantIdPaginated(Integer page, Integer size) throws DtoValidateNotFoundException {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(ORDER_CRITERIA).descending());
+        Role municipalityRole = getAdminRole();
+        Page<User> admins = userRepository.findAllByTenantIdAndRole(principalService.getTenantId(), municipalityRole, pageable);
+        UUID currentUserId = getUser().getId();
+
+        return admins.stream()
+                .filter(user -> !user.getId().equals(currentUserId))
+                .map(UserTableDto::entityToUserTableDto)
+                .toList();
+    }
+
+    public Integer countAllAdminsByTenantId() throws DtoValidateNotFoundException {
+        Role municipalityRole = getAdminRole();
+        return userRepository.countAllByTenantIdAndRole(principalService.getTenantId(), municipalityRole) - 1;
+    }
+
+    public List<User> createCashierUsers(Supplier supplier, Set<String> emails, String language) {
+
+        Role role = roleRepository.findByName(Role.ROLE_CASHIER).orElseThrow(() -> new IllegalArgumentException("Role not found"));
+
+        List<User> users = emails.stream()
+                .map(email -> {
+                    String token = UUID.randomUUID().toString().replace("-", "");
+                    User user = createCashierUser(email, supplier, principalService.getTenantId(), token, role);
+                    sendCashierEmail(email, token, language);
+                    return user;
+                })
+                .toList();
+
+        return users;
+    }
+
+    public List<String> getCashierEmailsForSupplier(UUID supplierId) {
+        List<User> cashiers = findAllCashiersBySupplierId(supplierId);
+        return cashiers.stream()
+                .map(User::getUsername)
+                .toList();
+    }
+
+    public User createCashierUser(String email, Supplier supplier, UUID tenantId, String token, Role role) {
+        User userToCreate = User.builder()
+                .role(role)
+                .username(email)
+                .isApproved(true)
+                .isActive(true)
+                .isEnabled(false)
+                .password(token)
+                .tenantId(tenantId)
+                .supplier(supplier)
+                .firstName("firstname")
+                .lastName("lastname")
+                .build();
+        return userRepository.save(userToCreate);
+    }
+
+    private Role getAdminRole() throws DtoValidateNotFoundException {
+        return roleRepository.findByName(Role.ROLE_MUNICIPALITY_ADMIN)
+                .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
     }
 
     private void enforceRateLimiting(UUID id, String remoteAddress) throws RecoverException {
@@ -347,9 +488,8 @@ public class UserService {
     }
 
     private void sendRecoveryEmail(User user, String language, RecoverPassword recoverPassword) {
-        boolean isSupplierUser = user.getRole().getName().equals(Role.ROLE_SUPPLIER);
-        String url = getBaseUrl(isSupplierUser, baseUrl, baseMunicipalityUrl) + RESET_URL + recoverPassword.getToken();
-        emailService.sendPasswordRecoveryEmail(url, new String[]{user.getUsername()}, language);
+        String url = getBaseUrl(user.getRole().getName(), baseUrl, baseMunicipalityUrl, baseCitizenUrl) + RESET_URL + recoverPassword.getToken();
+        emailService.sendPasswordRecoveryEmail(url, new String[]{user.getUsername()}, nl.centric.innovation.local4local.util.StringUtils.getLanguageForLocale(language));
     }
 
     private void validateEmailAndPassword(String password, String retypePassword) throws DtoValidateException {
@@ -440,8 +580,14 @@ public class UserService {
         User user = validateAndReturnCitizen(registerCitizenUserDto);
         user.setRole(role);
         user.setIsEnabled(false);
+        user.setActive(true);
         user.setTenantId(passholder.getTenant().getId());
         return userRepository.save(user);
+    }
+
+    private void sendCashierEmail(String email, String token, String language) {
+        String url = String.format("%s/set-password/%s/%s", baseUrl, token, email);
+        emailService.sendEmailAfterCashierCreated(url, nl.centric.innovation.local4local.util.StringUtils.getLanguageForLocale(language), email);
     }
 
     private void sendConfirmation(User user, String language) {
@@ -451,5 +597,13 @@ public class UserService {
 
     private User getUser() {
         return principalService.getUser();
+    }
+
+    private boolean isRoleSupplier(User user) {
+        return user.getRole().getName().equals(Role.ROLE_SUPPLIER);
+    }
+
+    private boolean isRoleCashier(User user) {
+        return user.getRole().getName().equals(Role.ROLE_CASHIER);
     }
 }

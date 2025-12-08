@@ -4,7 +4,7 @@ import styles from "./OffersGroupDrawerStyle";
 import commonDrawer from "../../common-style/OfferDrawerStyle";
 import { useContext, useState } from "react";
 import OfferContext from "../../contexts/offer/offer-context";
-import { Button, List, Text } from "react-native-paper";
+import { List, Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import OfferChip from "../offer-chip/OfferChip";
 import common from "../../common-style/CommonStyle";
@@ -15,7 +15,6 @@ import OfferService from "../../services/OfferService";
 import { OfferMobileDetailDto } from "../../utils/types/offerMobileDetailDto";
 import OfferCard from "../offer-card/OfferCard";
 import LoadingIndicator from "../loader/LoadingIndicator";
-import { colors } from "../../common-style/Palette";
 
 export default function OffersGroupDrawer({ navigation }: any) {
   const { t } = useTranslation("common");
@@ -101,7 +100,7 @@ export default function OffersGroupDrawer({ navigation }: any) {
                       number: offerState.offerGroup.length
                     })}
                   </Text>
-                  <Button textColor={colors.THEME_500} compact={true} mode='text'>{t('generic.buttons.viewList')}</Button>
+                  {/* <Button textColor={colors.THEME_500} compact={true} mode='text'>{t('generic.buttons.viewList')}</Button> */}
                 </View>
                 <FlatList
                   style={styles.groupContainer}

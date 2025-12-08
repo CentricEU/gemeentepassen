@@ -1,0 +1,101 @@
+FROM node:19-alpine as angularbuilder
+WORKDIR /app
+
+# Install dependencies
+RUN apk add --update --no-cache \
+    make \
+    g++ \
+    jpeg-dev \
+    cairo-dev \
+    giflib-dev \
+    pango-dev \
+    libtool \
+    autoconf \
+    automake
+
+# Install dependencies
+RUN npm install -g @angular/cli@latest
+RUN npm install -g nx
+RUN npm install -g jest
+
+# Copy necessary files
+COPY ./package.json ./package.json
+COPY ./package-lock.json ./package-lock.json
+COPY ./decorate-angular-cli.js ./decorate-angular-cli.js
+COPY ./nx.json ./nx.json
+COPY ./tsconfig.base.json ./tsconfig.base.json
+COPY ./.eslintrc.json ./.eslintrc.json
+COPY ./jest.preset.js  ./jest.preset.js
+
+# Copy the .npmrc file for npm authentication
+COPY ./frontend/.npmrc ./frontend/.npmrc
+
+# Install npm dependencies
+RUN npm install
+
+# Copy the app and lib code
+COPY ./apps ./apps
+COPY ./libs ./libs
+
+# Run lint, format, and tests
+nx run-many --all --target=lint --fix=true
+npm run format:fix
+nx run-many --all --target=test
+nx run-many --target=build --all --parallel --configuration=beta
+
+#Supplier App
+FROM python:alpine as angulardeployer
+WORKDIR /app
+
+# Install dependencies
+RUN apk -v --update add groff less
+RUN pip install awscli --upgrade
+
+# Copy the built app from the angularbuilder stage
+COPY --from=angularbuilder frontend/dist/apps/l4l-supplier ./l4l-supplier
+
+# Build arguments for AWS credentials and config
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG AWS_S3_BUCKET_SUPPLIER
+ARG AWS_CF_DISTRIBUTION_SUPPLIER 
+
+# Set environment variables for AWS credentials and configuration
+ENV AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID)
+ENV AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY)
+ENV AWS_S3_BUCKET_SUPPLIER=$AWS_S3_BUCKET_SUPPLIER
+ENV AWS_CF_DISTRIBUTION_SUPPLIER=$AWS_CF_DISTRIBUTION_SUPPLIER
+
+# Perform AWS CLI actions: remove old files, upload new, and invalidate CloudFront
+RUN aws s3 rm s3://$AWS_S3_BUCKET_SUPPLIER/ --recursive
+RUN aws s3 cp ./l4l-supplier s3://$AWS_S3_BUCKET_SUPPLIER/ --recursive
+RUN aws cloudfront create-invalidation --distribution-id $AWS_CF_DISTRIBUTION_SUPPLIER --paths "/*"
+
+
+#Municipality App
+FROM python:alpine as angulardeployer
+WORKDIR /app
+
+# Install dependencies
+RUN apk -v --update add groff less
+RUN pip install awscli --upgrade
+
+# Copy the built app from the angularbuilder stage
+COPY --from=angularbuilder frontend/dist/apps/l4l-municipality ./l4l-municipality
+
+# Build arguments for AWS credentials and config
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG AWS_S3_BUCKET_MUNICIPALITY
+ARG AWS_CF_DISTRIBUTION_MUNICIPALITY
+
+# Set environment variables for AWS credentials and configuration
+ENV AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID)
+ENV AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY)
+ENV AWS_S3_BUCKET_MUNICIPALITY=$AWS_S3_BUCKET_MUNICIPALITY
+ENV AWS_CF_DISTRIBUTION_MUNICIPALITY=$AWS_CF_DISTRIBUTION_MUNICIPALITY
+
+# Perform AWS CLI actions: remove old files, upload new, and invalidate CloudFront
+RUN aws s3 rm s3://$AWS_S3_BUCKET_MUNICIPALITY/ --recursive
+RUN aws s3 cp ./l4l-municipality s3://$AWS_S3_BUCKET_MUNICIPALITY/ --recursive
+RUN aws cloudfront create-invalidation --distribution-id $AWS_CF_DISTRIBUTION_MUNICIPALITY --paths "/*"

@@ -1,35 +1,58 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
 
 :host {
-	height: 100%;
-	@include flex(column);
+	@include mixins.flex(column);
 
 	::ng-deep {
 		.centric-alert {
-			@include size(100%);
+			@include mixins.size(100%);
 		}
 
 		centric-panel {
-			@include size(100%, 100%);
+			@include mixins.size(100%, 100%);
 		}
 
+		// .qr-code-panel {
+		// 	.panel-content {
+		// 		@include mixins.flex(column, center, center);
+		// 		padding: 32px;
+		// 	}
+		// }
 	}
 }
 
 .dashboard-container {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
-	grid-template-rows: repeat(4, 1fr);
+	grid-template-rows: repeat(4, auto);
+	align-items: start;
 	gap: 16px;
-	padding-bottom: 16px;
+	padding-right: 16px;
+	padding-left: 16px;
 	height: calc(100% - 52px);
 }
 
 .welcome {
 	font-size: 24px;
-	font-weight: 700;
-	padding: 16px 0px;
+	padding: 16px;
+	color: var(--greyscale-700);
 }
+
+// .qr-code-panel {
+// 	grid-column: 3 / 4;
+// 	grid-row: 1 / 3;
+
+// 	::ng-deep {
+// 		.panel-content {
+// 			height: auto;
+// 			@include mixins.flex(column, space-between);
+// 		}
+// 	}
+
+// 	img {
+// 		width: 50%;
+// 	}
+// }
 
 .add-offer-section {
 	grid-column: 1 / 3;
@@ -44,7 +67,7 @@
 	}
 
 	img {
-		@include size(156px, 132px);
+		@include mixins.size(156px, 132px);
 		max-width: 156px;
 		max-height: 132px;
 		border-radius: 8px;
@@ -52,13 +75,13 @@
 	}
 
 	.right-section {
-		@include flex(column, center, flex-start);
+		@include mixins.flex(column, center, flex-start);
 		gap: 16px;
 	}
 
 	.empty-logo {
-		@include flex(column, center, center);
-		@include size(160px, 160px);
+		@include mixins.flex(column, center, center);
+		@include mixins.size(160px, 160px);
 		min-width: 160px;
 		border-radius: 8px;
 		background: var(--greyscale-50);
@@ -69,7 +92,8 @@
 	}
 }
 
-frontend-offers-chart-panel {
+.offer-chart {
+	height: 100%;
 	grid-column: 3 / 5;
 	grid-row: 1 / 3;
 }
@@ -79,7 +103,7 @@ frontend-transactions-panel {
 	grid-row: 2 / 5;
 }
 
-frontend-used-offers-panel {
+.used-offer-chart {
 	grid-column: 3 / 5;
 	grid-row: 3 / 5;
 }
@@ -96,21 +120,27 @@ frontend-used-offers-panel {
 		grid-row: 1 / 2;
 	}
 
+	// .qr-code-panel {
+	// 	grid-column: 1 / 2;
+	// 	grid-row: 2 / 3;
 
-	frontend-offers-chart-panel {
-		grid-column: 2 / 3;
+	// 	img {
+	// 		width: 80%;
+	// 	}
+	// }
+
+	.offer-chart {
+		grid-column: 1 / 3;
 		grid-row: 2 / 3;
 	}
 
 	frontend-transactions-panel {
 		grid-column: 1 / 3;
 		grid-row: 3 / 4;
-		height: 384px;
 	}
 
-	frontend-used-offers-panel {
+	.used-offer-chart {
 		grid-column: 3 / 1;
 		grid-row: 4 / 5;
-		height: 384px;
 	}
 }

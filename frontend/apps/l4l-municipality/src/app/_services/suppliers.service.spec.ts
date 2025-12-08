@@ -1,12 +1,11 @@
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { RejectionReason, SupplierForMapViewDto, SupplierStatus, SupplierViewDto } from '@frontend/common';
+import { SupplierForMapViewDto, SupplierStatus, SupplierViewDto } from '@frontend/common';
 
 import { GetSuppliersDto } from '../_models/get-suppliers-dto.model';
 import { InvitationDto } from '../_models/invitation-dto.model';
 import { InviteSuppliersDto } from '../_models/invite-suppliers-dto.model';
-import { RejectSupplierDto } from '../_models/reject-supplier-dto.model';
 import { MunicipalitySupplierService } from './suppliers.service';
 
 describe('MunicipalitySupplierService', () => {
@@ -58,21 +57,6 @@ describe('MunicipalitySupplierService', () => {
 
 		const req = httpMock.expectOne(`${environmentMock.apiPath}/suppliers/approve/${supplierId}`);
 		expect(req.request.method).toEqual('PUT');
-
-		req.flush({});
-	});
-
-	it('should send a POST request to reject a supplier', () => {
-		const rejectSupplierModel: RejectSupplierDto = {
-			reason: RejectionReason.DUPLICATE,
-			supplierId: '123',
-		};
-
-		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		service.rejectSupplier(rejectSupplierModel).subscribe(() => {});
-
-		const req = httpMock.expectOne(`${environmentMock.apiPath}/suppliers/reject`);
-		expect(req.request.method).toEqual('POST');
 
 		req.flush({});
 	});

@@ -1,0 +1,24 @@
+@use '../../../../../../libs/shared-assets/_styles/full-size-pannel';
+@use '@windmill/windmill/src/lib/assets/utils/mixins' as mixins;
+
+:host {
+	::ng-deep .no-data-description {
+		width: 1000px !important;
+	}
+
+	::ng-deep {
+		table {
+			@include mixins.grid-cols(220px, auto, auto, auto, auto, auto, auto, auto, 120px);
+
+			span {
+				overflow: hidden !important;
+				display: -webkit-box !important;
+				-webkit-box-orient: vertical;
+				text-overflow: unset !important;
+				white-space: unset !important;
+				-webkit-line-clamp: 4;
+				line-clamp: 3;
+			}
+		}
+	}
+}

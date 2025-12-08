@@ -20,8 +20,11 @@
 		@include mixins.flex(column, center, center);
 		gap: 16px;
 
-		img {
-			@include mixins.size(156px, 64px);
+		img {			
+			height: 64px;
+  			max-width: 156px;
+ 			width: auto;
+  			object-fit: contain;
 		}
 	}
 

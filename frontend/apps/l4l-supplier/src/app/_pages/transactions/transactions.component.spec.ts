@@ -13,10 +13,9 @@ import {
 } from '@frontend/common';
 import { TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { of } from 'rxjs';
 
-import { GenerateInvoiceComponent } from '../../_components/generate-invoice/generate-invoice.component';
 import { AppModule } from '../../app.module';
 import { TransactionsComponent } from './transactions.component';
 
@@ -24,7 +23,6 @@ describe('TransactionsComponent', () => {
 	let component: TransactionsComponent;
 	let fixture: ComponentFixture<TransactionsComponent>;
 	let dialogService: DialogService;
-	let translateService: TranslateService;
 	let breadcrumbService: BreadcrumbService;
 	let breadcrumbServiceSpy: any;
 	let activatedRouteMock: any;
@@ -69,7 +67,6 @@ describe('TransactionsComponent', () => {
 		fixture = TestBed.createComponent(TransactionsComponent);
 		component = fixture.componentInstance;
 		dialogService = TestBed.inject(DialogService);
-		translateService = TestBed.inject(TranslateService);
 		breadcrumbService = TestBed.inject(BreadcrumbService);
 		activatedRouteMock = TestBed.inject(ActivatedRoute);
 		component.transactionsTable = new TableComponent<TransactionTableDto>(dialogService);
@@ -162,7 +159,7 @@ describe('TransactionsComponent', () => {
 
 	it('should initialize all columns', () => {
 		component['initColumns']();
-		expect(component.allColumns.length).toBe(6);
+		expect(component.allColumns.length).toBe(5);
 	});
 
 	it('should call offersTable.manageColumns', () => {
@@ -174,10 +171,9 @@ describe('TransactionsComponent', () => {
 	it('should initialize columns correctly', () => {
 		component['initColumns']();
 		const expectedColumns = [
-			new TableColumn('checkbox', 'checkbox', 'checkbox', true, true, ColumnDataType.DEFAULT, true),
 			new TableColumn('transactions.passholderNumber', 'passNumber', 'passNumber', true, true),
 			new TableColumn('transactions.citizenName', 'citizenName', 'citizenName', true, false),
-			new TableColumn('general.amount', 'amount', 'amount', true, true),
+			new TableColumn('general.amount', 'amount', 'amount', true, true, ColumnDataType.CURRENCY),
 			new TableColumn('general.date', 'createdDate', 'createdDate', true, false),
 			new TableColumn('general.time', 'createdTime', 'createdTime', true, false),
 		];
@@ -195,12 +191,6 @@ describe('TransactionsComponent', () => {
 		const applyFiltersSpy = jest.spyOn<any, any>(component, 'onApplyFilters');
 		component.onApplyFilters();
 		expect(applyFiltersSpy).toHaveBeenCalled();
-	});
-
-	it('should call clearFilters', () => {
-		const resetFiltersSpy = jest.spyOn<any, any>(component, 'clearFilters');
-		component.clearFilters();
-		expect(resetFiltersSpy).toHaveBeenCalled();
 	});
 
 	it('should call selectMonth', () => {
@@ -370,44 +360,6 @@ describe('TransactionsComponent', () => {
 		);
 
 		expect(component.transactionsTable.afterDataLoaded).toHaveBeenCalledWith([]);
-	});
-
-	it('should open generate invoice dialog and show toaster on success', () => {
-		const dialogRefMock = {
-			afterClosed: jest.fn().mockReturnValue(of(true)),
-		};
-		jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
-		const showToasterSpy = jest.spyOn<any, any>(component, 'showToaster');
-
-		component.openGenerateInvoice();
-
-		expect(dialogService.message).toHaveBeenCalledWith(GenerateInvoiceComponent, {
-			width: '520px',
-			disableClose: false,
-			restoreFocus: true,
-			data: component.selectedDate,
-		});
-		expect(dialogRefMock.afterClosed).toHaveBeenCalled();
-		expect(showToasterSpy).toHaveBeenCalled();
-	});
-
-	it('should not show toaster if dialog is closed without generating', () => {
-		const dialogRefMock = {
-			afterClosed: jest.fn().mockReturnValue(of(false)),
-		};
-		jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
-		const showToasterSpy = jest.spyOn<any, any>(component, 'showToaster');
-
-		component.openGenerateInvoice();
-
-		expect(dialogService.message).toHaveBeenCalledWith(GenerateInvoiceComponent, {
-			width: '520px',
-			disableClose: false,
-			restoreFocus: true,
-			data: component.selectedDate,
-		});
-		expect(dialogRefMock.afterClosed).toHaveBeenCalled();
-		expect(showToasterSpy).not.toHaveBeenCalled();
 	});
 
 	it.each([

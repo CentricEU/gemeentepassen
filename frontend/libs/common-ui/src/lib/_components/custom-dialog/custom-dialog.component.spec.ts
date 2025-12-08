@@ -57,4 +57,16 @@ describe('CustomDialogComponent', () => {
 		component.accept();
 		expect(dialogRefStub.close).toHaveBeenCalledWith(true);
 	});
+
+	it.each([
+		[{ reason: 'Some reason' }, true, 'truthy reason'],
+		[undefined, false, 'optionalText is undefined'],
+		[{ reason: '' }, false, 'falsy reason'],
+	])(
+		'should return %s for isRejectionDialog when data.optionalText is %s (%s)',
+		(optionalText, expected, description) => {
+			component.data.optionalText = optionalText;
+			expect(component.isRejectionDialog).toBe(expected);
+		},
+	);
 });

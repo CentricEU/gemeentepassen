@@ -1,4 +1,4 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../libs/shared-assets/_styles/mixins';
 
 :host {
 	width: 100%;
@@ -6,24 +6,14 @@
 
 	::ng-deep {
 		centric-panel,
-		centric-mat-tab-group {
+		windmill-tab-group {
 			height: 100%;
 		}
 
-		.mat-tab-body-wrapper {
-			@include flex(column, flex-start, flex-start);
-			gap: 16px;
+		.windmill-tab {
 			height: 100%;
+			max-height: calc(100vh - 160px);
 			overflow-y: scroll;
-		}
-
-		mat-tab-group {
-			height: 100%;
-			max-height: calc(100vh - 80px);
-		}
-
-		.mat-mdc-tab-body-wrapper:has(frontend-offers-for-municipality) {
-			padding: 0px !important;
 		}
 	}
 }

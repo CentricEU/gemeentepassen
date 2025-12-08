@@ -1,10 +1,10 @@
 package nl.centric.innovation.local4local.config;
 
+import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.authentication.JwtAuthenticationFilter;
 import nl.centric.innovation.local4local.authentication.L4LAuthenticationEntryPoint;
 import nl.centric.innovation.local4local.authentication.LogoutSuccessHandler;
 import nl.centric.innovation.local4local.authentication.DisabledRequestsFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -27,18 +27,15 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@RequiredArgsConstructor
 @ComponentScan()
 public class SecurityConfig {
 
-    @Autowired
-    private L4LAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final L4LAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
-
-    @Autowired
-    private LogoutSuccessHandler logoutSuccessHandler;
+    private final LogoutSuccessHandler logoutSuccessHandler;
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -64,6 +61,10 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors().and()
                 .authorizeHttpRequests(auth -> auth.antMatchers("/api").authenticated())
+                .headers(headers -> headers
+                        .xssProtection(xss -> xss.block(true))
+                        .contentSecurityPolicy(csp -> csp.policyDirectives("script-src 'self'"))
+                )
                 .exceptionHandling(exceptionHandlingConfigurer -> exceptionHandlingConfigurer
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .logout(logout -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
@@ -78,7 +79,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
 
-        return (web) -> web.ignoring().antMatchers("/authenticate");
+        return web -> web.ignoring().antMatchers("/authenticate");
     }
 
     @Bean

@@ -21,6 +21,11 @@
 
 -(NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
+  return [self bundleURL];
+}
+ 
+- (NSURL *)bundleURL
+{
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
 #else
@@ -28,11 +33,19 @@
 #endif
 }
 
-- (BOOL)application:(UIApplication *)application
-   openURL:(NSURL *)url
-   options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
-{
-  return [RCTLinkingManager application:application openURL:url options:options];
-}
+- (BOOL) application: (UIApplication *) application
+ continueUserActivity: (nonnull NSUserActivity *)userActivity
+   restorationHandler: (nonnull void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler
+ {
+   if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+     if (self.authorizationFlowManagerDelegate) {
+       BOOL resumableAuth = [self.authorizationFlowManagerDelegate resumeExternalUserAgentFlowWithURL:userActivity.webpageURL];
+       if (resumableAuth) {
+         return YES;
+       }
+     }
+   }
+   return [RCTLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+ }
 
 @end

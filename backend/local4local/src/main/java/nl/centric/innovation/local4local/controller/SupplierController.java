@@ -1,5 +1,6 @@
 package nl.centric.innovation.local4local.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.dto.RegisterSupplierDto;
 import nl.centric.innovation.local4local.dto.RejectSupplierDto;
@@ -11,9 +12,9 @@ import nl.centric.innovation.local4local.entity.Tenant;
 import nl.centric.innovation.local4local.enums.SupplierStatusEnum;
 import nl.centric.innovation.local4local.exceptions.DtoValidateException;
 import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
-import nl.centric.innovation.local4local.service.impl.PrincipalService;
-import nl.centric.innovation.local4local.service.interfaces.SupplierService;
-import nl.centric.innovation.local4local.service.interfaces.TenantService;
+import nl.centric.innovation.local4local.repository.TenantRepository;
+import nl.centric.innovation.local4local.service.impl.SupplierService;
+import nl.centric.innovation.local4local.service.impl.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -46,9 +47,9 @@ public class SupplierController {
 
     private final SupplierService supplierService;
 
-    private final TenantService tenantService;
+    private final UserService userService;
 
-    private final PrincipalService principalService;
+    private final TenantRepository tenantRepository;
 
     @Value("${error.entity.notfound}")
     private String errorEntityNotFound;
@@ -56,7 +57,7 @@ public class SupplierController {
     @PutMapping(path = "/approve/{supplierId}")
     @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
     public ResponseEntity<Void> approveSupplier(@PathVariable("supplierId") UUID supplierId,
-                                                @CookieValue(value = "language", defaultValue = "nl-NL") String language) throws DtoValidateException {
+                                                @CookieValue(value = "language_municipality", defaultValue = "nl-NL") String language) throws DtoValidateException {
         supplierService.approveSupplier(supplierId, language);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -77,7 +78,7 @@ public class SupplierController {
     }
 
     @GetMapping("/{supplierId}")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPPLIER})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPPLIER, Role.ROLE_CASHIER})
     public ResponseEntity<SupplierViewDto> getSupplier(@PathVariable("supplierId") UUID supplierId)
             throws DtoValidateException {
         // Todo: move the logic to the service
@@ -91,9 +92,9 @@ public class SupplierController {
 
     @PostMapping("/register")
     public ResponseEntity<Void> saveSupplier(@RequestBody RegisterSupplierDto registerSupplierDto,
-                                             @CookieValue(value = "language", defaultValue = "nl-NL") String language) throws DtoValidateException {
+                                             @CookieValue(value = "language_supplier", required = false, defaultValue = "nl-NL") String language) throws DtoValidateException {
         // Todo: move the logic to the service
-        Optional<Tenant> tenant = tenantService.findByTenantId(registerSupplierDto.tenantId());
+        Optional<Tenant> tenant = tenantRepository.findById(registerSupplierDto.tenantId());
 
         supplierService.save(registerSupplierDto, tenant, language);
         return ResponseEntity.ok().build();
@@ -102,7 +103,7 @@ public class SupplierController {
     @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
     @PostMapping(path = "/reject")
     public ResponseEntity<Void> rejectSupplier(@RequestBody RejectSupplierDto rejectSupplierDto,
-                                               @CookieValue(value = "language", defaultValue = "nl-NL") String language) throws DtoValidateException {
+                                               @CookieValue(value = "language_municipality", defaultValue = "nl-NL") String language) throws DtoValidateException {
 
         supplierService.rejectSupplier(rejectSupplierDto, language, rejectSupplierDto.reason().getReason());
         return ResponseEntity.ok().build();
@@ -144,6 +145,34 @@ public class SupplierController {
     public ResponseEntity<Integer> countAllByTenantId(@RequestParam UUID tenantId,
                                                       @RequestParam Set<SupplierStatusEnum> statuses) throws DtoValidateException {
         return ResponseEntity.ok(supplierService.countAllByTenantIdAndStatus(tenantId, statuses));
+    }
+
+    @GetMapping("/qr-code")
+    @Secured({Role.ROLE_SUPPLIER})
+    public ResponseEntity<Resource> getQRCode() throws IOException {
+        byte[] qrCodeBytes = supplierService.getQRImage();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf("image/png"));
+
+        Resource resource = new ByteArrayResource(qrCodeBytes);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(qrCodeBytes.length)
+                .body(resource);
+    }
+
+
+    @GetMapping("/{supplierId}/cashiers")
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPPLIER})
+    @Operation(
+            summary = "Retrieve a list with cashier usernames for a supplier",
+            description = "Allows a Municipality Admin or a Supplier to retrieve a list with cashier usernames."
+    )
+    public ResponseEntity<List<String>> getCashiersForSupplier(@PathVariable("supplierId") UUID supplierId) throws DtoValidateException {
+        supplierService.validateSupplier(supplierId);
+        List<String> cashierEmails = userService.getCashierEmailsForSupplier(supplierId);
+        return ResponseEntity.ok(cashierEmails);
     }
 
 }

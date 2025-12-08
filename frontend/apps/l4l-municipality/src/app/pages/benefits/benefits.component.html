@@ -1,0 +1,48 @@
+@if (isDataExisting) {
+	<frontend-table
+		#benefitsTable
+		class="table-pannel"
+		[columns]="allColumns"
+		[hasCheckbox]="false"
+		[listLength]="dataCount"
+		[showFooter]="true"
+		[showHeader]="true"
+		(loadDataEvent)="loadData($event)">
+		<ng-container>
+			<span id="table-label" class="left-container">{{ 'benefitsPage.header' | translate }} </span>
+			<section class="right-container">
+				<centric-button
+					[type]="'high-emphasis-theme'"
+					[iconId]="'plus_b'"
+					[ariaLabel]="'benefitsPage.buttonText' | translate"
+					(click)="openCreateBenefitModal()">
+					{{ 'benefitsPage.buttonText' | translate }}
+				</centric-button>
+			</section>
+		</ng-container>
+	</frontend-table>
+} @else {
+	<centric-panel class="table-pannel" [class.full-size-panel]="true" [showFooter]="false" [header]="true">
+		<ng-container panel-header>
+			<span class="left-container">{{ 'benefitsPage.header' | translate }} </span>
+		</ng-container>
+		<ng-container panel-content>
+			@if (showCreateCitizenGroupState) {
+				<frontend-no-data
+					[imageName]="'no-groups.svg'"
+					[noDataTitle]="'benefitsPage.welcome'"
+					[noDataDescription]="'benefitsPage.noGroupsYet'">
+					<centric-button type="high-emphasis-theme" iconId="arrow-right_r" (click)="goToProfilePage()">
+						{{ 'benefitsPage.goToProfilePage' | translate }}
+					</centric-button>
+				</frontend-no-data>
+			} @else {
+				<frontend-no-data [noDataTitle]="'benefitsPage.welcome'" [noDataDescription]="'benefitsPage.noData'">
+					<centric-button type="high-emphasis-theme" iconId="plus_b" (click)="openCreateBenefitModal()">
+						{{ 'benefitsPage.buttonText' | translate }}
+					</centric-button>
+				</frontend-no-data>
+			}
+		</ng-container>
+	</centric-panel>
+}

@@ -25,7 +25,7 @@ public record OfferRequestDto(
         LocalDate startDate,
         @NotNull(message = "Expiration date is required")
         LocalDate expirationDate,
-        @NotEmpty(message = "Grants are required")
-        Set<UUID> grantsIds,
+        @NotNull(message = "Benefit is required")
+        UUID benefitId,
         RestrictionRequestDto restrictionRequestDto) {
 }

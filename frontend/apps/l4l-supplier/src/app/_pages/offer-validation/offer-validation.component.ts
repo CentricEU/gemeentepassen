@@ -1,11 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { FormUtil, RegexUtil, SilentErrorCode } from '@frontend/common';
+import { FormUtil, RegexUtil, SilentErrorCode, ValidatedCode } from '@frontend/common';
 
 import { DiscountModalComponent } from '../../_components/discount-modal/discount-modal.component';
 import { CodeValidationDto } from '../../models/code-validation.model';
-import { ValidatedCode } from '../../models/validated-code.models';
 import { ValidationCodeStatus } from '../../models/validation-code-status.model';
 import { DiscountCodeService } from '../../services/discount-code/discount-code.service';
 import { TransactionService } from '../../services/transactions/transaction.service';
@@ -14,6 +13,7 @@ import { TransactionService } from '../../services/transactions/transaction.serv
 	selector: 'frontend-offer-validation',
 	templateUrl: './offer-validation.component.html',
 	styleUrls: ['./offer-validation.component.scss'],
+	standalone: false,
 })
 export class OfferValidationComponent implements OnInit {
 	public validateCodeForm: FormGroup;
@@ -79,6 +79,8 @@ export class OfferValidationComponent implements OnInit {
 				return 'validationPage.errorMessageTimeSlots';
 			case SilentErrorCode.offerAlreadyUsed:
 				return 'validationPage.errorMessageAlreadyUsed';
+			case SilentErrorCode.offerUsageLimitReached:
+				return 'validationPage.errorMessageUsageLimitReached';
 			default:
 				return '';
 		}
@@ -99,6 +101,11 @@ export class OfferValidationComponent implements OnInit {
 
 		dialogRef.afterClosed().subscribe((result) => {
 			if (!result) {
+				return;
+			}
+
+			if (typeof result === 'number' && Object.values(SilentErrorCode).includes(result as SilentErrorCode)) {
+				this.handleValidationError(result as number);
 				return;
 			}
 

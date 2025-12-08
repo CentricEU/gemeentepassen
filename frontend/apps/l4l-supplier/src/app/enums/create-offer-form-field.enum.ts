@@ -4,7 +4,7 @@ export enum CreateOfferFormFields {
 	amount = 'amount',
 	holder = 'holder',
 	validity = 'validity',
-	grantsIds = 'grantsIds',
+	benefitId = 'benefitId',
 	offerTypeId = 'offerTypeId',
 	timeSlots = 'timeSlots',
 }

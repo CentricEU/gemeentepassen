@@ -1,0 +1,36 @@
+<centric-button type="outlined-theme" [matMenuTriggerFor]="monthsMenu">
+	{{ selectedDate.monthLabel | translate }} {{ selectedDate.year }}
+	<centric-icon2 [size]="'20'" [svgIcon]="'caret-small-down_b'"></centric-icon2>
+</centric-button>
+
+<mat-menu #monthsMenu="matMenu">
+	<ng-container *ngFor="let data of menuData">
+		<button mat-menu-item *ngIf="data.year; else noYear" [matMenuTriggerFor]="yearDataMenu">
+			{{ data.year }}
+		</button>
+
+		<mat-menu #yearDataMenu="matMenu">
+			<ng-container *ngFor="let monthData of data.months">
+				<button mat-menu-item (click)="selectMonth(monthData)">
+					{{ monthData.monthLabel | translate }} {{ monthData.year }}
+				</button>
+			</ng-container>
+		</mat-menu>
+
+		<ng-template #noYear>
+			<ng-container *ngFor="let monthData of data.months">
+				<button mat-menu-item (click)="selectMonth(monthData)">
+					{{ monthData.monthLabel | translate }} {{ monthData.year }}
+				</button>
+			</ng-container>
+		</ng-template>
+	</ng-container>
+</mat-menu>
+
+<ng-template #menuDataTemplate let-data>
+	<ng-container *ngFor="let monthData of data.months">
+		<button mat-menu-item (click)="selectMonth(monthData)">
+			{{ monthData.monthLabel | translate }} {{ monthData.year }}
+		</button>
+	</ng-container>
+</ng-template>

@@ -4,7 +4,7 @@ export enum FilterColumnKey {
 	TITLE = 'titleFilter',
 	CITIZEN_OFFER_TYPE = 'citizenOfferTypeFilter',
 	OFFER_TYPE = 'offerTypeFilter',
-	GRANTS = 'grantsFilter',
+	BENEFITS = 'benefitFilter',
 	VALIDITY = 'validityFilter',
 	ACTIONS = 'actionsFilter',
 }

@@ -2,6 +2,7 @@ import { Directive, ElementRef, Input, OnInit, Renderer2 } from '@angular/core';
 
 @Directive({
 	selector: '[frontendRequiredInput]',
+	standalone: false,
 })
 export class MarkAsteriskDirective implements OnInit {
 	@Input() isVisible = false;

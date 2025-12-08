@@ -1,0 +1,1 @@
+ALTER TABLE l4l_global.passes ADD COLUMN created_date TIMESTAMP DEFAULT now() NOT NULL;

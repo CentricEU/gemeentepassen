@@ -1,14 +1,12 @@
 import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { BottomTabNavigationEventMap, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import OfferIcon from "../../assets/icons/offer.svg";
-import ScanIcon from "../../assets/icons/scan.svg";
 import TransactionsIcon from "../../assets/icons/transactions.svg";
 import ProfileIcon from "../../assets/icons/profile.svg";
 import DiscountsIcon from "../../assets/icons/coins.svg";
-
+import BenefitIcon from "../../assets/icons/benefits.svg";
 import type { SvgProps } from "react-native-svg";
 import { OffersStack } from "../offers/OfferScreen";
-import { ScanStack } from "../scan/ScanScreen";
 import { TransactionsStack } from "../transactions/TransactionScreen";
 import { ProfileStack } from "../profile/ProfileScreen";
 import { colors } from "../../common-style/Palette";
@@ -18,11 +16,22 @@ import OfferProvider from "../../contexts/offer/offer-provider";
 import {
 	CommonActions,
 	NavigationContainerRef,
+	NavigationHelpers,
+	NavigationState,
+	ParamListBase,
+	TabActionHelpers,
+	TabNavigationState,
 } from "@react-navigation/native";
 import { NativeSyntheticEvent } from "react-native";
 import { commonShadowStyles } from "../../common-style/CommonShadowStyle";
 import { DiscountsStack } from "../discounts/DiscountsScreen";
+import { BenefitsStack } from "../my-benefits/MyBenefits";
+import { getCurrentRouteName } from "../../utils/HelperUtils";
 
+
+type Navigation =
+	NavigationHelpers<ParamListBase, BottomTabNavigationEventMap> &
+	TabActionHelpers<ParamListBase>;
 const Tab = createBottomTabNavigator();
 
 const screenOptions = (iconComponent: React.FC<SvgProps>, label: string) => ({
@@ -33,8 +42,61 @@ const screenOptions = (iconComponent: React.FC<SvgProps>, label: string) => ({
 			height: 24,
 		}),
 	tabBarLabel: label,
-	tabBarLabelStyle: { fontFamily: REGULAR },
+	tabBarLabelStyle: { fontFamily: REGULAR, fontSize: 10 },
 });
+
+const getCurrentStackScreens = (
+    state: TabNavigationState<ParamListBase>
+): { currentTabName: string; currentDiscountsScreen?: string; currentOffersScreen?: string } => {
+    const currentTab = state.routes[state.index];
+ 
+    const discountsStack = state.routes.find((r) => r.name === 'DiscountsStack');
+    const offersStack = state.routes.find((r) => r.name === 'OffersStack');
+ 
+    const currentDiscountsScreen = getCurrentRouteName(discountsStack?.state as NavigationState);
+    const currentOffersScreen = getCurrentRouteName(offersStack?.state as NavigationState);
+ 
+    return {
+        currentTabName: currentTab.name,
+        currentDiscountsScreen,
+        currentOffersScreen,
+    };
+};
+ 
+const shouldResetOffersStack = (
+    currentTabName: string,
+    currentDiscountsScreen?: string,
+    currentOffersScreen?: string
+): boolean => {
+    return (
+        currentTabName === 'DiscountsStack' &&
+        currentDiscountsScreen === 'DiscountCode' &&
+        currentOffersScreen === 'DiscountCode'
+    );
+};
+ 
+const handleOffersTabPressWithConditionalReset =
+    (navigation: Navigation) => (e: { preventDefault: () => void }) => {
+        const navState = navigation.getState() as TabNavigationState<ParamListBase>;
+        const { currentTabName, currentDiscountsScreen, currentOffersScreen } =
+            getCurrentStackScreens(navState);
+ 
+        if (shouldResetOffersStack(currentTabName, currentDiscountsScreen, currentOffersScreen)) {
+            e.preventDefault();
+ 
+            navigation.dispatch(
+                CommonActions.navigate({
+                    name: 'OffersStack',
+                    params: {
+                        screen: 'Offers',
+                        params: {
+                            resetOffers: true,
+                        },
+                    },
+                })
+            );
+        }
+    };
 
 const tabBarOptions = {
 	headerShown: false,
@@ -57,11 +119,9 @@ export function Home() {
 			name: "OffersStack",
 			component: OffersStack,
 			options: screenOptions(OfferIcon, t("navigation.offers")),
-		},
-		{
-			name: "ScanStack",
-			component: ScanStack,
-			options: screenOptions(ScanIcon, t("navigation.scan")),
+			listeners: ({ navigation }: any) => ({
+				tabPress: handleOffersTabPressWithConditionalReset(navigation),
+			}),
 		},
 		{
 			name: "DiscountsStack",
@@ -75,6 +135,12 @@ export function Home() {
 				TransactionsIcon,
 				t("navigation.transactions")
 			),
+		},
+		{
+			name: "BenefitsStack",
+			component: BenefitsStack,
+			options: screenOptions(BenefitIcon, t("navigation.benefits")),
+
 		},
 		{
 			name: "ProfileStack",

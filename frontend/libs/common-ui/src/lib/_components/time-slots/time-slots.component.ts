@@ -7,13 +7,14 @@ import { TranslateService } from '@ngx-translate/core';
 	selector: 'frontend-time-slots',
 	templateUrl: './time-slots.component.html',
 	styleUrls: ['./time-slots.component.scss'],
+	standalone: false,
 })
 export class TimeSlotsComponent {
 	@Input() clickedOutsideFieldTime: boolean;
 	@Input() generalForm: FormGroup;
 
 	public validationFunctionErrorMinFieldCompleted = FormUtil.validationFunctionErrorMinFieldCompleted;
-	public shouldDisplayDoubleFieldValidityError = FormUtil.shouldDisplayDoubleFieldValidityError;
+	public shouldShowRequiredErrorForEitherFields = FormUtil.shouldShowRequiredErrorForEitherFields;
 	public shouldDisplayCompareError = FormUtil.shouldDisplayCompareError;
 	public onRestrictionTypeChange = FormUtil.onRestrictionTypeChange;
 

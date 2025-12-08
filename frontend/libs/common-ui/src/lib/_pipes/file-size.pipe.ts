@@ -4,6 +4,7 @@ const FILE_SIZE_UNITS: string[] = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB'
 
 @Pipe({
 	name: 'fileSizePipe',
+	standalone: false,
 })
 export class FileSizePipe implements PipeTransform {
 	public transform(sizeInBytes: number): string {

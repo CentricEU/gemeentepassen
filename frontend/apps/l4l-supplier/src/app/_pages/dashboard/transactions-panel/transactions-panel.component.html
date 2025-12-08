@@ -1,9 +1,16 @@
-<centric-panel [shadow]="true">
-	<ng-container panel-header>
-		<div class="left-container">
-			<span class="line-clamp-1">{{ 'dashboard.transactions.title' | translate }}</span>
-		</div>
-	</ng-container>
-
-	<ng-container panel-content> </ng-container>
-</centric-panel>
+<centric-card [shadow]="true">
+	<centric-card-header>
+		<div centric-card-title>{{ 'dashboard.transactions.title' | translate }}</div>
+		<windmill-combo-button
+			[menuItems]="dashboardService.dropdownData"
+			[contentType]="'dropdown'"
+			[dropdownButtonText]="activeTimePeriod | translate"
+			[dropdownType]="'uncontained-greyscale'"
+			(menuItemSelected)="onTimePeriodChange($event)"
+			[disabled]="!isSupplierActive">
+		</windmill-combo-button>
+	</centric-card-header>
+	<div centric-card-content>
+		<frontend-transaction-chart #transactionChart> </frontend-transaction-chart>
+	</div>
+</centric-card>

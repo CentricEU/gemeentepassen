@@ -6,8 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,7 +17,6 @@ import javax.persistence.Column;
 import java.io.Serial;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @EqualsAndHashCode()
 @Entity
@@ -57,9 +54,7 @@ public class OfferTransaction {
         return offerTransaction;
     }
 
-    public String getConcatenatedGrantTitles() {
-        return discountCode.getOffer().getGrants().stream()
-                .map(Grant::getTitle)
-                .collect(Collectors.joining(", "));
+    public String getOfferBenefitName() {
+        return discountCode.getOffer().getBenefit().getName();
     }
 }

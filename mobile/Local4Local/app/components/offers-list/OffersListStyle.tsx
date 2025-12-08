@@ -1,6 +1,6 @@
-import {StyleSheet} from "react-native";
-import {BOLD, SEMI_BOLD} from "../../common-style/FontFamily";
-import {colors} from "../../common-style/Palette";
+import { StyleSheet } from 'react-native';
+import { BOLD } from '../../common-style/FontFamily';
+import { colors } from '../../common-style/Palette';
 
 const styles = StyleSheet.create({
 	offersListContainer: {
@@ -17,10 +17,6 @@ const styles = StyleSheet.create({
 	},
 	offersListContent: {
 		paddingBottom: 128
-	},
-	offersListLabel: {
-		fontFamily: SEMI_BOLD,
-		color: colors.THEME_500
 	},
 	offersListCard: {
 		marginHorizontal: 16,

@@ -1,4 +1,5 @@
 export const FILE_SIZE_THRESHOLD = 200 * 1024;
+export const MAX_FILE_SIZE_UPLOAD = 10 * 1024 * 1024; // 10MB
 
 /**
  * Default settings for the map view
@@ -49,3 +50,19 @@ export const MAP_DEFAULTS = {
 		WEB_MERCATOR: 'EPSG:3857',
 	},
 };
+
+export const DASHBOARD_TRANSLATION_KEYS = {
+	THIS_MONTH: 'dashboard.offers.thisMonth',
+	THIS_QUARTER: 'dashboard.offers.thisQuarter',
+	THIS_YEAR: 'dashboard.offers.thisYear',
+};
+
+export const TEXT_AREA_MAX_LENGTH = 1024;
+export const TEXT_AREA_MAX_LENGTH_256 = 256;
+
+export const LOGO_TYPES = {
+	LOCAL_FOR_LOCAL: 'localforlocal-logo.svg',
+	CITY_PASSES: 'citypasses-logo.png',
+};
+
+export const BSN_KEY = 'bsn';

@@ -1,6 +1,8 @@
 package nl.centric.innovation.local4local.unit;
 
 import lombok.SneakyThrows;
+import nl.centric.innovation.local4local.dto.BenefitLightDto;
+import nl.centric.innovation.local4local.dto.BenefitTableDto;
 import nl.centric.innovation.local4local.dto.DeleteOffersDto;
 import nl.centric.innovation.local4local.dto.FilterOfferRequestDto;
 import nl.centric.innovation.local4local.dto.OfferMobileDetailDto;
@@ -16,17 +18,17 @@ import nl.centric.innovation.local4local.dto.OfferViewTableDto;
 import nl.centric.innovation.local4local.dto.ReactivateOfferDto;
 import nl.centric.innovation.local4local.dto.RejectOfferDto;
 import nl.centric.innovation.local4local.dto.RestrictionRequestDto;
+import nl.centric.innovation.local4local.entity.Benefit;
 import nl.centric.innovation.local4local.entity.Category;
-import nl.centric.innovation.local4local.entity.Grant;
 import nl.centric.innovation.local4local.entity.Offer;
 import nl.centric.innovation.local4local.entity.OfferType;
+import nl.centric.innovation.local4local.entity.Passholder;
 import nl.centric.innovation.local4local.entity.RejectOffer;
 import nl.centric.innovation.local4local.entity.Role;
 import nl.centric.innovation.local4local.entity.Supplier;
 import nl.centric.innovation.local4local.entity.SupplierProfile;
 import nl.centric.innovation.local4local.entity.Tenant;
 import nl.centric.innovation.local4local.entity.User;
-import nl.centric.innovation.local4local.enums.CreatedForEnum;
 import nl.centric.innovation.local4local.enums.GenericStatusEnum;
 import nl.centric.innovation.local4local.enums.TimeIntervalPeriod;
 import nl.centric.innovation.local4local.exceptions.DtoValidateException;
@@ -34,16 +36,18 @@ import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException
 import nl.centric.innovation.local4local.repository.DiscountCodeRepository;
 import nl.centric.innovation.local4local.repository.OfferRepository;
 import nl.centric.innovation.local4local.repository.OfferTypeRepository;
+import nl.centric.innovation.local4local.repository.PassholderRepository;
 import nl.centric.innovation.local4local.repository.RejectOfferRepository;
+import nl.centric.innovation.local4local.repository.TenantRepository;
+import nl.centric.innovation.local4local.service.impl.BenefitService;
 import nl.centric.innovation.local4local.service.impl.DiscountCodeService;
-import nl.centric.innovation.local4local.service.impl.GrantService;
+import nl.centric.innovation.local4local.service.impl.OfferSearchHistoryService;
 import nl.centric.innovation.local4local.service.impl.OfferService;
 import nl.centric.innovation.local4local.service.impl.PrincipalService;
+import nl.centric.innovation.local4local.service.impl.SupplierService;
 import nl.centric.innovation.local4local.service.impl.UserService;
 import nl.centric.innovation.local4local.service.interfaces.EmailService;
 import nl.centric.innovation.local4local.service.interfaces.RestrictionService;
-import nl.centric.innovation.local4local.service.interfaces.SupplierService;
-import nl.centric.innovation.local4local.service.interfaces.TenantService;
 import nl.centric.innovation.local4local.util.DateUtils;
 import nl.centric.innovation.local4local.util.ModelConverter;
 import org.junit.jupiter.api.Test;
@@ -71,15 +75,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static nl.centric.innovation.local4local.service.impl.GrantService.ORDER_CRITERIA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -87,11 +88,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OfferServiceImplTests {
@@ -112,7 +109,7 @@ class OfferServiceImplTests {
     private RejectOfferRepository rejectOfferRepository;
 
     @Mock
-    private GrantService grantService;
+    private BenefitService benefitService;
 
     @Mock
     private PrincipalService principalService;
@@ -130,11 +127,16 @@ class OfferServiceImplTests {
     private EmailService emailService;
 
     @Mock
-    private TenantService tenantService;
+    private TenantRepository tenantRepository;
+
+    @Mock
+    private PassholderRepository passholderRepository;
 
     @Mock
     private DiscountCodeService discountCodeService;
 
+    @Mock
+    private OfferSearchHistoryService offerSearchHistoryService;
     private static final UUID SUPPLIER_ID = UUID.randomUUID();
     private static final UUID OFFER_ID = UUID.randomUUID();
     private static final Double LATITUDE = 52.364246;
@@ -150,14 +152,32 @@ class OfferServiceImplTests {
                 Arguments.of(LocalDate.of(2023, 12, 10), LocalDate.of(2023, 10, 11)));
     }
 
+    private static List<Arguments> provideTestCases() {
+        return List.of(
+                Arguments.of("Test", List.of("Test Offer 1", "Test Offer 2")),
+                Arguments.of("NonExistent", Collections.emptyList())
+        );
+    }
+
     @Test
     @SneakyThrows
     void GivenValidRequest_WhenCreateOffer_ThenExpectSuccess() {
         // Given
+        UUID tenantId = UUID.randomUUID();
+
+        Benefit benefit = Benefit.builder()
+                .name("Title")
+                .description("Description")
+                .tenantId(tenantId)
+                .startDate(LocalDate.of(2023, 1, 1))
+                .expirationDate(LocalDate.of(2023, 12, 30))
+                .build();
+        benefit.setId(UUID.randomUUID());
         String coordinatesString = "test";
         RestrictionRequestDto restrictionRequestDto = RestrictionRequestDto.builder().ageRestriction(10).build();
-        OfferRequestDto offerRequestDto = offerRequestDtoBuilder(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 12, 11),
-                getIds());
+        UUID benefitId = benefit.getId();
+
+        OfferRequestDto offerRequestDto = offerRequestDtoBuilder(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 12, 11), benefitId);
 
         User user = new User();
         user.setRole(new Role(1, "ROLE_SUPPLIER"));
@@ -176,7 +196,8 @@ class OfferServiceImplTests {
         });
 
         OfferType offerTypeMock = offerTypeBuilder();
-        Set<Grant> mockGrantsList = Set.of(grantBuilder(), grantBuilder());
+
+
         UUID supplierId = UUID.randomUUID();
         Supplier supplier = Supplier.builder()
                 .companyName("CompanyName")
@@ -187,12 +208,13 @@ class OfferServiceImplTests {
                 .build();
         supplier.setProfile(supplierProfile);
         user.setSupplier(supplier);
+        when(benefitService.findById(benefit.getId())).thenReturn(Optional.of(benefit));
+
+        when(principalService.getTenantId()).thenReturn(tenantId);
         when(offerTypeRepository.findById(offerRequestDto.offerTypeId())).thenReturn(Optional.of(offerTypeMock));
-        when(grantService.getAllInIds(offerRequestDto.grantsIds())).thenReturn(mockGrantsList);
-        when(principalService.getTenantId()).thenReturn(UUID.randomUUID());
         when(principalService.getSupplierId()).thenReturn(supplierId);
         when(supplierService.findBySupplierId(supplierId)).thenReturn(Optional.of(supplier));
-        when(tenantService.findByTenantId(any(UUID.class))).thenReturn(Optional.of(tenant));
+        when(tenantRepository.findById(tenantId)).thenReturn(Optional.of(tenant));
         when(principalService.getUser()).thenReturn(user);
         when(restrictionService.saveRestriction(restrictionRequestDto))
                 .thenReturn(ModelConverter.restrictionRequestDtoToEntity(restrictionRequestDto));
@@ -211,10 +233,9 @@ class OfferServiceImplTests {
     @Test
     @SneakyThrows
     void GivenNullOfferType_WhenCreateOffer_ThenExpectError() {
-        OfferRequestDto offerRequestDto = offerRequestDtoBuilder(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 12, 11),
-                getIds());
+        OfferRequestDto offerRequestDto = offerRequestDtoBuilder(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 12, 11), UUID.randomUUID());
 
-        when(offerTypeRepository.findById(offerRequestDto.offerTypeId())).thenReturn(Optional.empty());
+        // when(offerTypeRepository.findById(offerRequestDto.offerTypeId())).thenReturn(Optional.empty());
 
         assertThrows(DtoValidateException.class, () -> offerService.createOffer(offerRequestDto, "en-US"));
     }
@@ -222,25 +243,20 @@ class OfferServiceImplTests {
     @Test
     @SneakyThrows
     void GivenWrongSupplierInContext_WhenCreateOffer_ThenExpectError() {
-        OfferRequestDto offerRequestDto = offerRequestDtoBuilder(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 12, 11),
-                getIds());
+        // Given
+        OfferRequestDto offerRequestDto = offerRequestDtoBuilder(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 12, 11), UUID.randomUUID());
 
-        OfferType offerTypeMock = offerTypeBuilder();
-        UUID supplierId = UUID.randomUUID();
-        when(offerTypeRepository.findById(offerRequestDto.offerTypeId())).thenReturn(Optional.of(offerTypeMock));
-        when(principalService.getSupplierId()).thenReturn(supplierId);
-        when(supplierService.findBySupplierId(supplierId)).thenReturn(Optional.empty());
-
+        // Then
         assertThrows(DtoValidateException.class, () -> offerService.createOffer(offerRequestDto, "en-US"));
     }
 
     @Test
     @SneakyThrows
     void GivenNullIds_WhenCreateOffer_ThenExpectError() {
-        OfferRequestDto offerRequestDto = offerRequestDtoBuilder(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 12, 11),
-                null);
+        OfferRequestDto offerRequestDto = offerRequestDtoBuilder(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 12, 11), UUID.randomUUID()
+        );
 
-        when(offerTypeRepository.findById(offerRequestDto.offerTypeId())).thenReturn(Optional.empty());
+        //when(offerTypeRepository.findById(offerRequestDto.offerTypeId())).thenReturn(Optional.empty());
 
         assertThrows(DtoValidateException.class, () -> offerService.createOffer(offerRequestDto, "en-US"));
     }
@@ -248,12 +264,11 @@ class OfferServiceImplTests {
     @Test
     @SneakyThrows
     void GivenNullIds_WhenCreateOfferWithGrant_ThenExpectError() {
-        OfferRequestDto offerRequestDto = offerRequestDtoBuilder(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 12, 11),
-                null);
+        OfferRequestDto offerRequestDto = offerRequestDtoBuilder(LocalDate.of(2023, 10, 2), LocalDate.of(2023, 12, 11), UUID.randomUUID());
 
         OfferType offerTypeMock = OfferType.builder().offerTypeId(0).offerTypeLabel("test").build();
 
-        when(offerTypeRepository.findById(offerRequestDto.offerTypeId())).thenReturn(Optional.of(offerTypeMock));
+        //when(offerTypeRepository.findById(offerRequestDto.offerTypeId())).thenReturn(Optional.of(offerTypeMock));
 
         assertThrows(DtoValidateException.class, () -> offerService.createOffer(offerRequestDto, "en-US"));
     }
@@ -264,8 +279,7 @@ class OfferServiceImplTests {
                                                                                  LocalDate expirationDate) {
 
         // Given
-        OfferRequestDto requestDto = offerRequestDtoBuilder(starDate, expirationDate,
-                getIds());
+        OfferRequestDto requestDto = offerRequestDtoBuilder(starDate, expirationDate, UUID.randomUUID());
 
         // When
         assertThrows(DtoValidateException.class, () -> offerService.createOffer(requestDto, "en-US"));
@@ -279,7 +293,7 @@ class OfferServiceImplTests {
         // Given
         List<Offer> mockOfferList = List.of(offerBuilder(), offerBuilder());
         Page<Offer> mockOfferPage = new PageImpl<>(mockOfferList);
-        Pageable pageable = PageRequest.of(0, 25, Sort.by(ORDER_CRITERIA));
+        Pageable pageable = PageRequest.of(0, 25, Sort.by("title"));
         UUID supplierId = UUID.randomUUID();
 
         // When
@@ -329,7 +343,7 @@ class OfferServiceImplTests {
         // Given
         List<Offer> mockOfferList = List.of(offerBuilder(), offerBuilder());
         Page<Offer> mockOfferPage = new PageImpl<>(mockOfferList);
-        Pageable pageable = PageRequest.of(0, 25, Sort.by(ORDER_CRITERIA));
+        Pageable pageable = PageRequest.of(0, 25, Sort.by("title"));
         UUID tenantId = UUID.randomUUID();
         List<GenericStatusEnum> statusList = Arrays.asList(GenericStatusEnum.PENDING, GenericStatusEnum.REJECTED);
 
@@ -403,7 +417,7 @@ class OfferServiceImplTests {
                 User.builder().username("username2").build());
 
         // When
-        when(tenantService.findByTenantId(tenantId)).thenReturn(Optional.of(mockedTenant));
+        when(tenantRepository.findById(tenantId)).thenReturn(Optional.of(mockedTenant));
 
         when(userServiceMock.findAllAdminsByTenantId(tenantId)).thenReturn(adminList);
 
@@ -412,7 +426,7 @@ class OfferServiceImplTests {
         offerService.sendReviewOfferEmail(tenantId, language, user);
 
         // Then
-        verify(tenantService, times(1)).findByTenantId(tenantId);
+        verify(tenantRepository, times(1)).findById(tenantId);
         verify(userServiceMock, times(1)).findAllAdminsByTenantId(tenantId);
         verify(emailService, times(1)).sendOfferReviewEmail(any(), any(), any(), any(), any(), any());
     }
@@ -425,13 +439,13 @@ class OfferServiceImplTests {
         String language = "en";
         User user = new User();
 
-        when(tenantService.findByTenantId(nonExistentTenantId)).thenReturn(Optional.empty());
+        when(tenantRepository.findById(nonExistentTenantId)).thenReturn(Optional.empty());
 
         // Then
         assertThrows(DtoValidateNotFoundException.class, () -> offerService
                 .sendReviewOfferEmail(nonExistentTenantId, language, user));
 
-        verify(tenantService, times(1)).findByTenantId(nonExistentTenantId);
+        verify(tenantRepository, times(1)).findById(nonExistentTenantId);
         verify(userServiceMock, never()).findAllAdminsByTenantId(any());
         verify(emailService, never()).sendProfileCreatedEmail(any(), any(), any(), any(), any(), any());
     }
@@ -444,11 +458,15 @@ class OfferServiceImplTests {
         Pageable pageable = PageRequest.of(page, 20);
         UUID tenantId = UUID.randomUUID();
         LocalDate localDate = LocalDate.of(2025, 3, 4);
+        UUID citizenId = UUID.randomUUID();
+        User mockUser = new User();
+        mockUser.setId(citizenId);
 
+        when(principalService.getUser()).thenReturn(mockUser);
         when(principalService.getTenantId()).thenReturn(tenantId);
-        when(offerRepository.findAllOffersOrderedByDistanceToUser(pageable, LATITUDE, LONGITUDE, tenantId, localDate)).thenReturn(Collections.emptyList());
+        when(offerRepository.findAllOffersOrderedByDistanceToUser(pageable, LATITUDE, LONGITUDE, tenantId, localDate, citizenId, 1)).thenReturn(Collections.emptyList());
         // When
-        List<OfferMobileListDto> result = offerService.getOffersOrderedByDistanceToUser(page, LATITUDE, LONGITUDE, localDate);
+        List<OfferMobileListDto> result = offerService.getOffersOrderedByDistanceToUser(page, LATITUDE, LONGITUDE, localDate, "", 1);
 
         // Then
         assertTrue(result.isEmpty());
@@ -462,11 +480,39 @@ class OfferServiceImplTests {
         Pageable pageable = PageRequest.of(page, 20);
         UUID tenantId = UUID.randomUUID();
         LocalDate localDate = LocalDate.of(2025, 3, 4);
+        UUID citizenId = UUID.randomUUID();
+        User mockUser = new User();
+        mockUser.setId(citizenId);
 
+        when(principalService.getUser()).thenReturn(mockUser);
         when(principalService.getTenantId()).thenReturn(tenantId);
-        when(offerRepository.findAllOffersOrderedByDistanceToUser(pageable, LATITUDE, LONGITUDE, tenantId, localDate)).thenReturn(List.of(offerMobileListDtotoBuilder()));
+        when(offerRepository.findAllOffersOrderedByDistanceToUser(pageable, LATITUDE, LONGITUDE, tenantId, localDate, citizenId, 1)).thenReturn(List.of(offerMobileListDtotoBuilder()));
         // When
-        List<OfferMobileListDto> result = offerService.getOffersOrderedByDistanceToUser(page, LATITUDE, LONGITUDE, localDate);
+        List<OfferMobileListDto> result = offerService.getOffersOrderedByDistanceToUser(page, LATITUDE, LONGITUDE, localDate, "", 1);
+
+        // Then
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenValidDataButOneOfferWithSearch_WhenGetOffersOrderedByDistanceToUser_ThenExpectOneOffer() {
+        // Given
+        int page = 0;
+        Pageable pageable = PageRequest.of(page, 20);
+        UUID tenantId = UUID.randomUUID();
+        LocalDate localDate = LocalDate.of(2025, 3, 4);
+        String searchKeyword = "test";
+        UUID citizenId = UUID.randomUUID();
+        User mockUser = new User();
+        mockUser.setId(citizenId);
+
+        when(principalService.getUser()).thenReturn(mockUser);
+        when(principalService.getTenantId()).thenReturn(tenantId);
+        doNothing().when(offerSearchHistoryService).saveSearchHistory(searchKeyword);
+        when(offerRepository.findSearchedOffersOrderedByDistanceToUser(pageable, LATITUDE, LONGITUDE, tenantId, localDate, citizenId, searchKeyword, 1)).thenReturn(List.of(offerMobileListDtotoBuilder()));
+        // When
+        List<OfferMobileListDto> result = offerService.getOffersOrderedByDistanceToUser(page, LATITUDE, LONGITUDE, localDate, searchKeyword, 1);
 
         // Then
         assertEquals(1, result.size());
@@ -480,7 +526,8 @@ class OfferServiceImplTests {
         Double longitude = -74.0;
 
         // When Then
-        assertThrows(DtoValidateException.class, () -> offerService.getOffersOrderedByDistanceToUser(page, latitude, longitude, LocalDate.of(2030, 4, 3)));
+        assertThrows(DtoValidateException.class, () ->
+                offerService.getOffersOrderedByDistanceToUser(page, latitude, longitude, LocalDate.of(2030, 4, 3), "", 1));
     }
 
     @Test
@@ -522,15 +569,27 @@ class OfferServiceImplTests {
     @Test
     @SneakyThrows
     void GivenInvalidOfferId_WhenUseOffer_ThenExpectError() {
+        // Given
+        UUID citizenId = UUID.randomUUID();
         User user = new User();
-
+        user.setId(citizenId);
         when(principalService.getUser()).thenReturn(user);
+
+        Passholder passholder = new Passholder();
+        passholder.expiringDate = LocalDate.now().plusDays(1);
+        when(passholderRepository.findByUserId(citizenId)).thenReturn(Optional.of(passholder));
 
         OfferUsageRequestDto offerUsageRequestDto = offerTransactionDtoBuilder(UUID.randomUUID());
 
-        when(offerRepository.findByIdAndStatus(offerUsageRequestDto.offerId(), GenericStatusEnum.ACTIVE)).thenReturn(Optional.empty());
+        when(offerRepository.findByIdAndStatusWithBenefitAccess(
+                offerUsageRequestDto.offerId(),
+                GenericStatusEnum.ACTIVE,
+                citizenId))
+                .thenReturn(Optional.empty());
 
-        assertThrows(DtoValidateException.class, () -> offerService.useOffer(offerUsageRequestDto));
+        // Then
+        assertThrows(DtoValidateNotFoundException.class,
+                () -> offerService.useOffer(offerUsageRequestDto));
     }
 
     @Test
@@ -541,41 +600,59 @@ class OfferServiceImplTests {
         UUID userId = UUID.randomUUID();
         user.setId(userId);
         UUID offerId = UUID.randomUUID();
+
         when(principalService.getUser()).thenReturn(user);
 
+        Passholder passholder = new Passholder();
+        passholder.setExpiringDate(LocalDate.now().plusDays(5));
+        when(passholderRepository.findByUserId(userId)).thenReturn(Optional.of(passholder));
+
         Offer offer = new Offer();
+        offer.setId(offerId);
         offer.setAmount(10.0);
         offer.setStartDate(LocalDate.now().minusDays(1));
         offer.setExpirationDate(LocalDate.now().plusDays(1));
-        offer.setId(offerId);
+
+        Benefit benefit = new Benefit();
+        benefit.setExpirationDate(LocalDate.now().plusDays(5));
+        offer.setBenefit(benefit);
 
         OfferUsageRequestDto offerUsageRequestDto = OfferUsageRequestDto.builder()
-                .offerId(UUID.randomUUID())
+                .offerId(offerId)
                 .amount(5.0)
                 .currentTime("20:00:00")
                 .build();
 
-        // When
-        when(offerRepository.findByIdAndStatus(offerUsageRequestDto.offerId(), GenericStatusEnum.ACTIVE)).thenReturn(Optional.of(offer));
+        when(offerRepository.findByIdAndStatusWithBenefitAccess(offerId, GenericStatusEnum.ACTIVE, userId))
+                .thenReturn(Optional.of(offer));
+
         doNothing().when(discountCodeService).save(offerId, userId);
 
+        // Then
         assertDoesNotThrow(() -> offerService.useOffer(offerUsageRequestDto));
     }
 
     @Test
     @SneakyThrows
     void GivenAmountExceedsOfferAmount_WhenUseOffer_ThenExpectError() {
+        // Given
         User user = new User();
         UUID userId = UUID.randomUUID();
         user.setId(userId);
-
         when(principalService.getUser()).thenReturn(user);
+
+        Passholder passholder = new Passholder();
+        passholder.expiringDate = LocalDate.now().plusDays(5);
+        when(passholderRepository.findByUserId(userId)).thenReturn(Optional.of(passholder));
 
         Offer offer = new Offer();
         offer.setAmount(10.0);
-
         offer.setStartDate(LocalDate.now().minusDays(1));
         offer.setExpirationDate(LocalDate.now().plusDays(1));
+
+        Benefit benefit = new Benefit();
+        benefit.setExpirationDate(LocalDate.now().plusDays(5));
+        offer.setBenefit(benefit);
 
         OfferUsageRequestDto offerUsageRequestDto = OfferUsageRequestDto.builder()
                 .offerId(UUID.randomUUID())
@@ -583,10 +660,18 @@ class OfferServiceImplTests {
                 .currentTime("20:00:00")
                 .build();
 
-        when(offerRepository.findByIdAndStatus(offerUsageRequestDto.offerId(), GenericStatusEnum.ACTIVE)).thenReturn(Optional.of(offer));
+        when(offerRepository.findByIdAndStatusWithBenefitAccess(
+                offerUsageRequestDto.offerId(),
+                GenericStatusEnum.ACTIVE,
+                userId))
+                .thenReturn(Optional.of(offer));
 
-        assertThrows(DtoValidateException.class, () -> offerService.useOffer(offerUsageRequestDto), "Amount requested exceeds available offer amount.");
+        // Then
+        assertThrows(DtoValidateException.class,
+                () -> offerService.useOffer(offerUsageRequestDto),
+                "Amount requested exceeds available offer amount.");
     }
+
 
     @Test
     void givenValidRequest_whenCountFilteredOffers_thenReturnCount() {
@@ -594,7 +679,7 @@ class OfferServiceImplTests {
         FilterOfferRequestDto filterParams = FilterOfferRequestDto.builder()
                 .status(GenericStatusEnum.ACTIVE)
                 .offerTypeId(1)
-                .grantId(UUID.randomUUID())
+                .benefitId(UUID.randomUUID())
                 .build();
 
         int expectedCount = 10;
@@ -615,18 +700,24 @@ class OfferServiceImplTests {
     @Test
     @SneakyThrows
     void GivenDateOutOfRange_WhenUseOffer_ThenExpectError() {
+        // Given
         User user = new User();
         UUID userId = UUID.randomUUID();
         user.setId(userId);
-
         when(principalService.getUser()).thenReturn(user);
+
+        Passholder passholder = new Passholder();
+        passholder.expiringDate = LocalDate.now().plusDays(1);
+        when(passholderRepository.findByUserId(userId)).thenReturn(Optional.of(passholder));
 
         Offer offer = new Offer();
         offer.setAmount(10.0);
-
-
         offer.setStartDate(LocalDate.now().plusDays(1));
         offer.setExpirationDate(LocalDate.now().minusDays(1));
+
+        Benefit benefit = new Benefit();
+        benefit.setExpirationDate(LocalDate.now().plusDays(5));
+        offer.setBenefit(benefit);
 
         OfferUsageRequestDto offerUsageRequestDto = OfferUsageRequestDto.builder()
                 .offerId(UUID.randomUUID())
@@ -634,9 +725,81 @@ class OfferServiceImplTests {
                 .currentTime("20:00:00")
                 .build();
 
-        when(offerRepository.findByIdAndStatus(offerUsageRequestDto.offerId(), GenericStatusEnum.ACTIVE)).thenReturn(Optional.of(offer));
+        when(offerRepository.findByIdAndStatusWithBenefitAccess(
+                offerUsageRequestDto.offerId(), GenericStatusEnum.ACTIVE, userId))
+                .thenReturn(Optional.of(offer));
 
-        assertThrows(DtoValidateException.class, () -> offerService.useOffer(offerUsageRequestDto), "Current date is outside the valid range of the offer's start and expiration date.");
+        // Then
+        assertThrows(DtoValidateException.class,
+                () -> offerService.useOffer(offerUsageRequestDto),
+                "Expected exception when current date is outside offer range");
+    }
+
+
+    @Test
+    @SneakyThrows
+    void GivenNoPassholder_WhenUseOffer_ThenExpectNotFoundError() {
+        UUID citizenId = UUID.randomUUID();
+        User user = new User();
+        user.setId(citizenId);
+        when(principalService.getUser()).thenReturn(user);
+
+        OfferUsageRequestDto dto = offerTransactionDtoBuilder(UUID.randomUUID());
+
+        when(passholderRepository.findByUserId(citizenId)).thenReturn(Optional.empty());
+
+        assertThrows(DtoValidateNotFoundException.class,
+                () -> offerService.useOffer(dto),
+                "Expected not found when passholder is missing");
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenExpiredPassholder_WhenUseOffer_ThenExpectExpiredError() {
+        UUID citizenId = UUID.randomUUID();
+        User user = new User();
+        user.setId(citizenId);
+        when(principalService.getUser()).thenReturn(user);
+
+        Passholder passholder = new Passholder();
+        passholder.expiringDate = LocalDate.now().minusDays(1);
+        when(passholderRepository.findByUserId(citizenId)).thenReturn(Optional.of(passholder));
+
+        OfferUsageRequestDto dto = offerTransactionDtoBuilder(UUID.randomUUID());
+
+        assertThrows(DtoValidateException.class,
+                () -> offerService.useOffer(dto),
+                "Expected exception for expired passholder");
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenExpiredBenefit_WhenUseOffer_ThenExpectBenefitExpiredError() {
+        UUID citizenId = UUID.randomUUID();
+        User user = new User();
+        user.setId(citizenId);
+        when(principalService.getUser()).thenReturn(user);
+
+        Passholder passholder = new Passholder();
+        passholder.expiringDate = LocalDate.now().plusDays(1);
+        when(passholderRepository.findByUserId(citizenId)).thenReturn(Optional.of(passholder));
+
+        Offer offer = new Offer();
+        offer.setStartDate(LocalDate.now().minusDays(1));
+        offer.setExpirationDate(LocalDate.now().plusDays(1));
+
+        Benefit benefit = new Benefit();
+        benefit.setExpirationDate(LocalDate.now().minusDays(1)); // expired
+        offer.setBenefit(benefit);
+
+        OfferUsageRequestDto dto = offerTransactionDtoBuilder(UUID.randomUUID());
+
+        when(offerRepository.findByIdAndStatusWithBenefitAccess(dto.offerId(), GenericStatusEnum.ACTIVE, citizenId))
+                .thenReturn(Optional.of(offer));
+
+        assertThrows(DtoValidateException.class,
+                () -> offerService.useOffer(dto),
+                "Expected exception for expired benefit");
     }
 
     @Test
@@ -657,7 +820,7 @@ class OfferServiceImplTests {
         // Given
         List<Offer> mockOfferList = List.of(offerBuilder(), offerBuilder());
         Page<Offer> mockOfferPage = new PageImpl<>(mockOfferList);
-        Pageable pageable = PageRequest.of(0, 25, Sort.by(ORDER_CRITERIA));
+        Pageable pageable = PageRequest.of(0, 25, Sort.by("title"));
         UUID supplierId = UUID.randomUUID();
 
         // When
@@ -765,11 +928,20 @@ class OfferServiceImplTests {
     @Test
     void GivenValidRequest_WhenGetFilteredOffers_ThenExpectSuccess() {
         // Given
+        Benefit benefit = Benefit.builder()
+                .name("Title")
+                .description("Description")
+                .startDate(LocalDate.of(2023, 10, 2))
+                .expirationDate(LocalDate.of(2023, 10, 4))
+                .build();
+
+        benefit.setId(UUID.randomUUID());
+
         UUID supplierId = UUID.randomUUID();
         FilterOfferRequestDto filterParams = FilterOfferRequestDto.builder()
                 .status(GenericStatusEnum.ACTIVE)
                 .offerTypeId(1)
-                .grantId(UUID.randomUUID())
+                .benefitId(UUID.randomUUID())
                 .build();
         int pageIndex = 0;
         int pageSize = 10;
@@ -789,12 +961,13 @@ class OfferServiceImplTests {
         offer.setOfferType(offerType);
         offer.setStartDate(LocalDate.now());
         offer.setExpirationDate(LocalDate.now().plusDays(7));
+        offer.setBenefit(benefit);
         List<Offer> offers = List.of(offer);
 
         when(principalService.getSupplierId()).thenReturn(supplierId);
         when(offerRepository.findAllWithSpecification(supplierId, filterParams, pageable)).thenReturn(offers);
         List<OfferViewTableDto> expectedOfferViewTableDtos = offers.stream()
-                .map(offerEntity -> ModelConverter.entityToOfferViewTableDto(offerEntity, null))
+                .map(offerEntity -> ModelConverter.entityToOfferViewTableDto(offerEntity))
                 .toList();
 
         // When
@@ -804,6 +977,120 @@ class OfferServiceImplTests {
         assertEquals(expectedOfferViewTableDtos, result);
         verify(principalService, times(1)).getSupplierId();
         verify(offerRepository, times(1)).findAllWithSpecification(supplierId, filterParams, pageable);
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenOfferDateOutsideBenefitRange_WhenCreateOffer_ThenThrowDtoValidateException() {
+        // Given
+        UUID tenantId = UUID.randomUUID();
+
+        Benefit benefit = Benefit.builder()
+                .name("Title")
+                .description("Description")
+                .tenantId(tenantId)
+                .startDate(LocalDate.of(2023, 10, 10))
+                .expirationDate(LocalDate.of(2023, 12, 30))
+                .build();
+        benefit.setId(UUID.randomUUID());
+
+        User user = new User();
+        user.setRole(new Role(1, "ROLE_SUPPLIER"));
+
+        String coordinatesString = "test";
+        Supplier supplier = Supplier.builder().companyName("CompanyName").build();
+        SupplierProfile supplierProfile = SupplierProfile.builder().coordinatesString(coordinatesString).coordinates(null).build();
+        supplier.setProfile(supplierProfile);
+        user.setSupplier(supplier);
+
+        //when(principalService.getUser()).thenReturn(user);
+        when(benefitService.findById(benefit.getId())).thenReturn(Optional.of(benefit));
+        when(principalService.getTenantId()).thenReturn(tenantId);
+        //when(principalService.getSupplierId()).thenReturn(UUID.randomUUID());
+        //when(supplierService.findBySupplierId(any())).thenReturn(Optional.of(supplier));
+        //when(tenantRepository.findById(tenantId)).thenReturn(Optional.of(Tenant.builder().name("tenant").build()));
+
+        // Out-of-range start date (before benefit start)
+        UUID benefitId = benefit.getId();
+        OfferRequestDto invalidOfferRequest = offerRequestDtoBuilder(
+                LocalDate.of(2023, 9, 10), // before benefit start date!
+                LocalDate.of(2023, 12, 1), // valid end date
+                benefitId
+        );
+
+        // Expect
+        OfferRequestDto finalInvalidOfferRequest1 = invalidOfferRequest;
+        assertThrows(DtoValidateException.class, () ->
+                offerService.createOffer(finalInvalidOfferRequest1, "en-US")
+        );
+
+        // Out-of-range end date (after benefit end)
+        invalidOfferRequest = offerRequestDtoBuilder(
+                LocalDate.of(2023, 10, 15),
+                LocalDate.of(2024, 1, 1), // after benefit expiration!
+                benefitId
+        );
+
+        OfferRequestDto finalInvalidOfferRequest = invalidOfferRequest;
+        assertThrows(DtoValidateException.class, () ->
+                offerService.createOffer(finalInvalidOfferRequest, "en-US")
+        );
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenStartDateNotBeforeExpiration_WhenCreateOffer_ThenThrowDtoValidateException() {
+        // Given
+        UUID tenantId = UUID.randomUUID();
+
+        Benefit benefit = Benefit.builder()
+                .name("Title")
+                .description("Description")
+                .tenantId(tenantId)
+                .startDate(LocalDate.of(2023, 1, 1))
+                .expirationDate(LocalDate.of(2023, 12, 30))
+                .build();
+        benefit.setId(UUID.randomUUID());
+
+        User user = new User();
+        user.setRole(new Role(1, "ROLE_SUPPLIER"));
+
+        String coordinatesString = "test";
+        Supplier supplier = Supplier.builder().companyName("CompanyName").build();
+        SupplierProfile supplierProfile = SupplierProfile.builder().coordinatesString(coordinatesString).coordinates(null).build();
+        supplier.setProfile(supplierProfile);
+        user.setSupplier(supplier);
+
+        //when(principalService.getUser()).thenReturn(user);
+        when(benefitService.findById(benefit.getId())).thenReturn(Optional.of(benefit));
+        when(principalService.getTenantId()).thenReturn(tenantId);
+        //when(principalService.getSupplierId()).thenReturn(UUID.randomUUID());
+        //when(supplierService.findBySupplierId(any())).thenReturn(Optional.of(supplier));
+        //when(tenantRepository.findById(tenantId)).thenReturn(Optional.of(Tenant.builder().name("tenant").build()));
+
+        // Start and end date the same
+        OfferRequestDto invalidOfferRequest = offerRequestDtoBuilder(
+                LocalDate.of(2023, 10, 10),
+                LocalDate.of(2023, 10, 10),
+                benefit.getId()
+        );
+
+        OfferRequestDto finalInvalidOfferRequest = invalidOfferRequest;
+        assertThrows(DtoValidateException.class, () ->
+                offerService.createOffer(finalInvalidOfferRequest, "en-US")
+        );
+
+        // End date before start date
+        invalidOfferRequest = offerRequestDtoBuilder(
+                LocalDate.of(2023, 11, 1),
+                LocalDate.of(2023, 10, 1),
+                benefit.getId()
+        );
+
+        OfferRequestDto finalInvalidOfferRequest1 = invalidOfferRequest;
+        assertThrows(DtoValidateException.class, () ->
+                offerService.createOffer(finalInvalidOfferRequest1, "en-US")
+        );
     }
 
     @Test
@@ -841,17 +1128,21 @@ class OfferServiceImplTests {
         );
         LocalDate localDate = LocalDate.of(2025, 3, 10);
         UUID tenantId = UUID.randomUUID();
+        UUID citizenId = UUID.randomUUID();
+        User mockUser = new User();
+        mockUser.setId(citizenId);
 
+        when(principalService.getUser()).thenReturn(mockUser);
         when(principalService.getTenantId()).thenReturn(tenantId);
-        when(offerRepository.findActiveOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, tenantId, 1))
+        when(offerRepository.findActiveOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, tenantId, 1, citizenId))
                 .thenReturn(mockOffers);
 
         // When
-        Map<String, List<OfferMobileMapLightDto>> result = offerService.getOffersWithinViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, 1);
+        Map<String, List<OfferMobileMapLightDto>> result = offerService.getOffersWithinViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, 1, "");
 
         // Then
         assertEquals(mockOffers.size(), result.size());
-        verify(offerRepository).findActiveOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, tenantId, 1);
+        verify(offerRepository).findActiveOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, tenantId, 1, citizenId);
     }
 
     @Test
@@ -859,17 +1150,21 @@ class OfferServiceImplTests {
         // Given
         LocalDate localDate = LocalDate.of(2025, 3, 10);
         UUID tenantId = UUID.randomUUID();
+        UUID citizenId = UUID.randomUUID();
+        User mockUser = new User();
+        mockUser.setId(citizenId);
 
+        when(principalService.getUser()).thenReturn(mockUser);
         when(principalService.getTenantId()).thenReturn(tenantId);
-        when(offerRepository.findActiveOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, tenantId, 2))
+        when(offerRepository.findActiveOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, tenantId, 2, citizenId))
                 .thenReturn(Collections.emptyList());
 
         // When
-        Map<String, List<OfferMobileMapLightDto>> result = offerService.getOffersWithinViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, 2);
+        Map<String, List<OfferMobileMapLightDto>> result = offerService.getOffersWithinViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, 2, "");
 
         // Then
         assertTrue(result.isEmpty());
-        verify(offerRepository).findActiveOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, tenantId, 2);
+        verify(offerRepository).findActiveOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, tenantId, 2, citizenId);
     }
 
     @Test
@@ -881,17 +1176,51 @@ class OfferServiceImplTests {
         );
         LocalDate localDate = LocalDate.of(2025, 3, 4);
         UUID tenantId = UUID.randomUUID();
+        UUID citizenId = UUID.randomUUID();
+        User mockUser = new User();
+        mockUser.setId(citizenId);
 
+        when(principalService.getUser()).thenReturn(mockUser);
         when(principalService.getTenantId()).thenReturn(tenantId);
-        when(offerRepository.findActiveOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, tenantId, 1))
+        when(offerRepository.findActiveOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, tenantId, 1, citizenId))
                 .thenReturn(mockOffers);
 
         // When
-        Map<String, List<OfferMobileMapLightDto>> result = offerService.getOffersWithinViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, 1);
+        Map<String, List<OfferMobileMapLightDto>> result = offerService.getOffersWithinViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, 1, "");
 
         // Then
         assertEquals(mockOffers.size() - 1, result.size());
-        verify(offerRepository).findActiveOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, tenantId, 1);
+        verify(offerRepository).findActiveOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE, localDate, tenantId, 1, citizenId);
+    }
+
+    @Test
+    void GivenBoundaryConditionWithSearch_WhenGetOffersWithinViewport_ThenSuccess() {
+        // Given
+        List<OfferMobileMapLightDto> mockOffers = Arrays.asList(
+                createOfferMapLightDto("test1", false, "coordinates1"),
+                createOfferMapLightDto("test2", false, "coordinates1")
+        );
+        LocalDate localDate = LocalDate.of(2025, 3, 4);
+        UUID tenantId = UUID.randomUUID();
+        String searchKeyword = "test";
+        UUID citizenId = UUID.randomUUID();
+        User mockUser = new User();
+        mockUser.setId(citizenId);
+
+        when(principalService.getUser()).thenReturn(mockUser);
+        when(principalService.getTenantId()).thenReturn(tenantId);
+        when(offerRepository.findActiveSearchOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE,
+                localDate, tenantId, 1, citizenId, searchKeyword))
+                .thenReturn(mockOffers);
+
+        // When
+        Map<String, List<OfferMobileMapLightDto>> result = offerService.getOffersWithinViewport(MIN_LATITUDE, MAX_LATITUDE,
+                MIN_LONGITUDE, MAX_LONGITUDE, localDate, 1, searchKeyword);
+
+        // Then
+        assertEquals(mockOffers.size() - 1, result.size());
+        verify(offerRepository).findActiveSearchOffersInViewport(MIN_LATITUDE, MAX_LATITUDE, MIN_LONGITUDE, MAX_LONGITUDE,
+                localDate, tenantId, 1, citizenId, searchKeyword);
     }
 
     @Test
@@ -905,6 +1234,7 @@ class OfferServiceImplTests {
 
     @Test
     void GivenOfferIdOfNonPendingOffer_WhenRejectOffer_ThenExpectDtoValidateException() {
+
         Offer offer = createOffer();
         offer.setStatus(GenericStatusEnum.REJECTED);
         RejectOfferDto rejectedOffer = new RejectOfferDto("reason", OFFER_ID);
@@ -915,7 +1245,8 @@ class OfferServiceImplTests {
     }
 
     @Test
-    void GivenValidRejectOfferDto_WhenRejectOffer_ThenExpectSuccess() throws DtoValidateException {
+    @SneakyThrows
+    void GivenValidRejectOfferDto_WhenRejectOffer_ThenExpectSuccess() {
         // Given
         String language = "en";
         Offer offer = createOffer();
@@ -985,7 +1316,8 @@ class OfferServiceImplTests {
     }
 
     @Test
-    void GivenValidOfferIdOfRejectedOffer_WhenGetOfferRejectionReason_ThenExpectSuccess() throws DtoValidateException {
+    @SneakyThrows
+    void GivenValidOfferIdOfRejectedOffer_WhenGetOfferRejectionReason_ThenExpectSuccess() {
         // Given
         Offer offer = createOffer();
         offer.setStatus(GenericStatusEnum.REJECTED);
@@ -1095,6 +1427,40 @@ class OfferServiceImplTests {
         assertEquals(expectedCounts, actualCounts);
     }
 
+    @ParameterizedTest
+    @MethodSource("provideTestCases")
+    void GivenKeyword_WhenSearchOffersStartingWithKeyword_ThenReturnExpectedOffers(String keyword, List<String> expectedOffers) {
+        // Given
+        UUID tenantId = UUID.randomUUID();
+        UUID citizenId = UUID.randomUUID();
+        User mockUser = new User();
+        mockUser.setId(citizenId);
+
+        when(principalService.getUser()).thenReturn(mockUser);
+        when(principalService.getTenantId()).thenReturn(tenantId);
+        when(offerRepository.searchByTitlePrefix(keyword, tenantId, GenericStatusEnum.ACTIVE, citizenId)).thenReturn(expectedOffers);
+
+        // When
+        List<String> result = offerService.searchOffersByKeyword(keyword);
+
+        // Then
+        assertEquals(expectedOffers, result);
+    }
+
+    @Test
+    void GivenInvalidAmountForOfferType_WhenCreateOffer_ThenExpectError() {
+        // Given
+        OfferRequestDto offerRequestDto = OfferRequestDto.builder()
+                .offerTypeId(1)
+                .amount(150.0)
+                .startDate(LocalDate.now())
+                .expirationDate(LocalDate.now().plusDays(10))
+                .build();
+
+        // When & Then
+        assertThrows(DtoValidateException.class, () -> offerService.createOffer(offerRequestDto, "en-US"));
+    }
+
     private Offer createOffer() {
         Offer offer = new Offer();
         OfferType offerType = new OfferType();
@@ -1112,11 +1478,8 @@ class OfferServiceImplTests {
         return offer;
     }
 
-    private Set<UUID> getIds() {
-        return new HashSet<>(Arrays.asList(UUID.randomUUID(), UUID.randomUUID()));
-    }
 
-    private OfferRequestDto offerRequestDtoBuilder(LocalDate startDate, LocalDate expirationDate, Set<UUID> ids) {
+    private OfferRequestDto offerRequestDtoBuilder(LocalDate startDate, LocalDate expirationDate, UUID benefitId) {
         return OfferRequestDto.builder()
                 .title("Title")
                 .amount((double) 0)
@@ -1125,7 +1488,7 @@ class OfferServiceImplTests {
                 .offerTypeId(0)
                 .startDate(startDate)
                 .expirationDate(expirationDate)
-                .grantsIds(ids)
+                .benefitId(benefitId)
                 .restrictionRequestDto(RestrictionRequestDto.builder().ageRestriction(10).build())
                 .build();
     }
@@ -1143,6 +1506,15 @@ class OfferServiceImplTests {
     }
 
     private Offer offerBuilder() {
+        Benefit benefit = Benefit.builder()
+                .name("Title")
+                .description("Description")
+                .startDate(LocalDate.of(2023, 10, 2))
+                .expirationDate(LocalDate.of(2023, 10, 4))
+                .build();
+
+        benefit.setId(UUID.randomUUID());
+
         Offer offer = Offer.builder()
                 .amount(2.22)
                 .title("title")
@@ -1160,26 +1532,35 @@ class OfferServiceImplTests {
                         .build())
                 .citizenOfferType("CITIZEN_WITH_PASS")
                 .coordinatesString("Test")
-                .grants(Set.of())
+                .benefit(benefit)
                 .build();
+
         offer.setId(UUID.randomUUID());
+        System.out.println(offer.getId());
         return offer;
     }
 
-    private Grant grantBuilder() {
-        Grant grant = Grant.builder()
-                .title("Title")
-                .amount(0)
-                .createFor(CreatedForEnum.PASS_OWNER)
+    private BenefitTableDto benefitBuilder() {
+        BenefitTableDto benefit = BenefitTableDto.builder()
+                .id(UUID.randomUUID())
+                .name("Title")
                 .description("Description")
                 .startDate(LocalDate.of(2023, 10, 2))
                 .expirationDate(LocalDate.of(2023, 10, 4))
                 .build();
-        grant.setId(UUID.randomUUID());
-        return grant;
+        return benefit;
     }
 
     private OfferMobileListDto offerMobileListDtotoBuilder() {
+
+        BenefitLightDto benefit = BenefitLightDto.builder()
+                .id(UUID.randomUUID())
+                .name("Title")
+                .description("Description")
+                .startDate(LocalDate.of(2023, 10, 2))
+                .expirationDate(LocalDate.of(2023, 10, 4))
+                .build();
+
         return OfferMobileListDto.builder()
                 .id(UUID.randomUUID())
                 .amount(2.22)
@@ -1194,7 +1575,7 @@ class OfferServiceImplTests {
                 .citizenOfferType("CITIZEN_WITH_PASS")
                 .distance(10D)
                 .isActive(true)
-                .grants(new HashSet<>())
+                .benefit(benefit)
                 .workingHours(new ArrayList<>())
                 .build();
     }

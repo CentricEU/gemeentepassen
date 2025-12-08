@@ -1,10 +1,9 @@
 module.exports = {
-    project: {
-        ios: {},
-        android: {},
+  project: {
+    ios: {},
+    android: {
+      packageName: 'com.local4local',
     },
-    assets: ['./app/assets/fonts'],
-    dependencies: {
-        ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
-    }
+  },
+  assets: ['./app/assets/fonts'],
 };

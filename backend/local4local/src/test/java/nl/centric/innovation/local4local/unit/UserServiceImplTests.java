@@ -15,20 +15,17 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.spy;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import nl.centric.innovation.local4local.dto.CitizenViewDto;
 import nl.centric.innovation.local4local.dto.CreateUserDto;
 import nl.centric.innovation.local4local.dto.RegisterCitizenUserDto;
+import nl.centric.innovation.local4local.dto.SetupPasswordValidateDTO;
+import nl.centric.innovation.local4local.dto.UserTableDto;
 import nl.centric.innovation.local4local.dto.UserViewDto;
 import nl.centric.innovation.local4local.entity.ConfirmationToken;
 import nl.centric.innovation.local4local.entity.Passholder;
@@ -55,6 +52,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -249,6 +249,8 @@ class UserServiceImplTests {
         UUID userId = UUID.randomUUID();
         User user = new User();
         user.setId(userId);
+        user.setIsEnabled(true);
+        user.setActive(true);
         user.setRole(new Role(1, Role.ROLE_SUPPLIER));
 
         when(userRepository.findByUsernameIgnoreCase(SAMPLE_EMAIL)).thenReturn(Optional.of(user));
@@ -268,6 +270,7 @@ class UserServiceImplTests {
 
         UUID userId = UUID.randomUUID();
         User user = new User();
+        user.setIsEnabled(true);
         user.setId(userId);
         user.setRole(new Role(1, Role.ROLE_MUNICIPALITY_ADMIN));
 
@@ -386,14 +389,30 @@ class UserServiceImplTests {
     }
 
     @Test
-    public void GivenValidRequest_WhenFindAllBySupplierId_ThenExpectListOfUsers() {
+    public void GivenValidRequest_WhenFindAllCashiersBySupplierId_ThenExpectListOfUsers() {
         //Given
         UUID supplierId = UUID.randomUUID();
         List<User> mockUserList = List.of(new User(), new User());
-
+        Role mockedRole = Role.builder().name(Role.ROLE_CASHIER).build();
+        when(roleRepository.findByName(Role.ROLE_CASHIER)).thenReturn(Optional.of(mockedRole));
         //When
-        when(userRepository.findAllBySupplierId(supplierId)).thenReturn(mockUserList);
-        List<User> tenants = userService.findAllBySupplierId(supplierId);
+        when(userRepository.findAllBySupplierIdAndRole(supplierId, mockedRole)).thenReturn(mockUserList);
+        List<User> tenants = userService.findAllCashiersBySupplierId(supplierId);
+
+        //Than
+        assertEquals(2, tenants.size());
+    }
+
+    @Test
+    public void GivenValidRequest_WhenFindAllSuppliersBySupplierId_ThenExpectListOfUsers() {
+        //Given
+        UUID supplierId = UUID.randomUUID();
+        List<User> mockUserList = List.of(new User(), new User());
+        Role mockedRole = Role.builder().name(Role.ROLE_SUPPLIER).build();
+        when(roleRepository.findByName(Role.ROLE_SUPPLIER)).thenReturn(Optional.of(mockedRole));
+        //When
+        when(userRepository.findAllBySupplierIdAndRole(supplierId, mockedRole)).thenReturn(mockUserList);
+        List<User> tenants = userService.findAllSuppliersBySupplierId(supplierId);
 
         //Than
         assertEquals(2, tenants.size());
@@ -435,6 +454,8 @@ class UserServiceImplTests {
     public void GivenUserId_WhenFIndById_ThenExpectUser() {
         //Given
         User user = new User();
+        user.setRole(Role.builder()
+                .name(Role.ROLE_SUPPLIER).build());
         Supplier supplier = new Supplier();
         user.setSupplier(supplier);
         UUID id = UUID.randomUUID();
@@ -768,7 +789,9 @@ class UserServiceImplTests {
 
         List<User> userList = Arrays.asList(User.builder().username("email1@domain.com").build(),
                 User.builder().username("email2@domain.com").build());
-        when(userService.findAllBySupplierId(supplierId)).thenReturn(userList);
+        Role mockedRole = Role.builder().name(Role.ROLE_SUPPLIER).build();
+        when(roleRepository.findByName(Role.ROLE_SUPPLIER)).thenReturn(Optional.of(mockedRole));
+        when(userService.findAllSuppliersBySupplierId(supplierId)).thenReturn(userList);
 
         String[] expectedEmails = {"email1@domain.com", "email2@domain.com"};
 
@@ -805,4 +828,172 @@ class UserServiceImplTests {
         assertThrows(DtoValidateAlreadyExistsException.class, () -> userService.saveCitizen(registerUserDto, "en"));
     }
 
+    @Test
+    void GivenValidPageAndSize_WhenGetAllAdminsByTenantIdPaginated_ThenReturnUserTableDtoList() throws DtoValidateNotFoundException {
+        // Given
+        int page = 0;
+        int size = 2;
+        UUID tenantId = UUID.randomUUID();
+        UUID currentUserId = UUID.randomUUID();
+
+        Role role = Role.builder().name(Role.ROLE_MUNICIPALITY_ADMIN).build();
+        User currentUser = User.builder().build();
+        currentUser.setCreatedDate(LocalDateTime.now());
+        currentUser.setId(currentUserId);
+        currentUser.setUsername("test1@mail.com");
+        User otherUser = User.builder().build();
+        otherUser.setCreatedDate(LocalDateTime.now());
+        otherUser.setId(UUID.randomUUID());
+        otherUser.setUsername("test2@mail.com");
+
+        Page<User> userPage = new PageImpl<>(List.of(currentUser, otherUser));
+
+        when(roleRepository.findByName(Role.ROLE_MUNICIPALITY_ADMIN)).thenReturn(Optional.of(role));
+        when(principleService.getTenantId()).thenReturn(tenantId);
+        when(userRepository.findAllByTenantIdAndRole(eq(tenantId), eq(role), any(Pageable.class))).thenReturn(userPage);
+        when(principleService.getUser()).thenReturn(currentUser);
+
+        List<UserTableDto> result = userService.getAllAdminsByTenantIdPaginated(page, size);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void GivenValidTenantId_WhenCountAllAdminsByTenantId_ThenReturnCountMinusOne() throws DtoValidateNotFoundException {
+        // Given
+        UUID tenantId = UUID.randomUUID();
+        Role role = Role.builder().name(Role.ROLE_MUNICIPALITY_ADMIN).build();
+
+        when(roleRepository.findByName(Role.ROLE_MUNICIPALITY_ADMIN)).thenReturn(Optional.of(role));
+        when(principleService.getTenantId()).thenReturn(tenantId);
+        when(userRepository.countAllByTenantIdAndRole(tenantId, role)).thenReturn(5);
+
+        Integer result = userService.countAllAdminsByTenantId();
+
+        assertEquals(4, result);
+    }
+
+    @Test
+    public void GivenEmailSupplierTenantTokenRole_WhenCreateCashierUser_ThenUserSavedWithProperties() {
+        // Given
+        String email = "cashier@domain.com";
+        UUID tenantId = UUID.randomUUID();
+        String token = UUID.randomUUID().toString().replace("-", "");
+        Role cashierRole = Role.builder().id(3).name(Role.ROLE_CASHIER).build();
+        Supplier supplierLocal = Supplier.builder().companyName("Company").build();
+
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        User result = userService.createCashierUser(email, supplierLocal, tenantId, token, cashierRole);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(email, result.getUsername());
+        assertEquals(token, result.getPassword());
+        assertEquals(tenantId, result.getTenantId());
+        assertEquals(supplierLocal, result.getSupplier());
+        assertEquals(cashierRole, result.getRole());
+    }
+
+    @Test
+    public void GivenSupplierEmailsLanguage_WhenCreateCashierUsers_ThenUsersCreatedAndEmailsSent() {
+        // Given
+        List<String> emailsList = List.of("c1@domain.com", "c2@domain.com");
+        Set<String> emails = new LinkedHashSet<>(emailsList);
+        String language = "en";
+        Supplier supplier = Supplier.builder()
+                .companyName("Company")
+                .build();
+
+        Role cashierRole = Role.builder()
+                .id(3)
+                .name(Role.ROLE_CASHIER)
+                .build();
+
+        UUID tenantId = UUID.randomUUID();
+
+        when(roleRepository.findByName(Role.ROLE_CASHIER))
+                .thenReturn(java.util.Optional.of(cashierRole));
+
+        when(principleService.getTenantId()).thenReturn(tenantId);
+
+        // Return the argument when saving a user
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Spy userService to verify sendCashierEmail calls
+        UserService spyUserService = spy(userService);
+
+        // When
+        List<User> result = spyUserService.createCashierUsers(supplier, emails, language);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        for (int i = 0; i < emailsList.size(); i++) {
+            User u = result.get(i);
+
+            assertEquals(emailsList.get(i), u.getUsername());
+            assertEquals(supplier, u.getSupplier());
+            assertEquals(cashierRole, u.getRole());
+            assertEquals(tenantId, u.getTenantId());
+            assertNotNull(u.getPassword());
+        }
+    }
+
+    @Test
+    public void GivenValidSupplierId_WhenGetCashierEmailsForSupplier_ThenReturnUsernames() {
+        // Given
+        UUID supplierId = UUID.randomUUID();
+        Role cashierRole = Role.builder().name(Role.ROLE_CASHIER).build();
+        List<User> userList = List.of(
+                User.builder().username("c1@domain.com").build(),
+                User.builder().username("c2@domain.com").build()
+        );
+
+        when(roleRepository.findByName(Role.ROLE_CASHIER)).thenReturn(Optional.of(cashierRole));
+        when(userRepository.findAllBySupplierIdAndRole(supplierId, cashierRole)).thenReturn(userList);
+
+        // When
+        List<String> result = userService.getCashierEmailsForSupplier(supplierId);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("c1@domain.com", result.get(0));
+        assertEquals("c2@domain.com", result.get(1));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideValidAndInvalidTokens")
+    void GivenUsernameAndToken_WhenValidateToken_ThenReturnExpectedResult(String username, String token, Boolean expectedResult) throws DtoValidateException {
+        // Given
+        User user = User.builder().username(username).password("validToken").build();
+        when(userRepository.findByUsernameIgnoreCase(anyString())).thenReturn(Optional.of(user));
+        // When
+        Boolean result = userService.validateToken(new SetupPasswordValidateDTO(token, username));
+        // Then
+        assertEquals(expectedResult, result);
+    }
+
+    @Test
+    void GivenNonExistingUsername_WhenValidateToken_ThenThrowDtoValidateNotFoundException() {
+        // Given
+        String username = "nonexistent@domain.com";
+        String token = "someToken";
+        when(userRepository.findByUsernameIgnoreCase(anyString())).thenReturn(Optional.empty());
+
+        // Then
+        assertThrows(DtoValidateNotFoundException.class, () -> userService.validateToken(new SetupPasswordValidateDTO(username, token)));
+    }
+
+    private static Stream<Arguments> provideValidAndInvalidTokens() {
+        return Stream.of(
+                Arguments.of("user1@domain.com", "validToken", true),
+                Arguments.of("user2@domain.com", "invalidToken", false)
+        );
+    }
 }

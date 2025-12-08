@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatTabChangeEvent } from '@angular/material/tabs';
 import {
 	AuthService,
 	Breadcrumb,
@@ -9,7 +8,9 @@ import {
 	UserInfo,
 } from '@frontend/common';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService, ToastrService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { WindmillTabComponent } from '@windmill/ng-windmill/tabs';
+import { ToastrService } from '@windmill/ng-windmill/toastr';
 
 import { MunicipalitySupplierService } from '../../_services/suppliers.service';
 import { ActiveSuppliersComponent } from '../active-suppliers/active-suppliers.component';
@@ -20,6 +21,7 @@ import { InviteSuppliersComponent } from '../invite-suppliers/invite-suppliers.c
 	selector: 'frontend-suppliers',
 	templateUrl: './suppliers.component.html',
 	styleUrls: ['./suppliers.component.scss'],
+	standalone: false,
 })
 export class SuppliersListComponent implements OnInit, OnDestroy {
 	@ViewChild('activeSuppliers') activeSuppliers: ActiveSuppliersComponent;
@@ -96,7 +98,7 @@ export class SuppliersListComponent implements OnInit, OnDestroy {
 		);
 	}
 
-	public tabChanged(event: MatTabChangeEvent): void {
+	public tabChanged(event: WindmillTabComponent): void {
 		this.tabIndex = event.index;
 	}
 

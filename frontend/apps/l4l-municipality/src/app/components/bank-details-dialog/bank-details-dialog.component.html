@@ -1,0 +1,17 @@
+<section mat-dialog-title>
+	<h3>{{ 'dashboard.bankDetails.title' | translate }}</h3>
+</section>
+<section mat-dialog-content>
+	<p class="description" id="dialog-description">{{ 'dashboard.bankDetails.description' | translate }}</p>
+	<form centric-complex-form [formGroup]="bankInformationForm">
+		<frontend-bank-input [formGroup]="bankInformationForm" [isReadonly]="false"> </frontend-bank-input>
+	</form>
+</section>
+<section mat-dialog-actions>
+	<centric-button ariaAttributes type="outlined-theme" (click)="logout()">
+		{{ 'general.logout' | translate }}
+	</centric-button>
+	<centric-button ariaAttributes (click)="finishSetup()" [disabled]="!bankInformationForm.valid">
+		{{ 'general.button.finish' | translate }}
+	</centric-button>
+</section>

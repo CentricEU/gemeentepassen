@@ -50,9 +50,6 @@ jest.mock('@react-navigation/bottom-tabs', () => ({
 jest.mock('../offers/OfferScreen', () => ({
     OffersStack: () => <div>OffersStack</div>
 }));
-jest.mock('../scan/ScanScreen', () => ({
-    ScanStack: () => <div>ScanStack</div>
-}));
 jest.mock('../transactions/TransactionScreen', () => ({
     TransactionsStack: () => <div>TransactionsStack</div>
 }));
@@ -76,7 +73,6 @@ describe('<Home />', () => {
         const { getByTestId } = render(<Home />);
 
         expect(getByTestId('OffersStack')).toBeTruthy();
-        expect(getByTestId('ScanStack')).toBeTruthy();
         expect(getByTestId('TransactionsStack')).toBeTruthy();
         expect(getByTestId('ProfileStack')).toBeTruthy();
     });

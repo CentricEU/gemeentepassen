@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 	selector: 'frontend-breadcrumbs',
 	templateUrl: './breadcrumbs.component.html',
 	styleUrls: ['./breadcrumbs.component.scss'],
+	standalone: false,
 })
 export class BreadcrumbsComponent implements OnInit, OnDestroy {
 	public breadcrumbs: Breadcrumb[];

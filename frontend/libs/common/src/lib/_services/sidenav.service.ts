@@ -19,21 +19,15 @@ export class SidenavService {
 		return isSupplierApp ? isSupplierComponent : isMunicipalityComponent;
 	}
 
-	public reloadCurrentRoute(): void {
-		const currentUrl = '/';
-
-		this.router.navigateByUrl(commonRoutingConstants.login, { skipLocationChange: true }).then(() => {
-			this.router.navigate([currentUrl]);
-		});
-	}
-
 	private checkForCommonComponents(currentPath: string): boolean {
 		const validPaths = [
 			commonRoutingConstants.register,
 			commonRoutingConstants.login,
 			commonRoutingConstants.recover,
+			commonRoutingConstants.setupPassword,
 			commonRoutingConstants.resendConfirmationEmail,
 			commonRoutingConstants.registrationSuccessful,
+			commonRoutingConstants.openInApp,
 		];
 		let isCommonComponent = false;
 		validPaths.forEach((definedPath: string) => {

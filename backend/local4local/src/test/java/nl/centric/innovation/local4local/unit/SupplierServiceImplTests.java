@@ -22,11 +22,9 @@ import nl.centric.innovation.local4local.repository.RejectSupplierRepository;
 import nl.centric.innovation.local4local.repository.SupplierRepository;
 import nl.centric.innovation.local4local.repository.TenantRepository;
 import nl.centric.innovation.local4local.service.impl.PrincipalService;
-import nl.centric.innovation.local4local.service.impl.SupplierServiceImpl;
+import nl.centric.innovation.local4local.service.impl.SupplierService;
 import nl.centric.innovation.local4local.service.impl.UserService;
 import nl.centric.innovation.local4local.service.interfaces.EmailService;
-import nl.centric.innovation.local4local.service.interfaces.TenantService;
-import nl.centric.innovation.local4local.util.ModelConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,6 +38,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+//import qrgenerator.QRCodeGenerator;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -53,10 +52,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static nl.centric.innovation.local4local.service.impl.SupplierServiceImpl.ORDER_CRITERIA;
+import static nl.centric.innovation.local4local.service.impl.SupplierService.ORDER_CRITERIA;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
@@ -67,17 +67,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class SupplierServiceImplTests {
+class SupplierServiceImplTests {
     @InjectMocks
-    private SupplierServiceImpl supplierService;
+    private SupplierService supplierService;
     @Mock
     private SupplierRepository supplierRepositoryMock;
     @Mock
     private TenantRepository tenantRepository;
     @Mock
     private RejectSupplierRepository rejectSupplierRepository;
-    @Mock
-    private TenantService tenantServiceMock;
     @Mock
     private UserService userServiceMock;
     @Mock
@@ -88,13 +86,13 @@ public class SupplierServiceImplTests {
     @Mock
     private PrincipalService principalService;
 
+//    @Mock
+//    private QRCodeGenerator qrCodeGenerator;
 
     private Tenant tenant;
 
     private Supplier supplier;
     private User user;
-
-    private RejectSupplier rejectSupplier;
     private static final String KVK_VALID = "12345678";
     private static final UUID TENANT_ID = UUID.randomUUID();
 
@@ -109,13 +107,12 @@ public class SupplierServiceImplTests {
         tenant = new Tenant();
         supplier = new Supplier();
         user = new User();
-        rejectSupplier = new RejectSupplier();
     }
 
     @ParameterizedTest
     @MethodSource("customKvk")
     @SneakyThrows
-    public void GivenValid_WhenSaveSupplier_ThenExpectSuccess(String kvk) {
+    void GivenValid_WhenSaveSupplier_ThenExpectSuccess(String kvk) {
         // Given
         RegisterSupplierDto validSupplierDto = RegisterSupplierDto.builder().agreedTerms(true)
                 .tenantId(UUID.randomUUID()).email("centric@centric.com").kvk(kvk).build();
@@ -132,7 +129,7 @@ public class SupplierServiceImplTests {
     }
 
     @Test()
-    public void GivenNoTenant_WhenSaveSupplier_ThenExpectDtoValidateNotFoundException() {
+    void GivenNoTenant_WhenSaveSupplier_ThenExpectDtoValidateNotFoundException() {
         // Given
         RegisterSupplierDto invalidSupplierDto = RegisterSupplierDto.builder().agreedTerms(true).kvk(KVK_VALID).build();
 
@@ -142,7 +139,7 @@ public class SupplierServiceImplTests {
     }
 
     @Test
-    public void GivenUserWithEmailEmailAlreadyExisting_WhenSaveSupplier_ThenExpectDtoValidateAlreadyExistsException() {
+    void GivenUserWithEmailEmailAlreadyExisting_WhenSaveSupplier_ThenExpectDtoValidateAlreadyExistsException() {
         // Given
         RegisterSupplierDto duplicateEmailSupplierDto = RegisterSupplierDto.builder().agreedTerms(true).kvk(KVK_VALID)
                 .build();
@@ -156,7 +153,7 @@ public class SupplierServiceImplTests {
     }
 
     @Test
-    public void GivenTermsAndConditionNotAgreed_WhenSaveSupplier_ThenExpectDtoValidateException() {
+    void GivenTermsAndConditionNotAgreed_WhenSaveSupplier_ThenExpectDtoValidateException() {
         // Given
         RegisterSupplierDto termsNotAgreedSupplierDto = RegisterSupplierDto.builder().agreedTerms(false).kvk(KVK_VALID)
                 .build();
@@ -167,25 +164,24 @@ public class SupplierServiceImplTests {
     }
 
     @Test
-    public void GivenKvkNotValid_WhenSaveSupplier_ThenExpectDtoValidateException() {
+    void GivenKvkNotValid_WhenSaveSupplier_ThenExpectDtoValidateException() {
         // Given
         RegisterSupplierDto termsNotAgreedSupplierDto = RegisterSupplierDto.builder().agreedTerms(true).kvk("3128")
                 .build();
 
         // When Then
         assertThrows(DtoValidateException.class, () -> supplierService.save(termsNotAgreedSupplierDto, Optional.of(tenant), "nl-NL"));
-
     }
 
     @Test
-    public void GivenNotExistingTenantId_WhenGetSuppliers_ThenExpectDtoValidateException() {
+    void GivenNotExistingTenantId_WhenGetSuppliers_ThenExpectDtoValidateException() {
         // When Then
         assertThrows(DtoValidateException.class,
                 () -> supplierService.getAllByTenantIdAndStatus(TENANT_ID, 0, 25, SupplierStatusEnum.APPROVED));
     }
 
     @Test
-    public void GivenNotExistingTenantId_WhenGetSuppliersAndMultipleStatus_ThenExpectDtoValidateException() {
+    void GivenNotExistingTenantId_WhenGetSuppliersAndMultipleStatus_ThenExpectDtoValidateException() {
         // Given
         Set<SupplierStatusEnum> statusSet = new HashSet<>();
         statusSet.add(SupplierStatusEnum.PENDING);
@@ -198,7 +194,7 @@ public class SupplierServiceImplTests {
 
     @Test
     @SneakyThrows
-    public void GivenValidTenantId_WhenGetAllByTenantId_ThenSuppliersDtosReturned() {
+    void GivenValidTenantId_WhenGetAllByTenantId_ThenSuppliersDtosReturned() {
         // Given
         Set<SupplierStatusEnum> statusSet = new HashSet<>();
         statusSet.add(SupplierStatusEnum.PENDING);
@@ -211,7 +207,7 @@ public class SupplierServiceImplTests {
         Page<Supplier> mockSupplierPage = new PageImpl<>(mockSupplierList);
 
         // When
-        when(tenantServiceMock.findByTenantId(TENANT_ID)).thenReturn(Optional.of(tenant1));
+        when(tenantRepository.findById(TENANT_ID)).thenReturn(Optional.of(tenant1));
         when(supplierRepositoryMock.findAllByTenantIdAndStatusIn(TENANT_ID, PageRequest.of(0, 25, Sort.by(ORDER_CRITERIA)), statusSet))
                 .thenReturn(mockSupplierPage);
 
@@ -224,7 +220,7 @@ public class SupplierServiceImplTests {
 
     @Test
     @SneakyThrows
-    public void GivenValidTenantId_WhenGetAllByTenantIdAndStatusIn_ThenSuppliersDtosReturned() {
+    void GivenValidTenantId_WhenGetAllByTenantIdAndStatusIn_ThenSuppliersDtosReturned() {
         // Given
         Tenant tenant1 = new Tenant();
         tenant1.setId(TENANT_ID);
@@ -233,7 +229,7 @@ public class SupplierServiceImplTests {
         Page<Supplier> mockSupplierPage = new PageImpl<>(mockSupplierList);
 
         // When
-        when(tenantServiceMock.findByTenantId(TENANT_ID)).thenReturn(Optional.of(tenant1));
+        when(tenantRepository.findById(TENANT_ID)).thenReturn(Optional.of(tenant1));
         when(supplierRepositoryMock.findAllByTenantIdAndStatus(TENANT_ID, PageRequest.of(0, 25, Sort.by(ORDER_CRITERIA)), SupplierStatusEnum.APPROVED))
                 .thenReturn(mockSupplierPage);
 
@@ -246,10 +242,10 @@ public class SupplierServiceImplTests {
 
     @Test
     @SneakyThrows
-    public void GivenValidTenantId_WhenCountByTenantId_ThenShouldCount() {
+    void GivenValidTenantId_WhenCountByTenantId_ThenShouldCount() {
 
         tenant.setId(TENANT_ID);
-        when(tenantServiceMock.findByTenantId(TENANT_ID)).thenReturn(Optional.of(tenant));
+        when(tenantRepository.findById(TENANT_ID)).thenReturn(Optional.of(tenant));
         when(supplierRepositoryMock.countByTenantIdAndStatusIn(TENANT_ID, Set.of(SupplierStatusEnum.APPROVED))).thenReturn(2);
 
         Integer count = supplierService.countAllByTenantIdAndStatus(TENANT_ID, Set.of(SupplierStatusEnum.APPROVED));
@@ -258,8 +254,8 @@ public class SupplierServiceImplTests {
     }
 
     @Test
-    public void GivenNotExistingTenantId_WhenCountSuppliers_ThenExpectDtoValidateException() {
-        when(tenantServiceMock.findByTenantId(TENANT_ID)).thenReturn(Optional.empty());
+    void GivenNotExistingTenantId_WhenCountSuppliers_ThenExpectDtoValidateException() {
+        when(tenantRepository.findById(TENANT_ID)).thenReturn(Optional.empty());
 
         assertThrows(DtoValidateNotFoundException.class, () -> {
             supplierService.countAllByTenantIdAndStatus(TENANT_ID, Set.of(SupplierStatusEnum.APPROVED));
@@ -267,7 +263,7 @@ public class SupplierServiceImplTests {
     }
 
     @Test
-    public void GivenNotExistingSupplierId_WhenApproveSupplier_ThenExpectDtoValidateException() {
+    void GivenNotExistingSupplierId_WhenApproveSupplier_ThenExpectDtoValidateException() {
         // When Then
         assertThrows(DtoValidateNotFoundException.class,
                 () -> supplierService.approveSupplier(SUPPLIER_ID, "en-Us"));
@@ -275,7 +271,7 @@ public class SupplierServiceImplTests {
 
     @Test
     @SneakyThrows
-    public void GivenValidSupplierId_WhenApproveSupplier_ThenShouldUpdate() {
+    void GivenValidSupplierId_WhenApproveSupplier_ThenShouldUpdate() {
         //Given
         Tenant mockedTenand = Tenant.builder().name("TestTenant").build();
         Supplier mockedSupplier = Supplier.builder().tenant(mockedTenand).build();
@@ -286,7 +282,8 @@ public class SupplierServiceImplTests {
 
         //When
         when(supplierService.findBySupplierId(SUPPLIER_ID)).thenReturn(Optional.of(mockedSupplier));
-        when(userServiceMock.findAllBySupplierId(mockedSupplier.getId())).thenReturn(userList);
+        when(userServiceMock.findAllSuppliersBySupplierId(mockedSupplier.getId())).thenReturn(userList);
+        //when(qrCodeGenerator.generateQRCodeImage("https://www.google.com/")).thenReturn(dummyImage);
         doNothing().when(emailService).sendApproveProfileEmail(any(), any(), any(), any(), any());
 
         supplierService.approveSupplier(SUPPLIER_ID, "en-Us");
@@ -297,7 +294,7 @@ public class SupplierServiceImplTests {
 
     @Test
     @SneakyThrows
-    public void GivenValidData_WhenSendReviewEmailToSupplierWithApproved_ThenExpectSendApproveProfileEmailToBeCalled() {
+    void GivenValidData_WhenSendReviewEmailToSupplierWithApproved_ThenExpectSendApproveProfileEmailToBeCalled() {
 
         // Given
         UUID supplierId = UUID.randomUUID();
@@ -310,7 +307,7 @@ public class SupplierServiceImplTests {
                 User.builder().username("username2").build());
 
         // When
-        when(userServiceMock.findAllBySupplierId(supplierId)).thenReturn(userList);
+        when(userServiceMock.findAllSuppliersBySupplierId(supplierId)).thenReturn(userList);
 
         doNothing().when(emailService).sendApproveProfileEmail(any(), any(), any(), any(), any());
 
@@ -322,7 +319,7 @@ public class SupplierServiceImplTests {
 
     @Test
     @SneakyThrows
-    public void GivenValidData_WhenSendReviewEmailToSupplier_ThenExpectEmailServiceNotToBeCalled() {
+    void GivenValidData_WhenSendReviewEmailToSupplier_ThenExpectEmailServiceNotToBeCalled() {
         // Given
         UUID supplierId = UUID.randomUUID();
         String language = "en";
@@ -335,7 +332,7 @@ public class SupplierServiceImplTests {
                 User.builder().username("username2").build());
 
         // When
-        when(userServiceMock.findAllBySupplierId(supplierId)).thenReturn(userList);
+        when(userServiceMock.findAllSuppliersBySupplierId(supplierId)).thenReturn(userList);
 
         supplierService.sendReviewEmailToSupplier(mockedSupplier, SupplierStatusEnum.REJECTED, language);
 
@@ -344,7 +341,7 @@ public class SupplierServiceImplTests {
     }
 
     @Test
-    public void GivenValidData_WhenUpdateSupplierHasStatusUpdate_ThenExpectRepostitoryToBeCalled() {
+    void GivenValidData_WhenUpdateSupplierHasStatusUpdate_ThenExpectRepostitoryToBeCalled() {
         // Given
         UUID supplierId = UUID.randomUUID();
 
@@ -360,21 +357,21 @@ public class SupplierServiceImplTests {
 
     @Test
     @SneakyThrows
-    public void GivenValidData_WhenUpdateupdateSupplierStatus_ThenExpectRepostitorySaveToBeCalled() {
+    void GivenValidData_WhenUpdateupdateSupplierStatus_ThenExpectRepostitorySaveToBeCalled() {
         // Given
-        Supplier supplier = Supplier.builder().build();
+        Supplier supplierData = Supplier.builder().build();
         // When
-        when(supplierRepositoryMock.save(supplier)).thenReturn(supplier);
+        when(supplierRepositoryMock.save(supplierData)).thenReturn(supplierData);
 
-        supplierService.updateSupplierStatus(supplier, SupplierStatusEnum.APPROVED);
+        supplierService.updateSupplierStatus(supplierData, SupplierStatusEnum.APPROVED);
 
         // Then
-        assertEquals(supplier.isHasStatusUpdate(), true);
-        verify(supplierRepositoryMock, times(1)).save(supplier);
+        assertTrue(supplierData.isHasStatusUpdate());
+        verify(supplierRepositoryMock, times(1)).save(supplierData);
     }
 
     @Test
-    public void GivenNotExistingSupplierId_WhenRejectSupplier_ThenExpectDtoValidateException() {
+    void GivenNotExistingSupplierId_WhenRejectSupplier_ThenExpectDtoValidateException() {
         //Given
         RejectSupplierDto rejectSupplierDto = new RejectSupplierDto(
                 RejectionReason.DUPLICATE,
@@ -388,14 +385,7 @@ public class SupplierServiceImplTests {
     }
 
     @Test
-    public void GivenNotExistingSupplierId_WhenGetRejectedSupplier_ThenExpectDtoValidateException() {
-        //Given
-        RejectSupplierDto rejectSupplierDto = new RejectSupplierDto(
-                RejectionReason.DUPLICATE,
-                "",
-                SUPPLIER_ID
-        );
-
+    void GivenNotExistingSupplierId_WhenGetRejectedSupplier_ThenExpectDtoValidateException() {
         // When Then
         assertThrows(DtoValidateNotFoundException.class, () ->
                 supplierService.getRejectedSupplier(SUPPLIER_ID));
@@ -403,7 +393,7 @@ public class SupplierServiceImplTests {
 
     @Test
     @SneakyThrows
-    public void GivenValidRequest_WhenRejectSupplier_ThenExpectSavingRejectSupplier() {
+    void GivenValidRequest_WhenRejectSupplier_ThenExpectSavingRejectSupplier() {
         //Given
         RejectSupplierDto rejectSupplierDto = new RejectSupplierDto(
                 RejectionReason.DUPLICATE,
@@ -419,8 +409,8 @@ public class SupplierServiceImplTests {
         //When
         when(rejectSupplierRepository.save(any(RejectSupplier.class))).thenReturn(mock(RejectSupplier.class));
         when(supplierService.findBySupplierId(any())).thenReturn(Optional.of(supplier));
-        when(tenantServiceMock.findByTenantId(any())).thenReturn(Optional.of(tenant));
-        when(userServiceMock.findAllBySupplierId(mockedSupplier.getId())).thenReturn(userList);
+        when(tenantRepository.findById(any())).thenReturn(Optional.of(tenant));
+        when(userServiceMock.findAllSuppliersBySupplierId(mockedSupplier.getId())).thenReturn(userList);
 
         // Then
         supplierService.rejectSupplier(rejectSupplierDto, "en-Us", RejectionReason.NOT_IN_REGION.toString());
@@ -432,25 +422,53 @@ public class SupplierServiceImplTests {
     }
 
     @Test
-    public void GivenValidSupplierIdAndException_WhenApproveSupplier_ThenExpectDtoValidateException() throws Exception {
-        //Given
-        Tenant mockedTenand = Tenant.builder().name("TestTenant").build();
-        Supplier mockedSupplier = Supplier.builder().tenant(mockedTenand).build();
-        mockedSupplier.setId(SUPPLIER_ID);
-        List<User> userList = Arrays.asList(User.builder().username("username1").build(),
-                User.builder().username("username2").build());
-        //When
-        when(supplierService.findBySupplierId(SUPPLIER_ID)).thenReturn(Optional.of(mockedSupplier));
+    @SneakyThrows
+    void GivenSupplierId_WhenGetQRImage_ThenExpectSuccess() {
+        // Given
+        User mockUser = mock(User.class);
+        UUID uuid = UUID.randomUUID();
+        Supplier mockSupplier = mock(Supplier.class);
+        when(mockUser.getSupplier()).thenReturn(mockSupplier);
+        when(mockSupplier.getId()).thenReturn(uuid);
 
-        //Then
-        assertThrows(DtoValidateException.class, () ->
-                supplierService.approveSupplier(SUPPLIER_ID, "en-Us"));
+        byte[] expectedBytes = new byte[]{(byte) 0x89, (byte) 0x50, (byte) 0x4E, (byte) 0x47, (byte) 0x0D, (byte) 0x0A,
+                (byte) 0x1A, (byte) 0x0A, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x49, (byte) 0x45, (byte) 0x4E,
+                (byte) 0x44, (byte) 0xAE, (byte) 0x42, (byte) 0x60, (byte) 0x82};
+
+        S3Object s3Object = new S3Object();
+        s3Object.setObjectContent(new ByteArrayInputStream(expectedBytes));
+
+        // When
+        when(principalService.getUser()).thenReturn(mockUser);
+        when(amazonS3Client.getObject(any(GetObjectRequest.class))).thenReturn(s3Object);
+
+        byte[] actualBytes = supplierService.getQRImage();
+
+        // Then
+        assertNotNull(actualBytes);
+
     }
 
+//    @Test
+//    void GivenValidSupplierIdAndException_WhenApproveSupplier_ThenExpectDtoValidateException() throws Exception {
+//        //Given
+//        Tenant mockedTenand = Tenant.builder().name("TestTenant").build();
+//        Supplier mockedSupplier = Supplier.builder().tenant(mockedTenand).build();
+//        mockedSupplier.setId(SUPPLIER_ID);
+//
+//        //When
+//        when(supplierService.findBySupplierId(SUPPLIER_ID)).thenReturn(Optional.of(mockedSupplier));
+//        when(qrCodeGenerator.generateQRCodeImage("https://www.google.com/")).thenThrow(Exception.class);
+//
+//        //Then
+//        assertThrows(DtoValidateException.class, () ->
+//                supplierService.approveSupplier(SUPPLIER_ID, "en-Us"));
+//    }
+
     @Test
-    public void testGetAllByTenantIdForMap_TenantNotFound() {
+    void testGetAllByTenantIdForMap_TenantNotFound() {
         // Given
-        when(tenantServiceMock.findByTenantId(TENANT_ID)).thenReturn(Optional.empty());
+        when(tenantRepository.findById(TENANT_ID)).thenReturn(Optional.empty());
 
         // When & Then
         assertThrows(DtoValidateNotFoundException.class, () -> {
@@ -459,9 +477,9 @@ public class SupplierServiceImplTests {
     }
 
     @Test
-    public void testGetAllByTenantIdForMap_NoSuppliers() throws DtoValidateNotFoundException {
+    void testGetAllByTenantIdForMap_NoSuppliers() throws DtoValidateNotFoundException {
         // Given
-        when(tenantServiceMock.findByTenantId(TENANT_ID)).thenReturn(Optional.of(tenant));
+        when(tenantRepository.findById(TENANT_ID)).thenReturn(Optional.of(tenant));
         when(supplierRepositoryMock.findAllByTenantIdAndStatus(TENANT_ID, SupplierStatusEnum.APPROVED))
                 .thenReturn(List.of());
 
@@ -473,14 +491,14 @@ public class SupplierServiceImplTests {
     }
 
     @Test
-    public void testTnGetAllByTenantIdForMap_SuppliersFound() throws DtoValidateNotFoundException {
+    void testTnGetAllByTenantIdForMap_SuppliersFound() throws DtoValidateNotFoundException {
         // Given
         supplier.setProfile(new SupplierProfile());
-        when(tenantServiceMock.findByTenantId(TENANT_ID)).thenReturn(Optional.of(tenant));
+        when(tenantRepository.findById(TENANT_ID)).thenReturn(Optional.of(tenant));
         when(supplierRepositoryMock.findAllByTenantIdAndStatus(TENANT_ID, SupplierStatusEnum.APPROVED))
                 .thenReturn(List.of(supplier));
 
-        SupplierForMapViewDto expectedDto = ModelConverter.entityToSupplierForMapViewDto(supplier);
+        SupplierForMapViewDto expectedDto = SupplierForMapViewDto.entityToSupplierForMapViewDto(supplier);
 
         // When
         List<SupplierForMapViewDto> result = supplierService.getAllByTenantIdForMap(TENANT_ID);

@@ -6,6 +6,11 @@ import { Observable } from 'rxjs';
 export class JwtInterceptor implements HttpInterceptor {
 	intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
 		let token = localStorage.getItem('JWT_TOKEN');
+		const isSignicatRequest = request.url.includes('signicat.com');
+
+		if (isSignicatRequest) {
+			return next.handle(request);
+		}
 
 		if (!token) {
 			request = request.clone({
@@ -19,7 +24,7 @@ export class JwtInterceptor implements HttpInterceptor {
 
 		token = token.replace(/^"(.*)"$/, '$1');
 		request = request.clone({
-			setHeaders: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+			setHeaders: { Authorization: `Bearer ${token}` },
 			withCredentials: true,
 		});
 

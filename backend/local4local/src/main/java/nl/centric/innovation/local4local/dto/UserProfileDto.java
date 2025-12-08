@@ -4,12 +4,16 @@ import lombok.Builder;
 import nl.centric.innovation.local4local.entity.User;
 import nl.centric.innovation.local4local.entity.UserProfile;
 
+import javax.validation.constraints.NotNull;
+
 @Builder
 public record UserProfileDto(
-        String telephone,
+        @NotNull(message = "First name is required")
         String firstName,
+        @NotNull(message = "Last name is required")
         String lastName,
-        String address) {
+        String address,
+        String telephone) {
     public static UserProfileDto entityToUserProfileDto(UserProfile userProfile) {
         return UserProfileDto.builder()
                 .address(userProfile.getAddress())

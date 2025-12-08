@@ -1,4 +1,4 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
 
 $background-image: '/assets/images/login.svg';
 
@@ -11,6 +11,6 @@ $background-image: '/assets/images/login.svg';
 }
 
 .background-cover {
-	@include size(100%, 100%);
-	@include background-image($background-image, cover, no-repeat, center);
+	@include mixins.size(100%, 100%);
+	@include mixins.background-image($background-image, cover, no-repeat, center);
 }

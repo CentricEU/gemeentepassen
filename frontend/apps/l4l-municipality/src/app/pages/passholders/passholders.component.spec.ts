@@ -1,10 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import {
-	ActionButtons,
 	ColumnDataType,
-	GrantDto,
-	GrantHolder,
+	commonRoutingConstants,
 	Page,
 	PaginatedData,
 	PassholderViewDto,
@@ -12,12 +10,11 @@ import {
 } from '@frontend/common';
 import { CustomDialogComponent, TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { of } from 'rxjs';
 
 import { PassholdersService } from '../../_services/passholders.service';
 import { AppModule } from '../../app.module';
-import { AssignGrantComponent } from '../../components/assign-grant/assign-grant.component';
 import { ImportPassholdersComponent } from '../../components/import-passholders/import-passholders.component';
 import { PassholdersComponent } from './passholders.component';
 
@@ -124,14 +121,13 @@ describe('PassholdersComponent', () => {
 	it('should initialize columns', () => {
 		component.initializeColumns();
 		const expectedColumns: TableColumn[] = [
-			new TableColumn('checkbox', 'checkbox', 'checkbox', true, true, ColumnDataType.DEFAULT, true),
-			new TableColumn('general.name', 'name', 'name', true, false),
+			new TableColumn('general.name', 'name', 'name', true, true),
 			new TableColumn('general.bsn', 'bsn', 'bsn', true, false),
 			new TableColumn('general.address', 'address', 'address', true, false),
 			new TableColumn('general.residenceCity', 'residenceCity', 'residenceCity', true, false),
-			new TableColumn('general.expiringDate', 'expiringDate', 'expiringDate', true, false),
-			new TableColumn('general.passNumber', 'passNumber', 'passNumber', true, false),
-			new TableColumn('passholders.assignedGrants', 'grants', 'grants', true, true, ColumnDataType.CHIPS),
+			new TableColumn('general.expiringDate', 'expiringDate', 'expiringDate', true, false, ColumnDataType.DATE),
+			new TableColumn('general.passNumber', 'passNumber', 'passNumber', true, true),
+			new TableColumn('general.citizenGroup', 'citizenGroupName', 'citizenGroupName', true, false),
 			new TableColumn(
 				'general.registered',
 				'isRegistered',
@@ -148,18 +144,7 @@ describe('PassholdersComponent', () => {
 
 	it('should call service on getPassholders', () => {
 		const pages: Page<PassholderViewDto>[] = Array.from({ length: 5 }, () => new Page([]));
-		const mockRow: PassholderViewDto = {
-			id: 'mockId',
-			name: 'name',
-			bsn: 'bsn',
-			address: 'test',
-			passNumber: '3423232',
-			residenceCity: 'Gouda',
-			expiringDate: new Date(),
-			grants: [new GrantDto('id', 'test', 'test', 230, GrantHolder.PASS_CHILD, new Date(), new Date())],
-			selected: false,
-			isCheckboxDisabled: false,
-		};
+
 		component['dataCount'] = 1;
 		component.passholdersTable = new TableComponent<PassholderViewDto>(dialogService);
 		component.passholdersTable.paginatedData = new PaginatedData<PassholderViewDto>(pages, 10, 0);
@@ -223,31 +208,6 @@ describe('PassholdersComponent', () => {
 		});
 	});
 
-	it('should return AssignGrantComponent as the type of modal', () => {
-		expect(component.typeOfModal).toBe(AssignGrantComponent);
-	});
-
-	it('should open delete popup when click on trash icon', () => {
-		const mockRow: PassholderViewDto = {
-			id: 'mockId',
-			name: 'name',
-			bsn: 'bsn',
-			address: 'test',
-			passNumber: '3423232',
-			residenceCity: 'Gouda',
-			expiringDate: new Date(),
-			grants: [new GrantDto('id', 'test', 'test', 230, GrantHolder.PASS_CHILD, new Date(), new Date())],
-			selected: false,
-			isCheckboxDisabled: false,
-		};
-
-		component['openDialogDelete'] = jest.fn();
-
-		component.onActionButtonClicked({ actionButton: ActionButtons.trashIcon, row: mockRow });
-
-		expect(component['openDialogDelete']).toHaveBeenCalledTimes(1);
-	});
-
 	it('should not throw errors when called with valid arguments', () => {
 		const mockRow: PassholderViewDto = {
 			id: 'mockId',
@@ -257,7 +217,7 @@ describe('PassholdersComponent', () => {
 			passNumber: '3423232',
 			residenceCity: 'Gouda',
 			expiringDate: new Date(),
-			grants: [new GrantDto('id', 'test', 'test', 230, GrantHolder.PASS_CHILD, new Date(), new Date())],
+			citizenGroupName: 'groupName',
 			selected: false,
 			isCheckboxDisabled: false,
 		};
@@ -284,14 +244,14 @@ describe('PassholdersComponent', () => {
 			autoFocus: true,
 			data: {
 				acceptButtonText: 'general.button.delete',
-				acceptButtonType: 'button-alert',
+				acceptButtonType: 'high-emphasis-danger',
 				cancelButtonText: 'general.button.cancel',
-				cancelButtonType: 'button-link-dark',
+				cancelButtonType: 'ghost-greyscale',
 				comments: '',
 				disableClosing: false,
 				fileName: '',
 				mainContent: '',
-				modalTypeClass: 'alert',
+				modalTypeClass: 'danger',
 				optionalText: {
 					comments: '-',
 					email: '',
@@ -312,14 +272,14 @@ describe('PassholdersComponent', () => {
 			autoFocus: true,
 			data: {
 				acceptButtonText: 'general.button.delete',
-				acceptButtonType: 'button-alert',
+				acceptButtonType: 'high-emphasis-danger',
 				cancelButtonText: 'general.button.cancel',
-				cancelButtonType: 'button-link-dark',
+				cancelButtonType: 'ghost-greyscale',
 				comments: '',
 				disableClosing: false,
 				fileName: '',
 				mainContent: '',
-				modalTypeClass: 'alert',
+				modalTypeClass: 'danger',
 				optionalText: {
 					comments: '-',
 					email: '',
@@ -368,31 +328,6 @@ describe('PassholdersComponent', () => {
 		expect(passholdersServiceSpy.deletePassholder).not.toHaveBeenCalled();
 	});
 
-	describe('Tests for dialog assign ', () => {
-		it('should open the import grants popup', () => {
-			const mockRow: PassholderViewDto = {
-				id: 'mockId',
-				name: 'name',
-				bsn: 'bsn',
-				address: 'test',
-				passNumber: '3423232',
-				residenceCity: 'Gouda',
-				expiringDate: new Date(),
-				grants: [new GrantDto('id', 'test', 'test', 230, GrantHolder.PASS_CHILD, new Date(), new Date())],
-				selected: false,
-				isCheckboxDisabled: false,
-			};
-			component['dataCount'] = 1;
-			component.passholdersTable = new TableComponent<PassholderViewDto>(dialogService);
-			component.passholdersTable.currentDisplayedPage = [mockRow];
-			jest.spyOn(dialogService as any, 'prompt');
-
-			component.assignMultipleGrants();
-
-			expect((dialogService as any).prompt).toHaveBeenCalled();
-		});
-	});
-
 	describe('Tests for onGetSelectedItemsNumber ', () => {
 		it('should set isMultipleSelect to true when count is greater than 0', () => {
 			component.onGetSelectedItemsNumber(5);
@@ -407,60 +342,6 @@ describe('PassholdersComponent', () => {
 		it('should set isMultipleSelect to false when count is less than 0', () => {
 			component.onGetSelectedItemsNumber(-1);
 			expect(component.isMultipleSelect).toBe(false);
-		});
-	});
-
-	describe('Tests for after dialog close ', () => {
-		const dialogRefMock = { afterClosed: () => of(true) };
-
-		it('should call dialogService.prompt on openDialogWithTable', () => {
-			const mockRow: PassholderViewDto = {
-				id: 'mockId',
-				name: 'name',
-				bsn: 'bsn',
-				address: 'test',
-				passNumber: '3423232',
-				residenceCity: 'Gouda',
-				expiringDate: new Date(),
-				grants: [new GrantDto('id', 'test', 'test', 230, GrantHolder.PASS_CHILD, new Date(), new Date())],
-				selected: false,
-				isCheckboxDisabled: false,
-			};
-			component['dataCount'] = 1;
-			component.passholdersTable = new TableComponent<PassholderViewDto>(dialogService);
-			component.passholdersTable.currentDisplayedPage = [mockRow];
-			jest.spyOn(dialogService, 'prompt').mockReturnValue(dialogRefMock as any);
-			jest.spyOn(dialogRefMock, 'afterClosed').mockReturnValue(of(true));
-			component['loadData'] = jest.fn();
-
-			component.assignMultipleGrants();
-			expect(dialogService['prompt']).toHaveBeenCalled();
-			expect(component['loadData']).toHaveBeenCalled();
-		});
-
-		it('should call dialogService.prompt on openDialogWithTable and no nothing if dismissed', () => {
-			const mockRow: PassholderViewDto = {
-				id: 'mockId',
-				name: 'name',
-				bsn: 'bsn',
-				address: 'test',
-				passNumber: '3423232',
-				residenceCity: 'Gouda',
-				expiringDate: new Date(),
-				grants: [new GrantDto('id', 'test', 'test', 230, GrantHolder.PASS_CHILD, new Date(), new Date())],
-				selected: false,
-				isCheckboxDisabled: false,
-			};
-			component['dataCount'] = 1;
-			component.passholdersTable = new TableComponent<PassholderViewDto>(dialogService);
-			component.passholdersTable.currentDisplayedPage = [mockRow];
-			jest.spyOn(dialogService, 'prompt').mockReturnValue(dialogRefMock as any);
-			jest.spyOn(dialogRefMock, 'afterClosed').mockReturnValue(of(false));
-			component['loadData'] = jest.fn();
-
-			component.assignMultipleGrants();
-			expect(dialogService['prompt']).toHaveBeenCalled();
-			expect(component['loadData']).not.toHaveBeenCalled();
 		});
 	});
 
@@ -486,5 +367,37 @@ describe('PassholdersComponent', () => {
 				toastBackground: 'toast-light',
 			});
 		});
+	});
+
+	describe('getCitizenGroupsCount', () => {
+		it('should set showCreateCitizenGroupState to false when count is greater than 0', () => {
+			const mockCitizenGroupsService = component['citizenGroupsService'];
+			jest.spyOn(mockCitizenGroupsService, 'countCitizenGroups').mockReturnValue({
+				subscribe: (callback: (count: number) => void) => callback(5),
+			} as any);
+
+			component.showCreateCitizenGroupState = true;
+			(component as any).getCitizenGroupsCount();
+
+			expect(component.showCreateCitizenGroupState).toBe(false);
+		});
+
+		it('should not change showCreateCitizenGroupState when count is 0', () => {
+			const mockCitizenGroupsService = component['citizenGroupsService'];
+			jest.spyOn(mockCitizenGroupsService, 'countCitizenGroups').mockReturnValue({
+				subscribe: (callback: (count: number) => void) => callback(0),
+			} as any);
+
+			component.showCreateCitizenGroupState = true;
+			(component as any).getCitizenGroupsCount();
+
+			expect(component.showCreateCitizenGroupState).toBe(true);
+		});
+	});
+
+	it('should navigate to profile page when goToProfilePage is called', () => {
+		const navigateSpy = jest.spyOn(component['router'], 'navigate');
+		component.goToProfilePage();
+		expect(navigateSpy).toHaveBeenCalledWith([commonRoutingConstants.profile]);
 	});
 });

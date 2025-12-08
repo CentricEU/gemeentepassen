@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService, UserInfo, WeekDays, WorkingHoursDto, WorkingHoursService } from '@frontend/common';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 
 import { WorkingHoursDialogComponent } from '../working-hours-dialog/working-hours-dialog.component';
 
@@ -8,6 +8,7 @@ import { WorkingHoursDialogComponent } from '../working-hours-dialog/working-hou
 	selector: 'frontend-working-hours',
 	templateUrl: './working-hours.component.html',
 	styleUrls: ['./working-hours.component.scss'],
+	standalone: false,
 })
 export class WorkingHoursComponent implements OnInit {
 	public workingHoursData: WorkingHoursDto[] = [];
@@ -29,7 +30,7 @@ export class WorkingHoursComponent implements OnInit {
 	public openSaveScheduleModal(): void {
 		this.dialogService
 			.message(WorkingHoursDialogComponent, {
-				width: '676px',
+				width: '844px',
 				height: '600px',
 				closeOnNavigation: false,
 				data: this.workingHoursData,

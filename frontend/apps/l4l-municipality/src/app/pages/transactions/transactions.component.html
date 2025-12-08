@@ -1,0 +1,69 @@
+<ng-container *ngIf="dataCount; else noData">
+	<frontend-table
+		#transactionsTable
+		class="table-pannel"
+		[columns]="allColumns"
+		[filterColumns]="allFilterColumns"
+		[hasCheckbox]="false"
+		[innerEmptyState]="isInnerEmptyStateVisible"
+		[innerEmptyStateTitle]="innerEmptyStateTitle"
+		[showFooter]="true"
+		[showHeader]="true"
+		[listLength]="allMonthTransactionsCount"
+		(getSelectedItemsNumber)="setAreTransactionsSelected($event)"
+		(loadDataEvent)="loadData($event)">
+		<ng-container>
+			<span class="left-container">
+				{{ 'general.pages.transactions' | translate }}
+			</span>
+
+			<div class="right-container">
+				<centric-button
+					ariaAttributes
+					windmill-tooltip
+					class="item"
+					type="icon-ghost-greyscale"
+					iconId="slider-vert_b"
+					size="small"
+					tooltipColor="surface"
+					tooltipPosition="above"
+					[ariaLabelTranslation]="'modal.manageColumns.title'"
+					[tooltipText]="'modal.manageColumns.title' | translate"
+					(click)="manageColumns()">
+				</centric-button>
+
+				<centric-button
+					ariaAttributes
+					windmill-tooltip
+					class="item"
+					type="icon-ghost-greyscale"
+					iconId="file-euro_b"
+					size="small"
+					tooltipColor="surface"
+					tooltipPosition="above"
+					[disabled]="isTransactionCountZero"
+					[ariaLabelTranslation]="'general.button.generateSEPA'"
+					[tooltipText]="'general.button.generateSEPA' | translate"
+					(click)="generateSEPA()">
+				</centric-button>
+
+				<frontend-transactions-date-menu
+					[selectedDate]="selectedDate"
+					[menuData]="menuData"
+					(selectedMonth)="onSelectMonth($event)">
+				</frontend-transactions-date-menu>
+			</div>
+		</ng-container>
+	</frontend-table>
+</ng-container>
+
+<ng-template #noData>
+	<centric-panel class="table-pannel" [class.full-size-panel]="true" [showFooter]="false">
+		<ng-container panel-content>
+			<frontend-no-data
+				[noDataTitle]="'transactions.noData.title'"
+				[noDataDescription]="'transactions.noData.description'">
+			</frontend-no-data>
+		</ng-container>
+	</centric-panel>
+</ng-template>

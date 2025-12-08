@@ -80,6 +80,7 @@
 		89C6BE57DB24E9ADA2F236DE /* Pods-Local4Local-Local4LocalTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Local4Local-Local4LocalTests.release.xcconfig"; path = "Target Support Files/Pods-Local4Local-Local4LocalTests/Pods-Local4Local-Local4LocalTests.release.xcconfig"; sourceTree = "<group>"; };
 		9E4B5B68030744CB837594B6 /* OpenSans-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-MediumItalic.ttf"; path = "../app/assets/fonts/OpenSans-MediumItalic.ttf"; sourceTree = "<group>"; };
 		B57DFE855F024868A0863E14 /* OpenSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-Bold.ttf"; path = "../app/assets/fonts/OpenSans-Bold.ttf"; sourceTree = "<group>"; };
+		BE0DF7002E2E527700BBB11C /* Local4Local.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Local4Local.entitlements; path = Local4Local/Local4Local.entitlements; sourceTree = "<group>"; };
 		C60D228C39B646DB96132E0A /* OpenSans-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-SemiBold.ttf"; path = "../app/assets/fonts/OpenSans-SemiBold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -124,6 +125,7 @@
 		13B07FAE1A68108700A75B9A /* Local4Local */ = {
 			isa = PBXGroup;
 			children = (
+				BE0DF7002E2E527700BBB11C /* Local4Local.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -579,11 +581,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 14;
-				DEVELOPMENT_TEAM = ZU7T993DZ5;
+				CODE_SIGN_ENTITLEMENTS = Local4Local/Local4Local.entitlements;
+				CURRENT_PROJECT_VERSION = 18;
+				DEVELOPMENT_TEAM = 2T2W8U5F83;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Local4Local/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Local4Local;
+				INFOPLIST_KEY_CFBundleDisplayName = "Gemeentepassen App";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -595,7 +598,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Local4LocalApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.centric.stadspasapp;
 				PRODUCT_NAME = Local4Local;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -615,10 +618,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 14;
-				DEVELOPMENT_TEAM = ZU7T993DZ5;
+				CODE_SIGN_ENTITLEMENTS = Local4Local/Local4Local.entitlements;
+				CURRENT_PROJECT_VERSION = 18;
+				DEVELOPMENT_TEAM = 2T2W8U5F83;
 				INFOPLIST_FILE = Local4Local/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Local4Local;
+				INFOPLIST_KEY_CFBundleDisplayName = "Gemeentepassen App";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -630,7 +634,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.Local4LocalApp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.centric.stadspasapp;
 				PRODUCT_NAME = Local4Local;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;

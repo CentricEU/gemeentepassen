@@ -1,9 +1,9 @@
-@import './mixins.scss';
+@use './mixins.scss' as mixins;
 
 .overlay {
-	@include flex(row, center, center);
-	@include size(100vw, 100vh);
-	@include pos(fixed, $t: 0, $l: 0, $z: 99999);
+	@include mixins.flex(row, center, center);
+	@include mixins.size(100vw, 100vh);
+	@include mixins.pos(fixed, $t: 0, $l: 0, $z: 99999);
 	background-color: var(--blackscale-300);
 	background-repeat: no-repeat;
 	background-position: center;
@@ -12,7 +12,7 @@
 }
 
 .loader {
-	@include size(1em, 1em);
+	@include mixins.size(1em, 1em);
 	color: var(--neutral-1);
 	font-size: 90px;
 	text-indent: -9999em;

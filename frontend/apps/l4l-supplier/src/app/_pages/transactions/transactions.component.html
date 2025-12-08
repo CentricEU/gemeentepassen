@@ -4,7 +4,7 @@
 		class="table-pannel"
 		[columns]="allColumns"
 		[filterColumns]="allFilterColumns"
-		[hasCheckbox]="true"
+		[hasCheckbox]="false"
 		[innerEmptyState]="isInnerEmptyStateVisible"
 		[innerEmptyStateTitle]="innerEmptyStateTitle"
 		[showFooter]="true"
@@ -22,7 +22,7 @@
 					ariaAttributes
 					windmill-tooltip
 					class="item"
-					type="icon-button-fourth-dark"
+					type="icon-ghost-greyscale"
 					iconId="slider-vert_b"
 					size="small"
 					tooltipColor="surface"
@@ -30,30 +30,6 @@
 					[ariaLabelTranslation]="'modal.manageColumns.title'"
 					[tooltipText]="'modal.manageColumns.title' | translate"
 					(click)="manageColumns()">
-				</centric-button>
-
-				<centric-button
-					ariaAttributes
-					windmill-tooltip
-					class="item"
-					type="icon-button-fourth-dark"
-					iconId="file-euro_b"
-					size="small"
-					tooltipColor="surface"
-					tooltipPosition="above"
-					[disabled]="isTransactionCountZero"
-					[ariaLabelTranslation]="'transactions.generateInvoice.title'"
-					[tooltipText]="'transactions.generateInvoice.title' | translate"
-					(click)="openGenerateInvoice()">
-				</centric-button>
-
-				<centric-button
-					ariaAttributes
-					type="uncontained-greyscale"
-					class="clear-filters-button"
-					[disabled]="!areFiltersApplied"
-					(click)="clearFilters()">
-					{{ 'general.button.clearFilter' | translate }}
 				</centric-button>
 
 				<frontend-transactions-date-menu

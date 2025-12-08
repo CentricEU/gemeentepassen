@@ -24,6 +24,7 @@ const testOffer: OfferMobileDetailDto = {
 	id: "offerId",
 	title: "Test Offer",
 	description: "Test Description",
+	benefit: [],
 	amount: 100,
 	citizenOfferType: CitizenOfferType.citizenWithPass,
 	offerType: {
@@ -39,7 +40,6 @@ const testOffer: OfferMobileDetailDto = {
 	companyName: "Test Company",
 	distance: 10,
 	discountCode: "1234A",
-	grants: [],
 	companyAddress: "Test Address",
 	companyLogo: "Test Logo",
 	workingHours: [

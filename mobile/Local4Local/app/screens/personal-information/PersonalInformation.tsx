@@ -10,62 +10,88 @@ import style from "./PersonalInformationStyle";
 import { useContext, useEffect, useState } from "react";
 import { CitizenProfileDto } from "../../utils/models/CitizenProfileDto";
 import UserService from "../../services/UserService";
-import { PersonalInforFormData } from "../../utils/types/personalInfoFormData"
-import React from 'react';
+import { PersonalInforFormData } from "../../utils/types/personalInfoFormData";
+import React from "react";
 import { NavigationEnum } from "../../utils/enums/navigationEnum";
 import AuthenticationContext from "../../contexts/authentication/authentication-context";
 
-
 export function PersonalInformation({ navigation }: { navigation: any }) {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common");
   const [userProfile, setUserProfile] = useState<CitizenProfileDto>();
   const { authState, setAuthState } = useContext(AuthenticationContext);
 
-  const { control, handleSubmit, reset, setValue, trigger, formState: { errors, isDirty }, watch } = useForm({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    trigger,
+    formState: { errors, isDirty },
+    watch,
+  } = useForm({
     mode: "onChange",
     defaultValues: {
       firstName: "",
       lastName: "",
       address: "",
-      telephone: ""
+      telephone: "",
     },
   });
 
   const generalFormEntries = [
     {
       name: PersonalInfoFormControlsEnum.firstName,
-      label: t('registerPage.registerForm.firstName') + '*',
-      placeholder: t('registerPage.registerForm.firstNamePlaceholder'),
-      required: true
+      label: t("registerPage.registerForm.firstName") + "*",
+      placeholder: t("registerPage.registerForm.firstNamePlaceholder"),
+      required: true,
     },
     {
       name: PersonalInfoFormControlsEnum.lastName,
-      label: t('registerPage.registerForm.lastName') + '*',
-      placeholder: t('registerPage.registerForm.lastNamePlaceholder'),
-      required: true
+      label: t("registerPage.registerForm.lastName") + "*",
+      placeholder: t("registerPage.registerForm.lastNamePlaceholder"),
+      required: true,
     },
     {
       name: PersonalInfoFormControlsEnum.address,
-      label: t('personalInformation.address'),
-      placeholder: t('personalInformation.addressPlaceholder'),
-      required: false
+      label: t("personalInformation.address"),
+      placeholder: t("personalInformation.addressPlaceholder"),
+      required: false,
     },
     {
       name: PersonalInfoFormControlsEnum.telephone,
-      label: t('personalInformation.phoneNumber'),
-      placeholder: t('personalInformation.phoneNumberPlaceholder'),
-      required: false
-    }
+      label: t("personalInformation.phoneNumber"),
+      placeholder: t("personalInformation.phoneNumberPlaceholder"),
+      required: false,
+    },
   ];
 
   const hasErrorOnFormFields = (): boolean => {
     return !!errors.firstName || !!errors.lastName;
-
   };
 
   const isFormUntouchedOrInvalid = () => {
-    return !isDirty || isPersonalInfoFormInvalid();
-  }
+    const initialValues = {
+      firstName: userProfile?.firstName || "",
+      lastName: userProfile?.lastName || "",
+      address: userProfile?.address || "",
+      telephone: userProfile?.telephone || "",
+    };
+
+    const currentValues = {
+      firstName: watch(PersonalInfoFormControlsEnum.firstName),
+      lastName: watch(PersonalInfoFormControlsEnum.lastName),
+      address: watch(PersonalInfoFormControlsEnum.address),
+      telephone: watch(PersonalInfoFormControlsEnum.telephone),
+    };
+
+    const isDifferentFromInitial = Object.keys(initialValues).some(
+      (key) =>
+        initialValues[key as keyof typeof initialValues] !==
+        currentValues[key as keyof typeof currentValues]
+    );
+
+    return !isDifferentFromInitial || isPersonalInfoFormInvalid();
+  };
 
   const isPersonalInfoFormInvalid = () => {
     return isEmptyOnRequiredFormFields() || hasErrorOnFormFields();
@@ -79,17 +105,21 @@ export function PersonalInformation({ navigation }: { navigation: any }) {
   };
 
   const onSubmit = (data: PersonalInforFormData) => {
-    const objectToSave = new CitizenProfileDto(userProfile?.username as string,
+    const objectToSave = new CitizenProfileDto(
+      userProfile?.username as string,
       data.firstName,
       data.lastName,
       data.address,
-      data.telephone);
+      data.telephone
+    );
     handleUpdateInformation(objectToSave);
   };
 
   const handleUpdateInformation = async (data: CitizenProfileDto) => {
     try {
-      const updatedProfile = await UserService.updateUserInformation(data);
+      const updatedProfile = await UserService.updateUserInformation(
+        data
+      );
       setAuthState({ ...authState, profile: updatedProfile });
       navigation.navigate(NavigationEnum.profileScreen);
     } catch (error: any) {
@@ -103,7 +133,8 @@ export function PersonalInformation({ navigation }: { navigation: any }) {
 
   const getCitizenProfile = async () => {
     try {
-      const profile: CitizenProfileDto = await UserService.getCitizenProfile();
+      const profile: CitizenProfileDto =
+        await UserService.getCitizenProfile();
       setUserProfile(profile);
       reset(profile);
     } catch (error) {
@@ -112,7 +143,7 @@ export function PersonalInformation({ navigation }: { navigation: any }) {
   };
 
   const removeTextFromInput = (name: string) => {
-    setValue(name as keyof PersonalInforFormData, '');
+    setValue(name as keyof PersonalInforFormData, "");
     trigger(name as keyof PersonalInforFormData);
   };
 
@@ -127,24 +158,48 @@ export function PersonalInformation({ navigation }: { navigation: any }) {
                 control={control}
                 rules={{
                   maxLength: 256,
-                  required: item.required ? {
-                    value: item.required,
-                    message: t('generic.errors.requiredField'),
-                  } : false,
+                  required: item.required
+                    ? {
+                      value: item.required,
+                      message: t(
+                        "generic.errors.requiredField"
+                      ),
+                    }
+                    : false,
                 }}
-                render={({ field: { onChange, onBlur, value } }) => (
+                render={({
+                  field: { onChange, onBlur, value },
+                }) => (
                   <>
                     <TextInput
                       onBlur={onBlur}
                       mode={"outlined"}
                       label={item.label}
-                      style={{ backgroundColor: colors.SURFACE_50 }}
+                      style={{
+                        backgroundColor:
+                          colors.SURFACE_50,
+                      }}
                       placeholder={item.placeholder}
                       value={value}
                       testID={item.name + "_id"}
-                      activeOutlineColor={colors.THEME_500}
+                      activeOutlineColor={
+                        colors.THEME_500
+                      }
                       onChangeText={onChange}
-                      right={value && (value as string).length > 0 && <TextInput.Icon icon="close" onPress={() => removeTextFromInput(item.name)} />}
+                      right={
+                        value &&
+                        (value as string).length >
+                        0 && (
+                          <TextInput.Icon
+                            icon="close"
+                            onPress={() =>
+                              removeTextFromInput(
+                                item.name
+                              )
+                            }
+                          />
+                        )
+                      }
                     />
 
                     <HelperText
@@ -173,4 +228,3 @@ export function PersonalInformation({ navigation }: { navigation: any }) {
 
   return personalInfoForm();
 }
-

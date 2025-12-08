@@ -9,26 +9,33 @@ const TestComponent: React.FC<{ onRender: (context: ReturnType<typeof useRefresh
 };
 
 describe('RefreshProvider', () => {
+    const originalError = console.error;
+    beforeAll(() => {
+        console.error = jest.fn();
+    });
+    afterAll(() => {
+        console.error = originalError;
+    });
     it('should throw an error if useRefresh is used outside of RefreshProvider', () => {
-        expect(() => render(<TestComponent onRender={() => {}} />)).toThrow('useRefresh hook must be used within a RefreshProvider');
+        expect(() => render(<TestComponent onRender={() => { }} />)).toThrow('useRefresh hook must be used within a RefreshProvider');
     });
 
     it('should provide the correct initial context values', () => {
         let receivedContext: ReturnType<typeof useRefresh> | undefined;
-        
+
         render(
             <RefreshProvider>
                 <TestComponent onRender={(context) => { receivedContext = context; }} />
             </RefreshProvider>
         );
-        
+
         expect(receivedContext).toBeDefined();
         expect(receivedContext?.refreshing).toBe(false);
     });
 
     it('should update refreshing state when startRefresh and stopRefresh are called', () => {
         let receivedContext: ReturnType<typeof useRefresh> | undefined;
-        
+
         render(
             <RefreshProvider>
                 <TestComponent onRender={(context) => { receivedContext = context; }} />

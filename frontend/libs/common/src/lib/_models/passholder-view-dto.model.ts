@@ -1,5 +1,4 @@
 import { GenericTableData } from './generic-table-data.model';
-import { GrantDto } from './grant-dto.model';
 
 export class PassholderViewDto extends GenericTableData {
 	public id: string;
@@ -9,7 +8,7 @@ export class PassholderViewDto extends GenericTableData {
 	public passNumber: string;
 	public residenceCity: string;
 	public expiringDate: Date;
-	public grants: GrantDto[];
+	public citizenGroupName: string;
 
 	constructor(
 		id: string,
@@ -19,6 +18,7 @@ export class PassholderViewDto extends GenericTableData {
 		passNumber: string,
 		residenceCity: string,
 		expiringDate: Date,
+		citizenGroupName: string,
 	) {
 		super();
 		this.address = address;
@@ -28,5 +28,6 @@ export class PassholderViewDto extends GenericTableData {
 		this.residenceCity = residenceCity;
 		this.expiringDate = expiringDate;
 		this.id = id;
+		this.citizenGroupName = citizenGroupName;
 	}
 }

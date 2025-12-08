@@ -6,12 +6,18 @@ import { SupplierProfileComponent } from '../supplier-profile/supplier-profile.c
 @Component({
 	selector: 'frontend-supplier-profile-panel',
 	templateUrl: './supplier-profile-panel.component.html',
-	styleUrls: ['./supplier-profile-panel.component.scss']
+	styleUrls: ['./supplier-profile-panel.component.scss'],
+	standalone: false,
 })
 export class SupplierInformationPanelComponent {
 	@ViewChild('profileInformation') supplierProfileInfomationComponent: SupplierProfileComponent;
 
 	@Input() isReadOnly = false;
+	@Input() isRejectedStatus = false;
+
+	public get actionButtonText(): string {
+		return this.isRejectedStatus ? 'general.button.reapply' : 'general.button.saveChanges';
+	}
 
 	public get decodedImage(): string | ArrayBuffer | null {
 		return this.supplierProfileInfomationComponent?.decodedImage;
@@ -25,7 +31,7 @@ export class SupplierInformationPanelComponent {
 	constructor(private supplierProfileService: SupplierProfileService) {}
 
 	public saveChanges(): void {
-		this.supplierProfileInfomationComponent.saveChanges();
+		this.supplierProfileInfomationComponent.saveChanges(this.isRejectedStatus);
 	}
 
 	public suspendSupplier(): void {

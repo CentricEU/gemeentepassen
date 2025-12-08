@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { GrantDto, OfferInformationDto } from '@frontend/common';
+import { OfferInformationDto } from '@frontend/common';
 import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 
@@ -32,6 +32,7 @@ const MY_FORMATS = {
 		{ provide: MAT_DATE_LOCALE, useValue: 'en-US' },
 		{ provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
 	],
+	standalone: false,
 })
 export class OfferInformationComponent implements OnInit {
 	@Input() offer: OfferInformationDto;
@@ -50,12 +51,12 @@ export class OfferInformationComponent implements OnInit {
 		return this.translateService.instant('offer.citizenWithPass');
 	}
 
-	private getAcceptedGrants(offer: OfferInformationDto): string {
-		if (!offer.grants) {
+	private getAcceptedBenefit(offer: OfferInformationDto): string {
+		if (!offer.benefit) {
 			return '';
 		}
 
-		return offer.grants.map((grant: GrantDto) => grant.title || '').join(', ');
+		return offer.benefit.name;
 	}
 
 	private initForm(data: OfferInformationDto): void {
@@ -63,7 +64,7 @@ export class OfferInformationComponent implements OnInit {
 			citizenOfferType: [this.getCitizenOfferType()],
 			title: [data.title, [Validators.required]],
 			offerTypeId: [this.translateService.instant(data.offerType), [Validators.required]],
-			acceptedGrants: [this.getAcceptedGrants(data), [Validators.required]],
+			acceptedBenefit: [this.getAcceptedBenefit(data), [Validators.required]],
 			description: [data.description, [Validators.required]],
 			startDate: [moment(data.startDate), [Validators.required]],
 			expirationDate: [moment(data.expirationDate), [Validators.required]],

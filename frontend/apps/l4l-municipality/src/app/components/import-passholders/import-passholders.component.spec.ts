@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
-import { FileExtension } from '@frontend/common';
+import { CitizenGroupsService, FileExtension } from '@frontend/common';
 import { WindmillModule } from '@frontend/common-ui';
 import { of } from 'rxjs';
 
@@ -12,6 +12,7 @@ describe('ImportPassholdersComponent', () => {
 	let component: ImportPassholdersComponent;
 	let fixture: ComponentFixture<ImportPassholdersComponent>;
 	let passholderServiceSpy: any;
+	let citizenGroupsServiceMock: any;
 
 	const dialogRefStub = { close: () => undefined, afterClosed: () => undefined };
 
@@ -20,12 +21,17 @@ describe('ImportPassholdersComponent', () => {
 			uploadCSV: jest.fn(),
 		};
 
+		citizenGroupsServiceMock = {
+			getCitizenGroups: jest.fn().mockReturnValue(of([{ id: '1', groupName: 'Group1' }])),
+		};
+
 		await TestBed.configureTestingModule({
 			declarations: [ImportPassholdersComponent],
 			imports: [WindmillModule, AppModule],
 			providers: [
 				{ provide: MatDialogRef, useValue: dialogRefStub },
 				{ provide: PassholdersService, useValue: passholderServiceSpy },
+				{ provide: CitizenGroupsService, useValue: citizenGroupsServiceMock },
 			],
 		}).compileComponents();
 
@@ -44,9 +50,12 @@ describe('ImportPassholdersComponent', () => {
 		expect(component.isImportDisabled).toBeTruthy();
 	});
 
-	it('should return false if file is present', () => {
+	it('should return false if file is present and citizenGroup is selected', () => {
 		const file = new File(['fileContent'], 'test-file.csv', { type: 'text/csv' });
 		component.onFileSelected(file);
+
+		component.importPassholdersForm.get('citizenGroup')?.setValue('test-group');
+
 		expect(component.isImportDisabled).toBeFalsy();
 	});
 
@@ -70,11 +79,91 @@ describe('ImportPassholdersComponent', () => {
 		expect(component.file).toBe(file);
 	});
 
-	it('should upload the file ', () => {
+	it('should upload the file', () => {
 		jest.spyOn(passholderServiceSpy, 'uploadCSV');
 		component.file = new File(['fileContent'], 'test-file.csv', { type: 'text/csv' });
+
+		component.importPassholdersForm.get('citizenGroup')?.setValue('test-group');
+
 		component.uploadCsv();
 
-		expect(passholderServiceSpy.uploadCSV).toHaveBeenCalledWith(component.file);
+		expect(passholderServiceSpy.uploadCSV).toHaveBeenCalledWith(component.file, 'test-group');
+	});
+
+	describe('initForm', () => {
+		it('should initialize form with citizenGroup control and required validator', () => {
+			(component as any).initForm();
+			const citizenGroupControl = component.importPassholdersForm.get('citizenGroup');
+			expect(citizenGroupControl).toBeTruthy();
+			expect(citizenGroupControl?.validator).toBeTruthy();
+		});
+
+		it('should add additional controls when citizenGroupData exists', () => {
+			component.citizenGroupData = [
+				{ formControl: 'formControlCitizenGroup-Test' } as any,
+				{ formControl: 'formControlCitizenGroup-Another' } as any,
+			];
+
+			(component as any).initForm();
+
+			expect(component.importPassholdersForm.contains('formControlCitizenGroup-Test')).toBeTruthy();
+			expect(component.importPassholdersForm.contains('formControlCitizenGroup-Another')).toBeTruthy();
+		});
+
+		it('should not add extra controls when citizenGroupData is undefined', () => {
+			component.citizenGroupData = [];
+
+			(component as any).initForm();
+
+			expect(Object.keys(component.importPassholdersForm.controls)).toEqual(['citizenGroup']);
+		});
+	});
+
+	it('should call loadInitialData inside ngOnInit', () => {
+		const spy = jest.spyOn(component as any, 'loadInitialData');
+
+		(component as any).initForm();
+		component.ngOnInit();
+
+		expect(spy).toHaveBeenCalled();
+	});
+
+	it('should populate citizenGroupData after ngOnInit', () => {
+		citizenGroupsServiceMock.getCitizenGroups.mockReturnValue(of([{ id: '1', groupName: 'Group1' }]));
+
+		(component as any).initForm();
+		component.ngOnInit();
+		fixture.detectChanges();
+
+		expect(component.citizenGroupData.length).toBe(1);
+		expect(component.importPassholdersForm.get('citizenGroup')?.value).toBe('1');
+	});
+
+	describe('isImportDisabled', () => {
+		beforeEach(() => {
+			(component as any).initForm(); // Ensure form is initialized
+		});
+
+		it.each([
+			['should return true when no file and no citizenGroup selected', undefined, undefined, true],
+			[
+				'should return true when file exists but citizenGroup is empty',
+				new File(['fileContent'], 'test.csv', { type: 'text/csv' }),
+				undefined,
+				true,
+			],
+			['should return true when citizenGroup is selected but no file', undefined, 'group1', true],
+			[
+				'should return false when both file and citizenGroup are present',
+				new File(['fileContent'], 'test.csv', { type: 'text/csv' }),
+				'group1',
+				false,
+			],
+		])('%s', (_description, file, citizenGroup, expected) => {
+			if (file) component.file = file;
+			if (citizenGroup) component.importPassholdersForm.get('citizenGroup')?.setValue(citizenGroup);
+
+			expect(component.isImportDisabled).toBe(expected);
+		});
 	});
 });

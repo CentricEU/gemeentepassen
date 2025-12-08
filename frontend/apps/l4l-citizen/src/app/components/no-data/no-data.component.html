@@ -1,0 +1,15 @@
+<!-- Will use it until migrate to standalone for Supplier/Municipality. 
+     Will be removed afterwards since it's duplicated but the other one it's
+     not standalone and other dependend components will need to be migrated to standalone 
+-->
+<!-- TODO: after standalone migration refactor the initial no-data-component from common -->
+<img [src]="getImagePath()" alt="No data image" />
+<section class="no-data-description">
+	<h4 id="no-data-title" tabindex="0">{{ noDataTitle | translate }}</h4>
+	<p
+		id="no-data-description"
+		[innerHTML]="noDataDescription | translate: translateParams"
+		aria-labelledby="no-data-title"
+		tabindex="0"></p>
+	<ng-content button></ng-content>
+</section>

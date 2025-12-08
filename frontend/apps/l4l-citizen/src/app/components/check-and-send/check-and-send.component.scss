@@ -1,0 +1,49 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
+@use '../../shared/styles/apply-for-pass-common.scss';
+
+:host {
+	.information-group {
+		.information-item {
+			padding-top: 8px;
+		}
+	}
+
+	.l4l-form-item-group {
+		::ng-deep {
+			.centric-form-item-group {
+				gap: 0px;
+			}
+		}
+	}
+
+	::ng-deep {
+		.centric-complex-form > *:not(:last-child) {
+			margin-bottom: 0px;
+		}
+		.centric-complex-form.top centric-form-item centric-form-label {
+			margin-bottom: 0px;
+			width: 160px;
+		}
+	}
+
+	.uploaded-files-list {
+		.uploaded-file-item {
+			@include mixins.flex(row, space-between, flex-start);
+			padding-top: 12px;
+			gap: 8px;
+
+			&:first-child {
+				padding-top: 10px;
+			}
+		}
+	}
+}
+
+.form-field {
+	@include mixins.flex(row, space-between, center);
+	gap: 32px;
+}
+
+.section-content {
+	padding-top: 12px;
+}

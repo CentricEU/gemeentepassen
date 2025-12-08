@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.dto.CodeValidationResponseDto;
 import nl.centric.innovation.local4local.dto.DiscountCodeViewDto;
 import nl.centric.innovation.local4local.dto.CodeValidationRequestDto;
+import nl.centric.innovation.local4local.entity.Benefit;
+import nl.centric.innovation.local4local.entity.CitizenBenefit;
 import nl.centric.innovation.local4local.entity.DiscountCode;
 import nl.centric.innovation.local4local.entity.Offer;
 import nl.centric.innovation.local4local.entity.OfferTransaction;
@@ -11,6 +13,7 @@ import nl.centric.innovation.local4local.entity.Restriction;
 import nl.centric.innovation.local4local.enums.GenericStatusEnum;
 import nl.centric.innovation.local4local.exceptions.DtoValidateException;
 import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
+import nl.centric.innovation.local4local.repository.BenefitRepository;
 import nl.centric.innovation.local4local.repository.DiscountCodeRepository;
 import nl.centric.innovation.local4local.repository.OfferRepository;
 import nl.centric.innovation.local4local.util.DateUtils;
@@ -38,7 +41,11 @@ public class DiscountCodeService {
 
     private final OfferRepository offerRepository;
 
+    private final BenefitRepository benefitRepository;
+
     private final PrincipalService principalService;
+
+    private final CitizenBenefitService citizenBenefitService;
 
     private final OfferTransactionService offerTransactionService;
     private static final int PERCENTAGE_OFFER_TYPE = 1;
@@ -63,6 +70,9 @@ public class DiscountCodeService {
 
     @Value("${error.restriction.eligiblePrice}")
     private String eligiblePriceError;
+
+    @Value("${error.benefit.amountExceeded}")
+    private String amountExceededError;
 
 
     public void save(UUID offerId, UUID userId) {
@@ -118,43 +128,52 @@ public class DiscountCodeService {
     }
 
     public CodeValidationResponseDto validateAndProcessDiscountCode(CodeValidationRequestDto codeValidationDto) throws DtoValidateException {
-        double adjustedAmount = codeValidationDto.amount() != null
+        boolean isCustomAmount = codeValidationDto.amount() != null;
+        double adjustedAmount = isCustomAmount
                 ? calculateDiscountedAmount(codeValidationDto.amount(), validateDiscountCode(codeValidationDto.code()))
                 : ZERO_AMOUNT;
 
         return validateAndProcessDiscountCodeCommon(
                 codeValidationDto.code(),
                 DateUtils.formatToLocalDateTime(codeValidationDto.currentTime()),
-                adjustedAmount
+                adjustedAmount,
+                isCustomAmount
         );
     }
 
     @Transactional
-    public void deactivateCodeAndSaveTransaction(DiscountCode discountCode, LocalDateTime currentTime, Double amount) throws DtoValidateException {
+    public void deactivateCodeAndSaveTransaction(DiscountCode discountCode, LocalDateTime currentTime, Double amount, CitizenBenefit citizenBenefit) throws DtoValidateException {
         if (!isOfferEligible(discountCode, currentTime, amount, true)) {
             deactivateDiscountCode(discountCode);
         }
-
-        offerTransactionService.saveTransaction(discountCode, amount, currentTime);
+        Double transactionAmount = amount != ZERO_AMOUNT ? amount : discountCode.getOffer().getAmount();
+        offerTransactionService.saveTransaction(discountCode, transactionAmount, currentTime);
+        citizenBenefitService.updateAmount(citizenBenefit.getUserId(), citizenBenefit.getBenefit().getId(), transactionAmount);
     }
 
-    private CodeValidationResponseDto validateAndProcessDiscountCodeCommon(String code, LocalDateTime currentTime, double adjustedAmount)
+    private CodeValidationResponseDto validateAndProcessDiscountCodeCommon(String code, LocalDateTime currentTime, double adjustedAmount, boolean isCustomAmount)
             throws DtoValidateException {
         DiscountCode discountCode = validateDiscountCode(code);
-        boolean isCustomAmount = adjustedAmount != ZERO_AMOUNT;
+
+        Benefit benefit = benefitRepository.findById(discountCode.getOffer().getBenefit().getId())
+                .orElseThrow(() -> new DtoValidateException(errorEntityNotFound));
+        CitizenBenefit citizenBenefit = citizenBenefitService.getCitizenBenefitByUserIdAndBenefit(discountCode.getUserId(), discountCode.getOffer().getBenefit().getId());
+
+        if (adjustedAmount > citizenBenefit.getAmount()) {
+            throw new DtoValidateException(amountExceededError);
+        }
 
         if (isSpecialOfferType(discountCode) && !isCustomAmount && isOfferEligible(discountCode, currentTime, adjustedAmount, false)) {
             return CodeValidationResponseDto.toDtoWithOfferDetails(discountCode, currentTime.toLocalTime());
         }
 
-        deactivateCodeAndSaveTransaction(discountCode, currentTime, adjustedAmount);
+        deactivateCodeAndSaveTransaction(discountCode, currentTime, adjustedAmount, citizenBenefit);
         return CodeValidationResponseDto.toDto(discountCode, currentTime.toLocalTime());
     }
 
     private double calculateDiscountedAmount(Double originalAmount, DiscountCode discountCode) {
-
         if (isPercentageDiscount(discountCode)) {
-            return originalAmount * (1 - discountCode.getOffer().getAmount() / 100);
+            return originalAmount * (discountCode.getOffer().getAmount() / 100);
         }
 
         return originalAmount;

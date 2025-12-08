@@ -5,9 +5,11 @@ import { render } from '@testing-library/react-native';
 
 describe('AuthenticationContext', () => {
   const initialAuthState: AuthenticationStateType = {
-    token: 'mock_token',
+    accessToken: 'mock_token',
+    refreshToken: null,
     authenticated: true,
-    accountDeleted: false
+    accountDeleted: false,
+    error: null,
   };
 
   it('allows setting authentication state', () => {

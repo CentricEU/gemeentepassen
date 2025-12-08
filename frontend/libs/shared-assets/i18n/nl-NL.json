@@ -1,7 +1,7 @@
 {
 	"general": {
 		"logout": "Uitloggen",
-		"welcomeL4L": "Welkom bij Stadspassen!",
+		"welcomeL4L": "Welkom bij Gemeentepassen!",
 		"hello": "Hallo",
 		"password": "Wachtwoord",
 		"filter": "Filteren",
@@ -19,10 +19,12 @@
 		"remainingItems": "Resterende artikelen",
 		"supplier": "Leverancier",
 		"valuePlaceholder": "Waarde",
+		"selectAll": "Selecteer alles",
+		"citizenGroup": "Inwonergroep",
 		"success": {
 			"title": "Gefeliciteerd",
 			"accountCreatedText": "Uw account is succesvol aangemaakt!",
-			"accountCreatedTextForCitizen": "Je account is succesvol aangemaakt!<br>Please go to your Stadspassen mobile app to log in.",
+			"accountCreatedTextForCitizen": "Je account is succesvol aangemaakt!<br>Please go to your Gemeentepassen mobile app to log in.",
 			"confirmEmailText": "We hebben een bevestigingsmail verzonden.",
 			"recoverPasswordText": "Wachtwoordherstel e-mail verzonden!",
 			"passwordUpdateText": "Uw wachtwoord is succesvol bijgewerkt!",
@@ -31,6 +33,8 @@
 			"offerReactivatedText": "Jouw aanbod is geactiveerd."
 		},
 		"button": {
+			"generateSEPA": "SEPA genereren",
+			"finish": "Profiel instellen voltooien",
 			"close": "Sluiten",
 			"cancel": "Annuleren",
 			"import": "Importeren",
@@ -55,8 +59,12 @@
 			"understand": "Begrepen",
 			"delete": "Verwijderen",
 			"sendInvite": "Uitnodiging versturen",
-			"assign": "Pasbezitter",
-			"clearFilter": "Wis filter"
+			"clearFilter": "Wis filter",
+			"reapply": "Opnieuw aanvragen",
+			"sendMessage": "Bericht versturen",
+			"stepperNext": "Volgende",
+			"stepperBack": "Rug",
+			"send": "Verzenden"
 		},
 		"chip": {
 			"title": "Geselecteerde artikelen",
@@ -66,9 +74,10 @@
 		"resultsPerPage": "Resultaten per pagina",
 		"status": "Status",
 		"amount": "Bedrag",
-		"acceptedGrants": "Geaccepteerde Tegoeden",
-		"date": "...Date",
-		"time": "...Time",
+		"acceptedBenefit": "Geaccepteerd Voordeel",
+		"date": "Datum",
+		"createdDate": "Aanmaakdatum",
+		"time": "Tijd",
 		"name": "Naam",
 		"category": "Categorie",
 		"actions": "Acties",
@@ -80,29 +89,31 @@
 		"from": "Van",
 		"to": "Tot",
 		"description": "Beschrijving",
-		"closed": "...Closed",
+		"closed": "Gesloten",
+		"closingWarning": "Afsluitwaarschuwing",
 		"pages": {
 			"dashboard": "Dashboard",
 			"suppliers": "Leveranciers",
 			"passholders": "Pasbezitters",
-			"grants": "Subsidies",
-			"editProfile": "Profiel bewerken",
+			"editProfile": "Profiel",
 			"offers": "Aanbiedingen",
-			"pendingOffers": "In afwachting van aanbiedingen",
+			"pendingOffers": "Aanbiedingen",
 			"invitations": "Uitnodigingen",
 			"supplierDetails": "Details",
 			"userManagement": "Gebruikersbeheer",
-			"offerValidation": "...Offer Validation",
-			"transactions": "Transacties"
+			"offerValidation": "Geldigheid",
+			"transactions": "Transacties",
+			"profile": "Profiel",
+			"benefits": "Voordelen"
 		},
-		"welcome": "Welkom!",
+		"welcome": "Welkom, {{name}}!",
 		"warning": "Waarschuwing",
 		"label": {
 			"close": "sluiten",
 			"label": "label",
 			"clear": "leeg",
-			"charactersLeft": "tekens over",
-			"charactersOverTheLimit": "teveel tekens"
+			"charactersLeft": "{{count}} tekens over",
+			"charactersOverTheLimit": "{{count}} teveel tekens"
 		},
 		"hourFormat": "00:00",
 		"weekdays": {
@@ -128,12 +139,41 @@
 			"noDataTitle": "Je locatie staat uit.",
 			"noDataDescription": "Het lijkt erop dat locatie is uitgeschakeld in je systeemvoorkeuren. Schakel locatieservices in om met de kaart te werken."
 		},
-		"month": "...Month",
+		"month": "Maand",
 		"registered": "Geregistreerd",
 		"yes": "Ja",
-		"no": "Nee"
+		"no": "Nee",
+		"monthPrefix": {
+			"january": "Jan.",
+			"february": "Feb.",
+			"march": "Mrt.",
+			"april": "Apr.",
+			"may": "Mei",
+			"june": "Jun.",
+			"july": "Jul.",
+			"august": "Aug.",
+			"september": "Sep.",
+			"october": "Okt.",
+			"november": "Nov.",
+			"december": "Dec."
+		},
+		"weekdaysGroup": "Weekdagengroep",
+		"logoDescription": "Logo afbeelding"
 	},
 	"genericFields": {
+		"bic": {
+			"field": "BIC",
+			"bicPlaceholder": "Voer de BIC in",
+			"bicFormControlRequired": "BIC is verplicht.",
+			"bicInvalid": "Voer een geldige Nederlandse BIC in.",
+			"mismatchedBicIban": "IBAN en BIC komen niet overeen. Zorg ervoor dat ze bij dezelfde bank horen."
+		},
+		"iban": {
+			"field": "IBAN",
+			"ibanPlaceholder": "Voer de IBAN in",
+			"ibanFormControlRequired": "IBAN is verplicht.",
+			"ibanInvalid": "Voer een geldige Nederlandse IBAN in."
+		},
 		"firstName": {
 			"title": "Voornaam",
 			"requiredError": "Voornaam is verplicht."
@@ -146,22 +186,27 @@
 			"requiredEmail": "E-mail is verplicht.",
 			"validEmail": "Voer een geldig e-mailadres in.",
 			"title": "E-mailadres",
-			"placeholder": "Voer uw e-mailadres in",
+			"placeholder": "Voer je e-mailadres in",
 			"requiredError": "E-mailadres is verplicht"
 		},
 		"password": {
-			"passwordPlaceholder": "Voer uw wachtwoord in",
+			"passwordPlaceholder": "Voer je wachtwoord in",
 			"confirmPassword": "Herhaal wachtwoord",
-			"confirmPasswordPlaceholder": "Herhaal uw wachtwoord",
+			"confirmPasswordPlaceholder": "Herhaal je wachtwoord",
 			"confirmPasswordRequired": "Wachtwoordherhaling is verplicht",
 			"confirmPasswordMatch": "Wachtwoorden moeten overeenkomen"
 		},
 		"amount": {
 			"amountFormControlRequired": "Bedrag is verplicht",
-			"nonZeroAmount": "...Value must be greater than 0."
+			"nonZeroAmount": "De waarde moet groter zijn dan 0.",
+			"nonMaxBenefitAmountValidator": "Het bedrag overschrijdt het maximum van {{amount}} € dat is toegestaan voor de geselecteerde vergoeding."
 		},
 		"website": {
 			"invalidUrl": "Voer een geldige en veilige website-URL in. (bijv. https://www.example.com)."
+		},
+		"validity": {
+			"validityFormControlRequired": "Voer in beide velden geldige datums in met alleen cijfers (DD/MM/JJJJ).",
+			"label": "Geldigheid"
 		}
 	},
 	"modal": {
@@ -169,43 +214,57 @@
 			"title": "Kolommen beheren",
 			"description": "Selecteer kolommen om weer te geven:"
 		},
-		"continueLogin": "Doorgaan met inloggen"
+		"continueLogin": "Doorgaan met inloggen",
+		"continueToApp": "Doorgaan naar dashboard"
 	},
 	"errors": {
 		"error": "Fout",
 		"htmlContent": "Dit veld mag geen HTML-inhoud bevatten.",
 		"generic": "Er is een fout opgetreden. Probeer het later opnieuw.",
+		"supplierNotApproved": "Uw leverancier moet door je gemeente worden goedgekeurd voordat je toegang krijgt tot de volledige functionaliteit.",
 		"400": "De server kon het verzoek niet begrijpen, controleer en dien een geldig verzoek in.",
-		"401": "Authenticatie mislukt. Controleer uw inloggegevens en probeer het opnieuw. ",
-		"403": "Toestemming geweigerd. Uw huidige toegangsniveau is onvoldoende voor deze handeling.",
-		"404": "Oeps, het lijkt erop dat u een doodlopende weg bent ingeslagen. De bron die u zoekt, kon niet worden gevonden.",
+		"401": "Authenticatie mislukt. Controleer je inloggegevens en probeer het opnieuw. ",
+		"403": "Toestemming geweigerd. je huidige toegangsniveau is onvoldoende voor deze handeling.",
+		"404": "Oeps, het lijkt erop dat je een doodlopende weg bent ingeslagen. De bron die je zoekt, kon niet worden gevonden.",
 		"500": "Onze server heeft een interne fout ondervonden. Probeer het later opnieuw.",
-		"40001": "Verzoek mislukt vanwege een validatie fout. Controleer en corrigeer de verstrekte gegevens voordat u opnieuw indient.",
-		"40002": "Wachtwoord bijwerken mislukt. Zorg ervoor dat uw nieuw wachtwoord voldoet aan de opgegeven vereisten en probeer het opnieuw.",
+		"40001": "Verzoek mislukt vanwege een validatie fout. Controleer en corrigeer de verstrekte gegevens voordat je opnieuw indient.",
+		"40002": "Wachtwoord bijwerken mislukt. Zorg ervoor dat je nieuw wachtwoord voldoet aan de opgegeven vereisten en probeer het opnieuw.",
 		"40003": "E-mail verzenden mislukt. Het opgegeven e-mailadres lijkt ongeldig te zijn. Controleer dit en probeer het opnieuw.",
-		"40004": "Authenticatie mislukt. Controleer uw inloggegevens en probeer het opnieuw.",
+		"40004": "Authenticatie mislukt. Controleer je inloggegevens en probeer het opnieuw.",
 		"40005": "Verzoek mislukt vanwege een unieke beperking. Zorg ervoor dat de verstrekte informatie uniek is en probeer het opnieuw.",
-		"40006": "Bepaalde details in uw verzoek zijn onvolledig. Probeer het nogmaals. ",
+		"40006": "Bepaalde details in je verzoek zijn onvolledig. Probeer het nogmaals. ",
 		"40007": "ERR TOEVOEGEN",
 		"40008": "Het ingevoerde wachtwoord en het bevestigde wachtwoord komen niet overeen. Wijzig het wachtwoord en probeer opnieuw.",
 		"40009": "Uw poging was meerdere keren onsuccesvol. Voltooi de ReCAPTCHA om door te gaan.",
 		"40010": "Voltooi het ReCAPTCHA-proces.",
-		"40011": "Toegang tot deze actie is beperkt. Neem contact op met uw beheerder voor assistentie.",
-		"40012": "Het bestand dat u heeft geüpload is te groot. Upload een ander bestand en probeer het nogmaals.",
-		"40013": "U kunt slechts drie pogingen tot wachtwoordherstel per dag initiëren.",
+		"40011": "Toegang tot deze actie is beperkt. Neem contact op met je beheerder voor assistentie.",
+		"40012": "Het bestand dat je hebt geüpload is te groot. Upload een ander bestand en probeer het nogmaals.",
+		"40013": "Je kunt slechts drie pogingen tot wachtwoordherstel per dag initiëren.",
 		"40014": "De link voor wachtwoordherstel is verlopen.",
-		"40015": "Uw nieuwe wachtwoord komt overeen met uw oude wachtwoord. Kies alstublieft een ander wachtwoord.",
+		"40015": "Uw nieuwe wachtwoord komt overeen met je oude wachtwoord. Kies alstublieft een ander wachtwoord.",
 		"40016": "Uw inlogsessie is beëindigd. Log alstublieft opnieuw in.",
 		"40017": "Uw inlogsessie is beëindigd. Log alstublieft opnieuw in.",
-		"40019": "Volledige functionaliteit is beschikbaar zodra uw gemeentelijke goedkeuring is voltooid, meestal binnen 5 werkdagen. Wacht op bevestiging om toegang te krijgen tot alle functies.",
+		"40019": "Volledige functionaliteit is beschikbaar zodra je gemeentelijke goedkeuring is voltooid, meestal binnen 5 werkdagen. Wacht op bevestiging om toegang te krijgen tot alle functies.",
 		"40020": "We konden het CSV-bestand niet inlezen",
 		"40021": "Ongeldig datumformaat in CSV-bestand ",
+		"40022": "Je verzoek kon niet worden voltooid vanwege een schending van de gegevensintegriteit. Controleer je gegevens en probeer het opnieuw.",
 		"40027": "Je hebt je e-mail al bevestigd.",
 		"40025": "Je account is nog niet gevalideerd. Controleer je e-mail en bevestig je e-mailadres om het registratieproces te voltooien.",
-		"40032": "...This email address is already in use.",
-		"40036": "...One of the BSN or Pass numbers you entered already exists.",
-		"40037": "Het bedrag dat u heeft ingevoerd overschrijdt het toegestane prijsbereik.",
-		"40038": "Dit e-mailadres is niet geldig."
+		"40032": "Dit e-mailadres wordt al gebruikt.",
+		"40036": "Dit BSN of pasnummer is al in gebruik.",
+		"40037": "Het bedrag dat je hebt ingevoerd overschrijdt het toegestane prijsbereik.",
+		"40038": "Dit e-mailadres is niet geldig.",
+		"40039": "Importeren mislukt. Zorg ervoor dat alle verplichte velden zijn ingevuld voordat je het opnieuw probeert.",
+		"40044": "We konden je identiteit niet verifiëren met DigiD. Controleer je gegevens en probeer het opnieuw.",
+		"40045": "Er was een probleem met de communicatie met DigiD. Probeer het opnieuw.",
+		"40046": "Je account is gedeactiveerd. Neem contact op met je gemeente voor hulp.",
+		"40048": "Je moet aan een categorie zijn toegewezen om toegang te krijgen tot het aanvraagformulier voor een pas.",
+		"40050": "Het documenttype dat je hebt geüpload, wordt niet geaccepteerd. Upload alstublieft een ondersteund bestandstype.",
+		"40051": "je hebt te veel documenten geüpload. Verwijder er enkele en probeer het opnieuw.",
+		"40052": "Sommige documenten zijn niet geüpload. Probeer het opnieuw.",
+		"40053": "Een document met deze naam is al geüpload. Hernoem je bestand en probeer het opnieuw.",
+		"40054": "Het geüploade document overschrijdt de maximaal toegestane grootte van 10 MB.",
+		"40055": "Het geüploade document is leeg, beschadigd of onleesbaar. Upload alstublieft een geldig document."
 	},
 	"alerts": {
 		"passwordAlertRequirements1": "Wachtwoord moet minimaal 8 tekens bevatten.",
@@ -216,31 +275,31 @@
 		"forgotPassword": "Wachtwoord vergeten",
 		"username": {
 			"title": "Gebruikersnaam",
-			"placeholder": "Voer uw gebruikersnaam in",
+			"placeholder": "Voer je gebruikersnaam in",
 			"requiredError": "Gebruikersnaam is verplicht"
 		},
 		"password": {
-			"placeholder": "Voer uw wachtwoord in",
+			"placeholder": "Voer je wachtwoord in",
 			"requiredError": "Wachtwoord is verplicht"
 		}
 	},
 	"register": {
 		"registerButton": "Registreren",
-		"title": "Registreer bij Stadspassen!",
+		"title": "Registreer bij Gemeentepassensen!",
 		"companyName": "Bedrijfsnaam",
 		"kvkNumber": "KvK-nummer",
 		"municipality": "Gemeente",
 		"emailAddress": "E-mailadres",
-		"firstNamePlaceholder": "Voer uw voornaam in",
-		"lastNamePlaceholder": "Voer uw achternaam in",
-		"companyNamePlaceholder": "Voer uw bedrijfsnaam in",
-		"kvkNumberPlaceholder": "Voer uw KvK-nummer in",
-		"municipalityPlaceholder": "Selecteer uw gemeente",
-		"emailAddressPlaceholder": "Voer uw e-mailadres in",
-		"passwordPlaceholder": "Voer uw wachtwoord in",
+		"firstNamePlaceholder": "Voer je voornaam in",
+		"lastNamePlaceholder": "Voer je achternaam in",
+		"companyNamePlaceholder": "Voer je bedrijfsnaam in",
+		"kvkNumberPlaceholder": "Voer je KvK-nummer in",
+		"municipalityPlaceholder": "Selecteer je gemeente",
+		"emailAddressPlaceholder": "Voer je e-mailadres in",
+		"passwordPlaceholder": "Voer je wachtwoord in",
 		"requiredMunicipality": "Gemeente is verplicht",
-		"accountAlreadyCreated": "Heeft u al een account?",
-		"accountNotCreated": "Heeft u geen account?",
+		"accountAlreadyCreated": "Heeft je al een account?",
+		"accountNotCreated": "Heb je geen account?",
 		"login": "Inloggen",
 		"agreements": "Ik ga akkoord met de voorwaarden",
 		"middleKeyword": "en het",
@@ -307,7 +366,7 @@
 		"categoryPlaceholder": "Selecteer categorie",
 		"commerceNumberPlaceholder": "Voer het Kamer van Koophandel nummer in",
 		"email": "Bedrijfsadministrateur e-mail",
-		"uploadMessage": "Je kunt hier <b> 1 bestand </b> uploaden. U kunt PNG, SVG, JPG, JPEG-bestanden toevoegen en de maximale bestandsgrootte die is toegestaan, is 200 KB.",
+		"uploadMessage": "Je kunt hier <b> 1 bestand </b> uploaden. je kunt PNG, SVG, JPG, JPEG-bestanden toevoegen en de maximale bestandsgrootte die is toegestaan, is 200 KB.",
 		"groupPlaceholder": "Selecteer groep",
 		"group": "Groep",
 		"subcategory": "Subcategorie",
@@ -328,8 +387,10 @@
 		"uploadLogo": "Logo uploaden",
 		"next": "Volgende",
 		"removeLogo": "Logo verwijderen",
-		"sizeExcedeedLogo": "Het bestand dat u probeert te uploaden overschrijdt de maximale toegestane bestandsgrootte van 200 KB.",
-		"companyAdminstratorEmail": "Bedrijfsbeheerder e-mail"
+		"logoAlt": "Logo van de gemeente Tilburg",
+		"sizeExcedeedLogo": "Het bestand dat je probeert te uploaden overschrijdt de maximale toegestane bestandsgrootte van 200 KB.",
+		"companyAdminstratorEmail": "Bedrijfsbeheerder e-mail",
+		"cashierEmails": "Kassamedewerkers"
 	},
 	"contactInformation": {
 		"header": "Contactgegevens",
@@ -354,7 +415,6 @@
 		"websitePlaceholder": "Voer de website van de leverancier in",
 		"accountManager": "Accountmanager",
 		"accountManagerFormControlRequired": "Naam accountmanager is verplicht.",
-		"websiteFormControlRequired": "Website is verplicht.",
 		"accountManagerPlaceholder": "Voer de naam van de accountmanager in",
 		"validZipCode": "Voer een geldige filiaalpostcode in.",
 		"validTelephone": "Voer een geldig filiaaltelefoonnummer in."
@@ -365,20 +425,21 @@
 		"timeSlotsFormControlRequired": "Vul beide tijdslotvelden in.",
 		"editSchedule": "Pas schema aan",
 		"setupSchedule": "Schema instellen",
-		"setupText": "Stel uw werkdagen en -uren in.",
-		"toggleText": "Je opneningstijden selecteren is verplicht."
+		"setupText": "Stel je werkdagen en -uren in.",
+		"toggleText": "Je opneningstijden selecteren is verplicht.",
+		"copyToAll": "Alles kopiëren"
 	},
 	"setupProfile": {
 		"setupSuccessful": "Wacht op goedkeuring",
 		"success": {
-			"text": "De goedkeuring door de gemeente duurt meestal tot 5 werkdagen.<br>Houd er rekening mee dat u geen aanbiedingen kunt plaatsen totdat uw verzoek is goedgekeurd."
+			"text": "De goedkeuring door de gemeente duurt meestal tot 5 werkdagen.<br>Houd er rekening mee dat je geen aanbiedingen kunt plaatsen totdat je verzoek is goedgekeurd."
 		},
 		"continue": "Ik begrijp het",
-		"finish": "Profiel instellen voltooien",
 		"setup": "Profiel instellen",
-		"successfulInfoMessage": "De goedkeuring door de gemeente duurt meestal tot 5 werkdagen. Houd er rekening mee dat u geen aanbiedingen kunt plaatsen totdat uw verzoek is goedgekeurd.",
-		"invalidZipCode": "We couldn't complete your profile setup due to an invalid zip code entered. Please ensure that the zip code you provided is accurate and try again.",
-		"invalidZipCodeEdit": "We konden je bewerkingsactie niet voltooien omdat er een ongeldige postcode is ingevoerd. Zorg ervoor dat de postcode die je hebt opgegeven juist is en probeer het opnieuw."
+		"successfulInfoMessage": "De goedkeuring door de gemeente duurt meestal tot 5 werkdagen. Houd er rekening mee dat je geen aanbiedingen kunt plaatsen totdat je verzoek is goedgekeurd.",
+		"invalidZipCode": "We kunnen je profiel niet aanmaken doordat de opgegeven postcode ongeldig is. Gebruik een geldige postcode.",
+		"invalidZipCodeEdit": "We konden je bewerkingsactie niet voltooien omdat er een ongeldige postcode is ingevoerd. Zorg ervoor dat de postcode die je hebt opgegeven juist is en probeer het opnieuw.",
+		"passwordAlreadySetup": "Wachtwoord is al ingesteld. Log alstublieft in."
 	},
 	"forgotPassword": {
 		"title": "Wachtwoord vergeten?",
@@ -395,8 +456,6 @@
 		"remove": "Verwijderen",
 		"viewSupplier": "Leverancier bekijken",
 		"suspendSupplier": "Leverancier schorsen",
-		"viewGrant": "Subsidie bekijken",
-		"editGrant": "Subsidie bewerken",
 		"delete": "Verwijderen",
 		"viewPassholder": "Pasbezitter bekijken",
 		"rejected": "Afgewezen",
@@ -410,72 +469,44 @@
 		"last": "Laatste pagina",
 		"selectPageSize": "Selecteer de paginagrootte",
 		"listResults": "Resultaten per pagina",
-		"descriptionListResults": "Kies de paginagrootte voor uw resultaten"
+		"descriptionListResults": "Kies de paginagrootte voor je resultaten"
 	},
 	"upload": {
-		"description": "Sleep 1 bestand hier naartoe",
+		"description": "Sleep 1 bestand hierheen om te uploaden of blader.",
+		"descriptionReplace": "Sleep 1 bestand hierheen om het bestand te vervangen.",
 		"supports": "Ondersteunt: ",
 		"warningFilesNumber": "U kunt slechts <b>1 bestand </b> uploaden",
-		"warningFormat": "Niet-ondersteund bestandsformaat. Upload alleen {{ acceptedFormats }} bestanden"
+		"warningFormat": "Niet-ondersteund bestandsformaat. Upload alleen <b>{{ acceptedFormats }} bestanden.</b>"
 	},
 	"approvedModal": {
 		"header": "Goedkeuring aangevraagd",
 		"title": "Uw verzoek is goedgekeurd",
-		"description": "Uw verzoek om lid te worden van Stadspassen is goedgekeurd door {{municipality}}"
+		"description": "Uw verzoek om lid te worden van Gemeentepassensen is goedgekeurd door {{municipality}}"
 	},
 	"passholders": {
 		"title": "Pasbezitters importeren",
 		"noData": {
-			"title": "Welkom bij Pasbeheer",
-			"description": "Het lijkt erop dat u nog geen pasbezitters heeft. Laten we beginnen door uw lijst met pasbezitters te importeren"
+			"title": "Welkom bij Pasbezitters",
+			"description": "Het lijkt erop dat je nog geen pasbezitters heeft.<br> Laten we beginnen door je lijst met pasbezitters te importeren.",
+			"descriptionNoCitizenGroup": "Het lijkt erop dat je nog geen inwonergroepen heeft aangemaakt.<br> Om pasbezitters te importeren, heeft je minimaal één groep nodig. Laten we beginnen met het toevoegen van je eerste inwonergroep!"
 		},
 		"successDelete": "De pashouder is succesvol verwijderd.",
-		"successAssignGrants": "De subsidies zijn succesvol toegekend.",
 		"import": "CSV-bestand importeren",
-		"uploadDescription": "Voeg automatisch pasbezitters toe door te importeren uit een CSV-bestand",
+		"uploadDescription": "Selecteer de juiste inwonercategorie en upload een CSV van pasbezitters om toe te wijzen.",
 		"download": "CSV-sjabloon downloaden",
-		"successImport": "Het bestand is succesvol geïmporteerd. De pasbezitters zijn geladen",
-		"assignedGrants": "Toegewezen tegoeden",
-		"assignGrants": "Tegoed toewijzen",
-		"grantName": "Subsidienaam",
-		"amoungGranted": "Bedrag toegekend",
+		"successImport": "De lijst met pasbezitters is succesvol geïmporteerd.",
+		"amountGranted": "Bedrag toegekend",
 		"delete": {
 			"title": "Pasbezitter verwijderen",
 			"content": "De geselecteerde pasbezitter wordt verwijderd </br> Verwijderde gegevens kunnen niet worden hersteld"
-		}
-	},
-	"grants": {
-		"grant": "Tegoed",
-		"noData": {
-			"title": "Welkom bij Tegoedbeheer",
-			"description": "Het lijkt erop dat u nog geen tegoeden heeft. Laten we beginnen door uw eerste tegoed toe te voegen"
 		},
-		"success": "De subsidie is succesvol aangemaakt.",
-		"assigning": "Tegoed toewijzen",
-		"warningMessage": "Het proces voor het toewijzen van tegoed wordt geannuleerd en niet-opgeslagen wijzigingen worden verwijderd",
-		"createGrant": "Tegoed aanmaken",
-		"title": "Tegoednaam",
-		"description": "Tegoedbeschrijving",
-		"createdFor": "Tegoed gemaakt voor",
-		"validity": "Geldigheid",
-		"titlePlaceholder": "Voer tegoednaam in",
-		"descriptionPlaceholder": "Voer Tegoedbeschrijving in",
-		"amountPlaceholder": "Voer tegoedbedrag in (Euro)",
-		"titleFormControlRequired": "Tegoednaam is verplicht",
-		"descriptionFormControlRequired": "Tegoedbeschrijving is verplicht",
-		"addGrant": "Nieuw tegoed toevoegen",
-		"validityFormControlRequired": "Voer alstublieft geldige data in beide velden in met alleen cijfers (DD/MM/JJJJ)",
-		"cardHolder": "Pasbezitter",
-		"childrenHolder": "Kinderen van een pasbezitter",
-		"beneficiaries": "Begunstigden",
-		"nrBeneficiaries": "Aantal begunstigden",
-		"editGrant": "Subsidie aanpassen",
-		"editWarningMessage": "De aanpassing wordt ongedaan gemaakt en niet-opgeslagen wijzigingen gaan verloren."
+		"citizenGroupPlaceholder": "Selecteer inwonergroep",
+		"citizenGroupRequired": "inwonergroep is verplicht."
 	},
 	"offer": {
 		"noData": {
 			"title": "Welkom bij Aanbiedingenbeheer",
-			"description": "Het lijkt erop dat u nog geen aanbiedingen heeft. Laten we beginnen door uw eerste aanbieding toe te voegen"
+			"description": "Het lijkt erop dat je nog geen aanbiedingen hebt. Laten we beginnen door je eerste aanbieding toe te voegen"
 		},
 		"createOffer": "Aanbieding toevoegen",
 		"addOffer": "Nieuwe aanbieding toevoegen",
@@ -483,8 +514,7 @@
 		"reactivateAlert": "Je staat op het punt om een aanbieding te activeren die al verlopen is.",
 		"offer": "Aanbieding",
 		"title": "Titel vermelding",
-		"targetAudience": "Doelgroep (aangemaakt voor)",
-		"acceptedGrantsPlaceholder": "Selecteer geaccepteerde tegoeden",
+		"acceptedBenefitsPlaceholder": "Selecteer geaccepteerd voordeel",
 		"titlePlaceholder": "Voer titel van de vermelding in",
 		"typeOfOffer": "Type aanbieding",
 		"typeOfOfferPlaceholder": "Selecteer type aanbieding",
@@ -493,9 +523,8 @@
 		"amount": "Korting bedrag",
 		"amountCreditPlaceholder": "Voer het tegoedbedrag in euro in (€)",
 		"amountPercentagePlaceholder": "Voer het kortingspercentage in",
-		"amountFreeEntryPlaceholder": "...Insert the free entry discount amount in Euro (€)",
+		"amountFreeEntryPlaceholder": "Voeg de waarde van gratis toegang in Euros (€) in",
 		"offerCreatedFor": "Aanbieding gemaakt voor",
-		"validity": "Geldigheid",
 		"restrictions": "Beperkingen",
 		"frequencyOfUse": {
 			"label": "Frequentie van gebruik",
@@ -518,26 +547,29 @@
 			"label": "Passende prijsklasse",
 			"minPrice": "Minimale prijs",
 			"maxPrice": "Maximale prijs",
-			"error": "Vul tenminste één prijsveld in"
+			"error": "Vul tenminste één prijsveld in",
+			"greaterThanZero": "Voer een prijs > 0 in ten minste één veld in."
 		},
-		"citizenWithPass": "Burger met pas",
+		"citizenWithPass": "inwoner met pas",
 		"formRequired": {
 			"titleFormControlRequired": "Titel is verplicht",
 			"descriptionFormControlRequired": "Aanbiedingsbeschrijving is verplicht",
 			"validityFormControlRequired": "Vul alstublieft beide datumvelden in",
-			"grantsFormControlRequired": "Het is verplicht om minimaal één subsidie te selecteren."
+			"benefitFormControlRequired": "Het selecteren van een voordeel is verplicht."
 		},
 		"types": {
-			"grant": "Subsidie",
-			"percentage": "Percentage",
+			"benefit": "Voordeel",
+			"percentage": "Korting",
 			"bogo": "Koop één krijg één gratis",
 			"credit": "Tegoed",
-			"freeEntry": "Gratis toegang"
+			"percentageDiscount": "Percentage korting",
+			"creditDiscount": "Tegoed korting",
+			"freeEntry": "Gratis toegang/Product"
 		},
-		"dialogOfferGrant": {
+		"dialogOfferBenefits": {
 			"createSuccessful": "Wacht op goedkeuring",
 			"mainContent": "Wacht op goedkeuring",
-			"mainContentText": "U heeft een aanbieding ingesteld waarmee burgers betalingen kunnen doen met gemeentelijke tegoeden, wat goedkeuring van de gemeente vereist. De goedkeuring door de gemeente duurt meestal tot 5 werkdagen"
+			"mainContentText": "Je hebt een aanbieding ingesteld waarmee inwoners betalingen kunnen doen met gemeentelijke voordelen, wat goedkeuring van de gemeente vereist. De goedkeuring door de gemeente duurt meestal tot 5 werkdagen"
 		},
 		"approve": {
 			"review": "Beoordeling aanbieding van leverancier",
@@ -548,8 +580,8 @@
 				"createdFor": "Aanbieding gemaakt voor",
 				"title": "Titel van de vermelding",
 				"tyoeOfOffer": "Type aanbieding",
-				"acceptedGrants": "Geaccepteerde tegoeden",
-				"description": "Aanbiedingsbeschrijving"
+				"description": "Aanbiedingsbeschrijving",
+				"acceptedBenefit": "Geaccepteerd voordeel"
 			}
 		},
 		"timeSlotFormControlRequired": "Vul alstublieft minstens één uurveld in",
@@ -562,7 +594,7 @@
 			"toasterSingular": "Je aanbieding is succesvol verwijderd.",
 			"toasterPlural": "Je aanbiedingen zijn succesvol verwijderd."
 		},
-		"freeEntry": "...Entry price"
+		"freeEntry": "Waarde gratis toegang"
 	},
 	"pendingOffer": {
 		"noData": {
@@ -582,10 +614,10 @@
 		"success": "Leverancier is succesvol afgewezen.",
 		"comments": "Opmerkingen",
 		"placeHolderReason": "Selecteer de redenen voor afwijzing",
-		"placeHolderComments": "Voer uw opmerkingen hier in",
+		"placeHolderComments": "Voer je opmerkingen hier in",
 		"leavingWarning": "Het proces om de aanbieder af te wijzen wordt geannuleerd en niet-opgeslagen wijzigingen worden verwijderd.",
 		"modal": {
-			"description": "Uw verzoek om lid te worden van Stadspassen is op dit moment afgewezen door {{municipality}}.<br><br><b>Afwijsreden:</b> {{reason}}<br><b>Afwijsdetails:</b> {{comments}}<br>"
+			"description": "Je verzoek om lid te worden van Gemeentepassensen is op dit moment afgewezen door {{municipality}}.<br><br><b>Afwijsreden:</b> {{reason}}<br><b>Afwijsdetails:</b> {{comments}}<br>"
 		},
 		"reasons": {
 			"notInRegion": "Niet in de regio",
@@ -593,7 +625,10 @@
 			"idle": "Inactief",
 			"incompleteInformation": "Onvolledige informatie",
 			"duplicate": "Duplicaat"
-		}
+		},
+		"reasonPlaceholder": "Afwijsreden:",
+		"commentPlaceholder": "Afwijsdetails:",
+		"reapplication": "Om opnieuw aan te melden, breng de nodige aanpassingen aan op basis van de afwijsreden en eventuele opmerkingen:"
 	},
 	"rejectOffer": {
 		"success": "De aanbieding is succesvol afgewezen.",
@@ -614,31 +649,40 @@
 	"dashboard": {
 		"qrCode": {
 			"header": "QR-code",
-			"textApproved": "Toon deze QR-code in uw winkel voor eenvoudige toegang tot uw aanbiedingen",
-			"textPending": "Na goedkeuring door de gemeente wordt uw QR-code weergegeven"
+			"textApproved": "Toon deze QR-code in je winkel voor eenvoudige toegang tot je aanbiedingen",
+			"textPending": "Na goedkeuring door de gemeente wordt je QR-code weergegeven"
 		},
 		"metrics": {
-			"passholders": "Aantal kaarthouders",
+			"passholders": "Aantal pashouders",
 			"suppliers": "Aantal aanbieders",
 			"transactions": "Aantal transacties"
 		},
 		"transactions": {
-			"title": "Transacties"
+			"title": "Transacties",
+			"noData": "Er zijn nog geen transactiegegevens.",
+			"valueOfTransactions": "Waarde van transacties"
 		},
 		"map": {
 			"title": "Aanbieders in jouw stad"
 		},
 		"offers": {
-			"textOffersExist": ".Je hebt in totaal {{offersCount}} aanbiedingen.",
+			"textOffersExist": "Je hebt in totaal {{offersCount}} aanbiedingen.",
 			"textNoOffers": "Op dit moment heb je geen aanbiedingen.",
 			"thisMonth": "Deze maand",
 			"thisQuarter": "Dit kwartaal",
 			"thisYear": "Dit jaar"
 		},
 		"usedOffers": {
-			"header": "Gebruikte aanbiedingen"
+			"header": "Gebruikte aanbiedingen",
+			"noDataMessage": "Er zijn nog geen gegevens over het gebruik van aanbiedingen.",
+			"legend": "Gebruik per type aanbieding"
 		},
-		"addOfferDescription": "De inwoners zijn aan het wachten op je laatste aanbiedingen. Schiet op 🛒 💸 !"
+		"addOfferDescription": "De inwoners zijn aan het wachten op je laatste aanbiedingen. Schiet op 🛒 💸 !",
+		"bankDetails": {
+			"title": "Bankgegevens vereist",
+			"description": "Voer de bankgegevens van je gemeente in. Dit is een eenmalige instelling.",
+			"success": "Uw bankgegevens zijn succesvol opgeslagen."
+		}
 	},
 	"group": {
 		"types": {
@@ -651,9 +695,9 @@
 	"legalForm": {
 		"types": {
 			"sole": "Eenmanszaak",
-			"foundation": "De stichting",
-			"association": "De vereniging",
-			"cooperative": "De coöperatie",
+			"foundation": "Stichting",
+			"association": "Vereniging",
+			"cooperative": "Coöperatie",
 			"publicLimitedCompany": "Naamloze vennootschap (nv)",
 			"privateLimitedCompany": "Besloten vennootschap (bv)",
 			"limitedPartnership": "De commanditaire vennootschap (cv)",
@@ -686,7 +730,8 @@
 	},
 	"userManagement": {
 		"welcome": "Welkom bij gebruikersbeheer",
-		"noData": "Het lijkt erop dat er geen gebruikers aangemaakt zijn."
+		"noData": "Het lijkt erop dat er geen gebruikers aangemaakt zijn.",
+		"newUser": "Nieuwe gebruiker"
 	},
 	"createUser": {
 		"title": "Maak gebruiker aan",
@@ -697,71 +742,312 @@
 		"success": "De gebruiker is succesvol aangemaakt."
 	},
 	"validationPage": {
-		"validate": "...Validate code",
-		"codePlaceholder": "...Type the code here",
-		"noCodesValidated": "...No codes have been validated yet.",
-		"noCodesValidatedDescription": "...Enter and validate a code to check a citizen's eligibility for an offer.",
-		"title": "...Verify eligibility",
-		"subtitle": "...Type the user’s code to validate his eligibility to use an offer.",
+		"validate": "Valideer code",
+		"codePlaceholder": "Voer de code hier in",
+		"noCodesValidated": "Er zijn nog geen codes gevalideerd.",
+		"noCodesValidatedDescription": "Voer een code in om te controleren of de klant in aanmerking komt voor het aabod.",
+		"title": "Controleer geldigheid",
+		"subtitle": "Voer de code van de gebruiker om te valideren het aanbod van toepassing is.",
 		"errors": {
-			"codeRequired": "...Code is required",
-			"codeInvalid": "...Code is invalid"
+			"codeRequired": "Code is vereist.",
+			"codeInvalid": "Code is ongeldig"
 		},
-		"validatedCodes": "...Validated codes",
-		"successMessage": " ...is validated successfully!",
-		"errorMessageNotFound": " ...is inactive or not found!",
-		"errorMessageOfferInactive": " ...is associated to an offer that is inactive.",
+		"validatedCodes": "Gevalideerde codes",
+		"successMessage": " is succesvol gevalideerd!",
+		"errorMessageNotFound": "is inactief of niet gevonden!",
+		"errorMessageOfferInactive": " is gekoppeld aan een aanbieding die inactief is.",
 		"errorMessageTimeSlots": " is gekoppeld aan een aanbieding die niet geldig is voor het huidige tijdslot.",
-		"errorMessageAlreadyUsed": " is gekoppeld aan een aanbieding die een frequentieovertreding heeft."
+		"errorMessageAlreadyUsed": " is gekoppeld aan een aanbieding die een frequentieovertreding heeft.",
+		"errorMessageUsageLimitReached": " is gekoppeld aan een aanbieding die zijn gebruikslimiet heeft bereikt."
 	},
 	"transactions": {
-		"passholderNumber": "...Pass holder no.",
-		"citizenName": "...Citizen name",
-		"menuLabel": "...This month",
+		"passholderNumber": "Pashouder nr.",
+		"citizenName": "Naam inwoner",
+		"menuLabel": "Deze maand",
 		"months": {
-			"january": "...January",
-			"february": "...February",
-			"march": "...March",
-			"april": "...April",
-			"may": "...May",
-			"june": "...June",
-			"july": "...July",
-			"august": "...August",
-			"september": "...September",
-			"october": "...October",
-			"november": "...November",
-			"december": "...December"
+			"january": "Januari",
+			"february": "Februari",
+			"march": "Maart",
+			"april": "April",
+			"may": "Mei",
+			"june": "Juni",
+			"july": "Juli",
+			"august": "Augustus",
+			"september": "September",
+			"october": "Oktober",
+			"november": "November",
+			"december": "December"
 		},
-		"noDataCurrentMonth": "...No transactions found for this month.",
+		"noDataCurrentMonth": "Geen transacties gevonden voor deze maand.",
 		"noData": {
-			"title": "...Welcome to Transactions Management",
-			"description": "...It looks like there aren’t any transactions yet."
+			"title": "Welkom bij Transacties Beheer",
+			"description": "Het lijkt erop dat er nog geen transacties zijn."
+		}
+	},
+	"benefitsPage": {
+		"header": "Voordelen",
+		"validityPeriod": "Geldigheidsduur",
+		"eligibilityCriteria": "Toegankelijkheidscriteria",
+		"requiredDocuments": "Vereiste documenten",
+		"beneficiaries": "Begunstigden",
+		"welcome": "Welkom bij Voordelen",
+		"noData": "Het lijkt erop dat je nog geen voordelen hebt.<br>Laten we beginnen met het toevoegen van je eerste voordeel!",
+		"noGroupsYet": "Het lijkt erop dat je nog geen inwonergroepen hebt aangemaakt.<br>Om voordelen toe te wijzen, heb je minstens één groep nodig. Laten we beginnen met het toevoegen van je eerste inwonergroep!",
+		"buttonText": "Voordeel aanmaken",
+		"goToProfilePage": "Ga naar profielpagina",
+		"createBenefit": "Voordeel aanmaken",
+		"createBenefitSuccess": "Het voordeel is succesvol aangemaakt."
+	},
+	"createBenefit": {
+		"title": "Nieuw voordeel toevoegen",
+		"name": "Voordeelnaam",
+		"namePlaceholder": "Voer voordeelnaam in, bijv. Gratis toegang voordeel",
+		"nameFormControlRequired": "Voordeelnaam is verplicht.",
+		"descriptionPlaceholder": "Bijv. “Geeft toegang tot musea, sportfaciliteiten, enz., voor inwoners met een laag inkomen.”",
+		"descriptionFormControlRequired": "Beschrijving is verplicht.",
+		"citizenGroups": "Voor wie is het voordeel? (inwonergroepen)",
+		"citizenGroupsPlaceholder": "Selecteer inwonergroepen",
+		"citizenGroupsFormControlRequired": "Er moet minstens één inwonergroep worden geselecteerd.",
+		"areaLabelCounterOneItemFacilityTypes": "Je hebt 1 item geselecteerd",
+		"areaLabelCounterMultipleItemsFacilityTypes": "Je hebt {{count}} items geselecteerd",
+		"amountPlaceholder": "Voer het uitkeringsbedrag in (euro)",
+		"leavingWarning": "Het aanmaken van het voordeel wordt geannuleerd en niet-opgeslagen wijzigingen worden verworpen."
+	},
+	"discount": {
+		"applyDiscount": "Korting toepassen",
+		"enterAmount": "Voer bedrag in",
+		"description": "De inwoner komt in aanmerking voor een <b>{{offerType}}</b> aanbieding genaamd <b>{{offerName}}</b>. Voer het bedrag in om de korting toe te passen.",
+		"percentageDiscount": "percentage korting",
+		"bogoDiscount": "Koop één, krijg één korting"
+	},
+	"profilePage": {
+		"header": "Inwonersgroepen",
+		"welcome": "Welkom bij Inwonersgroepen",
+		"noData": "Het lijkt erop dat je nog geen groepen hebt.<br>Laten we beginnen met het toevoegen van je eerste groep!",
+		"citizenGroups": {
+			"title": "inwonergroepen",
+			"addGroup": "Nieuwe groep toevoegen",
+			"groupName": "Groepsnaam",
+			"thresholdAmount": "Grenswaarde (%)",
+			"maxIncome": "Berekend maximaal inkomen (€)"
+		}
+	},
+	"digiD": {
+		"button": "Inloggen met DigiD",
+		"logoAlt": "DigiD-logo",
+		"fallback": {
+			"description": "Er is iets misgegaan tijdens het DigiD inloggen. Open de Gemeentepassensen app en probeer het opnieuw.",
+			"mobileButton": "Open Gemeentepassen App",
+			"imageAlt": "Illustratie die de DigiD-inlogfallback toont"
+		}
+	},
+	"citizenGroup": {
+		"createGroup": "Groep aanmaken",
+		"ageGroup": "Leeftijdsgroep",
+		"isDependentChildrenIncluded": "Ten laste kinderen",
+		"addNew": "Nieuwe inwonergroep toevoegen",
+		"groupName": "Groepsnaam",
+		"groupNamePlaceholder": "Voer categorienaam in, bijv. Alleenstaand",
+		"groupNameFormControlRequired": "Groepsnaam is verplicht.",
+		"ageGroupPlaceholder": "Selecteer leeftijd",
+		"ageGroupFormControlRequired": "Leeftijdsgroep is verplicht.",
+		"includesDependentChildren": "Omvat ten laste komende kinderen?",
+		"incomeThresholds": "Inkomensgrenzen",
+		"incomeThresholdsLine1": "Inkomensgrenzen zijn gekoppeld aan het minimumloon ({{ wage }}).",
+		"incomeThresholdsLine2": "inwoners in schuldhulpverlening kunnen toch in aanmerking komen.",
+		"minimumWage": "Minimumloon",
+		"threshold": "Grenswaarde (%)",
+		"thresholdPlaceholder": "Voer grenswaarde in (%)",
+		"thresholdFormControlRequired": "Grenswaarde is verplicht.",
+		"thresholdFormControlMinMaxError": "Grenswaarde moet tussen 1 en 200 liggen.",
+		"calculatedMaxIncome": "Berekend maximaal inkomen (€)",
+		"calculatedMaxIncomePlaceholder": "Berekend maximaal inkomen (€)",
+		"eligibilityCriteriaTitle": "Toelatingscriteria",
+		"requiredDocumentsTitle": "Vereiste documenten",
+		"under18": "Onder 18",
+		"criteriaOptions": {
+			"formLabel": "Kies de basisvoorwaarden waaraan een inwoner moet voldoen.",
+			"hasDigiD": "Inwoner heeft een DigiD",
+			"isAdult": "Inwoner is 18 jaar of ouder",
+			"livesInCity": "Inwoner woont in de stad",
+			"notStudent": "Inwoner is geen student"
 		},
-		"generateInvoice": {
-			"title": "...Generate invoice",
-			"description": "Uw factuur wordt gegenereerd in een .pdf-bestandsformaat.",
-			"invoiceNumber": "...Invoice number",
-			"issueDate": "...Issue date",
-			"dueDate": "...Due date",
-			"invoiceNumberPlaceholder": "...Enter invoice number",
-			"invoiceNumberRequired": "...Invoice number is required.",
-			"issueDateRequired": "...Issue date is required.",
-			"dueDateRequired": "...Due date is required.",
-			"success": "...Your invoice was successfully generated.",
-			"leaveWarning": "...Generating the invoice will be canceled, and unsaved changes will be discarded.",
-			"invoiceNumberInvalid": "...Please enter a valid invoice number.",
-			"days": {
-				"7days": "7 dagen",
-				"14days": "14 dagen",
-				"30days": "30 dagen"
+		"requiredDocuments": {
+			"formLabel": "Inwoners worden gevraagd deze documenten te uploaden bij de aanvraag van de pas",
+			"proofOfIdentity": "Bewijs van identiteit (bijv. geldig paspoort, identiteitskaart of verblijfsvergunning)",
+			"incomeProof": "Inkomensbewijs (bijv. loonstrook, uitkeringsspecificatie, jaaropgave)",
+			"assets": "Vermogen (bankafschriften, spaargeld, eigendommen)",
+			"debtsOrAlimony": "Schulden of alimentatieverplichtingen"
+		},
+		"createGroupSuccess": "De inwonergroep is succesvol aangemaakt.",
+		"leavingWarning": "Het aanmaken van de inwonergroep wordt geannuleerd en niet-opgeslagen wijzigingen worden verwijderd."
+	},
+	"applyForPass": {
+		"description": "Vraag een gratis Gemeentepassen aan als je in Nederland woont en een laag inkomen heeft. De pas geeft toegang tot musea, sportfaciliteiten en meer.",
+		"title": "Vraag Gemeentepassen aan",
+		"noExistingDigiD": "Heeft je nog geen DigiD?",
+		"createDigiD": "Klik hier om een DigiD-account aan te maken.",
+		"noneFitMe": "Geen past – help mij",
+		"confirmCategory": "Ja, dit geldt voor mij",
+		"groupCitizenAssignmentFromDigiD": {
+			"title": "Na de DigiD-identificatie valt je in de categorie:",
+			"maxIncome": " Max. inkomen",
+			"changeCategory": "Nee, wijzig categorie"
+		},
+		"groupCitizenAssignmentNotFittingDigiD": {
+			"title": "Selecteer de categorie die het beste bij je situatie past:",
+			"noData": {
+				"title": "Nog geen categorieën beschikbaar.",
+				"description": "De gemeente heeft op dit moment nog geen categoriegroepen aangemaakt.<br> Kom later terug of neem contact op met je gemeente voor meer informatie."
 			}
 		}
 	},
-	"discount": {
-		"applyDiscount": "...Apply discount",
-		"enterAmount": "...Enter amount",
-		"description": "...The citizen is eligible for a <b>{{offerType}}</b> offer named <b>{{offerName}}</b>. Please enter the amount to apply the discount.",
-		"percentageDiscount": "...percentage discount",
-		"bogoDiscount": "...Buy One Get One (BOGO)"
+	"noneCategoryFit": {
+		"title": "Hulp nodig bij het vinden van de juiste categorie?",
+		"description": "Het lijkt erop dat geen van de beschikbare categorieën overeenkomt met jouw huidige situatie.</br>Voor persoonlijke hulp raden we aan om contact op te nemen met <b>{{ municipalityName }} gemeente</b> (jouw lokale gemeente).",
+		"contactMunicipality": "Stuur ze een bericht met het onderstaande formulier of neem contact met hen op via telefoon op {{phoneNumber}} of per e-mail op {{emailAddress}}.",
+		"writeMessage": "Bericht schrijven",
+		"messageFormControlRequired": "Bericht is verplicht.",
+		"messageSentSucesfully": "Je bericht is succesvol verzonden."
+	},
+	"citizenDocumentsUpload": {
+		"title": "Documenten die je moet uploaden:",
+		"supportedDocuments": "Ondersteunde bestandstypen: .doc, .docx, .pdf en .txt. Maximale bestandsgrootte: 10 MB.",
+		"uploadFilesButton": "Bestand(en) uploaden",
+		"fileUploadAriaLabelButton": "Ondersteunde bestanden uploaden",
+		"fileUploadAriaDescriptionButton": "Ondersteunde bestandstypen: TXT, PDF, DOC, DOCX",
+		"fileUploadFailDuplicated": "Het bestand '{{fileName}}' is al toegevoegd.",
+		"fileUploadFailUnsupportedFormat": "Sommige van de geüploade bestandsformaten worden niet ondersteund.",
+		"fileUploadFailExceedMaximumSize": "Sommige van de geüploade bestanden zijn groter dan de maximaal toegestane 10 MB.",
+		"removeDocument": "Document verwijderen"
+	},
+	"applyForPassSetup": {
+		"stepper": {
+			"title": "Voordeelpas aanvragen",
+			"confirmIdentityStepLabel": "Identiteit bevestigen",
+			"uploadDocumentsStepLabel": "Documenten uploaden",
+			"checkAndSendStepLabel": "Controleren en verzenden",
+			"confirmationStepLabel": "Bevestiging"
+		},
+		"warningTitle": "Weet je zeker dat je wil annuleren?",
+		"warningDescription": "Dit stopt het aanvraagproces voor de pas en verwijdert alle niet-opgeslagen wijzigingen.",
+		"successTitle": "Aanvraag succesvol ingediend!",
+		"successDescription": "We zullen je gegevens beoordelen en contact met je opnemen via {{email}} of {{phoneNumber}} als er iets ontbreekt."
+	},
+	"confirmIdentity": {
+		"personalInformation": "Persoonlijke informatie",
+		"birthdate": "Geboortedatum",
+		"telephone": "Telefoon",
+		"info": "Om een gemeentepas aan te vragen, bevestig alstublieft je identiteit en upload de vereiste documenten.<br>Zodra je aanvraag is ingediend, wordt deze beoordeeld door de bevoegde instantie. Je ontvangt een bevestiging zodra de beoordeling is voltooid."
+	},
+	"uploadDocumentsStep": {
+		"title": "Voordelen waarvoor je in aanmerking komt:",
+		"grantAccess": "Toegang tot:",
+		"estimatedAmount": "Geschat bedrag:"
+	},
+	"additionalInformation": {
+		"title": "Aanvullende informatie",
+		"description": "Voeg een bericht toe als je een opmerking heeft.",
+		"writeMessage": "Schrijf een bericht"
+	},
+	"checkAndSend": {
+		"info": "Controleer je gegevens in deze preview. Als je wijzigingen wilt aanbrengen, kun je terugkeren door op 'terug' te klikken.<br> <b>Door op 'Verzenden' te klikken, worden je gegevens doorgestuurd naar de verantwoordelijke afdeling. </b>",
+		"documentsUploaded": "Documenten die je hebt geüpload:"
+	},
+	"privacy": {
+		"title": "Privacyverklaring",
+		"intro": {
+			"paragraph_1": "Wij zien het beschermen van persoonsgegevens als een zeer belangrijk onderdeel van onze bedrijfsvoering en dienstverlening. Het beschermen van deze gegevens ligt aan de basis van onze betrouwbaarheid als leverancier en partner. Met persoonsgegevens bedoelen we in dit geval: alle informatie over een geïdentificeerde en/of identificeerbare natuurlijke persoon.",
+			"paragraph_2": "In deze privacyverklaring lees je welke persoonsgegevens wij van je verzamelen. Wij verzamelen deze gegevens omdat we met jou een overeenkomst hebben of in contact zijn over onze diensten en producten.",
+			"paragraph_3": "Via deze verklaring krijgt je informatie over:",
+			"item_1": "waarom wij persoonsgegevens verwerken",
+			"item_2": "hoelang wij persoonsgegevens bewaren",
+			"item_3": "hoe je de door ons bewaarde persoonsgegevens kunt inzien en aanpassen",
+			"item_4": "hoe jouw persoonsgegevens bij ons zijn beveiligd"
+		},
+		"promises": {
+			"title": "Onze privacybeloften",
+			"subtitle": "Onze privacybeloften zijn te vangen in de volgende vuistregels:",
+			"purpose": {
+				"title": "Doelbepaling en doelbinding",
+				"description": "Wij gebruiken alleen persoonsgegevens voor uitdrukkelijk omschreven en gerechtvaardigde doeleinden."
+			},
+			"basis": {
+				"title": "Grondslag",
+				"description": "Wij baseren de verwerking van persoonsgegevens op een van de wettelijke grondslagen."
+			},
+			"minimization": {
+				"title": "Dataminimalisatie",
+				"description": "Wij zorgen dat bij de verwerking van persoonsgegevens dat de hoeveelheid gegevens beperkt blijft."
+			},
+			"transparency": {
+				"title": "Transparantie",
+				"description": "Wij leggen aan betrokkenen, zoals inwoners, leveranciers en medewerkers van de gemeente, transparant verantwoording af over het gebruik van hun persoonsgegevens."
+			},
+			"safety": {
+				"title": "Veiligheid",
+				"description": "Wij nemen privacy serieus. Bij iedere keuze die wij maken, nemen wij maatregelen om de privacy zo goed mogelijk te beschermen."
+			}
+		},
+		"security": {
+			"title": "Beveiliging persoonsgegevens",
+			"description": "Wij doen ons uiterste best om zorgvuldig met persoonsgegevens om te gaan. Ook doen wij alles om deze gegevens te beveiligen tegen verlies en/of enige vorm van onrechtmatig gebruik of onrechtmatige verwerking. Daarbij gebruiken wij passende technische en organisatorische maatregelen. Denk bijvoorbeeld aan de laatste innovaties op het gebied van security. Als wij je persoonsgegevens met derden moet delen om haar taken uit te voeren, sluiten wij hiervoor verwerkersovereenkomsten af."
+		},
+		"breach": {
+			"title": "Inbreuk op de beveiliging",
+			"paragraph_1": "Is er ondanks al onze inspanningen sprake van een inbreuk op de beoogde beveiliging? Dan handelen we dit incident af volgens de hiervoor opgestelde interne procedure. Uiteraard doen wij er in dat geval alles aan om de gevolgen van de inbreuk zo beperkt mogelijk te houden.",
+			"paragraph_2": "Vormt de inbreuk een privacyrisico, dan melden wij dit bij de Autoriteit Persoonsgegevens. Als het wenselijk is, en in ieder geval wanneer de wet dit vereist, informeren wij ook de betrokkenen over de inbreuk."
+		},
+		"rights": {
+			"title": "Wat zijn je rechten?",
+			"subtitle": "Conform de Algemene Verordening Gegevensbescherming heb je onderstaande rechten als het gaat om het gebruik van je persoonsgegevens:",
+			"access": {
+				"title": "Inzage",
+				"description": "Je hebt het recht om de persoonsgegevens die wij van je verwerkt in te zien."
+			},
+			"correction": {
+				"title": "Rectificatie en aanvulling",
+				"description": "Je hebt het recht om persoonsgegevens die wij van je verwerkt te laten wijzigen."
+			},
+			"forgotten": {
+				"title": "Vergetelheid",
+				"description": "je hebt het recht om je persoonsgegevens door ons te laten verwijderen."
+			},
+			"portability": {
+				"title": "Dataportabiliteit",
+				"description": "Je hebt het recht om persoonsgegevens over te laten dragen van ons naar een andere partij."
+			},
+			"restriction": {
+				"title": "Beperking van de verwerking",
+				"description": "Je hebt het recht om minder gegevens te laten verwerken door ons."
+			},
+			"automated": {
+				"title": "Geautomatiseerde besluitvorming en profilering",
+				"description": "Je hebt het recht op een menselijke blik bij besluiten die wij nemen (in tegenstelling tot geautomatiseerde besluitvorming)."
+			},
+			"objection": {
+				"title": "Bezwaar",
+				"description": "Je hebt het recht bij ons bezwaar te maken tegen een gegevensverwerking."
+			}
+		},
+		"contact": {
+			"title": "Hoe oefen jij je rechten uit?",
+			"description": "Wij nemen de privacy van je persoonsgegevens zeer serieus. Daarom hebben wij een privacy officer aangesteld die al je vragen over privacyrechten behandelt.",
+			"cta": "Je kunt contact opnemen met onze privacy officer via:"
+		},
+		"complaint": {
+			"title": "Het recht om een klacht in te dienen bij de toezichthoudende autoriteit",
+			"description": "Wij gaan zo transparant en zorgvuldig mogelijk met je gegevens om. Als je toch een klacht hebtt over de verwerking van je gegevens, verzoeken wij je eerst contact op te nemen met onze privacy officer. Dit kan door een bericht te sturen naar <a href=\"mailto:info@gemeentepassensen.eu\">info@gemeentepassensen.eu</a>. Wij doen vervolgens ons uiterste best om je klacht op te lossen. Mocht je het onverhoopt niet eens zijn met de genomen maatregel, dan kun je je wenden tot de Autoriteit Persoonsgegevens."
+		},
+		"info_sheet": {
+			"title": "Informatieblad per verwerking",
+			"subtitle": "Wij kiezen ervoor om naast de privacyverklaring voor specifieke verwerkingen/onderdelen een informatieblad op te stellen. Dit informatieblad gaat voor een verwerking specifiek in op de volgende deelonderwerpen:",
+			"item_1": "Waarom gebruiken wij je persoonsgegevens?",
+			"item_2": "Welke soorten persoonsgegevens verwerken wij?",
+			"item_3": "Wie heeft toegang tot je persoonsgegevens?",
+			"item_4": "Wat is de juridische grondslag voor de verwerking van je persoonsgegevens?",
+			"item_5": "Hoelang bewaren wij je persoonsgegevens?",
+			"item_6": "Welke beveiligingsmaatregelen zijn er getroffen?"
+		}
 	}
 }

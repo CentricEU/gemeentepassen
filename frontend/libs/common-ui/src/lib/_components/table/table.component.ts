@@ -1,19 +1,19 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
 import {
 	ColumnDataType,
 	FilterColumnKey,
 	FilterCriteria,
 	GenericTableData,
-	GrantDto,
 	Page,
 	PaginatedData,
 	StatusUtil,
 	TableColumn,
 	TableFilterColumn,
 } from '@frontend/common';
-import { DialogService, PageEvent } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 
 import { TableColumnsManagerComponent } from '../table-columns-manager/table-columns-manager.component';
 
@@ -21,6 +21,7 @@ import { TableColumnsManagerComponent } from '../table-columns-manager/table-col
 	selector: 'frontend-table',
 	templateUrl: './table.component.html',
 	styleUrls: ['./table.component.scss'],
+	standalone: false,
 })
 export class TableComponent<T extends GenericTableData> implements OnInit {
 	@Input() showHeader: boolean;
@@ -58,7 +59,7 @@ export class TableComponent<T extends GenericTableData> implements OnInit {
 	public paginatedData: PaginatedData<T>;
 	public currentDisplayedPage: Array<T>;
 
-	private displayedFilterColumns = [FilterColumnKey.STATUS, FilterColumnKey.OFFER_TYPE, FilterColumnKey.GRANTS];
+	private displayedFilterColumns = [FilterColumnKey.STATUS, FilterColumnKey.OFFER_TYPE, FilterColumnKey.BENEFITS];
 
 	private initialDisplayedFilterColumns = this.displayedFilterColumns;
 	private initialFilterColumns: TableFilterColumn[] = [];
@@ -100,10 +101,6 @@ export class TableComponent<T extends GenericTableData> implements OnInit {
 		filterColumn.source = searchTerm
 			? filterColumn.source.filter(({ value }) => value.toLowerCase().includes(searchTerm))
 			: filterColumn.filteredSource;
-	}
-
-	public isGrantDtoArray(source: GrantDto): boolean {
-		return Array.isArray(source) && source.length > 0 && source[0] instanceof GrantDto;
 	}
 
 	public isFilterCriteria(col: FilterColumnKey | string): boolean {

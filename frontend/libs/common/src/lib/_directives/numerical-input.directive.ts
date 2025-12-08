@@ -5,6 +5,7 @@ import { RegexUtil } from '../_util/regex-util';
 
 @Directive({
 	selector: '[frontendNumericalInput]',
+	standalone: false,
 })
 export class NumericInputDirective {
 	private regex = RegexUtil.numericalRegexPattern;

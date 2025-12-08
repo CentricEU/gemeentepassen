@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { commonRoutingConstants, MobileBrowserUtil } from '@frontend/common';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { of } from 'rxjs';
 
 import { RegistrationSuccessfulComponent } from './registration-successful.component';
@@ -21,6 +21,13 @@ describe('RegistrationSuccessfulComponent', () => {
 		openMobileApp: jest.fn(),
 	};
 
+	const environmentMock = {
+		production: false,
+		prefixes: 'localforlocal://',
+		envName: 'dev',
+		apiPath: '/api',
+	};
+
 	global.structuredClone = jest.fn((val) => {
 		return JSON.parse(JSON.stringify(val));
 	});
@@ -32,6 +39,7 @@ describe('RegistrationSuccessfulComponent', () => {
 			providers: [
 				{ provide: DialogService, useValue: dialogServiceMock },
 				{ provide: MobileBrowserUtil, useValue: mobileBrowserUtilMock },
+				{ provide: 'env', useValue: environmentMock },
 			],
 		}).compileComponents();
 	}));

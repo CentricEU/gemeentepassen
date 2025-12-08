@@ -53,4 +53,49 @@ describe('ChangePasswordService', () => {
 
 		expect(httpClientSpy.put).toHaveBeenCalledTimes(1);
 	});
+
+	it('should call setupPassword and return expected response', () => {
+		const setupPasswordMock = { token: 'setupToken', password: 'newPassword' };
+		const setupResponse = { status: 204, statusText: 'No Content' };
+		httpClientSpy.put.mockReturnValue(of(setupResponse));
+
+		service.setupPassword(setupPasswordMock as any).subscribe((data) => {
+			expect(data).toEqual(setupResponse);
+		});
+
+		expect(httpClientSpy.put).toHaveBeenCalledWith(
+			`${environmentMock.apiPath}/users/setup-password`,
+			setupPasswordMock,
+		);
+	});
+
+	it('should call httpClient.put with correct URL and body for changePassword', () => {
+		httpClientSpy.put.mockReturnValue(of(dummyResponse));
+
+		service.changePassword(recoverPasswordMock).subscribe();
+
+		expect(httpClientSpy.put).toHaveBeenCalledWith(
+			`${environmentMock.apiPath}/users/recover/reset-password`,
+			recoverPasswordMock,
+		);
+	});
+
+	it('should call validateSetupPasswordToken and return expected response', () => {
+		const validateMock = { token: 'validateToken' };
+		const validateResponse = true;
+		const httpPostSpy = jest.fn().mockReturnValue(of(validateResponse));
+
+		// Add post method to httpClientSpy
+		(httpClientSpy as any).post = httpPostSpy;
+
+		service.validateSetupPasswordToken(validateMock as any).subscribe((data) => {
+			expect(data).toEqual(validateResponse);
+		});
+
+		expect(httpPostSpy).toHaveBeenCalledWith(
+			`${environmentMock.apiPath}/users/setup-password/validate`,
+			validateMock,
+		);
+		expect(httpPostSpy).toHaveBeenCalledTimes(1);
+	});
 });

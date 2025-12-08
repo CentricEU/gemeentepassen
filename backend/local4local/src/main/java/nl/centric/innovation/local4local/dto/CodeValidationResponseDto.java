@@ -6,7 +6,6 @@ import nl.centric.innovation.local4local.util.DateUtils;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Builder

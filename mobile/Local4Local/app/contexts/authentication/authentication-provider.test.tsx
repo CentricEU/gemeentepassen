@@ -4,63 +4,70 @@ import AuthenticationProvider from './authentication-provider';
 import { retrieveToken } from '../../utils/auth/jwtSecurity';
 import AuthenticationContext from './authentication-context';
 
-
 jest.mock('../../utils/auth/jwtSecurity');
 
 describe('AuthenticationProvider', () => {
-  it('sets authState correctly when token exists', async () => {
-    (retrieveToken as jest.Mock).mockImplementation(() => Promise.resolve('mock_token'));
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
 
-    let renderedAuthState: any;
+	it('sets authState correctly when token exists', async () => {
+		(retrieveToken as jest.Mock).mockImplementation(() => Promise.resolve('mock_token'));
 
-    render(
-      <AuthenticationProvider>
-        <TestComponent />
-      </AuthenticationProvider>
-    );
+		let renderedAuthState: any;
 
-    function TestComponent() {
-      const { authState } = React.useContext(AuthenticationContext);
-      renderedAuthState = authState; 
-      return null;
-    }
+		render(
+			<AuthenticationProvider>
+				<TestComponent />
+			</AuthenticationProvider>
+		);
 
-    await act(async () => {
-      expect(retrieveToken).toHaveBeenCalledTimes(1);
-    });
+		function TestComponent() {
+			const { authState } = React.useContext(AuthenticationContext);
+			renderedAuthState = authState;
+			return null;
+		}
 
-    expect(renderedAuthState).toEqual({
-      token: 'mock_token',
-      authenticated: true,
-      accountDeleted: null
-    });
-  });
+		await act(async () => {
+			expect(retrieveToken).toHaveBeenCalledTimes(1);
+		});
 
-  it('sets authState correctly when token does not exist', async () => {
-    (retrieveToken as jest.Mock).mockImplementation(() => Promise.resolve(null));
+		expect(renderedAuthState).toEqual({
+			accessToken: 'mock_token',
+			refreshToken: 'mock_token',
+			authenticated: true,
+			accountDeleted: null,
+			error: null
+		});
+	});
 
-    let renderedAuthState: any;
+	it('sets authState correctly when token does not exist', async () => {
+		(retrieveToken as jest.Mock).mockImplementation(() => Promise.resolve(null));
 
-    render(
-      <AuthenticationProvider>
-        <TestComponent />
-      </AuthenticationProvider>
-    );
+		let renderedAuthState: any;
 
-    function TestComponent() {
-      const { authState } = React.useContext(AuthenticationContext);
-      renderedAuthState = authState; 
-      return null;
-    }
+		render(
+			<AuthenticationProvider>
+				<TestComponent />
+			</AuthenticationProvider>
+		);
 
-    await act(async () => {
-      expect(retrieveToken).toHaveBeenCalledTimes(2); 
-    });
+		function TestComponent() {
+			const { authState } = React.useContext(AuthenticationContext);
+			renderedAuthState = authState;
+			return null;
+		}
 
-    expect(renderedAuthState).toEqual({
-      token: null,
-      authenticated: false,
-      accountDeleted: null
-    });
-  });
+		await act(async () => {
+			expect(retrieveToken).toHaveBeenCalledTimes(1);
+		});
+
+		expect(renderedAuthState).toEqual({
+			accessToken: null,
+			refreshToken: null,
+			authenticated: false,
+			error: null,
+			accountDeleted: null
+		});
+	});
 });

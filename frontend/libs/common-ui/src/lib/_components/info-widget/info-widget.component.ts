@@ -4,6 +4,7 @@ import { Component, Input } from '@angular/core';
 	selector: 'frontend-info-widget',
 	templateUrl: './info-widget.component.html',
 	styleUrls: ['./info-widget.component.scss'],
+	standalone: false,
 })
 export class InfoWidgetComponent {
 	@Input() title: string;

@@ -3,7 +3,7 @@
 		#offersMunicipalityTable
 		class="table-pannel"
 		[columns]="allColumns"
-		[columnWithChips]="'grants'"
+		[columnWithChips]="'benefit'"
 		[typeOfT]="typeOfModal"
 		[shouldDisplayButtonForChips]="false"
 		[showFooter]="true"
@@ -13,15 +13,15 @@
 		(loadDataEvent)="loadData($event)">
 		<ng-container>
 			<span class="left-container">{{ 'general.pages.pendingOffers' | translate }} </span>
-			<section class="right-container">
+			<!-- <section class="right-container">
 				<centric-button
 					ariaAttributes
-					type="button-theme"
+					type="outlined-theme"
 					iconId="filter_b"
 					[ariaLabelTranslation]="'general.button.filter'">
 					{{ 'general.button.filter' | translate }}
 				</centric-button>
-			</section>
+			</section> -->
 		</ng-container>
 	</frontend-table>
 </ng-container>

@@ -1,0 +1,13 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+
+.outer-chart-container {
+	width: 100%;
+	aspect-ratio: 3 / 1;
+	max-height: 272px;
+	overflow: hidden;
+}
+
+.inner-chart-container {
+	position: relative;
+	@include mixins.size(100%, 100%);
+}

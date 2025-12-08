@@ -9,11 +9,11 @@ import nl.centric.innovation.local4local.entity.User;
 import nl.centric.innovation.local4local.exceptions.DtoValidateException;
 import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
 import nl.centric.innovation.local4local.repository.InviteSupplierRepository;
+import nl.centric.innovation.local4local.repository.TenantRepository;
 import nl.centric.innovation.local4local.service.impl.InviteSupplierServiceImpl;
 import nl.centric.innovation.local4local.service.impl.PrincipalService;
 import nl.centric.innovation.local4local.service.impl.UserService;
 import nl.centric.innovation.local4local.service.interfaces.EmailService;
-import nl.centric.innovation.local4local.service.interfaces.TenantService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -56,7 +56,7 @@ class InviteSupplierServiceImplTests {
     private UserService userServiceMock;
 
     @Mock
-    private TenantService tenantService;
+    private TenantRepository tenantRepository;
 
     @Mock
     private EmailService emailService;
@@ -85,7 +85,7 @@ class InviteSupplierServiceImplTests {
 
         Tenant mockedTenant = Tenant.builder().name("TestTenant").build();
 
-        when(tenantService.findByTenantId(tenantId)).thenReturn(Optional.of(mockedTenant));
+        when(tenantRepository.findById(tenantId)).thenReturn(Optional.of(mockedTenant));
 
         // When
         DtoValidateException exception = assertThrows(DtoValidateException.class, () ->
@@ -106,7 +106,7 @@ class InviteSupplierServiceImplTests {
         UUID tenantId = UUID.randomUUID();
         String language = "en";
 
-        when(tenantService.findByTenantId(tenantId)).thenReturn(Optional.empty());
+        when(tenantRepository.findById(tenantId)).thenReturn(Optional.empty());
         when(userServiceMock.findByUsername("existingUser@example.com")).thenReturn(Optional.of(new User()));
 
         // When
@@ -130,7 +130,7 @@ class InviteSupplierServiceImplTests {
 
         Tenant mockedTenant = Tenant.builder().name("TestTenant").build();
 
-        when(tenantService.findByTenantId(tenantId)).thenReturn(Optional.of(mockedTenant));
+        when(tenantRepository.findById(tenantId)).thenReturn(Optional.of(mockedTenant));
 
         // When
         DtoValidateException exception = assertThrows(DtoValidateException.class, () ->
@@ -152,7 +152,7 @@ class InviteSupplierServiceImplTests {
 
         Tenant mockedTenant = Tenant.builder().name("TestTenant").build();
 
-        when(tenantService.findByTenantId(tenantId)).thenReturn(Optional.of(mockedTenant));
+        when(tenantRepository.findById(tenantId)).thenReturn(Optional.of(mockedTenant));
         String language = "en";
         when(userServiceMock.findByUsername("email1@example.com")).thenReturn(Optional.empty());
         when(userServiceMock.findByUsername("email2@example.com")).thenReturn(Optional.empty());
@@ -182,7 +182,7 @@ class InviteSupplierServiceImplTests {
         Tenant mockedTenant = Tenant.builder().name("TestTenant").build();
 
         when(principalService.getTenantId()).thenReturn(tenantId);
-        when(tenantService.findByTenantId(tenantId)).thenReturn(Optional.of(mockedTenant));
+        when(tenantRepository.findById(tenantId)).thenReturn(Optional.of(mockedTenant));
         when(userServiceMock.findByUsername("existingUser@example.com")).thenReturn(Optional.of(new User()));
 
         // When
@@ -206,7 +206,7 @@ class InviteSupplierServiceImplTests {
         String language = "en";
 
         Tenant mockedTenant = Tenant.builder().name("TestTenant").build();
-        when(tenantService.findByTenantId(tenantId)).thenReturn(Optional.of(mockedTenant));
+        when(tenantRepository.findById(tenantId)).thenReturn(Optional.of(mockedTenant));
 
         // When/Then
         DtoValidateException exception = assertThrows(DtoValidateException.class, () ->
@@ -225,7 +225,7 @@ class InviteSupplierServiceImplTests {
         Page<InviteSupplier> mockInvitationsPage = new PageImpl<>(mockInvitationsList);
 
         when(principalService.getTenantId()).thenReturn(tenantId);
-        when(tenantService.findByTenantId(tenantId)).thenReturn(Optional.of(mockedTenant));
+        when(tenantRepository.findById(tenantId)).thenReturn(Optional.of(mockedTenant));
         when(inviteSupplierRepository.findAllByTenantIdAndIsActiveTrueOrderByCreatedDateDesc(tenantId, PageRequest.of(0, 25)))
                 .thenReturn(mockInvitationsPage);
 
@@ -243,7 +243,7 @@ class InviteSupplierServiceImplTests {
         Tenant mockedTenant = Tenant.builder().name("TestTenant").build();
 
         when(principalService.getTenantId()).thenReturn(tenantId);
-        when(tenantService.findByTenantId(tenantId)).thenReturn(Optional.of(mockedTenant));
+        when(tenantRepository.findById(tenantId)).thenReturn(Optional.of(mockedTenant));
         when(inviteSupplierRepository.countByTenantIdAndIsActiveTrue(tenantId)).thenReturn(5);
 
         Integer invitationsCount = inviteSupplierService.countByTenantId();

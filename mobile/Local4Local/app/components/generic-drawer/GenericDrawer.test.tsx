@@ -8,6 +8,10 @@ import { ButtonTypeEnum } from '../../utils/enums/buttonTypeEnum';
 jest.mock("../../assets/icons/close.svg", () => "CloseIcon");
 
 describe('GenericDrawer component', () => {
+    beforeAll(() => {
+        jest.useFakeTimers();
+    });
+
     test('renders correctly when visible is true', () => {
         const onCloseMock = jest.fn();
         const buttons = [

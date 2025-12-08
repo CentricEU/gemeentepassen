@@ -1,9 +1,6 @@
 <centric-panel [showFooter]="true">
 	<ng-container panel-header>
 		<p class="bold left-container">{{ supplierProfileServiceInformation.companyName }}</p>
-		<ng-container *ngIf="!isReadOnly">
-			<p class="custom-right-container right-container">{{ 'general.preview' | translate }}</p>
-		</ng-container>
 	</ng-container>
 	<ng-container panel-content>
 		<frontend-supplier-profile #profileInformation [isReadOnly]="isReadOnly"></frontend-supplier-profile>
@@ -12,16 +9,13 @@
 	<ng-container panel-footer>
 		<div class="flex-row-center footer-actions">
 			<ng-container *ngIf="isReadOnly; else editableForm">
-				<centric-button type="button-theme" (click)="suspendSupplier()">{{
+				<centric-button type="outlined-theme" (click)="suspendSupplier()">{{
 					'general.button.suspendSupplier' | translate
 				}}</centric-button>
 			</ng-container>
 			<ng-template #editableForm>
-				<centric-button type="button-theme" class="pointer" [disabled]="true" (click)="resetChanges()">{{
-					'general.button.reset' | translate
-				}}</centric-button>
 				<centric-button [disabled]="shouldDisableFinishButton()" class="pointer" (click)="saveChanges()">{{
-					'general.button.saveChanges' | translate
+					actionButtonText | translate
 				}}</centric-button>
 			</ng-template>
 		</div>

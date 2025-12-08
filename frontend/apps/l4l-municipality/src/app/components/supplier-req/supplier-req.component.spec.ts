@@ -13,7 +13,7 @@ import {
 	TableColumn,
 } from '@frontend/common';
 import { WindmillModule } from '@frontend/common-ui';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { of } from 'rxjs';
 
 import { GetSuppliersDto } from '../../_models/get-suppliers-dto.model';
@@ -43,6 +43,21 @@ describe('SupplierReqComponent', () => {
 	const sampleSuppliers: SupplierViewDto[] = MunicipalityMockUtil.createSuppliersArray(12);
 
 	beforeEach(async () => {
+		global.IntersectionObserver = class {
+			constructor() {
+				// mock constructor
+			}
+			observe() {
+				// mock observe
+			}
+			unobserve() {
+				// mock unobserve
+			}
+			disconnect() {
+				// mock disconnect
+			}
+		} as any;
+
 		supplierProfileService = {
 			getSupplierProfile: jest.fn(),
 			supplierProfileInformation: {} as any,
@@ -219,7 +234,7 @@ describe('SupplierReqComponent', () => {
 			data: {
 				mainContent: 'general.success.title',
 				secondContent: 'general.success.text',
-				acceptButtonType: 'button-success',
+				acceptButtonType: 'high-emphasis-success',
 				acceptButtonText: 'register.continue',
 			},
 		});
@@ -285,11 +300,25 @@ describe('SupplierReqComponent', () => {
 			data: {
 				mainContent: 'general.success.title',
 				secondContent: 'general.success.text',
-				acceptButtonType: 'button-success',
+				acceptButtonType: 'high-emphasis-success',
 				acceptButtonText: 'register.continue',
 			},
 		});
 
 		expect(updateSuppliersListsSpy).toHaveBeenCalled();
+	});
+
+	it('should NOT update suppliers lists when the approval dialog closes without a response', () => {
+		const dialogRefMock = {
+			afterClosed: () => of(null),
+		};
+
+		const messageSpy = jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
+		const updateSuppliersListsSpy = jest.spyOn(component as any, 'updateSuppliersLists');
+
+		component['openSupplierReviewPopup']();
+
+		expect(messageSpy).toHaveBeenCalled();
+		expect(updateSuppliersListsSpy).not.toHaveBeenCalled();
 	});
 });

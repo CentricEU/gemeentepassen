@@ -6,7 +6,6 @@ import { Observable } from 'rxjs/internal/Observable';
 import { GetSuppliersDto } from '../_models/get-suppliers-dto.model';
 import { InvitationDto } from '../_models/invitation-dto.model';
 import { InviteSuppliersDto } from '../_models/invite-suppliers-dto.model';
-import { RejectSupplierDto } from '../_models/reject-supplier-dto.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -21,10 +20,6 @@ export class MunicipalitySupplierService {
 
 	public approveSupplier(supplierId: string): Observable<void> {
 		return this.httpClient.put<void>(`${this.environment.apiPath}/suppliers/approve/${supplierId}`, null);
-	}
-
-	public rejectSupplier(rejectSupplierDto: RejectSupplierDto): Observable<void> {
-		return this.httpClient.post<void>(`${this.environment.apiPath}/suppliers/reject`, rejectSupplierDto);
 	}
 
 	public getSuppliers(getSuppliersDto: GetSuppliersDto): Observable<SupplierViewDto[]> {

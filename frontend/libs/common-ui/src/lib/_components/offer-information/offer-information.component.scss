@@ -1,4 +1,4 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
 
 :host {
 	::ng-deep {
@@ -13,13 +13,13 @@
 }
 
 .button-style {
-	@include flex(row, flex-start, center);
+	@include mixins.flex(row, flex-start, center);
 	gap: 16px;
 	padding-bottom: 16px;
 }
 
 .validity {
-	@include flex(row, flex-start, center);
+	@include mixins.flex(row, flex-start, center);
 	gap: 32px;
 }
 

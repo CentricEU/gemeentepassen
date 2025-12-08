@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { AuthService, MAP_DEFAULTS, SupplierForMapViewDto, UserInfo } from '@frontend/common';
 import { Feature, Map, View } from 'ol';
 import { defaults as defaultControls, Zoom } from 'ol/control';
@@ -18,21 +18,29 @@ import { MunicipalitySupplierService } from '../../_services/suppliers.service';
 	selector: 'frontend-suppliers-map',
 	templateUrl: './suppliers-map.component.html',
 	styleUrls: ['./suppliers-map.component.scss'],
+	standalone: false,
 })
-export class SuppliersMapComponent implements OnInit {
+export class SuppliersMapComponent implements OnChanges {
+	@Input() public showMap: boolean;
 	public map: Map;
 	public showEmptyState = false;
+
+	private mapInitialized = false;
 
 	constructor(
 		private supplierService: MunicipalitySupplierService,
 		private authService: AuthService,
 	) {}
 
-	public ngOnInit(): void {
+	public ngOnChanges(): void {
 		this.initializeSuppliersData();
 	}
 
 	private initializeSuppliersData(): void {
+		if (!this.showMap || this.mapInitialized) {
+			return;
+		}
+
 		const tenantId = this.authService.extractSupplierInformation(UserInfo.TenantId);
 		if (!tenantId) {
 			return;
@@ -63,6 +71,7 @@ export class SuppliersMapComponent implements OnInit {
 	}
 
 	private initializeMap(data: SupplierForMapViewDto[]): void {
+		this.mapInitialized = true;
 		if (!data.length) {
 			this.setUserLocationAsDefault();
 			return;
@@ -78,6 +87,7 @@ export class SuppliersMapComponent implements OnInit {
 	}
 
 	private setUserLocationAsDefault(): void {
+		this.mapInitialized = true;
 		if (!navigator.geolocation) {
 			this.showEmptyState = true;
 			return;

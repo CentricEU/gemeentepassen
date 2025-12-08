@@ -49,7 +49,7 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "is_active")
+    @Column(name = "is_active") // indicates if the citizen user has "removed" their account
     private boolean isActive;
 
     @Column(name = "is_approved")

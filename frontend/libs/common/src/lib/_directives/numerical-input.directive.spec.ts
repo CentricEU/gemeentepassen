@@ -1,14 +1,24 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, ComponentFixtureAutoDetect, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 
 import { NumericInputDirective } from './numerical-input.directive';
 
 @Component({
-	template: `<input frontendNumericalInput formControlName="numericInput" />`,
+	standalone: false,
+	imports: [ReactiveFormsModule, NumericInputDirective],
+	template: `
+		<form [formGroup]="form">
+			<input frontendNumericalInput formControlName="numericInput" />
+		</form>
+	`,
 })
-class TestComponent {}
+class TestComponent {
+	form = new FormGroup({
+		numericInput: new FormControl(''),
+	});
+}
 class MockClipboardEvent extends Event {
 	clipboardData: {
 		getData: (format: string) => string;
@@ -32,7 +42,7 @@ describe('NumericInputDirective', () => {
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			declarations: [NumericInputDirective, TestComponent],
+			declarations: [TestComponent, NumericInputDirective],
 			imports: [FormsModule, ReactiveFormsModule],
 			providers: [{ provide: ComponentFixtureAutoDetect, useValue: true }],
 		});
@@ -62,5 +72,28 @@ describe('NumericInputDirective', () => {
 		pasteEvent.clipboardData.getData = () => 'abc';
 		inputElement.dispatchEvent(pasteEvent);
 		expect(inputElement.value).toBe('');
+	});
+
+	it('should prevent input if resulting value does not match numerical regex', () => {
+		fixture.componentInstance.form.get('numericInput')?.setValue('123');
+		fixture.detectChanges();
+
+		const event = new KeyboardEvent('keydown', { key: 'a' });
+		const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+		inputElement.dispatchEvent(event);
+
+		expect(preventDefaultSpy).toHaveBeenCalled();
+	});
+	it('should allow input if resulting value matches numerical regex', () => {
+		fixture.componentInstance.form.get('numericInput')?.setValue('123');
+		fixture.detectChanges();
+
+		const event = new KeyboardEvent('keydown', { key: '4' });
+		const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
+
+		inputElement.dispatchEvent(event);
+
+		expect(preventDefaultSpy).not.toHaveBeenCalled();
 	});
 });

@@ -30,6 +30,21 @@ describe('ActiveSuppliersComponent', () => {
 	const sampleSuppliers: SupplierViewDto[] = MunicipalityMockUtil.createSuppliersArray(12);
 
 	beforeEach(async () => {
+		global.IntersectionObserver = class {
+			constructor() {
+				// mock constructor
+			}
+			observe() {
+				// mock observe
+			}
+			unobserve() {
+				// mock unobserve
+			}
+			disconnect() {
+				// mock disconnect
+			}
+		} as any;
+
 		supplierServiceSpy = {
 			getSuppliers: jest.fn(),
 		};
@@ -89,7 +104,6 @@ describe('ActiveSuppliersComponent', () => {
 	it('should initialize columns', () => {
 		component.initializeColumns();
 		const expectedColumns: TableColumn[] = [
-			new TableColumn('checkbox', 'checkbox', 'checkbox', true, true, ColumnDataType.DEFAULT, true),
 			new TableColumn('general.status', 'status', 'status', true, true, ColumnDataType.STATUS),
 			new TableColumn('general.name', 'name', 'companyName', true, true),
 			new TableColumn('general.category', 'category', 'category', true),

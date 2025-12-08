@@ -1,1 +1,26 @@
-@import '../../../../libs/shared-assets/_styles/routing-container';
+@use '../../../../libs/shared-assets/_styles/routing-container';
+@use '../../../../libs/shared-assets/_styles/mixins' as mixins;
+
+:host {
+    .cashier-container {
+        @include mixins.flex(column);
+        overflow: auto;
+        height: 100%;
+
+        .cashier-offers {
+            min-height: calc(100% - 80px);
+            padding: 16px;
+
+            ::ng-deep {
+                .validation-container {
+                    padding-top: 32px;
+                }
+
+                frontend-no-data img {
+                    height: 36vh;
+                }
+
+            }
+        }
+    }
+}

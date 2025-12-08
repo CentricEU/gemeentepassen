@@ -8,6 +8,8 @@ import { WorkingHoursEditComponent } from '../working-hours-edit/working-hours-e
 @Component({
 	selector: 'frontend-working-hours-dialog',
 	templateUrl: './working-hours-dialog.component.html',
+	styleUrls: ['./working-hours-dialog.component.scss'],
+	standalone: false,
 })
 export class WorkingHoursDialogComponent implements AfterViewInit {
 	@ViewChild('workingHoursEdit') workingHoursEdit: WorkingHoursEditComponent;

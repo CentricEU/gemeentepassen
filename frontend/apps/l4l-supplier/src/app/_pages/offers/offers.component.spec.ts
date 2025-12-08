@@ -2,28 +2,24 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import {
+	ActionButtonIcons,
 	ActionButtons,
+	BenefitDto,
 	BreadcrumbService,
 	ColumnDataType,
 	FilterColumnKey,
 	FilterCriteria,
 	GenericStatusEnum,
-	GrantDto,
-	GrantHolder,
 	OfferTableDto,
 	Page,
 	PaginatedData,
+	TableActionButton,
 	TableColumn,
 	TableFilterColumn,
 } from '@frontend/common';
-import {
-	ChipRemainingDialogComponent,
-	CustomDialogComponent,
-	TableComponent,
-	WindmillModule,
-} from '@frontend/common-ui';
+import { CustomDialogComponent, TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { of } from 'rxjs';
 
 import { CreateOfferComponent } from '../../_components/create-offer/create-offer.component';
@@ -46,7 +42,7 @@ describe('OffersComponent', () => {
 	let breadcrumbService: BreadcrumbService;
 	let dropdownDataServiceSpy: any;
 	let formBuilder: FormBuilder;
-	let mockGrants: GrantDto[];
+	let mockBenefits: BenefitDto[];
 	let mockOfferRejectionReason: OfferRejectionReasonDto;
 	let breadcrumbServiceSpy: any;
 	let activatedRouteMock: any;
@@ -58,7 +54,7 @@ describe('OffersComponent', () => {
 			statusFilter: new FormControl(GenericStatusEnum.ACTIVE),
 			citizenOfferTypeFilter: new FormControl('CITIZEN_WITH_PASS'),
 			offerTypeFilter: new FormControl(0),
-			grantsFilter: new FormControl('id'),
+			benefitFilter: new FormControl('id'),
 			validityFilter: new FormControl(''),
 			actionsFilter: new FormControl(''),
 		});
@@ -78,7 +74,6 @@ describe('OffersComponent', () => {
 			getOffers: jest.fn(),
 			countOffers: jest.fn(),
 			deleteOffers: jest.fn(),
-			getGrants: jest.fn(),
 			getFilteredOffers: jest.fn(),
 			countFilteredOffers: jest.fn().mockReturnValue(of(10)),
 			getOfferRejectionReason: jest.fn(),
@@ -95,9 +90,23 @@ describe('OffersComponent', () => {
 
 		mockOfferRejectionReason = new OfferRejectionReasonDto('offerId', 'rejected title', 'reason');
 
-		mockGrants = [
-			new GrantDto('id1', 'title', 'desc', 123, GrantHolder.PASS_CHILD, new Date(), new Date()),
-			new GrantDto('id2', 'title', 'desc', 123, GrantHolder.PASS_CHILD, new Date(), new Date()),
+		mockBenefits = [
+			new BenefitDto(
+				'Benefit Name 1',
+				'Benefit Description',
+				new Date('2023-01-01'),
+				new Date('2023-12-31'),
+				[],
+				10,
+			),
+			new BenefitDto(
+				'Benefit Name 2',
+				'Benefit Description',
+				new Date('2023-01-01'),
+				new Date('2023-12-31'),
+				[],
+				20,
+			),
 		];
 
 		global.structuredClone = jest.fn((val) => {
@@ -127,7 +136,7 @@ describe('OffersComponent', () => {
 							statusFilter: new FormControl(GenericStatusEnum.ACTIVE),
 							citizenOfferTypeFilter: new FormControl('CITIZEN_WITH_PASS'),
 							offerTypeFilter: new FormControl(0),
-							grantsFilter: new FormControl('id'),
+							benefitFilter: new FormControl('id'),
 							validityFilter: new FormControl(''),
 							actionsFilter: new FormControl(''),
 						}),
@@ -153,7 +162,7 @@ describe('OffersComponent', () => {
 			statuses: [],
 			offerTypes: [],
 		};
-		component.availableGrants = [];
+		component.availableBenefits = [];
 		component.offersTable = new TableComponent<OfferTableDto>(dialogService);
 
 		fixture.detectChanges();
@@ -190,7 +199,7 @@ describe('OffersComponent', () => {
 				throw new Error('Failed to open modal');
 			});
 
-			expect(() => component.openCreateOfferModal()).toThrowError('Failed to open modal');
+			expect(() => component.openCreateOfferModal()).toThrow('Failed to open modal');
 		});
 	});
 
@@ -266,17 +275,16 @@ describe('OffersComponent', () => {
 				new TableColumn('checkbox', 'checkbox', 'checkbox', true, true, ColumnDataType.DEFAULT, true),
 				new TableColumn('general.status', 'status', 'status', true, true, ColumnDataType.STATUS),
 				new TableColumn('offer.title', 'title', 'title', true, true),
+				new TableColumn('offer.typeOfOffer', 'offerType', 'offerType', true, false, ColumnDataType.TRANSLATION),
 				new TableColumn(
-					'offer.targetAudience',
-					'citizenOfferType',
-					'citizenOfferType',
+					'general.acceptedBenefit',
+					'benefitName',
+					'benefitName',
 					true,
 					false,
-					ColumnDataType.TRANSLATION,
+					ColumnDataType.DEFAULT,
 				),
-				new TableColumn('offer.typeOfOffer', 'offerType', 'offerType', true, false, ColumnDataType.TRANSLATION),
-				new TableColumn('general.acceptedGrants', 'grants', 'grants', true, false, ColumnDataType.CHIPS),
-				new TableColumn('offer.validity', 'validity', 'validity', true, false),
+				new TableColumn('genericFields.validity.label', 'validity', 'validity', true, false),
 				new TableColumn('general.actions', 'actions', 'actions', true, true, ColumnDataType.DEFAULT, true),
 			];
 
@@ -331,6 +339,15 @@ describe('OffersComponent', () => {
 					GenericStatusEnum.EXPIRED,
 					'test',
 					'supplierId',
+					new BenefitDto(
+						'Benefit Name',
+						'Benefit Description',
+						new Date('2023-01-01'),
+						new Date('2023-12-31'),
+						['id1'],
+						100,
+					),
+					'Benefit Name',
 				),
 				new OfferTableDto(
 					'1',
@@ -342,6 +359,15 @@ describe('OffersComponent', () => {
 					GenericStatusEnum.PENDING,
 					'test',
 					'supplierId',
+					new BenefitDto(
+						'Benefit Name',
+						'Benefit Description',
+						new Date('2023-01-01'),
+						new Date('2023-12-31'),
+						['id1'],
+						100,
+					),
+					'Benefit Name',
 				),
 			];
 			const pages: Page<OfferTableDto>[] = Array.from({ length: 5 }, () => new Page([]));
@@ -351,10 +377,6 @@ describe('OffersComponent', () => {
 			expect(component.paginatedData.pages[0].values.length).toEqual(testData.length);
 			expect(component.offersTable.currentDisplayedPage.length).toEqual(testData.length);
 		});
-	});
-
-	it('should return AssignGrantComponent as the type of modal', () => {
-		expect(component.typeOfModal).toBe(ChipRemainingDialogComponent);
 	});
 
 	it('should return the correct ids of the selected offers', () => {
@@ -369,6 +391,15 @@ describe('OffersComponent', () => {
 				GenericStatusEnum.EXPIRED,
 				'test',
 				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+				),
+				'Benefit Name',
 			),
 			new OfferTableDto(
 				'3',
@@ -380,6 +411,15 @@ describe('OffersComponent', () => {
 				GenericStatusEnum.PENDING,
 				'test',
 				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+				),
+				'Benefit Name',
 			),
 		];
 		testData[1].selected = true;
@@ -419,6 +459,15 @@ describe('OffersComponent', () => {
 				GenericStatusEnum.ACTIVE,
 				'test',
 				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+				),
+				'Benefit Name',
 			);
 
 			jest.spyOn(component, 'openDeleteDialog');
@@ -439,6 +488,15 @@ describe('OffersComponent', () => {
 				GenericStatusEnum.ACTIVE,
 				'test',
 				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+				),
+				'Benefit Name',
 			);
 
 			jest.spyOn(component as any, 'openReactivateOfferModal');
@@ -459,6 +517,15 @@ describe('OffersComponent', () => {
 				GenericStatusEnum.ACTIVE,
 				'test',
 				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+				),
+				'Benefit Name',
 			);
 
 			jest.spyOn(component, 'openDeleteDialog');
@@ -482,11 +549,11 @@ describe('OffersComponent', () => {
 					cancelButtonText: 'general.button.cancel',
 					acceptButtonText: 'general.button.delete',
 					disableClosing: false,
-					modalTypeClass: 'alert',
+					modalTypeClass: 'danger',
 					fileName: '',
 					tooltipColor: 'danger',
-					acceptButtonType: 'button-alert',
-					cancelButtonType: 'button-link-dark',
+					acceptButtonType: 'high-emphasis-danger',
+					cancelButtonType: 'ghost-greyscale',
 					comments: '',
 					optionalText: {
 						comments: '-',
@@ -518,11 +585,11 @@ describe('OffersComponent', () => {
 					cancelButtonText: 'general.button.cancel',
 					acceptButtonText: 'general.button.delete',
 					disableClosing: false,
-					modalTypeClass: 'alert',
+					modalTypeClass: 'danger',
 					fileName: '',
 					tooltipColor: 'danger',
-					acceptButtonType: 'button-alert',
-					cancelButtonType: 'button-link-dark',
+					acceptButtonType: 'high-emphasis-danger',
+					cancelButtonType: 'ghost-greyscale',
 					comments: '',
 					optionalText: {
 						comments: '-',
@@ -612,6 +679,15 @@ describe('OffersComponent', () => {
 					GenericStatusEnum.EXPIRED,
 					'test',
 					'supplierId',
+					new BenefitDto(
+						'Benefit Name',
+						'Benefit Description',
+						new Date('2023-01-01'),
+						new Date('2023-12-31'),
+						['id1'],
+						100,
+					),
+					'Benefit Name',
 				),
 			];
 
@@ -673,7 +749,7 @@ describe('OffersComponent', () => {
 			const filters: FilterCriteria = {
 				statusFilter: GenericStatusEnum.ACTIVE,
 				offerTypeFilter: 1,
-				grantsFilter: 'grant1',
+				benefitFilter: 'grant1',
 			};
 
 			const filterDto = new FilterOfferRequestDto(GenericStatusEnum.ACTIVE, 1, 'grant1');
@@ -740,7 +816,7 @@ describe('OffersComponent', () => {
 	describe('initializeColumns', () => {
 		it('should initialize all columns', () => {
 			component.initializeColumns();
-			expect(component.allColumns.length).toBe(8);
+			expect(component.allColumns.length).toBe(7);
 		});
 	});
 
@@ -780,7 +856,7 @@ describe('OffersComponent', () => {
 	it('should initialize allFilterColumns correctly', () => {
 		component['initFilterColumnsData']();
 
-		expect(component.allFilterColumns).toHaveLength(8);
+		expect(component.allFilterColumns).toHaveLength(7);
 
 		expect(component.allFilterColumns[0].filterName).toEqual(FilterColumnKey.CHECKBOX);
 		expect(component.allFilterColumns[1].filterName).toEqual(FilterColumnKey.STATUS);
@@ -825,7 +901,7 @@ describe('OffersComponent', () => {
 			const mockFilters: FilterCriteria = {
 				statusFilter: GenericStatusEnum.ACTIVE,
 				offerTypeFilter: 1,
-				grantsFilter: '123',
+				benefitFilter: '123',
 			};
 
 			const result = component['createFilterOfferRequestDto'](mockFilters);
@@ -833,14 +909,14 @@ describe('OffersComponent', () => {
 			expect(result).toBeTruthy();
 			expect(result.status).toEqual(GenericStatusEnum.ACTIVE);
 			expect(result.offerTypeId).toEqual(1);
-			expect(result.grantId).toEqual('123');
+			expect(result.benefitId).toEqual('123');
 		});
 
 		it('should handle undefined or null values gracefully', () => {
 			const mockFilters: FilterCriteria = {
 				statusFilter: undefined,
 				offerTypeFilter: null as any,
-				grantsFilter: undefined,
+				benefitFilter: undefined,
 			};
 
 			const result = component['createFilterOfferRequestDto'](mockFilters);
@@ -848,23 +924,23 @@ describe('OffersComponent', () => {
 			expect(result).toBeTruthy();
 			expect(result.status).toBeUndefined();
 			expect(result.offerTypeId).toBeNull();
-			expect(result.grantId).toBeUndefined();
+			expect(result.benefitId).toBeUndefined();
 		});
 	});
 
-	describe('initializeGrants', () => {
-		it('should initialize availableGrants correctly', () => {
-			component['initializeGrants'](mockGrants);
+	describe('initializeBenefits', () => {
+		it('should initialize availableBenefits correctly', () => {
+			component['initializeBenefits'](mockBenefits);
 
-			expect(component.availableGrants.length).toEqual(2);
-			expect(component.availableGrants[0].key).toEqual('id1');
-			expect(component.availableGrants[0].value).toEqual('title');
+			expect(component.availableBenefits.length).toEqual(2);
+			expect(component.availableBenefits[0].key).toEqual('');
+			expect(component.availableBenefits[0].value).toEqual('Benefit Name 1');
 		});
 
 		it('should handle empty data gracefully', () => {
-			component['initializeGrants']([]);
+			component['initializeBenefits']([]);
 
-			expect(component.availableGrants).toEqual([]);
+			expect(component.availableBenefits).toEqual([]);
 		});
 	});
 
@@ -895,8 +971,8 @@ describe('OffersComponent', () => {
 		});
 	});
 
-	describe('initOfferTypeAndGrants', () => {
-		it('should initialize dropdown data and grants correctly', () => {
+	describe('initOfferTypeAndBenefits', () => {
+		it('should initialize dropdown data and benefits correctly', () => {
 			const mockData = [
 				{
 					offerTypes: [
@@ -907,51 +983,65 @@ describe('OffersComponent', () => {
 					targets: [{ value: 'Target A' }, { value: 'Target B' }],
 				},
 				[
-					{ id: '1', title: 'Grant 1' },
-					{ id: '2', title: 'Grant 2' },
+					{ id: '1', name: 'Benefit 1' },
+					{ id: '2', name: 'Benefit 2' },
 				],
 			];
 
 			jest.spyOn(component as any, 'getRequestsObservable').mockReturnValue(of(mockData));
 
-			component['initOfferTypeAndGrants']();
+			component['initOfferTypeAndBenefits']();
 
 			expect(component.dropdownsData.offerTypes.length).toEqual(2);
-			expect(component.availableGrants.length).toEqual(2);
+			expect(component.availableBenefits.length).toEqual(2);
 		});
 
 		it('should handle undefined data from observable gracefully', () => {
 			jest.spyOn(component as any, 'getRequestsObservable').mockReturnValue(of(undefined));
 
-			component['initOfferTypeAndGrants']();
+			component['initOfferTypeAndBenefits']();
 
 			expect(component.dropdownsData).toEqual({ offerTypes: [], statuses: [] });
-			expect(component.availableGrants.length).toEqual(0);
+			expect(component.availableBenefits.length).toEqual(0);
 		});
 	});
 
-	it('should initialize availableGrants when data is an array', () => {
-		const mockData: GrantDto[] = [
-			new GrantDto('id1', 'title', 'desc', 123, GrantHolder.PASS_CHILD, new Date(), new Date()),
-			new GrantDto('id2', 'title', 'desc', 123, GrantHolder.PASS_CHILD, new Date(), new Date()),
+	it('should initialize availableBenefits when data is an array', () => {
+		const mockData: BenefitDto[] = [
+			new BenefitDto(
+				'Benefit Name 1',
+				'Benefit Description',
+				new Date('2023-01-01'),
+				new Date('2023-12-31'),
+				['id1'],
+				100,
+			),
+			new BenefitDto(
+				'Benefit Name 2',
+				'Benefit Description',
+				new Date('2023-01-01'),
+				new Date('2023-12-31'),
+				['id2'],
+				100,
+			),
 		];
 
-		jest.spyOn(component as any, 'convertGrantsToEnumValueDto').mockReturnValue([...mockData]);
+		jest.spyOn(component as any, 'convertBenefitsToEnumValueDto').mockReturnValue([...mockData]);
 
-		component['initializeGrants'](mockData);
+		component['initializeBenefits'](mockData);
 
-		expect(component.availableGrants).toEqual([...mockData]);
+		expect(component.availableBenefits).toEqual([...mockData]);
 	});
 
 	it('should return early when data is not an array', () => {
 		const invalidData: any = 'invalid data';
 
-		jest.spyOn(component as any, 'convertGrantsToEnumValueDto');
+		jest.spyOn(component as any, 'convertBenefitsToEnumValueDto');
 
-		component['initializeGrants'](invalidData);
+		component['initializeBenefits'](invalidData);
 
-		expect(component.availableGrants).toEqual([]);
-		expect(component['convertGrantsToEnumValueDto']).not.toHaveBeenCalled();
+		expect(component.availableBenefits).toEqual([]);
+		expect(component['convertBenefitsToEnumValueDto']).not.toHaveBeenCalled();
 	});
 
 	it('should update listLength when countFilteredOffers is called', () => {
@@ -967,7 +1057,6 @@ describe('OffersComponent', () => {
 		component['countFilteredOffers']();
 
 		expect(offerService.countFilteredOffers).toHaveBeenCalledWith({
-			grantId: undefined,
 			offerTypeId: undefined,
 			status: GenericStatusEnum.ACTIVE,
 			targetType: undefined,
@@ -1013,17 +1102,16 @@ describe('OffersComponent', () => {
 			new TableColumn('checkbox', 'checkbox', 'checkbox', true, true, ColumnDataType.DEFAULT, true),
 			new TableColumn('general.status', 'status', 'status', true, true, ColumnDataType.STATUS),
 			new TableColumn('offer.title', 'title', 'title', true, true),
+			new TableColumn('offer.typeOfOffer', 'offerType', 'offerType', true, false, ColumnDataType.TRANSLATION),
 			new TableColumn(
-				'offer.targetAudience',
-				'citizenOfferType',
-				'citizenOfferType',
+				'general.acceptedBenefit',
+				'benefitName',
+				'benefitName',
 				true,
 				false,
-				ColumnDataType.TRANSLATION,
+				ColumnDataType.DEFAULT,
 			),
-			new TableColumn('offer.typeOfOffer', 'offerType', 'offerType', true, false, ColumnDataType.TRANSLATION),
-			new TableColumn('general.acceptedGrants', 'grants', 'grants', true, false, ColumnDataType.CHIPS),
-			new TableColumn('offer.validity', 'validity', 'validity', true, false),
+			new TableColumn('genericFields.validity.label', 'validity', 'validity', true, false),
 			new TableColumn('general.actions', 'actions', 'actions', true, true, ColumnDataType.DEFAULT, true),
 		];
 		expect(component.allColumns).toEqual(expectedColumns);
@@ -1036,13 +1124,13 @@ describe('OffersComponent', () => {
 			statusFilter: GenericStatusEnum.ACTIVE,
 			citizenOfferTypeFilter: 'CITIZEN',
 			offerTypeFilter: 0,
-			grantsFilter: 'id',
+			benefitFilter: 'id',
 		};
 
 		component.filterDto = new FilterOfferRequestDto(
 			mockFilterCriteria.statusFilter as GenericStatusEnum,
 			mockFilterCriteria.offerTypeFilter as number,
-			mockFilterCriteria.grantsFilter as string,
+			mockFilterCriteria.benefitFilter as string,
 		);
 
 		const mockFormGroup = new FormGroup({
@@ -1051,7 +1139,7 @@ describe('OffersComponent', () => {
 			statusFilter: new FormControl(mockFilterCriteria.statusFilter),
 			citizenOfferTypeFilter: new FormControl(mockFilterCriteria.citizenOfferTypeFilter),
 			offerTypeFilter: new FormControl(mockFilterCriteria.offerTypeFilter),
-			grantsFilter: new FormControl(mockFilterCriteria.grantsFilter),
+			benefitFilter: new FormControl(mockFilterCriteria.benefitFilter),
 		});
 
 		const testData = [
@@ -1065,6 +1153,15 @@ describe('OffersComponent', () => {
 				GenericStatusEnum.EXPIRED,
 				'test',
 				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+				),
+				'Benefit Name',
 			),
 			new OfferTableDto(
 				'3',
@@ -1076,6 +1173,15 @@ describe('OffersComponent', () => {
 				GenericStatusEnum.PENDING,
 				'test',
 				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+				),
+				'Benefit Name',
 			),
 		];
 		testData[1].selected = true;
@@ -1124,9 +1230,9 @@ describe('OffersComponent', () => {
 				autoFocus: true,
 				data: {
 					acceptButtonText: 'general.button.applyAgain',
-					acceptButtonType: 'button-success',
+					acceptButtonType: 'high-emphasis-success',
 					cancelButtonText: 'general.button.cancel',
-					cancelButtonType: 'button-link-dark',
+					cancelButtonType: 'ghost-greyscale',
 					comments: '',
 					disableClosing: false,
 					fileName: 'rejected.svg',
@@ -1190,7 +1296,7 @@ describe('OffersComponent', () => {
 		const filters: FilterCriteria = {
 			statusFilter: GenericStatusEnum.ACTIVE,
 			offerTypeFilter: 1,
-			grantsFilter: '123',
+			benefitFilter: '123',
 		};
 
 		component.offersTable = new TableComponent<OfferTableDto>(dialogService);
@@ -1207,6 +1313,15 @@ describe('OffersComponent', () => {
 				GenericStatusEnum.EXPIRED,
 				'test',
 				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+				),
+				'Benefit Name',
 			),
 			new OfferTableDto(
 				'3',
@@ -1218,6 +1333,15 @@ describe('OffersComponent', () => {
 				GenericStatusEnum.PENDING,
 				'test',
 				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+				),
+				'Benefit Name',
 			),
 		];
 		component.offersTable.currentDisplayedPage = testData;
@@ -1227,5 +1351,50 @@ describe('OffersComponent', () => {
 		component.onApplyFilters(filters, true);
 
 		expect(component.paginatedData.currentIndex).toBe(0);
+	});
+
+	describe('createActionButtons', () => {
+		it('should return the correct action buttons for ACTIVE status', () => {
+			const result = component['createActionButtons'](GenericStatusEnum.ACTIVE);
+
+			expect(result).toEqual([
+				new TableActionButton(ActionButtons.minusCircle, '', false, '', ActionButtonIcons.uncontained),
+			]);
+		});
+
+		it('should return the correct action buttons for EXPIRED status', () => {
+			const result = component['createActionButtons'](GenericStatusEnum.EXPIRED);
+
+			expect(result).toEqual([
+				new TableActionButton(
+					ActionButtons.trashIcon,
+					'actionButtons.delete',
+					false,
+					'',
+					ActionButtonIcons.uncontained,
+				),
+				new TableActionButton(
+					ActionButtons.circlePlay,
+					'actionButtons.reactivate',
+					false,
+					'',
+					ActionButtonIcons.uncontained,
+				),
+			]);
+		});
+
+		it('should return the correct action buttons for other statuses', () => {
+			const result = component['createActionButtons'](GenericStatusEnum.PENDING);
+
+			expect(result).toEqual([
+				new TableActionButton(
+					ActionButtons.trashIcon,
+					'actionButtons.delete',
+					false,
+					'',
+					ActionButtonIcons.uncontained,
+				),
+			]);
+		});
 	});
 });

@@ -6,18 +6,18 @@ import { Observable } from 'rxjs';
 import { CodeValidationDto } from '../../models/code-validation.model';
 
 @Injectable({
-	providedIn: 'root'
+	providedIn: 'root',
 })
 export class DiscountCodeService {
 	constructor(
 		@Inject('env') private environment: Environment,
-		private httpClient: HttpClient
+		private httpClient: HttpClient,
 	) {}
 
 	public validateCode(codeValidation: CodeValidationDto): Observable<CodeValidationDto> {
 		return this.httpClient.post<CodeValidationDto>(
 			`${this.environment.apiPath}/discount-codes/validate`,
-			codeValidation
+			codeValidation,
 		);
 	}
 }

@@ -87,7 +87,7 @@
 	</form>
 </section>
 <section mat-dialog-actions>
-	<centric-button ariaAttributes type="button-link-dark" (click)="close()">
+	<centric-button ariaAttributes type="ghost-greyscale" (click)="close()">
 		{{ 'general.button.cancel' | translate }}
 	</centric-button>
 	<centric-button ariaAttributes (click)="createUser()" [disabled]="!createUserForm.valid">

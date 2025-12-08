@@ -10,8 +10,17 @@
 	<centric-card [shadow]="true" class="transactions-section">
 		<centric-card-header>
 			<div centric-card-title>{{ 'dashboard.transactions.title' | translate }}</div>
+			<windmill-combo-button
+				[menuItems]="dashboardServiceInstance.dropdownData"
+				[contentType]="'dropdown'"
+				[dropdownButtonText]="activeTimePeriod | translate"
+				[dropdownType]="'uncontained-greyscale'"
+				(menuItemSelected)="onTimePeriodChange($event)">
+			</windmill-combo-button>
 		</centric-card-header>
-		<div centric-card-content></div>
+		<div centric-card-content>
+			<frontend-transaction-chart #transactionChart> </frontend-transaction-chart>
+		</div>
 	</centric-card>
 </div>
 
@@ -20,6 +29,6 @@
 		<div centric-card-title>{{ 'dashboard.map.title' | translate }}</div>
 	</centric-card-header>
 	<div centric-card-content>
-		<frontend-suppliers-map></frontend-suppliers-map>
+		<frontend-suppliers-map [showMap]="isApproved"></frontend-suppliers-map>
 	</div>
 </centric-card>

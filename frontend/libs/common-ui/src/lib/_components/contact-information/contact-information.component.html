@@ -168,7 +168,7 @@
 
 	<centric-form-item>
 		<centric-form-label>{{ 'contactInformation.website' | translate }}</centric-form-label>
-		<centric-form-control frontendRequiredInput>
+		<centric-form-control>
 			<windmill-input
 				ariaAttributes
 				formControlName="website"
@@ -179,11 +179,6 @@
 				[ariaLabelClearIcon]="'contactInformation.websitePlaceholder'"
 				[ariaLabelTranslation]="'contactInformation.websitePlaceholder'"
 				[validationFunction]="validationFunctionError.bind(this, 'website', contactInformationForm)">
-				<ng-container errors *ngIf="hasFormControlRequiredErrors('website', contactInformationForm)">
-					<span class="centric-error-message">
-						{{ getErrorMessageContactFormInputs('website') }}
-					</span>
-				</ng-container>
 				<ng-container errors *ngIf="hasPatternError(contactInformationForm, 'website')">
 					<span class="centric-error-message">
 						{{ 'genericFields.website.invalidUrl' | translate }}

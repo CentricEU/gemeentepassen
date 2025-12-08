@@ -1,0 +1,13 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+
+:host {
+    .setup-profile-form {
+        display: flex;
+        column-gap: 20px;
+    }
+
+    .regular-form {
+        @include mixins.flex(column);
+        gap: 16px;
+    }
+}

@@ -1,157 +1,75 @@
-import DiscountCodeService from "../services/DiscountCodeService";
-import { trackPromise } from "react-promise-tracker";
-import { apiPath } from "../utils/constants/api";
-import { AUTH_HEADER } from "../utils/constants/headers";
+import DiscountCodeService from './DiscountCodeService';
+import api from '../utils/auth/api-interceptor';
+import { AUTH_HEADER } from '../utils/constants/headers';
+import { StatusCode } from '../utils/enums/statusCode.enum';
 
-jest.mock("react-promise-tracker", () => ({
-	trackPromise: jest.fn((promise) => promise),
-}));
+jest.mock('../utils/auth/api-interceptor');
+jest.mock('../utils/constants/headers');
 
-jest.mock("../utils/constants/headers", () => ({
-	AUTH_HEADER: jest.fn(),
-}));
-
-describe("DiscountCodeService", () => {
-	const mockOfferId = "12345";
-	const mockApiPath = `${apiPath}/discount-codes/${encodeURIComponent(
-		mockOfferId
-	)}`;
-
+describe('DiscountCodeService', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
 
-	it("should fetch discount code successfully", async () => {
-		const mockHeaders = { Authorization: "Bearer token" };
-		const mockResponse = { discountCode: "DISCOUNT2024" };
+	describe('getDiscountCode', () => {
+		it('should return discount code data when API call is successful', async () => {
+			const mockOfferId = '123';
+			const mockResponse = { data: { code: 'DISCOUNT123' }, status: StatusCode.Ok };
+			(AUTH_HEADER as jest.Mock).mockResolvedValue({ Authorization: 'Bearer token' });
+			(api.get as jest.Mock).mockResolvedValue(mockResponse);
 
-		(AUTH_HEADER as jest.Mock).mockResolvedValue(mockHeaders);
-		global.fetch = jest.fn(() =>
-			Promise.resolve({
-				ok: true,
-				json: () => Promise.resolve(mockResponse),
-			})
-		) as jest.Mock;
+			const result = await DiscountCodeService.getDiscountCode(mockOfferId);
 
-		const result = await DiscountCodeService.getDiscountCode(mockOfferId);
-
-		expect(AUTH_HEADER).toHaveBeenCalled();
-		expect(fetch).toHaveBeenCalledWith(mockApiPath, {
-			method: "GET",
-			headers: mockHeaders,
+			expect(AUTH_HEADER).toHaveBeenCalled();
+			expect(api.get).toHaveBeenCalledWith(`/discount-codes/${encodeURIComponent(mockOfferId)}`, {
+				method: 'GET',
+				headers: { Authorization: 'Bearer token' },
+			});
+			expect(result).toEqual(mockResponse.data);
 		});
-		expect(trackPromise).toHaveBeenCalled();
-		expect(result).toEqual(mockResponse);
+
+		it('should throw an error when API call fails', async () => {
+			const mockOfferId = '123';
+			const mockError = new Error('404');
+			(AUTH_HEADER as jest.Mock).mockResolvedValue({ Authorization: 'Bearer token' });
+			(api.get as jest.Mock).mockResolvedValue({ status: 404 });
+
+			await expect(DiscountCodeService.getDiscountCode(mockOfferId)).rejects.toThrow(mockError);
+
+			expect(AUTH_HEADER).toHaveBeenCalled();
+			expect(api.get).toHaveBeenCalledWith(`/discount-codes/${encodeURIComponent(mockOfferId)}`, {
+				method: 'GET',
+				headers: { Authorization: 'Bearer token' },
+			});
+		});
 	});
 
-	it("should throw an error if the response is not ok", async () => {
-		const mockHeaders = { Authorization: "Bearer token" };
+	describe('getAllDiscountCodes', () => {
+		it('should return all discount codes data when API call is successful', async () => {
+			const mockResponse = { data: [{ code: 'DISCOUNT123' }], status: StatusCode.Ok };
+			(AUTH_HEADER as jest.Mock).mockResolvedValue({ Authorization: 'Bearer token' });
+			(api.get as jest.Mock).mockResolvedValue(mockResponse);
 
-		(AUTH_HEADER as jest.Mock).mockResolvedValue(mockHeaders);
-		global.fetch = jest.fn(() =>
-			Promise.resolve({
-				ok: false,
-				status: 404,
-			})
-		) as jest.Mock;
+			const result = await DiscountCodeService.getAllDiscountCodes();
 
-		await expect(
-			DiscountCodeService.getDiscountCode(mockOfferId)
-		).rejects.toThrow("404");
-
-		expect(AUTH_HEADER).toHaveBeenCalled();
-		expect(fetch).toHaveBeenCalledWith(mockApiPath, {
-			method: "GET",
-			headers: mockHeaders,
+			expect(AUTH_HEADER).toHaveBeenCalled();
+			expect(api.get).toHaveBeenCalledWith('/discount-codes', {
+				headers: { Authorization: 'Bearer token' },
+			});
+			expect(result).toEqual(mockResponse.data);
 		});
-		expect(trackPromise).toHaveBeenCalled();
-	});
 
-	it("should throw an error if there is a network issue", async () => {
-		const mockHeaders = { Authorization: "Bearer token" };
-		const mockError = new Error("Network Error");
+		it('should throw an error when API call fails', async () => {
+			const mockError = new Error('Not Found');
+			(AUTH_HEADER as jest.Mock).mockResolvedValue({ Authorization: 'Bearer token' });
+			(api.get as jest.Mock).mockResolvedValue({ status: 404, statusText: 'Not Found' });
 
-		(AUTH_HEADER as jest.Mock).mockResolvedValue(mockHeaders);
-		global.fetch = jest.fn(() => Promise.reject(mockError)) as jest.Mock;
+			await expect(DiscountCodeService.getAllDiscountCodes()).rejects.toThrow(mockError);
 
-		await expect(
-			DiscountCodeService.getDiscountCode(mockOfferId)
-		).rejects.toThrow(mockError);
-
-		expect(AUTH_HEADER).toHaveBeenCalled();
-		expect(fetch).toHaveBeenCalledWith(mockApiPath, {
-			method: "GET",
-			headers: mockHeaders,
+			expect(AUTH_HEADER).toHaveBeenCalled();
+			expect(api.get).toHaveBeenCalledWith('/discount-codes', {
+				headers: { Authorization: 'Bearer token' },
+			});
 		});
-		expect(trackPromise).toHaveBeenCalled();
 	});
-
-	it("should fetch all discount codes successfully", async () => {
-		const mockHeaders = { Authorization: "Bearer token" };
-		const mockResponse = [
-			{ discountCode: "DISCOUNT2024" },
-			{ discountCode: "DISCOUNT2025" },
-		];
-
-		(AUTH_HEADER as jest.Mock).mockResolvedValue(mockHeaders);
-		global.fetch = jest.fn(() =>
-			Promise.resolve({
-				ok: true,
-				json: () => Promise.resolve(mockResponse),
-			})
-		) as jest.Mock;
-
-		const result = await DiscountCodeService.getAllDiscountCodes();
-
-		expect(AUTH_HEADER).toHaveBeenCalled();
-		expect(fetch).toHaveBeenCalledWith(`${apiPath}/discount-codes`, {
-			method: "GET",
-			headers: mockHeaders,
-		});
-		expect(trackPromise).toHaveBeenCalled();
-		expect(result).toEqual(mockResponse);
-	});
-
-	it("should throw an error if the response is not ok when fetching all discount codes", async () => {
-		const mockHeaders = { Authorization: "Bearer token" };
-
-		(AUTH_HEADER as jest.Mock).mockResolvedValue(mockHeaders);
-		global.fetch = jest.fn(() =>
-			Promise.resolve({
-				ok: false,
-				statusText: "Not Found",
-			})
-		) as jest.Mock;
-
-		await expect(DiscountCodeService.getAllDiscountCodes()).rejects.toThrow(
-			"Not Found"
-		);
-
-		expect(AUTH_HEADER).toHaveBeenCalled();
-		expect(fetch).toHaveBeenCalledWith(`${apiPath}/discount-codes`, {
-			method: "GET",
-			headers: mockHeaders,
-		});
-		expect(trackPromise).toHaveBeenCalled();
-	});
-
-	it("should throw an error if there is a network issue when fetching all discount codes", async () => {
-		const mockHeaders = { Authorization: "Bearer token" };
-		const mockError = new Error("Network Error");
-
-		(AUTH_HEADER as jest.Mock).mockResolvedValue(mockHeaders);
-		global.fetch = jest.fn(() => Promise.reject(mockError)) as jest.Mock;
-
-		await expect(DiscountCodeService.getAllDiscountCodes()).rejects.toThrow(
-			mockError
-		);
-
-		expect(AUTH_HEADER).toHaveBeenCalled();
-		expect(fetch).toHaveBeenCalledWith(`${apiPath}/discount-codes`, {
-			method: "GET",
-			headers: mockHeaders,
-		});
-		expect(trackPromise).toHaveBeenCalled();
-	});
-
 });

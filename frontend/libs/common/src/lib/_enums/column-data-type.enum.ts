@@ -5,4 +5,8 @@ export enum ColumnDataType {
 	CHIPS,
 	STATUS,
 	REGISTERED,
+	YES_NO,
+	PERCENTAGE,
+	FROM_CITIZEN_GROUP_AGE_ENUM,
+	DATE,
 }

@@ -1,7 +1,7 @@
-import { getJestProjects } from '@nx/jest';
+import { getJestProjectsAsync } from '@nx/jest';
 import "jest-canvas-mock";
 
-export default {
-  projects: getJestProjects(),
+export default async () => ({
+  projects: await getJestProjectsAsync(),
   setupFiles: ["jest-canvas-mock"]
-};
+});

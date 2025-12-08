@@ -5,26 +5,24 @@ import {
 	BreadcrumbService,
 	ColumnDataType,
 	commonRoutingConstants,
+	MonthYearEntry,
 	PaginatedData,
 	TableColumn,
 	TableFilterColumn,
+	TransactionData,
+	TransactionDateMenu,
 	TransactionTableDto,
 } from '@frontend/common';
 import { TableBaseComponent, TableComponent } from '@frontend/common-ui';
-import { TranslateService } from '@ngx-translate/core';
-import { DialogService, ToastrService } from '@windmill/ng-windmill';
 import { forkJoin, of } from 'rxjs';
 
-import { GenerateInvoiceComponent } from '../../_components/generate-invoice/generate-invoice.component';
-import { MonthYearEntry } from '../../models/month-year-entry.model';
-import { TransactionData } from '../../models/transaction-data.model';
-import { TransactionDateMenu } from '../../models/transaction-date-menu.model';
 import { TransactionService } from '../../services/transactions/transaction.service';
 
 @Component({
 	selector: 'frontend-transactions',
 	templateUrl: './transactions.component.html',
 	styleUrls: ['./transactions.component.scss'],
+	standalone: false,
 })
 export class TransactionsComponent extends TableBaseComponent implements OnInit, OnDestroy {
 	@ViewChild('transactionsTable', { static: false }) transactionsTable: TableComponent<TransactionTableDto>;
@@ -60,9 +58,6 @@ export class TransactionsComponent extends TableBaseComponent implements OnInit,
 		private breadcrumbService: BreadcrumbService,
 		private transactionsService: TransactionService,
 		private cdr: ChangeDetectorRef,
-		private readonly dialogService: DialogService,
-		private translateService: TranslateService,
-		private readonly toastrService: ToastrService,
 	) {
 		super();
 	}
@@ -81,30 +76,8 @@ export class TransactionsComponent extends TableBaseComponent implements OnInit,
 		console.log('Method not implemented');
 	}
 
-	public clearFilters(): void {
-		this.transactionsTable?.clearFilters();
-	}
-
 	public manageColumns(): void {
 		this.transactionsTable?.manageColumns();
-	}
-
-	public openGenerateInvoice(): void {
-		this.dialogService
-			.message(GenerateInvoiceComponent, {
-				width: '520px',
-				disableClose: false,
-				restoreFocus: true,
-				data: this.selectedDate,
-			})
-			?.afterClosed()
-			.subscribe((generated) => {
-				if (!generated) {
-					return;
-				}
-
-				this.showToaster();
-			});
 	}
 
 	public onSelectMonth(monthYearEntry: MonthYearEntry): void {
@@ -213,10 +186,9 @@ export class TransactionsComponent extends TableBaseComponent implements OnInit,
 
 	private initColumns(): void {
 		this.allColumns = [
-			new TableColumn('checkbox', 'checkbox', 'checkbox', true, true, ColumnDataType.DEFAULT, true),
 			new TableColumn('transactions.passholderNumber', 'passNumber', 'passNumber', true, true),
 			new TableColumn('transactions.citizenName', 'citizenName', 'citizenName', true, false),
-			new TableColumn('general.amount', 'amount', 'amount', true, true),
+			new TableColumn('general.amount', 'amount', 'amount', true, true, ColumnDataType.CURRENCY),
 			new TableColumn('general.date', 'createdDate', 'createdDate', true, false),
 			new TableColumn('general.time', 'createdTime', 'createdTime', true, false),
 		];
@@ -227,10 +199,5 @@ export class TransactionsComponent extends TableBaseComponent implements OnInit,
 			new Breadcrumb('general.pages.dashboard', ['']),
 			new Breadcrumb('general.pages.transactions', [commonRoutingConstants.transactions]),
 		]);
-	}
-
-	private showToaster(): void {
-		const toastText = this.translateService.instant('transactions.generateInvoice.success');
-		this.toastrService.success(toastText, '', { toastBackground: 'toast-light' });
 	}
 }

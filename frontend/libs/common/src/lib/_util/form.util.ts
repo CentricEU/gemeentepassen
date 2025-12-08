@@ -1,12 +1,16 @@
 import { AbstractControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
-import { CentricCounterMessages } from '@windmill/ng-windmill';
 
+import { TextAreaCounterResult } from '../_models/text-area-counter-result.model';
+import { CommonUtil } from './common-util';
 import { RegexUtil } from './regex-util';
 
 export class FormUtil {
 	public static nonZeroAmountValidator(control: AbstractControl): ValidationErrors | null {
 		return control.value > 0 || control.value === '' ? null : { nonZeroAmount: true };
+	}
+
+	public static nonMaxBenefitAmountValidator(controlValue: number, maxAmount: number): ValidationErrors {
+		return controlValue <= maxAmount ? {} : { nonMaxBenefitAmount: true };
 	}
 
 	public static hasPatternError(form: FormGroup, fieldName: string): boolean {
@@ -29,6 +33,12 @@ export class FormUtil {
 			control.touched &&
 			(control.value?.length === 0 || control.value === null)
 		);
+	}
+
+	public static hasControlErrorsAndTouched(controlName: string, form: FormGroup): boolean {
+		const control = form.get(controlName);
+
+		return !!(form && control?.errors && control.touched);
 	}
 
 	public static validationFunctionErrorMinFieldCompleted(
@@ -60,13 +70,18 @@ export class FormUtil {
 
 	public static validationFunctionError(controlName: string, form: FormGroup): boolean | undefined {
 		const formControl = form.get(controlName);
-		const isFormInvalid = FormUtil.isInvalidForm(formControl);
 
 		if (!formControl) {
 			return false;
 		}
 
+		const isFormInvalid = FormUtil.isInvalidForm(formControl);
+
 		return isFormInvalid;
+	}
+
+	public static validationNoSpaceFunctionError(control: AbstractControl): ValidationErrors | null {
+		return typeof control.value === 'string' && control.value.trim() === '' ? { required: true } : null;
 	}
 
 	public static genericValidationFunctionError(controlName: string, form: FormGroup): boolean {
@@ -219,21 +234,48 @@ export class FormUtil {
 	 * If the user clicks outside the input and the input has a value the outcome will also be false.
 	 * If the user clicks outisde and both inputs are empty the outcome will be true.
 	 */
-	public static shouldDisplayDoubleFieldValidityError(
+	public static shouldShowRequiredErrorForEitherFields(
 		form: FormGroup,
 		firstField: string,
 		secondField: string,
 		clickedOutsideField: boolean,
 	): boolean {
-		if (form?.controls[firstField].value || form?.controls[secondField].value) {
-			return false;
+		const isEmpty = (field: string) => {
+			const value = form?.get(field)?.value;
+			return value === '' || value === null || value === undefined;
+		};
+
+		const areBothFieldsEmpty = isEmpty(firstField) && isEmpty(secondField);
+
+		// Only show "required" error if both are empty and not failing the greater-than-zero rule
+		return areBothFieldsEmpty && clickedOutsideField;
+	}
+
+	/**
+	 * Validator to ensure at least one of the two fields is greater than 0.
+	 * Returns true if one field is 0 and the other is empty, or if both fields are 0.
+	 */
+	public static isValidIfAtLeastOneFieldIsZeroOrEmpty(
+		form: FormGroup,
+		firstField: string,
+		secondField: string,
+	): boolean {
+		const first = form.get(firstField)?.value;
+		const second = form.get(secondField)?.value;
+
+		const isEmpty = (val: string | null | undefined) => val === null || val === undefined || val === '';
+
+		// Case 1: both are 0
+		if (first === 0 && second === 0) {
+			return true;
 		}
 
-		return (
-			(FormUtil.genericValidationFunctionError(firstField, form) &&
-				FormUtil.genericValidationFunctionError(secondField, form)) ||
-			clickedOutsideField
-		);
+		// Case 2: one is 0 and the other is empty
+		if ((first === 0 && isEmpty(second)) || (second === 0 && isEmpty(first))) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -273,7 +315,7 @@ export class FormUtil {
 		const firstFieldValue = form?.controls[firstField].value;
 		const secondFieldValue = form?.controls[secondField].value;
 
-		if (!value || idControl?.value === '') {
+		if (!CommonUtil.hasValidValue(value) || idControl?.value === '') {
 			return;
 		}
 
@@ -360,10 +402,16 @@ export class FormUtil {
 		return today;
 	}
 
-	public static getTextAreaCounterMessages(translateService: TranslateService): CentricCounterMessages {
+	public static getTextAreaCounterData(input: string | number | null, maxLength: number): TextAreaCounterResult {
+		const textLength = input ? String(input).length : 0;
+		const isValid = textLength <= maxLength;
+		const count = isValid ? maxLength - textLength : textLength - maxLength;
+		const key = isValid ? 'general.label.charactersLeft' : 'general.label.charactersOverTheLimit';
+
 		return {
-			validLengthText: translateService.instant('general.label.charactersLeft'),
-			invalidLengthText: translateService.instant('general.label.charactersOverTheLimit'),
+			messageKey: key,
+			messageCount: count,
+			isOverLimit: !isValid,
 		};
 	}
 
@@ -383,5 +431,14 @@ export class FormUtil {
 		const seconds = String(now.getSeconds()).padStart(2, '0');
 
 		return `${month}/${day}/${year}, ${hours}:${minutes}:${seconds}`;
+	}
+
+	public static isControlInvalid(controlName: string, form: FormGroup): boolean {
+		const control = form.controls[controlName];
+		return control?.touched && !control.valid;
+	}
+
+	public static hasControlMinMaxErrors(controlName: string, form: FormGroup): boolean {
+		return form && (form.get(controlName)?.errors?.['max'] || form.get(controlName)?.errors?.['min']);
 	}
 }

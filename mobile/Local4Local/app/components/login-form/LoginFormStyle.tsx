@@ -11,7 +11,12 @@ const styles = StyleSheet.create({
 	bottomText: {
 		marginBottom: 12,
 		color: colors.BLACK
-	}
+	},
+	forgotPasswordContainer: {
+        alignItems: 'flex-end',
+        marginTop: -16,
+        marginBottom: 32
+    },
 });
 
 export default styles;

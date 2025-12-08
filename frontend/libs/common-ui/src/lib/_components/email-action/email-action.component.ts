@@ -1,9 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
 	AppType,
+	CommonL4LModule,
 	commonRoutingConstants,
 	EmailConfirmationService,
 	FormUtil,
@@ -12,16 +14,29 @@ import {
 	RecoverPasswordService,
 	Role,
 } from '@frontend/common';
-import { DialogService } from '@windmill/ng-windmill';
-import { RecaptchaComponent } from 'ng-recaptcha';
+import { TranslateModule } from '@ngx-translate/core';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { RecaptchaComponent, RecaptchaFormsModule, RecaptchaModule } from 'ng-recaptcha-2';
 
 import { CustomDialogConfigUtil } from '../../_util/custom-dialog-config';
+import { WindmillModule } from '../../windmil.module';
 import { CustomDialogComponent } from '../custom-dialog/custom-dialog.component';
+import { LogoTitleComponent } from '../logo-title/logo-title.component';
 
 @Component({
 	selector: 'frontend-email-action',
 	templateUrl: './email-action.component.html',
 	styleUrls: ['./email-action.component.scss'],
+	standalone: true,
+	imports: [
+		CommonModule,
+		CommonL4LModule,
+		TranslateModule,
+		WindmillModule,
+		LogoTitleComponent,
+		RecaptchaFormsModule,
+		RecaptchaModule,
+	],
 })
 export class EmailActionComponent implements OnInit {
 	@ViewChild(RecaptchaComponent) ngRecaptcha!: RecaptchaComponent;
@@ -63,7 +78,7 @@ export class EmailActionComponent implements OnInit {
 
 	public isConfirmationEmailComponent(): boolean {
 		const route = this.route.snapshot.url?.[0]?.path;
-		return route === commonRoutingConstants.resendConfirmationEmail ?? false;
+		return route === commonRoutingConstants.resendConfirmationEmail;
 	}
 
 	public sendEmail(): void {

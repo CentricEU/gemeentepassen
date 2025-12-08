@@ -16,7 +16,7 @@
 	<frontend-working-hours-edit #workingHoursEdit [workingHoursData]="workingHoursData"></frontend-working-hours-edit>
 </div>
 <section mat-dialog-actions>
-	<centric-button type="button-link-dark" (click)="closePopup()">
+	<centric-button type="ghost-greyscale" (click)="closePopup()">
 		{{ 'general.button.cancel' | translate }}
 	</centric-button>
 	<centric-button [disabled]="!workingHoursEdit.isFormValid()" (click)="updateHours()">

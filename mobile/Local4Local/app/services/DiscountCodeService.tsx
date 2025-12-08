@@ -1,6 +1,7 @@
-import { AUTH_HEADER } from "../utils/constants/headers";
+import api from "../utils/auth/api-interceptor";
 import { trackPromise } from "react-promise-tracker";
-import { apiPath } from "../utils/constants/api";
+import { AUTH_HEADER } from "../utils/constants/headers";
+import { StatusCode } from "../utils/enums/statusCode.enum";
 
 class DiscountCodeService {
 	static async getDiscountCode(offerId: string): Promise<any> {
@@ -13,17 +14,14 @@ class DiscountCodeService {
 			};
 
 			const response = await trackPromise(
-				fetch(
-					`${apiPath}/discount-codes/${encodeURIComponent(offerId)}`,
-					requestObj
-				)
+				api.get(`/discount-codes/${encodeURIComponent(offerId)}`, requestObj)
 			);
 
-			if (!response.ok) {
+			if (response.status !== StatusCode.Ok) {
 				throw Error(response.status.toString());
 			}
 
-			return response.json();
+			return response.data;
 		} catch (error) {
 			throw error;
 		}
@@ -34,17 +32,14 @@ class DiscountCodeService {
 			const HEADERS_WITH_AUTH = await AUTH_HEADER();
 
 			const response = await trackPromise(
-				fetch(`${apiPath}/discount-codes`, {
-					method: "GET",
-					headers: HEADERS_WITH_AUTH,
-				})
+				api.get(`/discount-codes`, { headers: HEADERS_WITH_AUTH })
 			);
 
-			if (!response.ok) {
+			if (response.status !== StatusCode.Ok) {
 				throw new Error(response.statusText);
 			}
 
-			return response.json();
+			return response.data;
 		} catch (error) {
 			throw error;
 		}

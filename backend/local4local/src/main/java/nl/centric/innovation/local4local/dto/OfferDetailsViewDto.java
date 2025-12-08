@@ -1,7 +1,6 @@
 package nl.centric.innovation.local4local.dto;
 
 import java.time.LocalDate;
-import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -26,7 +25,6 @@ public record OfferDetailsViewDto(@NonNull UUID id,
                                   RestrictionViewDto restrictions,
                                   String companyLogo,
                                   @JsonInclude(JsonInclude.Include.NON_NULL)
-                                  Set<GrantViewDto> grants,
                                   OfferTransactionResponseDto lastOfferTransaction
 
 ) {

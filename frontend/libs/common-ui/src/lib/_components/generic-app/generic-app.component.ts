@@ -10,25 +10,26 @@ import {
 	UserInfo,
 } from '@frontend/common';
 import { TranslateService } from '@ngx-translate/core';
-import { CustomRoutes } from '@windmill/ng-windmill';
+import { CustomRoutes } from '@windmill/ng-windmill/sidenav';
 import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'frontend-generic-app',
 	templateUrl: './generic-app.component.html',
 	styleUrls: ['./generic-app.component.scss'],
+	standalone: false,
 })
 export class GenericAppComponent implements OnInit, OnDestroy, AfterViewChecked {
 	public applicationType = AppType.supplier;
 	public navigationRoutes: CustomRoutes;
-	public tranlationsLoaded = false;
+	public translationsLoaded = false;
 	private translationsSubscription: Subscription;
 	private authSubscription: Subscription;
 
 	constructor(
 		protected translateService: TranslateService,
+		protected authService: AuthService,
 		private tenantService: TenantService,
-		private authService: AuthService,
 		private sidenavService: SidenavService,
 		private breadcrumbService: BreadcrumbService,
 		private multilanguageService: MultilanguageService,
@@ -39,7 +40,7 @@ export class GenericAppComponent implements OnInit, OnDestroy, AfterViewChecked 
 		return (
 			!this.sidenavService.shouldHideNavigation(this.applicationType) &&
 			this.isTenantLoaded() &&
-			this.tranlationsLoaded
+			this.translationsLoaded
 		);
 	}
 
@@ -51,7 +52,7 @@ export class GenericAppComponent implements OnInit, OnDestroy, AfterViewChecked 
 		this.getTenant();
 		this.subscribeToLoginEvent();
 		this.subscribeToTranslationsLoad();
-		this.multilanguageService.setupLanguage();
+		this.multilanguageService.setupLanguage(this.applicationType);
 	}
 
 	public ngOnDestroy(): void {
@@ -79,11 +80,6 @@ export class GenericAppComponent implements OnInit, OnDestroy, AfterViewChecked 
 				name: this.translateService.instant('general.pages.dashboard'),
 			},
 			{
-				icon: 'settings_b',
-				path: '/profile/edit',
-				name: this.translateService.instant('general.pages.editProfile'),
-			},
-			{
 				icon: 'id-card_b',
 				path: commonRoutingConstants.offers,
 				name: this.translateService.instant('general.pages.offers'),
@@ -98,6 +94,11 @@ export class GenericAppComponent implements OnInit, OnDestroy, AfterViewChecked 
 				path: commonRoutingConstants.transactions,
 				name: this.translateService.instant('general.pages.transactions'),
 			},
+			{
+				icon: 'settings_b',
+				path: '/profile/edit',
+				name: this.translateService.instant('general.pages.editProfile'),
+			},
 		];
 	}
 
@@ -109,6 +110,10 @@ export class GenericAppComponent implements OnInit, OnDestroy, AfterViewChecked 
 	}
 
 	private getTenant(): void {
+		if (this.applicationType === AppType.citizen) {
+			return;
+		}
+
 		const tenantId = this.authService.extractSupplierInformation(UserInfo.TenantId);
 
 		if (!tenantId) {
@@ -123,7 +128,7 @@ export class GenericAppComponent implements OnInit, OnDestroy, AfterViewChecked 
 
 	private subscribeToTranslationsLoad(): void {
 		this.translationsSubscription = this.multilanguageService.translationsLoadedEventEmitter.subscribe(() => {
-			this.tranlationsLoaded = true;
+			this.translationsLoaded = true;
 			this.navigationRoutes = this.getMenuItemsForNavigation();
 			this.cdr.detectChanges();
 		});

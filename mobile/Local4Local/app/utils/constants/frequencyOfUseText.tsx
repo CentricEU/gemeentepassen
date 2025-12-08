@@ -1,7 +1,7 @@
-export const frequencyOfUse : {[index: string] : any} = {
-	SINGLE_USE: 'Single use',
-	DAILY: 'Daily',
-	WEEKLY: 'Weekly',
-	MONTHLY: 'Monthly',
-	YEARLY: 'Yearly'
+export const frequencyOfUse: { [index: string]: any } = {
+	SINGLE_USE: 'generic.frecquency.singleUse',
+	DAILY: 'generic.frecquency.daily',
+	WEEKLY: 'generic.frecquency.weekly',
+	MONTHLY: 'generic.frecquency.monthly',
+	YEARLY: 'generic.frecquency.yearly',
 }

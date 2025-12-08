@@ -13,15 +13,15 @@ public record OfferTransactionInvoiceDto(
         String passNumber,
         @NonNull
         Double amount,
-        @NotEmpty(message = "Accepted grants are required")
-        String acceptedGrants,
+        @NotEmpty(message = "Accepted benefit is required")
+        String acceptedBenefit,
         @NotEmpty(message = "Created date is required")
         String createdDate
 ) {
     public OfferTransactionInvoiceDto(String passNumber, OfferTransaction offerTransaction) {
         this(passNumber,
                 offerTransaction.getAmount(),
-                offerTransaction.getConcatenatedGrantTitles(),
+                offerTransaction.getOfferBenefitName(),
                 DateUtils.formatDateDefault(offerTransaction.getCreatedDate().toLocalDate()));
     }
 }

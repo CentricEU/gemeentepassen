@@ -7,7 +7,7 @@
 		windmill-tooltip
 		class="close-button"
 		[attr.ariaLabel]="'general.button.close' | translate"
-		[tooltipColor]="'theme'"
+		[tooltipColor]="'tooltipSurfaceColor'"
 		[tooltipText]="'general.button.close' | translate"
 		[ariaLabelTranslation]="'general.button.close'"
 		(click)="close()">
@@ -43,20 +43,37 @@
 						ariaLabelClearIcon
 						formControlName="rejectionReason"
 						[ariaLabel]="'rejectOffer.placeholderReason' | translate"
-						[maxLength]="1024"
-						[counterMessages]="counterMessages"
 						[ariaLabelTranslation]="'rejectOffer.placeholderReason'"
 						[ariaLabelClearIcon]="'rejectOffer.placeholderReason' | translate"
 						[placeholder]="'rejectOffer.placeholderReason' | translate"
-						[validationFunction]="validationFunctionError.bind(this, 'rejectionReason', rejectionForm)">
+						[validationFunction]="validationFunctionError.bind(this, 'rejectionReason', rejectionForm)"
+						(textareaValueChanged)="characterLimitMessageService.onTextareaValueChanged($event, maxLength)"
+						(clearValue)="characterLimitMessageService.onClearValue(maxLength)">
+						@if (!characterLimitMessageService.isOverCharacterLimit) {
+							<ng-container hints>
+								<span class="centric-hint-message">
+									{{
+										characterLimitMessageService.messageKey
+											| translate: { count: characterLimitMessageService.messageCount }
+									}}
+								</span>
+							</ng-container>
+						} @else {
+							<ng-container errors>
+								<span class="centric-error-message">
+									{{
+										characterLimitMessageService.messageKey
+											| translate: { count: characterLimitMessageService.messageCount }
+									}}
+								</span>
+							</ng-container>
+						}
 						<ng-container errors *ngIf="rejectionForm.get('rejectionReason')?.hasError('isHTML')">
 							<span class="centric-error-message">
 								{{ 'errors.htmlContent' | translate }}
 							</span>
 						</ng-container>
-						<ng-container
-							errors
-							*ngIf="hasFormControlRequiredErrors('rejectionReason', rejectionForm)">
+						<ng-container errors *ngIf="hasFormControlRequiredErrors('rejectionReason', rejectionForm)">
 							<span class="centric-error-message">
 								{{ 'rejectOffer.errorRequired' | translate }}
 							</span>
@@ -69,8 +86,8 @@
 </ng-template>
 
 <section mat-dialog-actions *ngIf="!isRejecting; else rejectionActions">
-	<centric-button type="button-link-dark" (click)="close()">{{ 'general.button.cancel' | translate }}</centric-button>
-	<centric-button type="button-theme" (click)="setIsRejecting(true)">{{
+	<centric-button type="ghost-greyscale" (click)="close()">{{ 'general.button.cancel' | translate }}</centric-button>
+	<centric-button type="outlined-theme" (click)="setIsRejecting(true)">{{
 		'general.reject' | translate
 	}}</centric-button>
 	<centric-button ariaAttributes [type]="data.acceptButtonType" (click)="approveOffer()">
@@ -79,10 +96,10 @@
 </section>
 <ng-template #rejectionActions>
 	<section mat-dialog-actions>
-		<centric-button type="button-link-dark" (click)="close()">{{
+		<centric-button type="ghost-greyscale" (click)="close()">{{
 			'general.button.cancel' | translate
 		}}</centric-button>
-		<centric-button type="button-theme" (click)="setIsRejecting(false)">{{
+		<centric-button type="outlined-theme" (click)="setIsRejecting(false)">{{
 			'general.back' | translate
 		}}</centric-button>
 		<centric-button

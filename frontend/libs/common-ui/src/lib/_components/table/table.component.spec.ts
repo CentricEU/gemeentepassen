@@ -1,11 +1,12 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup } from '@angular/forms';
+import { PageEvent } from '@angular/material/paginator';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
 	ColumnDataType,
 	EnumValueDto,
 	FilterColumnKey,
-	GrantDto,
 	Page,
 	PaginatedData,
 	StatusUtil,
@@ -13,7 +14,7 @@ import {
 	TableFilterColumn,
 } from '@frontend/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService, PageEvent } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { of, Subject } from 'rxjs';
 
 import { TableDataMock } from '../../_mocks/table-data.mock';
@@ -56,7 +57,7 @@ describe('TableComponent', () => {
 		await TestBed.configureTestingModule({
 			schemas: [NO_ERRORS_SCHEMA],
 			declarations: [TableComponent],
-			imports: [WindmillModule, TranslateModule.forRoot()],
+			imports: [WindmillModule, TranslateModule.forRoot(), BrowserAnimationsModule],
 			providers: [DialogService],
 		}).compileComponents();
 
@@ -327,41 +328,6 @@ describe('TableComponent', () => {
 		mockFilterColumns.forEach((filterColumn) => {
 			expect(filterColumn.source).toEqual(filterColumn.filteredSource);
 		});
-	});
-
-	it('should return false for an empty array', () => {
-		const source: any[] = [];
-
-		const result = component.isGrantDtoArray(source as unknown as GrantDto);
-
-		expect(result).toBe(false);
-	});
-
-	it('should return false for an array that does not contain instances of GrantDto', () => {
-		const source = [{}, {}, {}];
-
-		const result = component.isGrantDtoArray(source as unknown as GrantDto);
-
-		expect(result).toBe(false);
-	});
-
-	it('should return false for a non-array input', () => {
-		const source = {};
-
-		const result = component.isGrantDtoArray(source as unknown as GrantDto);
-
-		expect(result).toBe(false);
-	});
-
-	it('should return false for null or undefined input', () => {
-		let source: any = null;
-
-		let result = component.isGrantDtoArray(source);
-		expect(result).toBe(false);
-
-		source = undefined;
-		result = component.isGrantDtoArray(source);
-		expect(result).toBe(false);
 	});
 
 	it('should initialize filterFormGroup with form controls when filterColumns is defined', () => {

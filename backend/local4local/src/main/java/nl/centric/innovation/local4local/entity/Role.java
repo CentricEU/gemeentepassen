@@ -25,7 +25,7 @@ public class Role implements GrantedAuthority {
     public static final String ROLE_MUNICIPALITY_ADMIN = "ROLE_MUNICIPALITY_ADMIN";
     public static final String ROLE_SUPPLIER = "ROLE_SUPPLIER";
     public static final String ROLE_CITIZEN = "ROLE_CITIZEN";
-
+    public static final String ROLE_CASHIER = "ROLE_CASHIER";
     @Id
     @GeneratedValue
     @Column(name = "id", nullable = false, updatable = false)

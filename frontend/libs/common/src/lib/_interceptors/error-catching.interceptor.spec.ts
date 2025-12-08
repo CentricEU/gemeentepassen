@@ -1,9 +1,9 @@
-import { HttpErrorResponse, HttpRequest } from '@angular/common/http';
+import { HttpContext, HttpErrorResponse, HttpHandler, HttpRequest } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { ActiveToast, ToastrService } from '@windmill/ng-windmill';
+import { ActiveToast, ToastrService } from '@windmill/ng-windmill/toastr';
 import { of, throwError } from 'rxjs';
 
 import { CaptchaStatus } from '../_enums/captcha.enum';
@@ -11,17 +11,20 @@ import { PersistentErrorCode } from '../_enums/persistence-error-codes.enum';
 import { SilentErrorCode } from '../_enums/silent-error-codes.enum';
 import { MockRouter } from '../_mocks/router.mock';
 import { AuthService } from '../_services/auth.service';
+import { SKIP_ERROR_TOASTER } from '../_util/http-context-token';
 import { ErrorCatchingInterceptor } from './error-catching.interceptor';
 
 describe('ErrorCatchingInterceptor', () => {
 	let interceptor: ErrorCatchingInterceptor;
 	let router: Router;
 	let toastrService: ToastrService;
+	const mockToastrService = { error: jest.fn(), info: jest.fn(), clear: jest.fn() };
 
 	const authServiceMock = {
 		isLoggedIn: false,
 		logout: jest.fn(),
 		refreshToken: jest.fn().mockReturnValue(of({})),
+		logoutObservable: of(null),
 	};
 
 	beforeEach(() => {
@@ -87,6 +90,7 @@ describe('ErrorCatchingInterceptor', () => {
 			},
 		);
 	});
+
 	describe('Backend error with custom codes', () => {
 		it('should handle custom error: 40004', () => {
 			const customErrorCode = 40004;
@@ -196,6 +200,26 @@ describe('ErrorCatchingInterceptor', () => {
 				expect(navigateSpy).toHaveBeenCalledWith(['']);
 			},
 		);
+	});
+
+	it('should NOT navigate for custom error 40019 if router.url is /?reapply=true', () => {
+		const customErrorCode = 40019;
+		const navigateSpy = jest.spyOn(router, 'navigate');
+		Object.defineProperty(router, 'url', { get: () => '/?reapply=true' });
+		const request = new HttpRequest('GET', 'test');
+		const next = {
+			handle: () => {
+				return throwError(() => new HttpErrorResponse({ error: customErrorCode }));
+			},
+		};
+
+		interceptor.intercept(request, next).subscribe({
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			next: () => {},
+			error: () => {
+				expect(navigateSpy).not.toHaveBeenCalled();
+			},
+		});
 	});
 
 	describe('Backend error with status', () => {
@@ -406,6 +430,94 @@ describe('ErrorCatchingInterceptor', () => {
 				expect(toastrService.error).not.toHaveBeenCalled();
 			},
 		);
+	});
+
+	it('should throw error without showing toast for custom error: 40040', () => {
+		const customErrorCode = 40040;
+		const showToastSpy = jest.spyOn(interceptor as any, 'showToast');
+		const request = new HttpRequest('GET', 'test');
+		const next = {
+			handle: () => {
+				return throwError(() => new HttpErrorResponse({ error: customErrorCode }));
+			},
+		};
+
+		let errorCalled = false;
+
+		interceptor.intercept(request, next).subscribe({
+			error: (error) => {
+				errorCalled = true;
+				expect(error).toBeTruthy();
+				expect(error.error).toBe(customErrorCode);
+
+				expect(showToastSpy).not.toHaveBeenCalled();
+			},
+		});
+
+		expect(errorCalled).toBe(true);
+	});
+
+	it('should skip showing toast if SKIP_ERROR_TOASTER is set', (done) => {
+		const context = new HttpContext().set(SKIP_ERROR_TOASTER, true);
+		const request = new HttpRequest('GET', '/test', {
+			context,
+		});
+
+		const handler: HttpHandler = {
+			handle: () =>
+				throwError(
+					() =>
+						new HttpErrorResponse({
+							status: 400,
+							error: 12345,
+						}),
+				),
+		};
+
+		interceptor.intercept(request, handler).subscribe({
+			error: (err) => {
+				expect(err).toBeInstanceOf(HttpErrorResponse);
+				expect(mockToastrService.error).not.toHaveBeenCalled();
+				done();
+			},
+		});
+	});
+
+	it('should skip showing toast if error.error is a Blob', (done) => {
+		const blob = new Blob(['Some binary content'], { type: 'application/octet-stream' });
+
+		const request = new HttpRequest('GET', '/test');
+
+		const handler: HttpHandler = {
+			handle: () =>
+				throwError(
+					() =>
+						new HttpErrorResponse({
+							status: 500,
+							error: blob,
+						}),
+				),
+		};
+
+		const showToastSpy = jest.spyOn(interceptor as any, 'showToast');
+
+		interceptor.intercept(request, handler).subscribe({
+			error: (err) => {
+				expect(err).toBeInstanceOf(HttpErrorResponse);
+				expect(err.error).toBeInstanceOf(Blob);
+				expect(showToastSpy).not.toHaveBeenCalled();
+				done();
+			},
+		});
+	});
+
+	describe('subscribeToLogout', () => {
+		it('should remove error code 40019 from shownErrorCodes on logout', () => {
+			interceptor['shownErrorCodes'].add(40019);
+			(authServiceMock.logoutObservable as any).subscribe((cb: any) => cb());
+			interceptor['subscribeToLogout']();
+			expect(interceptor['shownErrorCodes'].has(40019)).toBe(false);
+		});
 	});
 
 	function expectForCustomError(customErrorCode: unknown, error: unknown) {

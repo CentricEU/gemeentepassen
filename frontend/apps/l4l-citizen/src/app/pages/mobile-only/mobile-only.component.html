@@ -1,0 +1,12 @@
+<div class="main-container">
+	<img src="/assets/images/digid_fallback.svg" alt="{{ 'digiD.fallback.imageAlt' | translate }}" />
+	<p class="bold">{{ 'digiD.fallback.description' | translate }}</p>
+
+	<centric-button
+		ariaAttributes
+		[attr.ariaLabel]="'digiD.fallback.button' | translate"
+		[ariaLabelTranslation]="'digiD.fallback.button'"
+		(click)="openMobileApp()">
+		{{ 'digiD.fallback.mobileButton' | translate }}
+	</centric-button>
+</div>

@@ -10,6 +10,7 @@ describe("OfferContext", () => {
 		id: "1",
 		title: "Mock Offer",
 		description: "Mock description",
+		benefit: [],
 		amount: 100,
 		citizenOfferType: CitizenOfferType.citizenWithPass,
 		offerType: { offerTypeId: 1, offerTypeLabel: "label" },
@@ -18,7 +19,6 @@ describe("OfferContext", () => {
 		coordinatesString: { latitude: 0, longitude: 0 },
 		companyName: "Mock Company",
 		distance: 10,
-		grants: [],
 		discountCode: "CODE1",
 		companyAddress: "Mock Address",
 		companyLogo: "mock-logo.png",
@@ -26,6 +26,7 @@ describe("OfferContext", () => {
 			new WorkingHour("id1", 0, "08:00:00", "16:00:00", true),
 			new WorkingHour("id2", 1, "08:00:00", "16:00:00", true),
 		],
+		isActive: true,
 	};
 
 	it("should provide the correct initial values", () => {

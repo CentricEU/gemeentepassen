@@ -1,10 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatTab, MatTabChangeEvent } from '@angular/material/tabs';
+import { MatTab } from '@angular/material/tabs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthService, PaginatedData, SupplierStatus, SupplierViewDto } from '@frontend/common';
 import { TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService, ToastrService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { ToastrService } from '@windmill/ng-windmill/toastr';
 import { of } from 'rxjs';
 
 import { InvitationDto } from '../../_models/invitation-dto.model';
@@ -29,6 +30,21 @@ describe('SuppliersListComponent', () => {
 	const sampleCount = 10;
 
 	beforeEach(async () => {
+		global.IntersectionObserver = class {
+			constructor() {
+				// mock constructor
+			}
+			observe() {
+				// mock observe
+			}
+			unobserve() {
+				// mock unobserve
+			}
+			disconnect() {
+				// mock disconnect
+			}
+		} as any;
+
 		supplierServiceSpy = {
 			getPendingSuppliers: jest.fn(),
 			getSuppliers: jest.fn(),
@@ -102,7 +118,7 @@ describe('SuppliersListComponent', () => {
 	});
 
 	it('should update tabIndex when tabChanged is called', () => {
-		const mockEvent: MatTabChangeEvent = {
+		const mockEvent: any = {
 			index: 1,
 			tab: {} as MatTab,
 		};
@@ -196,7 +212,7 @@ describe('SuppliersListComponent', () => {
 	});
 
 	it('should change tabIndex on tabChanged', () => {
-		const event = { index: 1 } as MatTabChangeEvent;
+		const event = { index: 1 } as any;
 		component.tabChanged(event);
 		expect(component.tabIndex).toBe(1);
 	});
