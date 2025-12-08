@@ -42,9 +42,9 @@ Before starting, ensure you have the following installed on your machine:
 
 ### 1️⃣ Database Setup
 
-1. Create a new database named `l4l`.
-2. Install PostGIS Spatial Extension and PostgreSQL Server.
-3.Run Backend to execute migrations. 
+1. Install PostGIS Spatial Extension and PostgreSQL Server.
+2. Create a new database named `l4l`.
+3. Run Backend to execute migrations. 
 3. Insert the first user (replace your email and tenant ID). Password is `'Password1!'`:
 
 ```sql
