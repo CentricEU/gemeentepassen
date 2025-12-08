@@ -82,24 +82,34 @@ spring.datasource.password=admin
 mvn install
 ```
 
-4. Run the project.  
-5. The backend service will be running at [http://localhost:8080](http://localhost:8080).
+4. Configure AWS CLI:
+
+```bash
+aws configure
+```
+- Enter your AWS Access Key ID
+- Enter your AWS Secret Access Key
+- Default region name (e.g., us-east-1)
+- Default output format (e.g., json)
+
+5. Run the project.  
+6. The backend service will be running at [http://localhost:8080](http://localhost:8080).
 
 ---
 
 ### 3️⃣ Frontend Setup (Angular)
 
 1. Open the `frontend` folder in **IDE** ( **VSCode** or any other IDE).
-2. Install Angular CLI 16 globally:
+2. Install Angular CLI 19 globally:
 
 ```bash
-npm i -g @16
+npm i -g @19
 ```
 
 3. Install project dependencies:
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 
 4. Run the project:
@@ -107,19 +117,16 @@ npm install
 ```bash
 npm run start-municipality
 ```
-
 - Frontend: [http://localhost:4200](http://localhost:4200)
 
 ```bash
 npm run start-supplier
 ```
-
 - Frontend: [http://localhost:4201](http://localhost:4201)
 
 ```bash
 npm run start-citizen
 ```
-
 - Frontend: [http://localhost:4202](http://localhost:4202)
 
 ---
@@ -218,4 +225,10 @@ const API_BASE_URL = "http://your_ip_address:8080/api";
 ### Mobile Issues
 
 - **Android Emulator Not Starting:** Verify Android Studio setup and AVD configuration.
-- **iOS Build Errors:** Ensure Xcode is updated and a Develop
+- **iOS Build Errors:** Ensure Xcode is updated and a Development Team is selected.
+- **API Connection Issues:** Check `api.tsx` for correct backend URL and network accessibility.
+
+---
+
+### 🌟 Thank you for using CityPasses!
+
