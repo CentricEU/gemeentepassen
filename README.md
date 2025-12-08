@@ -46,6 +46,7 @@ Before starting, ensure you have the following installed on your machine:
 2. Create a new database named `local4local`.
 3. Run Backend to execute migrations.
 3. Insert the first user (replace your email and tenant ID). Password is `'Password1!'`:
+   You can find the tenant_id in l4l_security/tenants.
 
 ```sql
 INSERT INTO l4l_security."user"(
