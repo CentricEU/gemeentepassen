@@ -4,5 +4,5 @@ import lombok.Builder;
 import org.springframework.http.HttpHeaders;
 
 @Builder
-public record AuthResponseDto(LoginResponseDTO loginResponseDTO, HttpHeaders httpHeaders) {
+public record AuthResponseDto(LoginResponseDto loginResponseDTO, HttpHeaders httpHeaders) {
 }

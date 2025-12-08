@@ -67,7 +67,6 @@
     <tr>
         <th th:text="#{invoice.passholderNumber}"></th>
         <th th:text="#{invoice.amount}"></th>
-        <th th:text="#{invoice.acceptedGrants}"></th>
         <th th:text="#{invoice.date}"></th>
     </tr>
     </thead>
@@ -75,7 +74,6 @@
     <tr th:each="transaction : ${offerTransactions}">
         <td th:text="${transaction.passNumber}"></td>
         <td th:text="'€' + ${transaction.amount}"></td>
-        <td th:text="${transaction.acceptedGrants}"></td>
         <td th:text="${transaction.createdDate}"></td>
     </tr>
     </tbody>

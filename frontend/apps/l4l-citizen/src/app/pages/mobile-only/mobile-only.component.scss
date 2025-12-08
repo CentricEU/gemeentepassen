@@ -1,0 +1,30 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+
+:host {
+
+    ::ng-deep {
+        centric-button {
+            width: 'auto';
+            margin: 0;
+        }
+    }
+    .main-container {
+        @include mixins.flex(column, center, center);
+        background-color: var(--surface-50);
+        gap: 16px;
+        padding-inline: 52px;
+        min-height: 100vh;
+    }
+
+    .img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    p {
+        text-align: center;
+        color: var(--greyscale-700);
+        line-height: 28px;
+        font-size: 18px;
+    }
+}

@@ -1,6 +1,6 @@
 import { HttpClient, HttpClientModule, HttpParams } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { AssignPassholderGrants, PassholderViewDto } from '@frontend/common';
+import { PassholderViewDto } from '@frontend/common';
 import { of } from 'rxjs';
 
 import { PassholdersService } from './passholders.service';
@@ -43,12 +43,14 @@ describe('PassholdersService', () => {
 			{ id: 2, name: 'Tenant 2' },
 		];
 		const file = new File(['Hello, this is the file content.'], 'example.txt', { type: 'text/plain' });
+		const citizenGroupId = 'citizenGroupId123';
 		const data: FormData = new FormData();
 		data.append('file', file, file.name);
+		data.append('citizenGroupId', citizenGroupId);
 
 		httpClientSpy.post.mockReturnValue(of(dummyPassholders));
 
-		service.uploadCSV(file).subscribe((passholders) => {
+		service.uploadCSV(file, citizenGroupId).subscribe((passholders) => {
 			expect(passholders).toEqual(dummyPassholders);
 		});
 
@@ -83,7 +85,9 @@ describe('PassholdersService', () => {
 			expect(count).toEqual(dummyPassholders);
 		});
 
-		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/passholders`, { params: httpParams });
+		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/passholders`, {
+			params: httpParams,
+		});
 	});
 
 	it('should put passholder when updating ', () => {
@@ -95,6 +99,7 @@ describe('PassholdersService', () => {
 			'number',
 			'residence',
 			new Date(),
+			'groupName',
 		);
 
 		httpClientSpy.put.mockReturnValue(of());
@@ -102,16 +107,6 @@ describe('PassholdersService', () => {
 		service.updatePassholder(passholder).subscribe();
 
 		expect(httpClientSpy.put).toHaveBeenCalledWith(`${environmentMock.apiPath}/passholders`, passholder);
-	});
-
-	it('should put passholder when assign grants ', () => {
-		const assignGrants = new AssignPassholderGrants(['testId'], ['testId']);
-
-		httpClientSpy.put.mockReturnValue(of());
-
-		service.assignGrants(assignGrants).subscribe();
-
-		expect(httpClientSpy.put).toHaveBeenCalledWith(`${environmentMock.apiPath}/passholders/assign`, assignGrants);
 	});
 
 	it('should delete passholder when delete method is called ', () => {

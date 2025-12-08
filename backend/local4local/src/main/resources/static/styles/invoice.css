@@ -92,6 +92,7 @@ table {
     border-collapse: separate;
     border-spacing: 0;
     border-radius: 8px;
+    border: 1.2px solid transparent;
 }
 
 th, td {
@@ -180,4 +181,3 @@ tr:last-child td:last-child {
   min-height: 100vh;
   max-width: 50%;
 }
-

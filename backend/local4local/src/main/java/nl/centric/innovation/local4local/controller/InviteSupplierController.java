@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -34,8 +35,8 @@ public class InviteSupplierController {
 
     @PostMapping("/send")
     @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
-    public ResponseEntity<Void> inviteSupplier(@RequestBody InviteSupplierDto inviteSupplierDto,
-                                               @CookieValue(value = "language", defaultValue = "nl-NL") String language) throws DtoValidateException {
+    public ResponseEntity<Void> inviteSupplier(@RequestBody @Valid InviteSupplierDto inviteSupplierDto,
+                                               @CookieValue(value = "language_municipality", defaultValue = "nl-NL") String language) throws DtoValidateException {
 
         inviteSupplierService.inviteSupplier(inviteSupplierDto, language);
         return ResponseEntity.ok().build();

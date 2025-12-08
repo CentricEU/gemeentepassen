@@ -1,7 +1,7 @@
-@import '../../../../../shared-assets/_styles/mixins.scss';
+@use '../../../../../shared-assets/_styles/mixins.scss' as mixins;
 
 .columns-section {
-	@include flex(column);
+	@include mixins.flex(column);
 	flex-wrap: wrap;
 	max-height: 340px;
 

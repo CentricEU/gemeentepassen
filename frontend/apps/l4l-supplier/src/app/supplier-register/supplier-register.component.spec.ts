@@ -4,16 +4,24 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Tenant, TenantService } from '@frontend/common';
 import { WindmillModule } from '@frontend/common-ui';
-import { AriaAttributesDirective } from '@innovation/accesibility';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { of } from 'rxjs';
 
+import { RegisterSupplier } from '../models/register-supplier.model';
 import { RegisterService } from '../services/register.service';
 import { SupplierRegisterComponent } from './supplier-register.component';
+
+jest.mock('dompurify', () => ({
+	__esModule: true,
+	sanitize: (input: string) => input,
+	default: {
+		sanitize: (input: string) => input,
+	},
+}));
 
 describe('SupplierRegisterComponent', () => {
 	let component: SupplierRegisterComponent;
@@ -21,6 +29,7 @@ describe('SupplierRegisterComponent', () => {
 	let tenantService: TenantService;
 	let router: Router;
 	let dialogServiceMock: any;
+	let activatedRouteMock: any;
 
 	const routerMock = {
 		navigate: jest.fn(),
@@ -41,8 +50,11 @@ describe('SupplierRegisterComponent', () => {
 	});
 
 	beforeEach(async () => {
+		activatedRouteMock = {
+			paramMap: of({ get: jest.fn() }),
+		};
+
 		await TestBed.configureTestingModule({
-			declarations: [SupplierRegisterComponent, AriaAttributesDirective],
 			imports: [
 				WindmillModule,
 				CommonModule,
@@ -57,6 +69,8 @@ describe('SupplierRegisterComponent', () => {
 				{ provide: RegisterService, useValue: registerMock },
 				{ provide: 'env', useValue: environmentMock },
 				{ provide: DialogService, useValue: dialogServiceMock },
+				{ provide: ActivatedRoute, useValue: activatedRouteMock },
+
 				TenantService,
 			],
 		}).compileComponents();
@@ -277,20 +291,62 @@ describe('SupplierRegisterComponent', () => {
 
 	it('should set dropdownSource and updatedSource when ngOnInit is called', () => {
 		const mockTenants: Tenant[] = [
-			{ id: '1', name: 'Tenant 1', address: 'Address 1', createdDate: new Date(10, 10, 10) },
-			{ id: '2', name: 'Tenant 2', address: 'Address 2', createdDate: new Date(10, 10, 10) },
+			{
+				id: '1',
+				name: 'Tenant 1',
+				address: 'Address 1',
+				createdDate: new Date(10, 10, 10),
+				phone: '1234567890',
+				email: 'tenant1@example.com',
+			},
+			{
+				id: '2',
+				name: 'Tenant 2',
+				address: 'Address 2',
+				createdDate: new Date(10, 10, 10),
+				phone: '0987654321',
+				email: 'tenant2@example.com',
+			},
 		];
 
 		jest.spyOn(tenantService, 'getTenants').mockReturnValue(of(mockTenants));
 		component.ngOnInit();
 
 		expect(component.dropdownSource).toEqual([
-			{ id: '1', name: 'Tenant 1', address: 'Address 1', createdDate: new Date(10, 10, 10) },
-			{ id: '2', name: 'Tenant 2', address: 'Address 2', createdDate: new Date(10, 10, 10) },
+			{
+				id: '1',
+				name: 'Tenant 1',
+				address: 'Address 1',
+				createdDate: new Date(10, 10, 10),
+				phone: '1234567890',
+				email: 'tenant1@example.com',
+			},
+			{
+				id: '2',
+				name: 'Tenant 2',
+				address: 'Address 2',
+				createdDate: new Date(10, 10, 10),
+				phone: '0987654321',
+				email: 'tenant2@example.com',
+			},
 		]);
 		expect(component.updatedSource).toEqual([
-			{ id: '1', name: 'Tenant 1', address: 'Address 1', createdDate: new Date(10, 10, 10) },
-			{ id: '2', name: 'Tenant 2', address: 'Address 2', createdDate: new Date(10, 10, 10) },
+			{
+				id: '1',
+				name: 'Tenant 1',
+				address: 'Address 1',
+				createdDate: new Date(10, 10, 10),
+				phone: '1234567890',
+				email: 'tenant1@example.com',
+			},
+			{
+				id: '2',
+				name: 'Tenant 2',
+				address: 'Address 2',
+				createdDate: new Date(10, 10, 10),
+				phone: '0987654321',
+				email: 'tenant2@example.com',
+			},
 		]);
 	});
 
@@ -302,15 +358,43 @@ describe('SupplierRegisterComponent', () => {
 	it('should filter the dropdown source based on input', () => {
 		const event = 'Name1';
 		component.dropdownSource = [
-			{ id: '1223', address: 'RandomAddress1', name: 'Name1', createdDate: new Date(2020, 0, 1) },
-			{ id: '12243', address: 'RandomAddress2', name: 'Name2', createdDate: new Date(2020, 0, 1) },
-			{ id: '122553', address: 'RandomAddress3', name: 'RandomName', createdDate: new Date(2020, 0, 1) },
+			{
+				id: '1223',
+				address: 'RandomAddress1',
+				name: 'Name1',
+				createdDate: new Date(2020, 0, 1),
+				phone: '1234567890',
+				email: 'name1@example.com',
+			},
+			{
+				id: '12243',
+				address: 'RandomAddress2',
+				name: 'Name2',
+				createdDate: new Date(2020, 0, 1),
+				phone: '2345678901',
+				email: 'name2@example.com',
+			},
+			{
+				id: '122553',
+				address: 'RandomAddress3',
+				name: 'RandomName',
+				createdDate: new Date(2020, 0, 1),
+				phone: '3456789012',
+				email: 'randomname@example.com',
+			},
 		];
 
 		component.onSearchValueChanged(event);
 
 		expect(component.updatedSource).toEqual([
-			{ id: '1223', address: 'RandomAddress1', name: 'Name1', createdDate: new Date(2020, 0, 1) },
+			{
+				id: '1223',
+				address: 'RandomAddress1',
+				name: 'Name1',
+				createdDate: new Date(2020, 0, 1),
+				phone: '1234567890',
+				email: 'name1@example.com',
+			},
 		]);
 	});
 
@@ -500,18 +584,259 @@ describe('SupplierRegisterComponent', () => {
 		expect(component.registerForm.valid).toBeFalsy();
 	});
 
-	it('should mark form as valid if all fields are filled', () => {
-		const form = component.registerForm;
-		form.controls['firstName'].setValue('John');
-		form.controls['lastName'].setValue('Doe');
-		form.controls['company'].setValue('ABC Company');
-		form.controls['kvk'].setValue('123456789');
-		form.controls['municipality'].setValue('Some Municipality');
-		form.controls['email'].setValue('john.doe@example.com');
-		form.controls['password'].setValue('password123');
-		form.controls['confirmPassword'].setValue('password123');
-		form.controls['agreement'].setValue(false);
+	it('should call dialogService.prompt with TermsAndConditionsDialogComponent and correct config when openTermsAndConditionModal is called', () => {
+		const promptSpy = jest.spyOn(component['dialogService'], 'prompt');
+		component.openTermsAndConditionModal();
+		expect(promptSpy).toHaveBeenCalledWith(expect.any(Function), expect.objectContaining({ width: '600px' }));
+	});
 
-		expect(form.valid).toBeFalsy();
+	it('should return "warning" toaster type when password has validation errors', () => {
+		component.registerForm.get('password')?.setErrors({ minLength: true });
+
+		const result = component.getToasterType();
+
+		expect(result).toBe('warning');
+	});
+
+	it('should return "success" toaster type when password has no validation errors', () => {
+		component.registerForm.get('password')?.setErrors(null);
+
+		const result = component.getToasterType();
+
+		expect(result).toBe('success');
+	});
+
+	it('should return true when confirmPassword has required errors', () => {
+		component.registerForm.get('confirmPassword')?.setErrors({ required: true });
+
+		const result = component.shouldDisplayPasswordConfirmationError();
+
+		expect(result).toBe(true);
+	});
+
+	it('should return true when form has fieldsMismatch error', () => {
+		component.registerForm.setErrors({ fieldsMismatch: true });
+
+		const result = component.shouldDisplayPasswordConfirmationError();
+
+		expect(result).toBe(true);
+	});
+
+	it('should return false when confirmPassword has no errors', () => {
+		component.registerForm.get('confirmPassword')?.setErrors(null);
+		component.registerForm.setErrors(null);
+
+		const result = component.shouldDisplayPasswordConfirmationError();
+
+		expect(result).toBe(false);
+	});
+
+	it('should map form values to registerSupplier correctly', () => {
+		component.registerForm.patchValue({
+			firstName: 'John',
+			lastName: 'Doe',
+			email: 'john@example.com',
+			company: 'Test Company',
+			kvk: '12345678',
+			password: 'Password123!',
+			confirmPassword: 'Password123!',
+			agreement: true,
+		});
+		component['selectTentantId'] = 'tenant-123';
+
+		component['mapSupplier']();
+
+		expect(component.registerSupplier).toEqual({
+			firstName: 'John',
+			lastName: 'Doe',
+			email: 'john@example.com',
+			companyName: 'Test Company',
+			kvk: '12345678',
+			tenantId: 'tenant-123',
+			password: 'Password123!',
+			retypedPassword: 'Password123!',
+			agreedTerms: true,
+		});
+	});
+
+	it('should call displayAccountConfirmationDialog after successful registration', () => {
+		const displayDialogSpy = jest.spyOn<any, any>(component, 'displayAccountConfirmationDialog');
+		component.registerForm.patchValue({
+			firstName: 'John',
+			lastName: 'Doe',
+			email: 'john@example.com',
+			company: 'Test Company',
+			kvk: '12345678',
+			password: 'Password123!',
+			confirmPassword: 'Password123!',
+			agreement: true,
+		});
+
+		component.saveSupplier();
+
+		expect(displayDialogSpy).toHaveBeenCalled();
+	});
+
+	it('should set shouldDisplaySuccessfulRegistrationDialog to true when displaying confirmation dialog', () => {
+		const mockSupplier: RegisterSupplier = {
+			firstName: 'John',
+			lastName: 'Doe',
+			email: 'john@example.com',
+			companyName: 'Test Company',
+			kvk: '12345678',
+			tenantId: 'tenant-123',
+			password: 'Password123!',
+			retypedPassword: 'Password123!',
+			agreedTerms: true,
+		};
+
+		component['displayAccountConfirmationDialog'](mockSupplier);
+
+		expect(component.shouldDisplaySuccessfulRegistrationDialog).toBe(true);
+	});
+
+	it('should preselect tenant in form when routeTenantId matches', () => {
+		component.routeTenantId = '1';
+		component.dropdownSource = [
+			{
+				id: '1',
+				name: 'Tenant 1',
+				address: 'Address 1',
+				createdDate: new Date(10, 10, 10),
+				phone: '1234567890',
+				email: 'tenant1@example.com',
+			},
+		];
+		component['initForm']();
+
+		component['preselectTenantInForm']();
+
+		expect(component.tenantId).toBe('1');
+		expect(component.registerForm.get('municipality')?.value).toBe('1');
+	});
+
+	it('should not preselect tenant when tenant is not found', () => {
+		component.routeTenantId = 'non-existent';
+		component.dropdownSource = [
+			{
+				id: '1',
+				name: 'Tenant 1',
+				address: 'Address 1',
+				createdDate: new Date(10, 10, 10),
+				phone: '1234567890',
+				email: 'tenant1@example.com',
+			},
+		];
+
+		component['preselectTenantInForm']();
+
+		expect(component.tenantId).toBeUndefined();
+	});
+	it('should handle subscription to route param when tenantId is present', () => {
+		const mockTenantId = 'test-tenant-123';
+		const paramMapMock = {
+			get: jest.fn().mockReturnValue(mockTenantId),
+		};
+
+		activatedRouteMock.paramMap = of(paramMapMock);
+
+		component['subscribeToRouteParam']();
+
+		expect(paramMapMock.get).toHaveBeenCalledWith('tenantId');
+		expect(component.routeTenantId).toBe(mockTenantId);
+	});
+
+	it('should return early when tenantId is null in route params', () => {
+		const paramMapMock = {
+			get: jest.fn().mockReturnValue(null),
+		};
+
+		activatedRouteMock.paramMap = of(paramMapMock);
+
+		component['subscribeToRouteParam']();
+
+		expect(paramMapMock.get).toHaveBeenCalledWith('tenantId');
+		expect(component.routeTenantId).toBeUndefined();
+	});
+
+	it('should call dialogService.message with CustomDialogWithTimerComponent and correct config', () => {
+		const mockSupplier: RegisterSupplier = {
+			firstName: 'John',
+			lastName: 'Doe',
+			email: 'test@example.com',
+			companyName: 'Test Company',
+			kvk: '12345678',
+			tenantId: 'tenant-123',
+			password: 'Password123!',
+			retypedPassword: 'Password123!',
+			agreedTerms: true,
+		};
+
+		const messageSpy = jest.spyOn(component['dialogService'], 'message');
+
+		component['displayAccountConfirmationDialog'](mockSupplier);
+
+		expect(messageSpy).toHaveBeenCalledWith(
+			expect.any(Function),
+			expect.objectContaining({
+				disableClose: true,
+			}),
+		);
+		expect(component.shouldDisplaySuccessfulRegistrationDialog).toBe(true);
+	});
+
+	describe('initializeMunicipalities', () => {
+		it('should set dropdownSource and updatedSource when data is returned', () => {
+			const mockTenants: Tenant[] = [
+				{
+					id: '1',
+					name: 'Tenant 1',
+					address: 'Address 1',
+					createdDate: new Date(2022, 1, 1),
+					phone: '1234567890',
+					email: 'tenant1@example.com',
+				},
+				{
+					id: '2',
+					name: 'Tenant 2',
+					address: 'Address 2',
+					createdDate: new Date(2022, 1, 2),
+					phone: '0987654321',
+					email: 'tenant2@example.com',
+				},
+			];
+			jest.spyOn(tenantService, 'getTenants').mockReturnValue(of(mockTenants));
+			component.routeTenantId = '';
+			component.initializeMunicipalities();
+			expect(component.dropdownSource).toEqual(mockTenants);
+			expect(component.updatedSource).toEqual(mockTenants);
+		});
+
+		it('should call preselectTenantInForm if routeTenantId is set', () => {
+			const mockTenants: Tenant[] = [
+				{
+					id: '1',
+					name: 'Tenant 1',
+					address: 'Address 1',
+					createdDate: new Date(2022, 1, 1),
+					phone: '1234567890',
+					email: 'tenant1@example.com',
+				},
+			];
+			jest.spyOn(tenantService, 'getTenants').mockReturnValue(of(mockTenants));
+			const preselectSpy = jest.spyOn(component as any, 'preselectTenantInForm');
+			component.routeTenantId = '1';
+			component.initializeMunicipalities();
+			expect(preselectSpy).toHaveBeenCalled();
+		});
+
+		it('should return early if data is falsy', () => {
+			jest.spyOn(tenantService, 'getTenants').mockReturnValue(of([]));
+			component.dropdownSource = [];
+			component.updatedSource = [];
+			component.initializeMunicipalities();
+			expect(component.dropdownSource).toEqual([]);
+			expect(component.updatedSource).toEqual([]);
+		});
 	});
 });

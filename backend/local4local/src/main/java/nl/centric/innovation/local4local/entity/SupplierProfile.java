@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import nl.centric.innovation.local4local.dto.SupplierProfileDto;
+import nl.centric.innovation.local4local.dto.SupplierProfilePatchDto;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.persistence.Column;
@@ -73,5 +75,41 @@ public class SupplierProfile extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "subcategory_id")
     private Subcategory subcategory;
+
+    @Column(name = "iban")
+    private String iban;
+
+    @Column(name = "bic")
+    private String bic;
+
+    public static SupplierProfile supplierProfileToEntity(SupplierProfilePatchDto dto) {
+        return buildSupplierProfile(dto);
+    }
+
+    public static SupplierProfile supplierProfileToEntity(SupplierProfileDto supplierProfileDto) {
+        return buildSupplierProfile(supplierProfileDto.supplierProfilePatchDto());
+    }
+
+    private static SupplierProfile buildSupplierProfile(SupplierProfilePatchDto dto) {
+        return SupplierProfile.builder()
+                .logo(dto.logo())
+                .ownerName(dto.ownerName())
+                .legalForm(LegalForm.builder().id(dto.legalForm()).build())
+                .groupName(Group.builder().id(dto.group()).build())
+                .category(Category.builder().id(dto.category()).build())
+                .subcategory(Subcategory.builder().id(dto.subcategory()).build())
+                .companyBranchAddress(dto.companyBranchAddress())
+                .branchProvince(dto.branchProvince())
+                .branchZip(dto.branchZip())
+                .branchLocation(dto.branchLocation())
+                .branchTelephone(dto.branchTelephone())
+                .email(dto.email())
+                .website(dto.website())
+                .accountManager(dto.accountManager())
+                .coordinatesString(dto.latlon().toString())
+                .iban(dto.iban())
+                .bic(dto.bic())
+                .build();
+    }
 
 }

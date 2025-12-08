@@ -1,0 +1,70 @@
+
+#stage 1 - get token for codeartifact
+FROM python:alpine AS codeartifact
+WORKDIR /app
+RUN apk -v --update add groff less
+RUN pip install awscli --upgrade
+
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG SECRET
+ARG PROFILE
+ENV PROFILE=${PROFILE}
+ENV SECRET=${SECRET}
+ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
+RUN aws codeartifact get-authorization-token --domain innovation-centric --domain-owner 235486961075 --region eu-west-2 --query authorizationToken --output text > ./result
+RUN aws secretsmanager get-secret-value --region eu-west-2 --secret-id cityPasses/${SECRET} --query SecretString --output text > ./secret.json
+
+#stage 2 - build project
+FROM maven:3-amazoncorretto-17 AS builder
+WORKDIR /app
+COPY --from=codeartifact /app/result .
+COPY --from=codeartifact /app/secret.json .
+
+
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG SECRET
+ARG PROFILE
+ENV PROFILE=${PROFILE}
+ENV SECRET=${SECRET}
+ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
+COPY pom.xml pom.xml
+COPY src src
+COPY settings.xml settings.xml
+COPY flyway.conf flyway.conf
+
+#This is needed to parse the json file from SecretsManager
+RUN yum update -y && \
+    yum install -y jq && \
+    yum clean all
+
+#Configure the settings.xml and flyway.conf files
+RUN sed -i -e 's|${CODEARTIFACT_AUTH_TOKEN}|'$(cat ./result)'|g' settings.xml
+RUN sed -i -e 's|${DB_URL}|'$(cat ./secret.json | jq -r '.["spring.datasource.url"]')'|g' flyway.conf
+RUN sed -i -e 's|${DB_USER}|'$(cat ./secret.json | jq -r '.["spring.datasource.username"]')'|g' flyway.conf
+RUN sed -i -e 's|${DB_PASS}|'$(cat ./secret.json | jq -r '.["spring.datasource.password"]')'|g' flyway.conf
+
+RUN mvn flyway:migrate --settings settings.xml 
+RUN mvn install --settings settings.xml
+
+#stage 3 - run project
+FROM amazoncorretto:17-al2-jdk
+WORKDIR /app
+COPY --from=builder /app/target/local4local-0.0.1-SNAPSHOT.jar .
+
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+ARG SECRET
+ARG PROFILE
+ENV PROFILE=${PROFILE}
+ENV SECRET=${SECRET}
+ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+EXPOSE 8080/tcp
+CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.profiles.active=${PROFILE}", "-Duser.dir=/app", "-Dja", "-jar", "/app/local4local-0.0.1-SNAPSHOT.jar"]
+

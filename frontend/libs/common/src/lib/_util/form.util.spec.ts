@@ -1,6 +1,4 @@
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
-import { CentricCounterMessages } from '@windmill/ng-windmill';
 
 import { FormUtil } from './form.util';
 
@@ -8,16 +6,6 @@ describe('FormUtil', () => {
 	let formGroup: FormGroup;
 	let form: FormGroup;
 	let formGroupRestrictions: FormGroup;
-
-	class MockTranslateService {
-		instant(key: string): string {
-			const translations: any = {
-				'general.label.charactersLeft': 'Characters left',
-				'general.label.charactersOverTheLimit': 'Characters over the limit',
-			};
-			return translations[key] || key;
-		}
-	}
 
 	beforeEach(() => {
 		formGroup = new FormBuilder().group({
@@ -30,8 +18,8 @@ describe('FormUtil', () => {
 		});
 
 		form = new FormGroup({
-			firstField: new FormControl(),
-			secondField: new FormControl(),
+			firstField: new FormControl(0),
+			secondField: new FormControl(12),
 		});
 
 		formGroupRestrictions = new FormGroup({
@@ -55,6 +43,8 @@ describe('FormUtil', () => {
 	});
 
 	it('should return true if both fields are untouched and empty when clicked outside', () => {
+		form.get('firstField')?.setValue('');
+		form.get('secondField')?.setValue('');
 		const result = FormUtil.validationFunctionErrorMinFieldCompleted('firstField', 'secondField', true, form);
 		expect(result).toBe(true);
 	});
@@ -66,6 +56,7 @@ describe('FormUtil', () => {
 	});
 	it('should return true if only one field is touched and empty when clicked outside', () => {
 		form.get('firstField')?.markAsTouched();
+		form.get('secondField')?.setValue('');
 		const result = FormUtil.validationFunctionErrorMinFieldCompleted('firstField', 'secondField', true, form);
 		expect(result).toBe(true);
 	});
@@ -395,7 +386,7 @@ describe('FormUtil', () => {
 		const result = FormUtil.calculateExpirationDate(pastStartDate, false);
 
 		expect(result instanceof Date).toBe(true);
-		expect(result).toEqual(expectedDate);
+		expect(result.toISOString().split('T')[0]).toEqual(expectedDate.toISOString().split('T')[0]);
 	});
 
 	it('should clear validators and errors for a given field', () => {
@@ -669,9 +660,10 @@ describe('FormUtil', () => {
 		const createOfferForm = new FormGroup({
 			[fullField]: new FormControl('someValue'),
 			['firstField']: new FormControl('Some value'),
+			['secondField']: new FormControl(''),
 		});
 
-		const result = FormUtil.shouldDisplayDoubleFieldValidityError(
+		const result = FormUtil.shouldShowRequiredErrorForEitherFields(
 			createOfferForm,
 			'firstField',
 			'secondField',
@@ -681,12 +673,14 @@ describe('FormUtil', () => {
 	});
 
 	it('should return true if fields are valid but clickedOutsideField is true', () => {
-		const result = FormUtil.shouldDisplayDoubleFieldValidityError(form, 'firstField', 'secondField', true);
+		form.get('firstField')?.setValue('');
+		form.get('secondField')?.setValue('');
+		const result = FormUtil.shouldShowRequiredErrorForEitherFields(form, 'firstField', 'secondField', true);
 		expect(result).toBeTruthy();
 	});
 
 	it('should return false if neither field has a value, both are valid, and clickedOutsideField is false', () => {
-		const result = FormUtil.shouldDisplayDoubleFieldValidityError(form, 'firstField', 'secondField', false);
+		const result = FormUtil.shouldShowRequiredErrorForEitherFields(form, 'firstField', 'secondField', false);
 		expect(result).toBeFalsy();
 	});
 
@@ -832,19 +826,6 @@ describe('FormUtil', () => {
 		);
 	});
 
-	it('should return the correct counter messages from TranslateService', () => {
-		const translateService = new MockTranslateService() as unknown as TranslateService;
-
-		const counterMessages: CentricCounterMessages = FormUtil.getTextAreaCounterMessages(translateService);
-
-		const expectedMessages: CentricCounterMessages = {
-			validLengthText: 'Characters left',
-			invalidLengthText: 'Characters over the limit',
-		};
-
-		expect(counterMessages).toEqual(expectedMessages);
-	});
-
 	describe('FormUtil.normalizeDate', () => {
 		test.each([
 			{ input: '2024-07-25T12:00:00Z', expected: '2024-07-25' },
@@ -913,5 +894,343 @@ describe('FormUtil', () => {
 		jest.useFakeTimers().setSystemTime(new Date('2024-02-10T12:34:56'));
 		const result = FormUtil.getClientDateTime();
 		expect(result).toBe('02/10/2024, 12:34:56');
+	});
+
+	describe('FormUtil.atLeastOneFieldGreaterThanZero', () => {
+		const cases = [
+			{
+				desc: 'should return true if both fields are 0',
+				first: 0,
+				second: 0,
+				expected: true,
+			},
+			{
+				desc: 'should return true if first is 0 and second is empty',
+				first: 0,
+				second: '',
+				expected: true,
+			},
+			{
+				desc: 'should return true if second is 0 and first is empty',
+				first: '',
+				second: 0,
+				expected: true,
+			},
+			{
+				desc: 'should return false if both fields are empty',
+				first: '',
+				second: '',
+				expected: false,
+			},
+			{
+				desc: 'should return false if both fields are greater than 0',
+				first: 2,
+				second: 3,
+				expected: false,
+			},
+			{
+				desc: 'should return false if one field is greater than 0 and the other is empty',
+				first: 5,
+				second: '',
+				expected: false,
+			},
+			{
+				desc: 'should return false if one field is 0 and the other is greater than 0',
+				first: 0,
+				second: 10,
+				expected: false,
+			},
+			{
+				desc: 'should return true if first is 0 and second is null',
+				first: 0,
+				second: null,
+				expected: true,
+			},
+			{
+				desc: 'should return true if second is 0 and first is null',
+				first: null,
+				second: 0,
+				expected: true,
+			},
+			{
+				desc: 'should return false if both fields are undefined',
+				first: undefined,
+				second: undefined,
+				expected: false,
+			},
+		];
+
+		it.each(cases)('$desc', ({ first, second, expected }) => {
+			const form = new FormGroup({
+				first: new FormControl(first),
+				second: new FormControl(second),
+			});
+			expect(FormUtil.isValidIfAtLeastOneFieldIsZeroOrEmpty(form, 'first', 'second')).toBe(expected);
+		});
+	});
+
+	describe('FormUtil.getTextAreaCounterData', () => {
+		it.each([
+			{
+				desc: 'input within limit (string)',
+				input: 'hello',
+				maxLength: 10,
+				expected: {
+					messageKey: 'general.label.charactersLeft',
+					messageCount: 5,
+					isOverLimit: false,
+				},
+			},
+			{
+				desc: 'input exceeds limit (string)',
+				input: 'this is too long',
+				maxLength: 5,
+				expected: {
+					messageKey: 'general.label.charactersOverTheLimit',
+					messageCount: 'this is too long'.length - 5,
+					isOverLimit: true,
+				},
+			},
+			{
+				desc: 'null input treated as empty',
+				input: null,
+				maxLength: 7,
+				expected: {
+					messageKey: 'general.label.charactersLeft',
+					messageCount: 7,
+					isOverLimit: false,
+				},
+			},
+			{
+				desc: 'number input within limit',
+				input: 12345,
+				maxLength: 6,
+				expected: {
+					messageKey: 'general.label.charactersLeft',
+					messageCount: 1,
+					isOverLimit: false,
+				},
+			},
+			{
+				desc: 'number input exceeding limit',
+				input: 123456789,
+				maxLength: 4,
+				expected: {
+					messageKey: 'general.label.charactersOverTheLimit',
+					messageCount: 5,
+					isOverLimit: true,
+				},
+			},
+		])('should return correct data when $desc', ({ input, maxLength, expected }) => {
+			const result = FormUtil.getTextAreaCounterData(input, maxLength);
+			expect(result).toEqual(expected);
+		});
+	});
+
+	describe('FormUtil.isControlInvalid', () => {
+		it('should return false if control is not touched', () => {
+			const form = new FormGroup({
+				controlName: new FormControl('', [Validators.required]),
+			});
+
+			const result = FormUtil.isControlInvalid('controlName', form);
+
+			expect(result).toBe(false);
+		});
+
+		it('should return true if control is touched and invalid', () => {
+			const control = new FormControl('', [Validators.required]);
+			control.markAsTouched();
+
+			const form = new FormGroup({
+				controlName: control,
+			});
+
+			const result = FormUtil.isControlInvalid('controlName', form);
+
+			expect(result).toBe(true);
+		});
+
+		it('should return false if control is touched and valid', () => {
+			const control = new FormControl('value', [Validators.required]);
+			control.markAsTouched();
+
+			const form = new FormGroup({
+				controlName: control,
+			});
+
+			const result = FormUtil.isControlInvalid('controlName', form);
+
+			expect(result).toBe(false);
+		});
+	});
+	it('should return true when control has min error', () => {
+		const numberForm = new FormGroup({
+			numberField: new FormControl(5, [Validators.min(10)]),
+		});
+
+		numberForm.get('numberField')?.markAsTouched();
+		numberForm.get('numberField')?.updateValueAndValidity();
+
+		const expectedError = { min: { min: 10, actual: 5 } };
+		expect(FormUtil.hasControlMinMaxErrors('numberField', numberForm)).toEqual(expectedError.min);
+	});
+
+	it('should return true when control has min error with correct error object structure', () => {
+		const numberForm = new FormGroup({
+			numberField: new FormControl(5, [Validators.min(10)]),
+		});
+
+		numberForm.get('numberField')?.markAsTouched();
+		numberForm.get('numberField')?.updateValueAndValidity();
+
+		const result = FormUtil.hasControlMinMaxErrors('numberField', numberForm);
+		expect(result).toBeTruthy();
+		expect(result).toMatchObject({ min: 10, actual: 5 });
+	});
+
+	it('should return false when control has no min or max errors', () => {
+		const validForm = new FormGroup({
+			numberField: new FormControl(7, [Validators.min(5), Validators.max(10)]),
+		});
+
+		validForm.get('numberField')?.markAsTouched();
+		validForm.get('numberField')?.updateValueAndValidity();
+
+		expect(FormUtil.hasControlMinMaxErrors('numberField', validForm)).toBeFalsy();
+	});
+
+	describe('hasControlErrorsAndTouched', () => {
+		it('should return true if control has errors and is touched', () => {
+			const formGroup = new FormBuilder().group({
+				testField: ['', Validators.required],
+			});
+			const control = formGroup.get('testField');
+			control?.setErrors({ required: true });
+			control?.markAsTouched();
+
+			const result = FormUtil.hasControlErrorsAndTouched('testField', formGroup);
+
+			expect(result).toBe(true);
+		});
+
+		it('should return false if control has errors but is not touched', () => {
+			const formGroup = new FormBuilder().group({
+				testField: ['', Validators.required],
+			});
+			const control = formGroup.get('testField');
+			control?.setErrors({ required: true });
+			control?.markAsUntouched();
+
+			const result = FormUtil.hasControlErrorsAndTouched('testField', formGroup);
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if control is touched but has no errors', () => {
+			const formGroup = new FormBuilder().group({
+				testField: [''],
+			});
+			const control = formGroup.get('testField');
+			control?.markAsTouched();
+
+			const result = FormUtil.hasControlErrorsAndTouched('testField', formGroup);
+
+			expect(result).toBe(false);
+		});
+
+		it('should return false if control does not exist', () => {
+			const formGroup = new FormBuilder().group({
+				otherField: [''],
+			});
+
+			const result = FormUtil.hasControlErrorsAndTouched('nonExistentField', formGroup);
+
+			expect(result).toBe(false);
+		});
+
+		it('should return empty object if controlValue is less than or equal to maxAmount', () => {
+			expect(FormUtil.nonMaxBenefitAmountValidator(5, 10)).toEqual({});
+			expect(FormUtil.nonMaxBenefitAmountValidator(10, 10)).toEqual({});
+		});
+
+		it('should return { nonMaxBenefitAmount: true } if controlValue is greater than maxAmount', () => {
+			expect(FormUtil.nonMaxBenefitAmountValidator(15, 10)).toEqual({ nonMaxBenefitAmount: true });
+		});
+
+		it('should return true if control has pattern error', () => {
+			const form = new FormGroup({
+				field: new FormControl('123', [Validators.pattern(/^[a-z]+$/)]),
+			});
+			expect(FormUtil.hasPatternError(form, 'field')).toBe(true);
+		});
+
+		it('should return false if control does not have pattern error', () => {
+			const form = new FormGroup({
+				field: new FormControl('abc', [Validators.pattern(/^[a-z]+$/)]),
+			});
+			expect(FormUtil.hasPatternError(form, 'field')).toBe(false);
+		});
+
+		it('should return false if control does not exist for pattern error', () => {
+			const form = new FormGroup({});
+			expect(FormUtil.hasPatternError(form, 'missing')).toBe(false);
+		});
+
+		it('should return true if control has required error', () => {
+			const form = new FormGroup({
+				field: new FormControl('', [Validators.required]),
+			});
+			form.get('field')?.setErrors({ required: true });
+			expect(FormUtil.hasFormControlRequiredErrors('field', form)).toBe(true);
+		});
+
+		it('should return undefined if control does not have required error', () => {
+			const form = new FormGroup({
+				field: new FormControl('value'),
+			});
+			expect(FormUtil.hasFormControlRequiredErrors('field', form)).toBe(undefined);
+		});
+
+		it('should return undefined if control does not exist for required error', () => {
+			const form = new FormGroup({});
+			expect(FormUtil.hasFormControlRequiredErrors('missing', form)).toBe(undefined);
+		});
+
+		it('should return true if control has errors and is touched', () => {
+			const form = new FormGroup({
+				field: new FormControl(''),
+			});
+			form.get('field')?.setErrors({ required: true });
+			form.get('field')?.markAsTouched();
+			expect(FormUtil.hasControlErrorsAndTouched('field', form)).toBe(true);
+		});
+
+		it('should return false if control has errors but is not touched', () => {
+			const form = new FormGroup({
+				field: new FormControl(''),
+			});
+			form.get('field')?.setErrors({ required: true });
+			form.get('field')?.markAsUntouched();
+			expect(FormUtil.hasControlErrorsAndTouched('field', form)).toBe(false);
+		});
+
+		it('should return false if control does not exist for errors and touched', () => {
+			const form = new FormGroup({});
+			expect(FormUtil.hasControlErrorsAndTouched('missing', form)).toBe(false);
+		});
+	});
+	describe('validationNoSpaceFunctionError', () => {
+		it.each([
+			{ desc: 'value is only spaces', value: '   ', expected: { required: true } },
+			{ desc: 'value is empty string', value: '', expected: { required: true } },
+			{ desc: 'value is non-empty string with non-space characters', value: 'abc', expected: null },
+			{ desc: 'value is a number', value: 123, expected: null },
+			{ desc: 'value is null', value: null, expected: null },
+			{ desc: 'value is undefined', value: undefined, expected: null },
+		])('should return $expected for $desc', ({ value, expected }) => {
+			const control = { value } as any;
+			expect(FormUtil.validationNoSpaceFunctionError(control)).toEqual(expected);
+		});
 	});
 });

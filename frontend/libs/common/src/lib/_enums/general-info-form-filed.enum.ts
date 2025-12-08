@@ -9,4 +9,6 @@ export enum GeneralInfoFormFields {
 	commerceMainLocation = 'commerceMainLocation',
 	commercePostalAdress = 'commercePostalAdress',
 	legalform = 'legalForm',
+	iban = 'iban',
+	bic = 'bic',
 }

@@ -8,6 +8,7 @@
 			ariaAttributes
 			[ariaLabelTranslation]="'general.button.close' | translate"
 			[attr.ariaLabel]="'general.button.close' | translate"
+			[tooltipColor]="'surface'"
 			[tooltipText]="'general.button.close' | translate"
 			(click)="close()">
 			<centric-icon2 [svgIcon]="'cancel_b'" [size]="'16'"></centric-icon2>
@@ -31,7 +32,7 @@
 	</section>
 </div>
 <div mat-dialog-actions>
-	<centric-button type="button-link-dark" (click)="close()">
+	<centric-button type="ghost-greyscale" (click)="close()">
 		{{ 'general.button.cancel' | translate }}
 	</centric-button>
 	<centric-button [disabled]="isButtonDisabled()" (click)="accept()">

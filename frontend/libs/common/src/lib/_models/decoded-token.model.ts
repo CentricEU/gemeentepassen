@@ -1,7 +1,9 @@
+import { RoleDto } from './role.model';
+
 export class DecodedToken {
 	exp: number;
 	iat: number;
-	role: string;
+	role: RoleDto;
 	sub: string;
 	userId: string;
 	username: string;

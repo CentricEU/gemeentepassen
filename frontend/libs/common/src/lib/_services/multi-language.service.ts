@@ -1,8 +1,10 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
 import { DateAdapter } from '@angular/material/core';
 import { TranslateService } from '@ngx-translate/core';
-import { CookieService } from 'ngx-cookie';
+import { CookieService } from 'ngx-cookie-service';
 
+import { AppType } from '../_enums/app-type.enum';
 import { Languages } from '../_enums/language.enum';
 
 @Injectable({
@@ -14,41 +16,48 @@ export class MultilanguageService {
 	public translationsLoadedEventEmitter = new EventEmitter<boolean>();
 
 	constructor(
-		private _translateService: TranslateService,
-		private _dateAdapter: DateAdapter<unknown>,
-		private _cookieService: CookieService,
+		private translateService: TranslateService,
+		private dateAdapter: DateAdapter<unknown>,
+		private cookieService: CookieService,
+		@Inject(DOCUMENT) private document: Document,
 	) {}
 
-	public setupLanguage(): void {
-		this._translateService.addLangs([Languages.en, Languages.nl]);
-		this._translateService.setDefaultLang(this.defLang);
+	public setupLanguage(appType: AppType): void {
+		this.translateService.addLangs([Languages.en, Languages.nl]);
 
-		const recordCookie = this._cookieService.get('language');
+		const recordCookie = this.cookieService.get(`language_${appType.toLowerCase()}`) as Languages;
 
 		if (recordCookie) {
-			this.setUsedLanguage(recordCookie);
+			this.setDocumentLang(recordCookie);
+			this.setUsedLanguage(recordCookie, appType);
 			return;
 		}
 
-		this.setUsedLanguage(this.defLang);
+		this.translateService.setDefaultLang(this.defLang);
+		this.setDocumentLang(this.defLang);
+		this.setUsedLanguage(this.defLang, appType);
 	}
 
-	private setUsedLanguage(lang: string): void {
-		this._dateAdapter.setLocale(lang);
+	public setUsedLanguage(lang: Languages, appType: AppType): void {
+		this.dateAdapter.setLocale(lang);
 
-		this._translateService.use(lang).subscribe((value) => {
+		this.translateService.use(lang).subscribe((value) => {
 			this.translations = value;
 			this.translationsLoadedEventEmitter.emit(true);
 		});
 
 		const isLocalhost = window.location.hostname === 'localhost';
-		const cookieDomain = isLocalhost ? 'localhost' : '.stadspassen.eu';
+		const cookieDomain = isLocalhost ? 'localhost' : '.gemeentepassen.eu';
 
-		this._cookieService.put('language', lang, {
+		this.cookieService.set(`language_${appType.toLowerCase()}`, lang, {
 			domain: cookieDomain,
 			path: '/',
 			secure: !isLocalhost,
-			sameSite: 'lax',
+			sameSite: 'Lax',
 		});
+	}
+
+	private setDocumentLang(lang: Languages): void {
+		this.document.documentElement.lang = lang.split('-')[0];
 	}
 }

@@ -1,9 +1,15 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Environment, GenericStatusEnum, OfferDto, OfferTableDto } from '@frontend/common';
+import {
+	Environment,
+	GenericStatusEnum,
+	OfferDto,
+	OfferTableDto,
+	SKIP_ERROR_TOASTER,
+	TimeIntervalPeriod,
+} from '@frontend/common';
 import { Observable } from 'rxjs';
 
-import { TimeIntervalPeriod } from '../../enums/time-interval-period.enum';
 import { DeleteOffersDto } from '../../models/delete-offers-dto.model';
 import { FilterOfferRequestDto } from '../../models/filter-offer-request-dto.model';
 import { OfferRejectionReasonDto } from '../../models/offer-rejection-reason-dto.model';
@@ -12,7 +18,7 @@ import { OfferType } from '../../models/offer-type.model';
 import { ReactivateOfferDto } from '../../models/reactivate-offer-dto.model';
 
 @Injectable({
-	providedIn: 'root'
+	providedIn: 'root',
 })
 export class OfferService {
 	private static httpHeaders = new HttpHeaders().set('Content-Type', 'application/json');
@@ -22,23 +28,23 @@ export class OfferService {
 
 	constructor(
 		@Inject('env') private environment: Environment,
-		private httpClient: HttpClient
+		private httpClient: HttpClient,
 	) {}
 
 	public createOffer(offerDto: OfferDto): Observable<OfferDto> {
 		return this.httpClient.post<OfferDto>(`${this.environment.apiPath}/offers`, offerDto, {
-			headers: OfferService.httpHeaders
+			headers: OfferService.httpHeaders,
 		});
 	}
 
 	public getFilteredOffers(
 		filterOfferRequestDto: FilterOfferRequestDto,
 		page: number,
-		size: number
+		size: number,
 	): Observable<OfferTableDto[] | []> {
 		let httpParams = new HttpParams()
 			.set('status', filterOfferRequestDto.status || '')
-			.set('grantId', filterOfferRequestDto.grantId || '')
+			.set('benefitId', filterOfferRequestDto.benefitId || '')
 			.set('pageIndex', page.toString())
 			.set('pageSize', size.toString());
 
@@ -49,7 +55,7 @@ export class OfferService {
 		}
 
 		return this.httpClient.get<OfferTableDto[]>(`${this.environment.apiPath}/offers/filter`, {
-			params: httpParams
+			params: httpParams,
 		});
 	}
 
@@ -64,7 +70,7 @@ export class OfferService {
 	public countFilteredOffers(filterOfferRequestDto: FilterOfferRequestDto): Observable<number> {
 		let httpParams = new HttpParams()
 			.set('status', filterOfferRequestDto.status || '')
-			.set('grantId', filterOfferRequestDto.grantId || '');
+			.set('benefitId', filterOfferRequestDto.benefitId || '');
 
 		const offerTypeId = filterOfferRequestDto.offerTypeId;
 
@@ -97,9 +103,17 @@ export class OfferService {
 		return this.httpClient.get<OfferRejectionReasonDto>(`${this.environment.apiPath}/offers/rejection/${offerId}`);
 	}
 
-	public getOfferCountsByStatus(timeIntervalPeriod: TimeIntervalPeriod): Observable<OfferStatusCountsDto> {
+	public getOfferCountsByStatus(
+		timeIntervalPeriod: TimeIntervalPeriod,
+		skipErrorToaster: boolean,
+	): Observable<OfferStatusCountsDto> {
+		const context = new HttpContext().set(SKIP_ERROR_TOASTER, skipErrorToaster);
+
 		return this.httpClient.get<OfferStatusCountsDto>(
-			`${this.environment.apiPath}/offers/status/counts/${timeIntervalPeriod}`
+			`${this.environment.apiPath}/offers/status/counts/${timeIntervalPeriod}`,
+			{
+				context,
+			},
 		);
 	}
 }

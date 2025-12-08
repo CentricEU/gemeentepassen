@@ -1,5 +1,6 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
-@import '../../../../../../libs/shared-assets/_styles/form';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+@use '../../../../../../libs/shared-assets/_styles/form';
+@use '../../../../../../libs/shared-assets/_styles/email-chips.scss';
 
 :host {
 	::ng-deep {
@@ -8,17 +9,25 @@
 				background-color: transparent;
 			}
 		}
+
+		centric-chip .centric-chip-container.has-max-width {
+			max-width: fit-content;
+		}
 	}
 
 	width: 100%;
 
 	.upload-button {
-		@include size(auto, 100%);
+		@include mixins.size(auto, 100%);
 	}
 }
 
+.cashier-emails {
+	grid-column: 1/-1;
+}
+
 .button-style {
-	@include flex(row, flex-start, center);
+	@include mixins.flex(row, flex-start, center);
 	gap: 16px;
 	padding-bottom: 16px;
 }

@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 
 import { ChangePassword } from '../_models/change-password.model';
 import { Environment } from '../_models/environment.model';
+import { SetupPassword } from '../_models/setup-password.model';
+import { SetupPasswordValidate } from '../_models/setup-password-validate.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -18,6 +20,17 @@ export class ChangePasswordService {
 		return this.httpClient.put<ChangePassword>(
 			`${this.environment.apiPath}/users/recover/reset-password`,
 			changePassword,
+		);
+	}
+
+	public setupPassword(setupPassword: SetupPassword): Observable<SetupPassword> {
+		return this.httpClient.put<SetupPassword>(`${this.environment.apiPath}/users/setup-password`, setupPassword);
+	}
+
+	public validateSetupPasswordToken(setupPassValidate: SetupPasswordValidate): Observable<boolean> {
+		return this.httpClient.post<boolean>(
+			`${this.environment.apiPath}/users/setup-password/validate`,
+			setupPassValidate,
 		);
 	}
 }

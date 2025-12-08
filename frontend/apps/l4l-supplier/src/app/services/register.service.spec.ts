@@ -49,6 +49,9 @@ describe('RegisterService', () => {
 			expect(data).toMatchObject(expectedResult);
 		});
 
-		expect(httpClientSpy.post).toHaveBeenCalledWith(`${environmentMock.apiPath}/suppliers/register`, expectedResult);
+		expect(httpClientSpy.post).toHaveBeenCalledWith(
+			`${environmentMock.apiPath}/suppliers/register`,
+			expectedResult,
+		);
 	});
 });

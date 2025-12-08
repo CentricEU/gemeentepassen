@@ -4,6 +4,7 @@ import { Component, Input } from '@angular/core';
 	selector: 'frontend-no-data',
 	templateUrl: './no-data.component.html',
 	styleUrls: ['./no-data.component.scss'],
+	standalone: false,
 })
 export class NoDataComponent {
 	@Input() noDataTitle: string;

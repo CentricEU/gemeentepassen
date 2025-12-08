@@ -1,0 +1,31 @@
+:host {
+	.l4l-form-item-group {
+		::ng-deep {
+			.centric-form-item-group {
+				gap: 16px;
+			}
+		}
+	}
+
+	::ng-deep {
+		windmill-select.ng-invalid.ng-dirty {
+			.select-wrapper {
+				button {
+					box-shadow: 0 0 0 2px inset var(--status-danger-500);
+				}
+			}
+		}
+	}
+}
+
+.citizen-group-block {
+	display: block;
+
+	.citizen-group-checkbox:not(:last-child) {
+		padding-bottom: 8px;
+	}
+}
+
+.eligibility-criteria-label {
+	margin-bottom: 8px !important;
+}

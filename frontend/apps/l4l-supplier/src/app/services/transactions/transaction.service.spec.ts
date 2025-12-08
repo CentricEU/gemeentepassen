@@ -1,10 +1,8 @@
 import { HttpClient, HttpClientModule, HttpParams } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { TransactionTableDto } from '@frontend/common';
+import { MonthYearEntry, TransactionTableDto, ValidatedCode } from '@frontend/common';
 import { of } from 'rxjs';
 
-import { MonthYearEntry } from '../../models/month-year-entry.model';
-import { ValidatedCode } from '../../models/validated-code.models';
 import { TransactionService } from './transaction.service';
 
 describe('TransactionService', () => {
@@ -48,7 +46,7 @@ describe('TransactionService', () => {
 			expect(data).toEqual(expectedValidatedCodes);
 		});
 
-		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/transactions/all`);
+		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/transactions/supplier/all`);
 	});
 
 	it('should return the number of all transactions', () => {
@@ -58,14 +56,14 @@ describe('TransactionService', () => {
 			expect(data).toEqual(5);
 		});
 
-		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/transactions/count-all`);
+		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/transactions/supplier/count-all`);
 	});
 
 	it('should return the number of all current month transactions', () => {
 		const selectedDate = { monthValue: 1, year: 2024 };
 		const httpParams = new HttpParams().set('month', selectedDate.monthValue).set('year', selectedDate.year);
 
-		const expectedUrl = `${environmentMock.apiPath}/transactions/count-by-month-and-year`;
+		const expectedUrl = `${environmentMock.apiPath}/transactions/supplier/count-by-month-and-year`;
 
 		httpClientSpy.get.mockReturnValue(of(15));
 
@@ -88,7 +86,7 @@ describe('TransactionService', () => {
 			expect(data).toEqual(years);
 		});
 
-		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/transactions/years`);
+		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/transactions/supplier/years`);
 	});
 
 	it('should return paginated transactions', () => {

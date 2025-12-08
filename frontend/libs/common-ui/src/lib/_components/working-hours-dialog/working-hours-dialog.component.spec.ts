@@ -1,11 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthService, WorkingHoursService } from '@frontend/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
 import { CommonUiModule } from '../../common-ui.module';
+import { WindmillModule } from '../../windmil.module';
 import { WorkingHoursDialogComponent } from './working-hours-dialog.component';
 
 describe('SaveWorkingHoursComponent', () => {
@@ -27,7 +29,13 @@ describe('SaveWorkingHoursComponent', () => {
 
 		await TestBed.configureTestingModule({
 			declarations: [WorkingHoursDialogComponent],
-			imports: [ReactiveFormsModule, TranslateModule.forRoot(), CommonUiModule],
+			imports: [
+				ReactiveFormsModule,
+				TranslateModule.forRoot(),
+				CommonUiModule,
+				WindmillModule,
+				NoopAnimationsModule,
+			],
 			providers: [
 				FormBuilder,
 				{ provide: MatDialogRef, useValue: dialogRefMock },

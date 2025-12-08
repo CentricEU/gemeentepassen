@@ -8,6 +8,8 @@ export class GeneralInformation {
 	public group: string;
 	public category: string;
 	public subcategory: string;
+	public iban: string;
+	public bic?: string;
 	public fileName?: string;
 	[key: string]: string | undefined;
 
@@ -20,5 +22,6 @@ export class GeneralInformation {
 		this.group = '';
 		this.category = '';
 		this.subcategory = '';
+		this.iban = '';
 	}
 }

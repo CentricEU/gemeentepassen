@@ -5,9 +5,14 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 	selector: 'frontend-custom-dialog',
 	templateUrl: './custom-dialog.component.html',
 	styleUrls: ['./custom-dialog.component.scss'],
+	standalone: false,
 })
 export class CustomDialogComponent {
 	@Input() customButton: boolean;
+
+	public get isRejectionDialog(): boolean {
+		return !!this.data.optionalText?.reason;
+	}
 
 	public get isShown(): boolean {
 		return this.data.acceptButtonText;

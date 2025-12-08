@@ -13,7 +13,7 @@ import AuthenticationContext from "../../contexts/authentication/authentication-
 import { useContext, useState } from "react";
 import { DeleteAccountDto } from "../../utils/models/DeleteAccountDto";
 import { LocationContext } from "../../contexts/location/location-provider";
-import { clearToken } from "../../utils/auth/jwtSecurity";
+import { clearAllTokens } from "../../utils/auth/jwtSecurity";
 import { NavigationEnum } from "../../utils/enums/navigationEnum";
 
 export function DeleteAccount({ navigation }: { navigation: any }) {
@@ -36,11 +36,13 @@ export function DeleteAccount({ navigation }: { navigation: any }) {
   });
 
   const clearState = async () => {
-    await clearToken();
+    await clearAllTokens();
     const newState = {
-      token: null,
+      accessToken: null,
+      refreshToken: null,
       authenticated: false,
-      accountDeleted: true
+      accountDeleted: true,
+      error: null
     };
     setAuthState(newState);
     handleClearWatch();

@@ -2,7 +2,7 @@ package nl.centric.innovation.local4local.enums;
 
 public enum AssetsEnum {
 
-    LOCAL_LOGO("/assets/images/tilburg-logo.png");
+    LOCAL_LOGO("/assets/images/citypasses-logo.png");
 
     private final String path;
 

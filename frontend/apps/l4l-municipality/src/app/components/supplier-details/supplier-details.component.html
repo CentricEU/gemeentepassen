@@ -1,24 +1,24 @@
-<centric-mat-tab-group [theme]="2" [selectedIndex]="tabIndex" (selectedTabChange)="tabChanged($event)">
-	<centric-mat-tab>
-		<ng-container tab-label>
+<windmill-tab-group [theme]="'underlined'" [selectedIndex]="tabIndex" (selectedTabChange)="tabChanged($event)">
+	<windmill-tab>
+		<ng-template windmill-tab-label>
 			<centric-icon2 [svgIcon]="'shop_b'" [size]="'20'"></centric-icon2>
 			<span>{{ 'general.pages.supplierDetails' | translate }}</span>
-		</ng-container>
-		<ng-container>
+		</ng-template>
+		<ng-container card-content>
 			<frontend-supplier-profile [isReadOnly]="true"></frontend-supplier-profile>
 		</ng-container>
-	</centric-mat-tab>
+	</windmill-tab>
 
-	<centric-mat-tab>
-		<ng-container tab-label>
+	<windmill-tab>
+		<ng-template windmill-tab-label>
 			<centric-icon2 [svgIcon]="'star_b'" [size]="'20'"></centric-icon2>
 			<span>{{ 'general.pages.offers' | translate }}</span>
-		</ng-container>
-		<ng-container>
+		</ng-template>
+		<ng-container card-content>
 			<frontend-offers-for-municipality [supplierId]="supplierId"></frontend-offers-for-municipality>
 		</ng-container>
-	</centric-mat-tab>
-</centric-mat-tab-group>
+	</windmill-tab>
+</windmill-tab-group>
 
 <ng-template #noData>
 	<frontend-no-data [noDataTitle]="'noDataTitle'" [noDataDescription]="'noDataDescription'"> </frontend-no-data>

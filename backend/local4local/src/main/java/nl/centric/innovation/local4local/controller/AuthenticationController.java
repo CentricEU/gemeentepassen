@@ -1,13 +1,19 @@
 package nl.centric.innovation.local4local.controller;
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.proc.BadJOSEException;
+import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.dto.AuthResponseDto;
 import nl.centric.innovation.local4local.dto.TokenRefreshResponseDto;
+import nl.centric.innovation.local4local.dto.TokenRequest;
 import nl.centric.innovation.local4local.exceptions.AuthenticationLoginException;
 import nl.centric.innovation.local4local.exceptions.CaptchaException;
-import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
+import nl.centric.innovation.local4local.exceptions.JwkNotFoundException;
+import nl.centric.innovation.local4local.exceptions.JwtValidationException;
 import nl.centric.innovation.local4local.exceptions.TokenRefreshException;
-import nl.centric.innovation.local4local.service.interfaces.RefreshTokenService;
-import org.springframework.beans.factory.annotation.Autowired;
+import nl.centric.innovation.local4local.service.impl.AuthenticationService;
+import nl.centric.innovation.local4local.service.impl.RefreshTokenService;
+import nl.centric.innovation.local4local.service.impl.SignicatService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,37 +23,45 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
 import nl.centric.innovation.local4local.dto.LoginRequestDTO;
-import nl.centric.innovation.local4local.dto.LoginResponseDTO;
+import nl.centric.innovation.local4local.dto.LoginResponseDto;
 import nl.centric.innovation.local4local.exceptions.InvalidRoleException;
-import nl.centric.innovation.local4local.exceptions.L4LException;
-import nl.centric.innovation.local4local.service.interfaces.AuthenticationService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.io.IOException;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/authenticate")
 public class AuthenticationController {
 
-    @Autowired
-    private AuthenticationService authService;
+    private final AuthenticationService authService;
 
-    @Autowired
-    private RefreshTokenService refreshTokenService;
+    private final RefreshTokenService refreshTokenService;
+
+    private final SignicatService signicatService;
 
     @PostMapping()
-    public ResponseEntity<LoginResponseDTO> createAuthenticationToken(@RequestBody LoginRequestDTO loginDTO,
+    public ResponseEntity<LoginResponseDto> createAuthenticationToken(@RequestBody @Valid LoginRequestDTO loginDTO,
                                                                       HttpServletRequest request)
-            throws CaptchaException, L4LException, AuthenticationLoginException, InvalidRoleException, DtoValidateNotFoundException {
+            throws CaptchaException, AuthenticationLoginException, InvalidRoleException {
 
         AuthResponseDto authenticateByRole = authService.authenticateByRole(loginDTO, request);
         return ResponseEntity.ok().headers(authenticateByRole.httpHeaders()).body(authenticateByRole.loginResponseDTO());
     }
 
-    @PostMapping("/refreshToken")
-    public ResponseEntity<?> refreshToken(@CookieValue(name = "refreshToken") String requestRefreshToken) throws TokenRefreshException {
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@CookieValue(name = "refreshToken", required = false) String requestRefreshToken) throws TokenRefreshException {
         TokenRefreshResponseDto tokenRefreshResponseDto = refreshTokenService.refreshToken(requestRefreshToken);
         return ResponseEntity.ok(tokenRefreshResponseDto);
+    }
+
+    @PostMapping("/signicat")
+    public ResponseEntity<?> authenticateWithSignicat(@RequestBody @Valid TokenRequest token) throws AuthenticationLoginException, JwtValidationException, BadJOSEException, IOException, JwkNotFoundException, JOSEException {
+        LoginResponseDto loginResponse = signicatService.authenticateWithSignicat(token);
+        return ResponseEntity.ok(loginResponse);
+
     }
 
 }

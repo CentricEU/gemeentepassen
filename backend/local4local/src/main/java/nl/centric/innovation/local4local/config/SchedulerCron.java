@@ -2,10 +2,11 @@ package nl.centric.innovation.local4local.config;
 
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.exceptions.DtoValidateException;
+import nl.centric.innovation.local4local.repository.BenefitRepository;
 import nl.centric.innovation.local4local.repository.OfferRepositoryCustom;
+import nl.centric.innovation.local4local.repository.OfferSearchHistoryRepositoryCustom;
 import nl.centric.innovation.local4local.repository.RecoverPasswordRepositoryCustom;
 import nl.centric.innovation.local4local.service.interfaces.BankHolidaysService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -27,8 +28,11 @@ public class SchedulerCron {
 
     private final OfferRepositoryCustom offerRepository;
 
+    private final BenefitRepository benefitRepository;
+
     private final BankHolidaysService bankHolidaysService;
 
+    private final OfferSearchHistoryRepositoryCustom offerSearchHistoryRepositoryCustom;
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     //will execute on every Monday at 1am
@@ -45,6 +49,13 @@ public class SchedulerCron {
         offerRepository.updateOfferStatus();
     }
 
+    //will execute on each day at 2:30am
+    @Scheduled(cron = "0 30 2 * * *")
+    public void taskToUpdateBenefitStatus() {
+        log.info("Scheduler Change Benefit Status task started at : " + sdf.format(new Date()));
+        benefitRepository.updateBenefitStatus();
+    }
+
     //will execute on 31 December at 3:30am
     @Scheduled(cron = "0 30 3 31 12 *")
     public void taskToGetBankHolidays() {
@@ -58,6 +69,14 @@ public class SchedulerCron {
             log.error("Error while Getting Bank Holidays: ");
             log.error(e.getMessage());
         }
+    }
+
+
+    //will execute on each day at 2:30am
+    @Scheduled(cron = "0 30 2 * * *")
+    public void taskToDeleteOfferSearchHistory() {
+        log.info("Scheduler Delete Offer Search History task started at : " + sdf.format(new Date()));
+        offerSearchHistoryRepositoryCustom.cleanupOfferSearchHistory();
     }
 
 }

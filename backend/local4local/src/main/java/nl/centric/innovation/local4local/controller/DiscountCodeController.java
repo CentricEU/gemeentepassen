@@ -57,7 +57,7 @@ public class DiscountCodeController {
     }
 
     @PostMapping("/validate")
-    @Secured(Role.ROLE_SUPPLIER)
+    @Secured({Role.ROLE_SUPPLIER, Role.ROLE_CASHIER})
     public ResponseEntity<CodeValidationResponseDto> validateDiscountCode(@Valid @RequestBody CodeValidationRequestDto codeValidationDto) throws DtoValidateException {
         CodeValidationResponseDto validationResponse = discountCodeService.validateAndProcessDiscountCode(codeValidationDto);
         return ResponseEntity.ok(validationResponse);

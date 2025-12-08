@@ -1,5 +1,5 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
-@import '../../../../../../libs/shared-assets/_styles/form';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+@use '../../../../../../libs/shared-assets/_styles/form';
 
 :host {
 	form {
@@ -7,9 +7,9 @@
 	}
 }
 .restrictions-section {
-	@include flex(column, $gap: 16px);
+	@include mixins.flex(column, $gap: 16px);
 }
 
 .restriction-items-section {
-	@include flex(column, $gap: 24px);
+	@include mixins.flex(column, $gap: 24px);
 }

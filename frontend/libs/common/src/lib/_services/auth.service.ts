@@ -1,14 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-
+import { Observable, Subject } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 import { Role } from '../_enums/roles.enum';
 import { UserInfo } from '../_enums/user-information.enum';
 import { DecodedToken } from '../_models/decoded-token.model';
 import { Environment } from '../_models/environment.model';
 import { JwtToken } from '../_models/jwt-token.model';
 import { RefreshToken } from '../_models/refresh-token.model';
+import { RoleDto } from '../_models/role.model';
+import { TokenRequest } from '../_models/token-request.model';
 import { JwtUtil } from '../_util/jwt.util';
 
 @Injectable({
@@ -17,6 +18,8 @@ import { JwtUtil } from '../_util/jwt.util';
 export class AuthService {
 	public loginEventEmitter = new EventEmitter<boolean>();
 
+	public logoutSubject = new Subject<void>();
+	public logoutObservable = this.logoutSubject.asObservable();
 	private jwtDecode = JwtUtil.decodeToken;
 	private decodedToken: DecodedToken | null;
 
@@ -29,10 +32,11 @@ export class AuthService {
 		if (!this.decodedToken) {
 			this.decodeToken(this.jwtToken);
 		}
+
 		return this.decodedToken;
 	}
 
-	public get userRole(): string | undefined {
+	public get userRole(): RoleDto | undefined {
 		return this.checkIfTokenExists() ? this.token?.role : undefined;
 	}
 
@@ -76,8 +80,19 @@ export class AuthService {
 		);
 	}
 
+	public authenticateWithSignicat(token: TokenRequest): Observable<void> {
+		const url = `${this.environment.apiPath}/authenticate/signicat`;
+		return this.http.post<JwtToken>(url, token).pipe(
+			tap((result) => {
+				this.setSession(result.token);
+				this.loginEventEmitter.emit(true);
+			}),
+			map(() => void 0),
+		);
+	}
+
 	public refreshToken(): Observable<RefreshToken> {
-		const url = `${this.environment.apiPath}/authenticate/refreshToken`;
+		const url = `${this.environment.apiPath}/authenticate/refresh-token`;
 		// Use withCredentials: true to make your browser include cookies and authentication headers in your XHR request
 		return this.http.post<RefreshToken>(url, {}, { withCredentials: true });
 	}
@@ -85,6 +100,7 @@ export class AuthService {
 	public logout(): void {
 		this.cookieCleaningLogout();
 		this.decodeAndRemoveJwt();
+		this.logoutSubject.next();
 	}
 
 	private decodeAndRemoveJwt(): void {
@@ -113,6 +129,19 @@ export class AuthService {
 	private checkIfTokenExists(): boolean {
 		const token = localStorage.getItem('JWT_TOKEN');
 		if (!token) {
+			return false;
+		}
+
+		const decoded = this.jwtDecode(token) as DecodedToken;
+
+		if (!decoded || !decoded.exp) {
+			localStorage.removeItem('JWT_TOKEN');
+			return false;
+		}
+
+		const now = Math.floor(Date.now() / 1000);
+		if (decoded.exp <= now) {
+			localStorage.removeItem('JWT_TOKEN');
 			return false;
 		}
 

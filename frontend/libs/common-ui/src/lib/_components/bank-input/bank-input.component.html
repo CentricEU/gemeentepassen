@@ -1,0 +1,63 @@
+<div
+	[ngClass]="{ 'setup-profile-form': isSetupProfileDialog, 'regular-form': !isSetupProfileDialog }"
+	[formGroup]="formGroup">
+	<centric-form-item>
+		<centric-form-label [attrFor]="'id-iban'">{{ 'genericFields.iban.field' | translate }}</centric-form-label>
+		<centric-form-control frontendRequiredInput>
+			<windmill-input
+				ariaAttributes
+				frontendHtmlContentValidator
+				formControlName="iban"
+				[id]="'id-iban'"
+				[placeholder]="'genericFields.iban.ibanPlaceholder' | translate"
+				[maxLength]="18"
+				[minLength]="18"
+				[hasClearIcon]="true"
+				[readonly]="isReadonly"
+				[ariaDescribedby]="ariaDescribedbyIbanId"
+				[ariaLabelClearIcon]="'general.label.clear' | translate"
+				[validationFunction]="validateIban">
+				<ng-container errors *ngIf="validateIban()">
+					<span class="centric-error-message" [attr.id]="'iban-error'">
+						{{ getErrorMessageForBankInputs('iban') }}
+					</span>
+				</ng-container>
+				<ng-container errors *ngIf="formGroup.get('iban')?.hasError('isHTML')">
+					<span class="centric-error-message" [attr.id]="'iban-error'">
+						{{ 'errors.htmlContent' | translate }}
+					</span>
+				</ng-container>
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+
+	<centric-form-item>
+		<centric-form-label [attrFor]="'id-bic'">{{ 'genericFields.bic.field' | translate }}</centric-form-label>
+		<centric-form-control>
+			<windmill-input
+				ariaAttributes
+				frontendHtmlContentValidator
+				formControlName="bic"
+				[id]="'id-bic'"
+				[placeholder]="'genericFields.bic.bicPlaceholder' | translate"
+				[maxLength]="11"
+				[minLength]="8"
+				[hasClearIcon]="true"
+				[readonly]="isReadonly"
+				[ariaDescribedby]="ariaDescribedbyBicId"
+				[ariaLabelClearIcon]="'general.label.clear' | translate"
+				[validationFunction]="validateBic">
+				<ng-container errors *ngIf="validateBic()">
+					<span class="centric-error-message" [attr.id]="'bic-error'">
+						{{ getErrorMessageForBankInputs('bic') }}
+					</span>
+				</ng-container>
+				<ng-container errors *ngIf="formGroup.get('bic')?.hasError('isHTML')">
+					<span class="centric-error-message" [attr.id]="'bic-error'">
+						{{ 'errors.htmlContent' | translate }}
+					</span>
+				</ng-container>
+			</windmill-input>
+		</centric-form-control>
+	</centric-form-item>
+</div>

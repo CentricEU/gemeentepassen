@@ -1,4 +1,5 @@
 import { CitizenOfferType } from "../enums/citizenOfferType";
+import { BenefitLightDto } from "./benefitLightDto";
 import { LatLon } from "./latLon";
 import { OfferType } from "./offerType";
 import { WorkingHourDto } from "./workingHourDto";
@@ -15,7 +16,7 @@ export type OfferMobileListDto = {
 	coordinatesString: LatLon;
 	companyName: string;
 	distance: number;
-	grants: Object[];
+	benefit: BenefitLightDto;
 	workingHours: WorkingHourDto[];
 	isActive: boolean;
 };

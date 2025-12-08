@@ -27,7 +27,7 @@ class MockOfferService {
 			coordinatesString: "{\"longitude\":45, \"latitude\":45}",
 			companyName: `Test Company`,
 			distance: 10,
-			grants: [],
+			benefit: {},
 			companyAddress: `Test Address`,
 			companyLogo: `Test Logo`,
 			workingHours: [new WorkingHour("id1", 0, "08:00:00", "16:00:00", true), new WorkingHour("id2", 1, "08:00:00", "16:00:00", true)],

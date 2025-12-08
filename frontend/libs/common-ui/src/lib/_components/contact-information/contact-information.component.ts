@@ -8,6 +8,8 @@ import {
 	RegexUtil,
 	SupplierProfile,
 	SupplierProfileService,
+	UserDto,
+	UserService,
 } from '@frontend/common';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -15,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 	selector: 'frontend-contact-information',
 	templateUrl: './contact-information.component.html',
 	styleUrls: ['./contact-information.component.scss'],
+	standalone: false,
 })
 export class ContactInformationComponent implements OnInit {
 	@Input() isReadonly = false;
@@ -35,10 +38,12 @@ export class ContactInformationComponent implements OnInit {
 	public hasPatternError = FormUtil.hasPatternError;
 
 	private localStorageData: ContactInformation = new ContactInformation();
+	private userInformationData: UserDto;
 
 	constructor(
 		private formBuilder: FormBuilder,
 		private translateService: TranslateService,
+		private userService: UserService,
 		private supplierProfileService: SupplierProfileService,
 	) {}
 
@@ -88,10 +93,7 @@ export class ContactInformationComponent implements OnInit {
 			branchLocation: [this.getFieldValue('branchLocation', enumValue, data), [Validators.required]],
 			branchTelephone: [this.getFieldValue('branchTelephone', enumValue, data), [this.telephoneValidator]],
 			email: [this.getFieldValue('email', enumValue, data), [this.emailValidator]],
-			website: [
-				this.getFieldValue('website', enumValue, data),
-				[Validators.required, Validators.pattern(RegexUtil.urlRegexPattern)],
-			],
+			website: [this.getFieldValue('website', enumValue, data), [Validators.pattern(RegexUtil.urlRegexPattern)]],
 			accountManager: [this.getFieldValue('accountManager', enumValue, data), [Validators.required]],
 		});
 	}
@@ -105,6 +107,18 @@ export class ContactInformationComponent implements OnInit {
 			case FormInitializationType.EMPTY:
 				return '';
 			case FormInitializationType.LOCAL_STORAGE:
+				if (field === 'accountManager') {
+					return this.localStorageData[field]
+						? this.localStorageData[field]
+						: `${this.userInformationData['firstName']} ${this.userInformationData['lastName']}`;
+				}
+
+				if (field === 'email') {
+					return this.localStorageData[field]
+						? this.localStorageData[field]
+						: this.userInformationData[field];
+				}
+
 				return this.localStorageData[field];
 			case FormInitializationType.DATABASE:
 				return data?.[field];
@@ -141,6 +155,7 @@ export class ContactInformationComponent implements OnInit {
 	}
 
 	private loadInitialData(): void {
+		this.userInformationData = this.userService.userInformation;
 		if (this.isReadonly || this.isEditProfileComponent) {
 			this.initForm(FormInitializationType.EMPTY);
 			this.getSupplierProfileInformation();

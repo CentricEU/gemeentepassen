@@ -1,0 +1,23 @@
+{
+	"companyBranchAddress": "Vlagberg 43",
+	"branchProvince": "Noord-Brabant",
+	"branchZip": "5845 EC",
+	"branchLocation": "Sint Anthonis",
+	"branchTelephone": null,
+	"email": null,
+	"website": null,
+	"accountManager": "Canache Gabriel",
+	"logo": null,
+	"ownerName": "Canache Gabriel",
+	"kvkNumber": "23432423",
+	"companyName": "TestSupplier",
+	"adminEmail": "l4l.centric+suppenvtestsupp@gmail.com",
+	"iban": "NL55INGB8877477636",
+	"bic": null,
+	"legalForm": 2,
+	"group": 1,
+	"category": 2,
+	"subcategory": null,
+	"supplierId": "cd2ed64b-dd15-48ec-874c-a275c1cd2a4b",
+	"latlon": { "longitude": 5.84762548, "latitude": 51.6156415 }
+}

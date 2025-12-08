@@ -21,5 +21,10 @@ public class MailTemplate {
     private String subject;
     private String btnText;
     private String closing;
+    private String tenantName;
+    private String tenantTelephone;
+    private String tenantWebsite;
+    private String tenantEmail;
+    private String endNote;
 
 }

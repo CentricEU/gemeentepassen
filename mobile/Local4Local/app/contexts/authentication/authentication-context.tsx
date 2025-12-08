@@ -2,10 +2,12 @@ import { createContext } from "react";
 import { CitizenProfileDto } from "../../utils/models/CitizenProfileDto";
 
 export type AuthenticationStateType = {
-  token: string | null;
+  accessToken: string | null;
+  refreshToken: string | null;
   authenticated: boolean | null;
   accountDeleted: boolean | null;
-  profile?: CitizenProfileDto
+  profile?: CitizenProfileDto;
+  error: string | null;
 };
 
 type AuthenticationContextType = {
@@ -14,7 +16,7 @@ type AuthenticationContextType = {
 };
 
 const AuthenticationContext = createContext<AuthenticationContextType>({
-  authState: { token: null, authenticated: null, accountDeleted: null },
+  authState: { accessToken: null, refreshToken: null, authenticated: null, accountDeleted: null, error: null },
   setAuthState: (state: AuthenticationStateType) => { },
 });
 

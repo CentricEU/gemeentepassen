@@ -1,35 +1,27 @@
-import React from "react";
-import DateUtils from "../../utils/DateUtils";
-import SupplierLogoCard from "../supplier-logo-card/SupplierLogoCard";
-import { View, Text } from "react-native";
-import { DiscountCodeDto } from "../../utils/types/discountCode";
-import { useTranslation } from "react-i18next";
-import style from "./DiscountCodeCardStyle";
-import { colors } from "../../common-style/Palette";
-import { OfferType } from "../../utils/types/offerType";
+import DateUtils from '../../utils/DateUtils';
+import SupplierLogoCard from '../supplier-logo-card/SupplierLogoCard';
+import { View, Text, Dimensions, StyleProp, ViewStyle } from 'react-native';
+import { DiscountCodeDto } from '../../utils/types/discountCode';
+import { useTranslation } from 'react-i18next';
+import style from './DiscountCodeCardStyle';
+import { colors } from '../../common-style/Palette';
+import { OfferType } from '../../utils/types/offerType';
+import { isTablet } from '../../utils/HelperUtils';
 
 const Header = ({
 	logo,
 	companyName,
 	isDiscountsListView,
-	isActive,
+	isActive
 }: {
 	logo: string;
 	companyName: string;
 	isDiscountsListView: boolean;
 	isActive: boolean;
 }) => (
-	<View
-		style={
-			isDiscountsListView
-				? style.headerContainerListView
-				: style.headerContainer
-		}
-	>
+	<View style={isDiscountsListView ? style.headerContainerListView : style.headerContainer}>
 		<SupplierLogoCard logo={logo} />
-		<Text style={isActive ? style.title : style.disabledTitle}>
-			{companyName}
-		</Text>
+		<Text style={isActive ? style.title : style.disabledTitle}>{companyName}</Text>
 	</View>
 );
 
@@ -38,7 +30,7 @@ const Details = ({
 	expirationDate,
 	isActive,
 	amount,
-	isListView,
+	isListView
 }: {
 	offerType: OfferType;
 	expirationDate: string;
@@ -46,7 +38,7 @@ const Details = ({
 	amount: number;
 	isListView?: boolean;
 }) => {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation('common');
 
 	const offerText = () => {
 		switch (offerType.offerTypeId) {
@@ -56,7 +48,7 @@ const Details = ({
 			case 3:
 				return `€ ${amount} ${t(offerType.offerTypeLabel)}`;
 			default:
-				return `${amount}% ${t("discounts.discount")}`;
+				return `${amount}% ${t('discounts.discount')}`;
 		}
 	};
 
@@ -70,37 +62,29 @@ const Details = ({
 
 	const renderDetails = () => (
 		<>
-			{renderText(
-				isActive ? style.boldText : style.disabledBoldText,
-				`${t("offer.offerType")} ${offerText()}`
-			)}
+			<View style={style.flexDirectionRow}>
+				{renderText(isActive ? style.boldText : style.disabledBoldText, `${t('offer.offerType')}`)}
+				{renderText(isActive ? style.enabled : style.disabled, ` ${offerText()}`)}
+			</View>
 			<View style={{ height: 4 }} />
-			{renderText(
-				isActive ? style.boldText : style.disabledBoldText,
-				`${t("offer.expirationDate")} ${expirationDateText}`
-			)}
+			<View style={style.flexDirectionRow}>
+				{renderText(isActive ? style.boldText : style.disabledBoldText, `${t('offer.expirationDate')}`)}
+				{renderText(isActive ? style.enabled : style.disabled, `${expirationDateText}`)}
+			</View>
 		</>
 	);
 
 	const renderListViewDetails = () => (
 		<View style={style.detailsContainerListView}>
-			{renderText(
-				isActive
-					? style.offerTypeListView
-					: style.disabledOfferTypeListView,
-				offerText()
-			)}
+			<View style={style.offerTypeText}>
+				{renderText(isActive ? style.offerTypeListView : style.disabledOfferTypeListView, offerText())}
+			</View>
 			<View style={style.expirationDateContainer}>
 				{renderText(
-					isActive
-						? style.expirationDateListView
-						: style.disabledExpirationDateListView,
-					t("discounts.expirationDate")
+					isActive ? style.expirationDateListView : style.disabledExpirationDateListView,
+					t('discounts.expirationDate')
 				)}
-				{renderText(
-					isActive ? style.boldText : style.disabledBoldText,
-					expirationDateText
-				)}
+				{renderText(isActive ? style.boldText : style.disabledBoldText, expirationDateText)}
 			</View>
 		</View>
 	);
@@ -111,37 +95,42 @@ const Details = ({
 const CodeDisplay = ({ code }: { code: string }) => (
 	<View style={style.codeContainer}>
 		<Text style={style.code} testID="discount-code">
-			{code.replace(/(.)(?=.*)/g, "$1 ")}
+			{code.replace(/(.)(?=.*)/g, '$1 ')}
 		</Text>
 	</View>
 );
 
 const DiscountCodeCard = ({
 	discountCode,
-	isDiscountsListView,
+	isDiscountsListView
 }: {
 	discountCode: DiscountCodeDto;
 	isDiscountsListView?: boolean;
 }) => {
-	const { t } = useTranslation("common");
+	const { t } = useTranslation('common');
 
 	const offerDetailsMap: Record<number, { backgroundColor: string }> = {
 		1: { backgroundColor: colors.INFO_400 },
 		2: { backgroundColor: colors.WARNING_900 },
 		3: { backgroundColor: colors.DANGER_400 },
-		4: { backgroundColor: colors.VIOLET },
+		4: { backgroundColor: colors.VIOLET }
 	};
 
 	const backgroundColor = discountCode.isActive
-		? offerDetailsMap[discountCode.offerType.offerTypeId]
-				?.backgroundColor || colors.SURFACE_50
+		? offerDetailsMap[discountCode.offerType.offerTypeId]?.backgroundColor || colors.SURFACE_50
 		: colors.GREY_SCALE_50;
+	const screenWidth = Dimensions.get('window').width;
+
+	const contentStyle: StyleProp<ViewStyle> = [
+		style.content,
+		{
+			backgroundColor,
+			width: isTablet() && !isDiscountsListView ? screenWidth * 0.6 : '100%'
+		}
+	];
 
 	const content = (
-		<View
-			style={[style.content, { backgroundColor }]}
-			testID={isDiscountsListView ? "content-view-list" : "content-view"}
-		>
+		<View style={contentStyle} testID={isDiscountsListView ? 'content-view-list' : 'content-view'}>
 			<Header
 				logo={discountCode.companyLogo}
 				companyName={discountCode.companyName}
@@ -158,14 +147,8 @@ const DiscountCodeCard = ({
 			{!isDiscountsListView && (
 				<>
 					<CodeDisplay code={discountCode.code} />
-					<Text
-						style={
-							discountCode.isActive
-								? style.footerText
-								: style.disabledFooterText
-						}
-					>
-						{t("offer.useCode")}
+					<Text style={discountCode.isActive ? style.footerText : style.disabledFooterText}>
+						{t('offer.useCode')}
 					</Text>
 				</>
 			)}

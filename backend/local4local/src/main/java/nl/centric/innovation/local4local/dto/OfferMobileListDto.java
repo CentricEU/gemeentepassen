@@ -3,6 +3,7 @@ package nl.centric.innovation.local4local.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.NonNull;
+import nl.centric.innovation.local4local.entity.Benefit;
 import nl.centric.innovation.local4local.entity.Offer;
 import nl.centric.innovation.local4local.entity.OfferType;
 import nl.centric.innovation.local4local.enums.GenericStatusEnum;
@@ -28,8 +29,7 @@ public record OfferMobileListDto(
         @NonNull String companyName,
         Double distance,
         @NonNull Boolean isActive,
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        Set<GrantViewDto> grants,
+        @NonNull BenefitLightDto benefit,
         @JsonInclude(JsonInclude.Include.NON_NULL)
         List<WorkingHoursDto> workingHours
 
@@ -38,7 +38,7 @@ public record OfferMobileListDto(
         this(offer.getId(), offer.getTitle(), offer.getDescription(), offer.getAmount(), offer.getCitizenOfferType(),
                 offer.getOfferType(), offer.getStartDate(), offer.getExpirationDate(), offer.getCoordinatesString(),
                 offer.getStatus(), offer.getSupplier().getCompanyName(), distance, isActive,
-                offer.getGrants().stream().map(GrantViewDto::entityToGrantViewDto).collect(Collectors.toSet()),
+                BenefitLightDto.entityToBenefitTableDto(offer.getBenefit()),
                 offer.getSupplier().getWorkingHours().stream().map(WorkingHoursDto::workingHoursEntityToDto).collect(Collectors.toList()));
     }
 

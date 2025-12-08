@@ -1,0 +1,47 @@
+# TO BE REMOVED
+#stage 1 - get token for codeartifact
+FROM python:alpine as codeartifact
+WORKDIR /app
+RUN apk -v --update add groff less
+RUN pip install awscli --upgrade
+
+ARG AWS_ACCESS_KEY_ID
+ARG AWS_SECRET_ACCESS_KEY
+
+RUN echo $AWS_ACCESS_KEY_ID
+RUN echo $AWS_SECRET_ACCESS_KEY
+
+RUN aws codeartifact get-authorization-token --domain innovation-centric --domain-owner 235486961075 --region eu-west-2 --query authorizationToken --output text > ./result
+
+#stage 2 - build project
+FROM maven:3-amazoncorretto-17 AS builder
+WORKDIR /app
+COPY --from=codeartifact /app/result .
+
+ARG A_DB_HOST
+ARG A_DB_USER
+ARG A_DB_PASS
+ARG A_DB_NAME
+
+ENV DB_HOST=$A_DB_HOST
+ENV DB_USER=$A_DB_USER
+ENV DB_PASS=$A_DB_PASS
+ENV DB_NAME=$A_DB_NAME
+
+COPY flyway.conf flyway.conf
+COPY pom.xml pom.xml
+COPY src src
+COPY settings.xml settings.xml
+
+RUN sed -i -e 's/${CODEARTIFACT_AUTH_TOKEN}/'$(cat ./result)'/g' settings.xml
+RUN mvn flyway:migrate --settings settings.xml
+RUN mvn install --settings settings.xml -Dmaven.test.skip=true
+
+#stage 3 - run project
+FROM amazoncorretto:17-al2-jdk
+WORKDIR /app
+COPY --from=builder /app/target/local4local-0.0.1-SNAPSHOT.jar .
+
+EXPOSE 8080/tcp
+CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.profiles.active=development", "-Duser.dir=/app", "-Dja", "-jar", "/app/local4local-0.0.1-SNAPSHOT.jar"]
+

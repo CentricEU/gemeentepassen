@@ -45,3 +45,5 @@ vendor/
 !android/gradle/wrapper/gradle-wrapper.jar
 
 android/local.properties
+*/.xcode.env.local
+.cxx

@@ -2,16 +2,27 @@
 
 :host {
 	.title-section {
-		@include mixins.flex(column, center, center);
-		padding: 32px 0 0 0;
+		margin-block: 32px;
 
-		img {
-			@include mixins.size(156px, 64px);
+		&.vertical {
+			@include mixins.flex(column, center, center);
+			gap: 16px;
+		}
+
+		&.horizontal {
+			@include mixins.flex(row, center, center);
+			gap: 16px;
+
+			img {
+				display: block;
+			}
 		}
 
 		.title {
+			@include mixins.flex(row, center, center);
 			margin: 0 !important;
 			color: var(--a11y-theme-500);
+			line-height: 1;
 		}
 	}
 }

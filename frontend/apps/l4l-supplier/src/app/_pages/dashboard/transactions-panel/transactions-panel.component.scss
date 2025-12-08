@@ -1,0 +1,18 @@
+@use '../../../../../../../libs/shared-assets/_styles/mixins';
+
+:host {
+	::ng-deep {
+		.mat-mdc-card {
+			min-height: 248px;
+		}
+		.mdc-card.centric-card .mat-mdc-card-content, .mdc-card.centric-card .mat-mdc-card-actions {
+			padding: 0px !important;
+		}
+		.outer-chart-container {
+			min-height: 248px;
+		}
+		.windmill-combo-button.dropdown .dropdown-combo-button .combo-button-text {
+			white-space: nowrap;
+		}
+	}
+}

@@ -5,6 +5,7 @@ export type DiscountCodeDto = {
 	companyName: string;
 	code: string;
 	offerType: OfferType;
+	offerTitle: string;
 	companyLogo: string;
 	isActive: boolean;
 	amount: number;

@@ -1,36 +1,42 @@
-import {StyleSheet} from "react-native";
-import {REGULAR, SEMI_BOLD} from "../../common-style/FontFamily";
-import {colors} from "../../common-style/Palette";
+import {  StyleSheet  } from 'react-native';
+import {  REGULAR, SEMI_BOLD  } from '../../common-style/FontFamily';
+import {  colors  } from '../../common-style/Palette';
 
 const styles = StyleSheet.create({
 	detailsContainer: {
+		flexWrap: 'wrap',
 		flexDirection: 'row',
 		marginTop: 16,
-		alignItems: 'center'
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		width: '100%',
 	},
 	detailsContainerForMap: {
 		flexDirection: 'column',
 		gap: 8,
-		alignItems: 'flex-start'
+		alignItems: 'flex-start',
 	},
 	locationTitle: {
 		fontFamily: SEMI_BOLD,
 		fontSize: 16,
 		lineHeight: 24,
-		flex: 1,
-		color: colors.GREY_SCALE_7
+		color: colors.GREY_SCALE_7,
+	},
+	locationTitleListView: {
+		flexShrink: 1,
+		width: 'auto',
 	},
 	locationDetails: {
 		flexDirection: 'row',
 		marginVertical: 2,
 		gap: 4,
-		alignItems: 'center'
+		alignItems: 'center',
 	},
 	locationStatus: {
 		fontFamily: REGULAR,
 		fontSize: 14,
 		lineHeight: 20,
-		color: colors.GREY_SCALE
+		color: colors.GREY_SCALE,
 	},
 });
 

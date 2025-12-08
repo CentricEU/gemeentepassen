@@ -1,43 +1,38 @@
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
-@import '@windmill/windmill/a11y-themes/AA/green-light.css';
-@import '@windmill/windmill/src/lib/assets/base/fonts';
-@import './pallete.scss';
-@import './mixins.scss';
-@import './layout.scss';
-@import './scroll.scss';
-@import './typography.scss';
+@use './mixins.scss' as mixins;
+@use './layout.scss';
+@use './typography.scss';
+@use './scroll.scss';
+@use './pallete.scss';
+@use '@angular/material/prebuilt-themes/indigo-pink.css';
+@use '@windmill/windmill/a11y-themes/AA/green-light.css';
+@use '@windmill/windmill/src/lib/assets/base/fonts';
+@use '@windmill/windmill/src/lib/assets/utils/mixins.scss' as windmill-mixins;
 
 $login-image: '/assets/images/login.svg';
 
 * {
+	@include windmill-mixins.states-messages;
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 }
 
-.required-asterisk {
-	color: var(--status-danger-500);
-	font-weight: bold;
-}
+// Utility classes for layout
 
 .routing-container {
-	@include flex;
+	@include mixins.flex;
 	height: 100%;
 }
 
 .inside-routing-container {
-	@include size(100%);
+	@include mixins.size(100%);
 	background: var(--surface-100);
 	-webkit-overflow-scrolling: touch;
 	overflow-y: auto;
 
 	&.active {
-		@include size(calc(100% - 78px));
+		@include mixins.size(calc(100% - 78px));
 	}
-}
-
-.hidden {
-	display: none;
 }
 
 body {
@@ -46,57 +41,26 @@ body {
 
 html,
 body {
-	@include size(100%, 100%);
+	@include mixins.size(100%, 100%);
 }
 
-.generic-color-icon {
-	color: var(--greyscale-500) !important;
-}
-
-.icon-button-fourth,
-.link {
-	@extend .generic-color-icon;
-}
-
-.generic-color-text {
-	color: var(--greyscale-400);
-}
-
-.error-message {
-	color: var(--status-danger-500);
-}
-
-.background-cover {
-	@include size(100%, 100%);
-	@include background-image($login-image, cover, no-repeat, center);
-}
-
-.bold {
-	font-weight: bold;
-}
-
-.form-header {
-	@include size(100%);
-	padding: 16px 0px;
-	border-bottom: 1px solid var(--surface-100);
-}
-
-.form-section {
-	@include flex(column);
-	gap: 16px;
-}
+// Utility classes for flexbox
 
 .half-width {
-	@include flex(column);
+	@include mixins.flex(column);
 	gap: 16px;
 	flex: 1;
 }
+
+// Utility class for time label
 
 .time-label {
 	min-width: fit-content;
 	height: 20px;
 	font-size: 14px;
 }
+
+// Utility classes for scroll
 
 .table-scroll {
 	table {
@@ -108,20 +72,14 @@ body {
 	}
 }
 
-.full-height {
-	height: 100%;
-}
-
-.semi-bold {
-	font-weight: 600;
-}
-
 .common-radius {
 	border-radius: 8px;
 }
 
+// Utility classes for account messages & buttons
+
 .account-message {
-	@include flex(row, center, center);
+	@include mixins.flex(row, center, center);
 	gap: 16px;
 
 	a {
@@ -139,9 +97,102 @@ body {
 	margin-bottom: 32px !important;
 }
 
+// Utility classes for visibility
+
+.hidden {
+	display: none;
+}
+
+// Utility classe for asterisk in forms
+
+.required-asterisk {
+	color: var(--status-danger-500);
+	font-weight: bold;
+}
+
+// Utility classes for image fitting
+
 .img-fit {
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-size: contain;
 	object-fit: contain;
+}
+
+.background-cover {
+	@include mixins.size(100%, 100%);
+	@include mixins.background-image($login-image, cover, no-repeat, center);
+}
+
+// Full width and height utility classes
+
+.full-width {
+	width: 100%;
+}
+
+.full-height {
+	height: 100%;
+}
+
+// Utility classes for font weight
+
+.semi-bold {
+	font-weight: 600;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+// Utility classes for form layout
+
+.form-header {
+	@include mixins.size(100%);
+	padding: 16px 0 0 0;
+	border-bottom: 1px solid var(--surface-100);
+}
+
+.form-section {
+	@include mixins.flex(column);
+	gap: 16px;
+}
+
+// Utility classes for text color
+
+.generic-color-text {
+	color: var(--greyscale-400);
+}
+
+.error-message {
+	color: var(--status-danger-500);
+}
+
+.generic-color-icon {
+	color: var(--greyscale-500) !important;
+}
+
+.icon-button-fourth,
+.link {
+	@extend .generic-color-icon;
+}
+
+.citizen-enrollment-view {
+	@include mixins.size(100%, 100%);
+	@include mixins.flex(column);
+	align-items: center;
+	justify-content: center;
+	gap: 32px;
+	padding: 32px;
+
+	.buttons-container {
+		@include mixins.flex(row);
+		gap: 16px;
+	}
+}
+
+// ellipsis utility class
+.ellipsis {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }

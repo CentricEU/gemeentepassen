@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import {
+	AppType,
 	AuthMock,
 	AuthService,
 	Breadcrumb,
@@ -212,5 +213,16 @@ describe('GenericAppComponent', () => {
 	it('should display breadcrumbs when there are any', () => {
 		component['breadcrumbService'].breadcrumbs = [new Breadcrumb(''), new Breadcrumb('')];
 		expect(component.shouldDisplayBreadcrumbs).toEqual(true);
+	});
+
+	it('should not call tenantService.getTenant when applicationType is citizen', () => {
+		component['applicationType'] = AppType.citizen;
+		tenantServiceMock.getTenant.mockClear();
+		tenantServiceMock.tenant = null as unknown as Tenant;
+
+		component['getTenant']();
+
+		expect(tenantServiceMock.getTenant).not.toHaveBeenCalled();
+		expect(tenantServiceMock.tenant).toBeNull();
 	});
 });

@@ -1,38 +1,34 @@
-@import '../../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../../libs/shared-assets/_styles/mixins' as mixins;
 
 :host {
 	::ng-deep {
 		.panel-header {
 			div {
 				windmill-combo-button {
-					min-width: 124px;
 					margin: 0 0 0 auto;
 				}
 			}
 		}
 
 		.panel-content {
-			@include flex(column, space-between, space-between);
-			@include size(100%, 100%);
-			padding: 32px;
+			@include mixins.flex(column, space-between, space-between);
+			@include mixins.size(100%, 100%);
+			padding: 32px 32px 32px 16px;
 
 			.outer-chart-container {
-				@include flex(column, center, center);
-				@include size(100%);
+				@include mixins.flex(column, center, center);
+				@include mixins.size(100%);
+
+				&.used-chart {
+					align-items: flex-start;
+				}
 
 				.inner-chart-container {
-					@include size(90%, 26vh);
+					@include mixins.size(90%, 26vh);
 				}
-			}
 
-			.empty-chart-container {
-				@include flex(column, center, center);
-				@include size(100%, 100%);
-
-				.empty-chart {
-					@include size(160px, 160px);
-					background: var(--greyscale-50);
-					border-radius: 50%;
+				.inner-used-offers-container {
+					@include mixins.size(100%, 26vh);
 				}
 			}
 		}
@@ -43,7 +39,7 @@
 	:host {
 		::ng-deep {
 			.panel-content {
-				@include flex(column, flex-start, flex-start);
+				@include mixins.flex(column, flex-start, flex-start);
 				gap: 16px;
 			}
 		}
@@ -56,10 +52,6 @@
 			.panel-content {
 				.outer-chart-container {
 					padding: 32px;
-
-					.inner-chart-container {
-						@include size(85%, 100%);
-					}
 				}
 			}
 		}

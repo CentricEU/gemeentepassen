@@ -4,6 +4,7 @@ import { OfferType } from "./offerType";
 import { WorkingHourDto } from "./workingHourDto";
 import { Restrictions } from "./restriction";
 import { OfferTransaction } from "./offerTransaction";
+import { BenefitLightDto } from "./benefitLightDto";
 
 export type OfferMobileDetailDto = {
 	id: string;
@@ -17,7 +18,7 @@ export type OfferMobileDetailDto = {
 	coordinatesString: LatLon;
 	companyName: string;
 	distance: number;
-	grants: Object[];
+	benefit: BenefitLightDto[];
 	restrictions?: Restrictions;
 	companyAddress: string;
 	companyLogo: string;

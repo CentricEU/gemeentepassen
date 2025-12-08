@@ -11,6 +11,7 @@ describe('DropdownDataService', () => {
 
 	const environmentMock: Environment = {
 		production: false,
+		prefixes: 'localforlocal://',
 		envName: 'dev',
 		apiPath: '/api',
 	};

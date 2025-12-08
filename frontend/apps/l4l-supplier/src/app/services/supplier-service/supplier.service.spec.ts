@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { RejectionReason, RejectSupplierDto, SupplierViewDto } from '@frontend/common';
+import { SupplierViewDto } from '@frontend/common';
 import { of } from 'rxjs';
 
 import { SupplierService } from './supplier.service';
@@ -70,22 +70,6 @@ describe('SupplierService', () => {
 			null,
 			{ params: httpParams },
 		);
-	});
-
-	it('should return a RejectSupplierDto object after successful get by id', () => {
-		const expectedResult: RejectSupplierDto = {
-			reason: RejectionReason.IDLE,
-			comments: 'Comms',
-			supplierId: '123',
-		};
-
-		httpClientSpy.get.mockReturnValue(of(expectedResult));
-
-		service.getSupplierRejectionInformation('id').subscribe((data) => {
-			expect(data).toMatchObject(expectedResult);
-		});
-
-		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/suppliers/rejection/id`);
 	});
 
 	it('should return a Blob after getQRCodeImage is called', (done) => {

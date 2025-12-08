@@ -13,17 +13,56 @@
 	</button>
 </section>
 <section mat-dialog-content>
-	<p>{{ 'passholders.uploadDescription' | translate }}</p>
-	<frontend-drag-file
-		[permittedFormats]="acceptedFormats"
-		(fileSelected)="onFileSelected($event)"></frontend-drag-file>
+	<form centric-complex-form [formGroup]="importPassholdersForm">
+		<p>{{ 'passholders.uploadDescription' | translate }}</p>
+		<centric-form-item>
+			<centric-form-label [attrFor]="'citizen-group-id'">
+				{{ 'general.citizenGroup' | translate }}
+			</centric-form-label>
+			<centric-form-control frontendRequiredInput>
+				<windmill-select
+					formControlName="citizenGroup"
+					ariaAttributes
+					[ariaLabelClearButton]="'general.label.clear' | translate"
+					[id]="'citizen-group-id'"
+					[hasClearIcon]="true"
+					[placeholder]="'passholders.citizenGroupPlaceholder' | translate"
+					[source]="citizenGroupData"
+					[displayPropertyName]="'label'"
+					[valuePropertyName]="'id'"
+					[ariaDescribedby]="
+						importPassholdersForm.get('citizenGroup')?.errors &&
+						importPassholdersForm.get('citizenGroup')?.touched
+							? 'citizen-group-error'
+							: ''
+					"
+					[validationFunction]="validationFunctionError.bind(this, 'citizenGroup', importPassholdersForm)">
+					@if (hasFormControlRequiredErrors('citizenGroup', importPassholdersForm)) {
+						<ng-container errors>
+							<span class="centric-error-message" [attr.id]="'citizen-group-error'">
+								{{ 'passholders.citizenGroupRequired' | translate }}
+							</span>
+						</ng-container>
+					}
+				</windmill-select>
+			</centric-form-control>
+		</centric-form-item>
 
-	<centric-link innerHref="./assets/_templates/import_passholders.csv" type="button-link" download="true">
-		{{ 'passholders.download' | translate }}
-	</centric-link>
+		<frontend-drag-file
+			[permittedFormats]="acceptedFormats"
+			(fileSelected)="onFileSelected($event)"></frontend-drag-file>
+
+		<centric-link
+			class="align-left"
+			innerHref="./assets/_templates/import_passholders.csv"
+			type="ghost-theme"
+			download="true">
+			{{ 'passholders.download' | translate }}
+		</centric-link>
+	</form>
 </section>
 <section mat-dialog-actions>
-	<centric-button type="button-link-dark" (click)="close()">
+	<centric-button type="ghost-greyscale" (click)="close()">
 		{{ 'general.button.cancel' | translate }}
 	</centric-button>
 	<centric-button (click)="uploadCsv()" [disabled]="isImportDisabled">

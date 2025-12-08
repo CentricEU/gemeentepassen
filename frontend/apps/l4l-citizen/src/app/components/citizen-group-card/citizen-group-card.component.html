@@ -1,0 +1,16 @@
+<div
+	class="category-card"
+	[class.selected]="groupCardData.selected"
+	[class.unselected]="!groupCardData.selected"
+	(click)="assignCitizenGroup()">
+	<p windmill-tooltip class="title bold ellipsis" [appTooltipOnEllipsis]="groupCardData.categoryTitle">
+		{{ groupCardData.categoryTitle }}
+	</p>
+
+	@for (detail of categoryDetails; track detail.key) {
+		<p class="detail-item">
+			<span class="semi-bold">{{ detail.key | translate }}</span
+			>: {{ detail.value }}
+		</p>
+	}
+</div>

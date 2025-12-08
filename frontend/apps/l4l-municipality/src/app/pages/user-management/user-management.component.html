@@ -1,17 +1,37 @@
-<centric-panel class="table-pannel" [class.full-size-panel]="!isDataExisting()">
-	<ng-container panel-header>
-		<span class="left-container">{{ 'general.pages.userManagement' | translate }} </span>
-		<ng-container *ngIf="isDataExisting()"> </ng-container>
-	</ng-container>
-	<ng-container panel-content>
-		<ng-container *ngIf="isDataExisting(); else noData"> </ng-container>
-	</ng-container>
-</centric-panel>
-
-<ng-template #noData>
-	<frontend-no-data [noDataTitle]="'userManagement.welcome'" [noDataDescription]="'userManagement.noData'">
-		<centric-button type="button-default" iconId="plus_b" (click)="openCreateUserDialog()">
-			{{ 'createUser.title' | translate }}
-		</centric-button>
-	</frontend-no-data>
-</ng-template>
+@if (isDataExisting()) {
+	<frontend-table
+		#usersTable
+		class="table-pannel"
+		[columns]="allColumns"
+		[hasCheckbox]="false"
+		[listLength]="dataCount"
+		[showFooter]="true"
+		[showHeader]="true"
+		(loadDataEvent)="loadData($event)">
+		<ng-container>
+			<span id="table-label" class="left-container">{{ 'general.pages.userManagement' | translate }} </span>
+			<section class="right-container">
+				<centric-button
+					[type]="'high-emphasis-theme'"
+					[iconId]="'plus_b'"
+					[ariaLabel]="'userManagement.newUser' | translate"
+					(click)="openCreateUserDialog()">
+					{{ 'userManagement.newUser' | translate }}
+				</centric-button>
+			</section>
+		</ng-container>
+	</frontend-table>
+} @else {
+	<centric-panel class="table-pannel" [class.full-size-panel]="!isDataExisting()">
+		<ng-container panel-header>
+			<span class="left-container">{{ 'general.pages.userManagement' | translate }} </span>
+		</ng-container>
+		<ng-container panel-content>
+			<frontend-no-data [noDataTitle]="'userManagement.welcome'" [noDataDescription]="'userManagement.noData'">
+				<centric-button type="high-emphasis-theme" iconId="plus_b" (click)="openCreateUserDialog()">
+					{{ 'createUser.title' | translate }}
+				</centric-button>
+			</frontend-no-data>
+		</ng-container>
+	</centric-panel>
+}

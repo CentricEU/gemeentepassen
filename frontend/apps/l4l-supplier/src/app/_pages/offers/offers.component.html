@@ -5,8 +5,6 @@
 		[columns]="allColumns"
 		[filterColumns]="allFilterColumns"
 		[hasCheckbox]="true"
-		[typeOfT]="typeOfModal"
-		[columnWithChips]="'grants'"
 		[shouldDisplayButtonForChips]="false"
 		[hasFilters]="true"
 		[showFooter]="true"
@@ -41,7 +39,7 @@
 						ariaAttributes
 						windmill-tooltip
 						class="item"
-						type="icon-button-fourth-dark"
+						type="icon-ghost-greyscale"
 						iconId="slider-vert_b"
 						size="small"
 						tooltipColor="surface"
@@ -52,7 +50,7 @@
 
 					<centric-button
 						ariaAttributes
-						type="button-default"
+						type="high-emphasis-theme"
 						iconId="plus_b"
 						[ariaLabelTranslation]="'offer.createOffer'"
 						(click)="openCreateOfferModal()">
@@ -68,7 +66,7 @@
 	<centric-panel class="table-pannel" [class.full-size-panel]="true" [showFooter]="false">
 		<ng-container panel-content>
 			<frontend-no-data [noDataTitle]="'offer.noData.title'" [noDataDescription]="'offer.noData.description'">
-				<centric-button type="button-default" iconId="plus_b" (click)="openCreateOfferModal()">
+				<centric-button type="high-emphasis-theme" iconId="plus_b" (click)="openCreateOfferModal()">
 					{{ 'offer.createOffer' | translate }}
 				</centric-button>
 			</frontend-no-data>

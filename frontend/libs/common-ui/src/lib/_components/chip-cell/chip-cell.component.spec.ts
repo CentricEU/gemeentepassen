@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { of } from 'rxjs';
 
 import { WindmillModule } from '../../windmil.module';
@@ -41,25 +41,4 @@ describe('ChipCellComponent', () => {
 		expect(component.remainingChips).toBeLessThan(0);
 	});
 
-	it('should open the import grants popup', () => {
-		jest.spyOn(dialogService as any, 'prompt');
-
-		component.openDialogWithTable([{}]);
-
-		expect((dialogService as any).prompt).toHaveBeenCalled();
-	});
-
-	describe('Tests for after dialog close ', () => {
-		const dialogRefMock = { afterClosed: () => of(true) };
-
-		it('should call dialogService.prompt on openDialogWithTable', () => {
-			jest.spyOn(dialogService, 'prompt').mockReturnValue(dialogRefMock as any);
-			jest.spyOn(dialogRefMock, 'afterClosed').mockReturnValue(of(true));
-			component['updateRemainingChips'] = jest.fn();
-
-			component.openDialogWithTable([{}]);
-			expect(dialogService['prompt']).toHaveBeenCalled();
-			expect(component['updateRemainingChips']).toHaveBeenCalled();
-		});
-	});
 });

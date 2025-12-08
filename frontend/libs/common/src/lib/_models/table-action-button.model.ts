@@ -8,8 +8,8 @@ export class TableActionButton {
 
 	constructor(
 		name: string,
-		tooltipTranslationLabel: string = '',
-		isDisabled: boolean = false,
+		tooltipTranslationLabel = '',
+		isDisabled = false,
 		text = '',
 		buttonType = 'uncontained-theme',
 		specificClass = '',

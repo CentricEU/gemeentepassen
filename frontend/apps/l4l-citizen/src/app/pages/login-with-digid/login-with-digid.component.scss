@@ -1,0 +1,29 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
+@use '../../../../../../libs/shared-assets/_styles/login-layout-common.scss';
+
+:host {
+	::ng-deep {
+		.centric-login-wrapper .login-template-content .form-login-template {
+			@extend .login-form-padding;
+		}
+
+		.centric-login-wrapper .login-template-content .title {
+			@extend .login-title-margin;
+		}
+
+		.centric-login-wrapper {
+			--login-image: url('/assets/images/login-layout.svg');
+			@extend .login-background;
+		}
+	}
+
+	.inner-form-container {
+		@include mixins.flex(column, center, center);
+		gap: 32px;
+		padding-bottom: 32px;
+	}
+
+	.login-button {
+		padding-inline: 32px;
+	}
+}

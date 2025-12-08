@@ -2,21 +2,15 @@
 	height: 100%;
 	::ng-deep {
 		centric-panel,
-		centric-mat-tab-group {
+		windmill-tab-group {
 			height: 100%;
 		}
 
-		.mat-tab-body-wrapper {
-			padding: 0 !important;
-		}
-
-		mat-tab-group {
+		.windmill-tab,
+		.windmill-tab-body,
+		.windmill-tab-group {
 			height: 100%;
-			max-height: calc(100vh - 80px);
-		}
-
-		centric-mat-tab-group {
-			height: 100%;
+			max-height: calc(100vh - 140px);
 		}
 
 		.full-size-panel {
@@ -32,6 +26,10 @@
 
 		.mat-mdc-tab-body-wrapper {
 			padding: 0 !important;
+		}
+
+		.centric-inner-button.small {
+			padding: 6px 16px;
 		}
 	}
 }

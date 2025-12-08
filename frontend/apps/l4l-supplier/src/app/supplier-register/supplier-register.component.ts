@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatDialogConfig } from '@angular/material/dialog';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import {
+	CommonL4LModule,
 	ConfirmPasswordValidator,
 	FormUtil,
 	ModalData,
@@ -10,9 +13,18 @@ import {
 	TenantService,
 	Toaster,
 } from '@frontend/common';
-import { CustomDialogConfigUtil, CustomDialogWithTimerComponent } from '@frontend/common-ui';
-import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill';
+import {
+	CustomDialogConfigUtil,
+	CustomDialogWithTimerComponent,
+	LogoTitleComponent,
+	TermsAndConditionsDialogComponent,
+	WindmillModule,
+} from '@frontend/common-ui';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { CentricButtonModule } from '@windmill/ng-windmill/button';
+import { WindmillCheckboxModule } from '@windmill/ng-windmill/checkbox';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { CentricLinkModule } from '@windmill/ng-windmill/link';
 
 import { FormFields } from '../enums/form-fields.enum';
 import { RegisterSupplier } from '../models/register-supplier.model';
@@ -22,6 +34,18 @@ import { RegisterService } from '../services/register.service';
 	selector: 'frontend-supplier-register',
 	templateUrl: './supplier-register.component.html',
 	styleUrls: ['./supplier-register.component.scss'],
+	imports: [
+		CommonModule,
+		CommonL4LModule,
+		FormsModule,
+		ReactiveFormsModule,
+		TranslateModule,
+		CentricButtonModule,
+		WindmillCheckboxModule,
+		CentricLinkModule,
+		WindmillModule,
+		LogoTitleComponent,
+	],
 })
 export class SupplierRegisterComponent implements OnInit {
 	public registerForm: FormGroup;
@@ -31,6 +55,8 @@ export class SupplierRegisterComponent implements OnInit {
 	public registerSupplier: RegisterSupplier;
 	public shouldDisplaySuccessfulRegistrationDialog = false;
 
+	public routeTenantId: string;
+
 	public passwordValidator = FormUtil.validatePassword;
 	public emailValidator = FormUtil.validateEmail(false);
 	public hasFormControlRequiredErrors = FormUtil.hasFormControlRequiredErrors;
@@ -38,6 +64,7 @@ export class SupplierRegisterComponent implements OnInit {
 	public validationFunctionErrorForKVK = FormUtil.validationFunctionErrorForKVK;
 	public getEmailErrorMessage = FormUtil.getEmailErrorMessage;
 	public getConfirmPasswordErrorMessage = FormUtil.getConfirmPasswordErrorMessage;
+	private readonly route = inject(ActivatedRoute);
 
 	private selectTentantId: string;
 
@@ -56,6 +83,7 @@ export class SupplierRegisterComponent implements OnInit {
 	) {}
 
 	public ngOnInit(): void {
+		this.subscribeToRouteParam();
 		this.initializeMunicipalities();
 		this.initForm();
 	}
@@ -129,7 +157,37 @@ export class SupplierRegisterComponent implements OnInit {
 			}
 			this.dropdownSource = data;
 			this.updatedSource = [...this.dropdownSource];
+
+			if (this.routeTenantId) {
+				this.preselectTenantInForm();
+			}
 		});
+	}
+
+	public openTermsAndConditionModal(): void {
+		this.dialogService.prompt(TermsAndConditionsDialogComponent, {
+			width: '600px',
+		});
+	}
+
+	private subscribeToRouteParam(): void {
+		this.route.paramMap.subscribe((params: ParamMap) => {
+			const tenantId = params.get('tenantId');
+
+			if (!tenantId) {
+				return;
+			}
+
+			this.routeTenantId = tenantId;
+		});
+	}
+
+	private preselectTenantInForm(): void {
+		const foundTenant = this.dropdownSource.find((t) => t.id === this.routeTenantId);
+		if (foundTenant) {
+			this.selectTentantId = foundTenant.id;
+			this.registerForm.get('municipality')?.setValue(foundTenant.id);
+		}
 	}
 
 	private getPasswordValidationErrors(): ValidationErrors | null | undefined {

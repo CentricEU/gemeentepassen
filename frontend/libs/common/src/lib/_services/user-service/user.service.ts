@@ -5,6 +5,7 @@ import { map, Observable, Subject, tap } from 'rxjs';
 import { CreateUserDto } from '../../_models/create-user-dto.model';
 import { Environment } from '../../_models/environment.model';
 import { UserDto } from '../../_models/user-dto.model';
+import { UserTableDto } from '../../_models/user-table-dto.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -37,6 +38,22 @@ export class UserService {
 				return result as UserDto;
 			}),
 		);
+	}
+
+	public countAdminUsers(): Observable<number> {
+		return this.httpClient.get<number>(`${this.environment.apiPath}/users/admins/count`);
+	}
+
+	public getCashierEmailsForSupplier(supplierId: string): Observable<string[]> {
+		return this.httpClient.get<string[]>(`${this.environment.apiPath}/suppliers/${supplierId}/cashiers`);
+	}
+
+	public getUsersPaged(page: number, size: number): Observable<UserTableDto[]> {
+		const httpParams = new HttpParams().set('page', page).set('size', size);
+
+		return this.httpClient.get<UserTableDto[]>(`${this.environment.apiPath}/users/admins/paginated`, {
+			params: httpParams,
+		});
 	}
 
 	public addUserInformation(value: UserDto): void {

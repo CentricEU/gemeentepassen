@@ -6,11 +6,18 @@ import { UserService } from '@frontend/common';
 import { CreateUserDto } from '@frontend/common';
 import { WindmillModule } from '@frontend/common-ui';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import DOMPurify from 'dompurify';
 import { of } from 'rxjs';
 
 import { AppModule } from '../../app.module';
 import { CreateUserPopupComponent } from './create-user-popup.component';
+
+jest.mock('dompurify', () => ({
+	default: {
+		sanitize: jest.fn((value: any) => value),
+	},
+}));
 
 describe('CreateUserPopupComponent', () => {
 	let component: CreateUserPopupComponent;
@@ -23,6 +30,8 @@ describe('CreateUserPopupComponent', () => {
 		afterClosed: jest.fn(() => of({})),
 		backdropClick: jest.fn(() => of({})),
 	};
+
+	(DOMPurify.sanitize as jest.Mock).mockImplementation((value: any) => value);
 
 	global.structuredClone = jest.fn((val) => {
 		return JSON.parse(JSON.stringify(val));

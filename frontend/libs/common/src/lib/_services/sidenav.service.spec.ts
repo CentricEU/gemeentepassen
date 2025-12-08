@@ -1,6 +1,5 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
 
 import { AppType } from '../_enums/app-type.enum';
 import { SidenavService } from './sidenav.service';
@@ -98,14 +97,5 @@ describe('SidenavService', () => {
 		expect(result).toBe(true);
 		expect(mockCheckForSupplierComponent).toHaveBeenCalled();
 		expect(mockCheckForCommonComponents).toHaveBeenCalled();
-	});
-
-	it('should reload the current route', async () => {
-		const router = TestBed.inject(Router);
-		const navigateByUrlSpy = jest.spyOn(router, 'navigateByUrl');
-		router.navigateByUrl('/example-route');
-		service.reloadCurrentRoute();
-
-		expect(navigateByUrlSpy).toHaveBeenCalledWith('/example-route');
 	});
 });

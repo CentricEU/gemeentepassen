@@ -3,8 +3,6 @@ import { render, fireEvent } from '@testing-library/react-native';
 import GenericAccordion from './GenericAccordion';
 import { Text } from 'react-native';
 
-
-
 describe('GenericAccordion', () => {
 	it('renders title correctly', () => {
 		const { getByText } = render(<GenericAccordion title="Test Title"><Text>Child Content</Text></GenericAccordion>);

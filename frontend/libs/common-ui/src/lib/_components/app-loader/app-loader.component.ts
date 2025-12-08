@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 	selector: 'frontend-app-loader',
 	templateUrl: './app-loader.component.html',
 	styleUrls: ['./app-loader.component.scss'],
+	standalone: false,
 })
 export class AppLoaderComponent implements OnInit, OnDestroy {
 	public show = false;

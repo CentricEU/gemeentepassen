@@ -14,29 +14,25 @@ jest.mock("../../utils/DateUtils", () => ({
 }));
 
 describe("DiscountCode Component", () => {
-	const mockDiscountCode = {
-		companyLogo: "https://example.com/logo.png",
-		companyName: "Example Company",
-		offerType: {
-			offerTypeId: 1,
-			offerTypeLabel: "offerTypeLabel",
-		},
-		expirationDate: "2024-12-31",
-		code: "DISCOUNT2024",
+	const mockRoute: any = {
+		key: "testKey",
+		name: "DiscountCode",
+		params: { offerId: "12345" },
 	};
 
-	const mockRoute = { params: { offerId: "12345" } };
+	const mockNavigation: any = {
+		navigate: jest.fn(),
+		goBack: jest.fn(),
+	};
 
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
 
 	it("renders nothing if no discount code data is available", async () => {
-		(DiscountCodeService.getDiscountCode as jest.Mock).mockResolvedValue(
-			null
-		);
+		(DiscountCodeService.getDiscountCode as jest.Mock).mockResolvedValue(null);
 
-		render(<DiscountCode route={mockRoute} navigation={{}} />);
+		render(<DiscountCode route={mockRoute} navigation={mockNavigation} />);
 
 		await waitFor(() =>
 			expect(DiscountCodeService.getDiscountCode).toHaveBeenCalledWith(
@@ -53,7 +49,7 @@ describe("DiscountCode Component", () => {
 			new Error("API Error")
 		);
 
-		render(<DiscountCode route={mockRoute} navigation={{}} />);
+		render(<DiscountCode route={mockRoute} navigation={mockNavigation} />);
 
 		await waitFor(() =>
 			expect(DiscountCodeService.getDiscountCode).toHaveBeenCalledWith(

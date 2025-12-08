@@ -1,4 +1,17 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+
 :host {
 	width: 100%;
 	overflow: hidden;
+
+	.supplier-edit {
+		@include mixins.flex(column);
+		gap: 16px;
+		height: 100%;
+	}
+
+	.supplier-profile-panel {
+		flex: 1 1 auto;
+		overflow: auto;
+	}
 }

@@ -5,8 +5,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nl.centric.innovation.local4local.service.interfaces.RefreshTokenService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import nl.centric.innovation.local4local.service.impl.RefreshTokenService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -16,9 +16,9 @@ import org.springframework.stereotype.Component;
 import io.jsonwebtoken.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class LogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
-    @Autowired
-    private RefreshTokenService refreshTokenService;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public void onLogoutSuccess(

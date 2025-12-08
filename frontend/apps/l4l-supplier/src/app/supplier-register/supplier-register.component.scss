@@ -1,11 +1,11 @@
-@import '../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../libs/shared-assets/_styles/mixins' as mixins;
 
-$background-image: '/assets/images/login.svg';
+$background-image: '/assets/images/login-layout.svg';
 
 :host {
 	::ng-deep {
 		.centric-register-wrapper .register-template-content {
-			@include size(580px);
+			@include mixins.size(580px);
 
 			.form-register-template {
 				max-height: 440px;
@@ -48,13 +48,12 @@ $background-image: '/assets/images/login.svg';
 }
 
 .l4l-logo {
-	@include size(156px, 64px);
+	@include mixins.size(156px, 64px);
 }
 
 .form-header {
-	@include size(100%);
-	@include flex(column, center, center);
-	padding: 32px 0 32px 0;
+	@include mixins.size(100%);
+	@include mixins.flex(column, center, center);
 }
 
 .form-header {
@@ -62,6 +61,6 @@ $background-image: '/assets/images/login.svg';
 }
 
 .background-cover {
-	@include size(100%, 100%);
-	@include background-image($background-image, cover, no-repeat, center);
+	@include mixins.size(100%, 100%);
+	@include mixins.background-image($background-image, cover, no-repeat, center);
 }

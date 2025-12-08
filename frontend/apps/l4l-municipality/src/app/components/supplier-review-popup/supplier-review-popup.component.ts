@@ -2,16 +2,19 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
+	CharacterLimitMessageService,
 	FormUtil,
 	ModalData,
 	RejectionReason,
 	SupplierProfileService,
+	SupplierRejectionService,
 	SupplierStatus,
+	TEXT_AREA_MAX_LENGTH,
 	WarningDialogData,
 } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { CentricCounterMessages, DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 
 import { RejectSupplierDto } from '../../_models/reject-supplier-dto.model';
 import { MunicipalitySupplierService } from '../../_services/suppliers.service';
@@ -20,35 +23,35 @@ import { MunicipalitySupplierService } from '../../_services/suppliers.service';
 	selector: 'frontend-supplier-review-popup',
 	templateUrl: './supplier-review-popup.component.html',
 	styleUrls: ['./supplier-review-popup.component.scss'],
+	standalone: false,
 })
 export class SupplierReviewPopupComponent implements OnInit {
 	public rejectSupplierForm: FormGroup;
 	public isRejecting = false;
 
-	public rejectionReasons = [
-		{ key: 'rejectSupplier.reasons.notInRegion', value: RejectionReason.NOT_IN_REGION },
-		{ key: 'rejectSupplier.reasons.misbehavior', value: RejectionReason.MISBEHAVIOR },
-		{ key: 'rejectSupplier.reasons.idle', value: RejectionReason.IDLE },
-		{ key: 'rejectSupplier.reasons.incompleteInformation', value: RejectionReason.INCOMPLETE_INFORMATION },
-		{ key: 'rejectSupplier.reasons.duplicate', value: RejectionReason.DUPLICATE },
-	];
-
-	public reasonDropdownSource: string[] = this.rejectionReasons.map((reason) =>
+	public reasonDropdownSource: string[] = this.supplierRejectionService.rejectionReasonValues.map((reason) =>
 		this.translateService.instant(reason.key),
 	);
 
 	public reasonUpdatedSource: string[] = [];
+	public characterLimitMessage = '';
+	public isOverCharacterLimit = false;
+	public maxLength = TEXT_AREA_MAX_LENGTH;
 
 	public validationFunctionError = FormUtil.validationFunctionError;
 	public hasFormControlRequiredErrors = FormUtil.hasFormControlRequiredErrors;
-	public counterMessages: CentricCounterMessages = FormUtil.getTextAreaCounterMessages(this.translateService);
 
 	private mapRejectionStringToEnum: Record<string, RejectionReason> = Object.fromEntries(
-		this.rejectionReasons.map((reason) => [this.translateService.instant(reason.key), reason.value]),
+		this.supplierRejectionService.rejectionReasonValues.map((reason) => [
+			this.translateService.instant(reason.key),
+			reason.value,
+		]),
 	);
 
 	constructor(
+		public readonly characterLimitMessageService: CharacterLimitMessageService,
 		private readonly dialogService: DialogService,
+		private readonly supplierRejectionService: SupplierRejectionService,
 		@Inject(MAT_DIALOG_DATA) public data: any,
 		private supplierService: MunicipalitySupplierService,
 		private supplierProfileService: SupplierProfileService,
@@ -82,7 +85,7 @@ export class SupplierReviewPopupComponent implements OnInit {
 
 		const rejectSupplierDto = this.createRejectSupplierDto(this.supplierId);
 
-		this.supplierService.rejectSupplier(rejectSupplierDto).subscribe(() => {
+		this.supplierRejectionService.rejectSupplier(rejectSupplierDto).subscribe(() => {
 			this.dialogRef.close(SupplierStatus.REJECTED);
 		});
 	}
@@ -151,9 +154,11 @@ export class SupplierReviewPopupComponent implements OnInit {
 	}
 
 	private initRejectSupplierForm(): void {
+		this.characterLimitMessageService.messageCount = TEXT_AREA_MAX_LENGTH;
+
 		this.rejectSupplierForm = this.formBuilder.group({
 			rejectionReason: ['', [Validators.required]],
-			rejectionComments: [''],
+			rejectionComments: ['', [Validators.maxLength(TEXT_AREA_MAX_LENGTH)]],
 		});
 	}
 }

@@ -3,7 +3,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActionButtons, AuthService, ColumnDataType, Page, PaginatedData, TableColumn } from '@frontend/common';
 import { TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService, ToastrService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { ToastrService } from '@windmill/ng-windmill/toastr';
 import { of } from 'rxjs';
 
 import { InvitationDto } from '../../_models/invitation-dto.model';
@@ -21,6 +22,21 @@ describe('InvitationsComponent', () => {
 	let authServiceSpy: any;
 
 	beforeEach(async () => {
+		global.IntersectionObserver = class {
+			constructor() {
+				// mock constructor
+			}
+			observe() {
+				// mock observe
+			}
+			unobserve() {
+				// mock unobserve
+			}
+			disconnect() {
+				// mock disconnect
+			}
+		} as any;
+
 		supplierServiceSpy = {
 			getInvitations: jest.fn(),
 		};

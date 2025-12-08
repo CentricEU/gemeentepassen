@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Environment, RejectSupplierDto, SupplierViewDto } from '@frontend/common';
+import { Environment, SupplierViewDto } from '@frontend/common';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -11,15 +11,6 @@ export class SupplierService {
 		@Inject('env') private environment: Environment,
 		private httpClient: HttpClient,
 	) {}
-
-	public getSupplierRejectionInformation(supplierId: string): Observable<RejectSupplierDto> {
-		return this.httpClient.get<RejectSupplierDto>(`${this.environment.apiPath}/suppliers/rejection/${supplierId}`);
-	}
-
-	public getTestRequest(): Observable<string> {
-		//TODO: delete this when a corresponding request will appear
-		return this.httpClient.get<string>(`${this.environment.apiPath}/suppliers/test`);
-	}
 
 	public getSupplierById(supplierId: string): Observable<SupplierViewDto> {
 		return this.httpClient.get<SupplierViewDto>(`${this.environment.apiPath}/suppliers/${supplierId}`);

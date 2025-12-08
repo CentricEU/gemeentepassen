@@ -1,0 +1,95 @@
+<span mat-dialog-title>
+	<h3>{{ 'register.termsAndConditions' | translate }}</h3>
+	<button
+		ariaAttributes
+		mat-dialog-close
+		windmill-tooltip
+		class="close-button"
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		[tooltipColor]="'tooltipSurfaceColor'"
+		[tooltipText]="'general.button.close' | translate"
+		(click)="closeDialog()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+	</button>
+</span>
+<div mat-dialog-content>
+	<div class="privacy-container" tabindex="0">
+		<div class="intro section">
+			<p>{{ 'privacy.intro.paragraph_1' | translate }}</p>
+			<p>{{ 'privacy.intro.paragraph_2' | translate }}</p>
+			<p class="intro-statements">{{ 'privacy.intro.paragraph_3' | translate }}</p>
+			<ul class="info-list">
+				<li *ngFor="let i of [1, 2, 3, 4]">
+					{{ 'privacy.intro.item_' + i | translate }}
+				</li>
+			</ul>
+		</div>
+
+		<section class="section">
+			<h4>{{ 'privacy.promises.title' | translate }}</h4>
+			<p>{{ 'privacy.promises.subtitle' | translate }}</p>
+			<ul class="promises-list">
+				<li *ngFor="let p of promises">
+					<strong>{{ 'privacy.promises.' + p.key + '.title' | translate }}</strong>
+					{{ 'privacy.promises.' + p.key + '.description' | translate }}
+				</li>
+			</ul>
+		</section>
+
+		<section class="section">
+			<h4>{{ 'privacy.security.title' | translate }}</h4>
+			<p>{{ 'privacy.security.description' | translate }}</p>
+		</section>
+
+		<section class="section">
+			<h4>{{ 'privacy.breach.title' | translate }}</h4>
+			<p>{{ 'privacy.breach.paragraph_1' | translate }}</p>
+			<p>{{ 'privacy.breach.paragraph_2' | translate }}</p>
+		</section>
+
+		<section class="section">
+			<h4>{{ 'privacy.rights.title' | translate }}</h4>
+			<p>{{ 'privacy.rights.subtitle' | translate }}</p>
+			<ul class="rights-list">
+				<li *ngFor="let r of rights">
+					<strong>{{ 'privacy.rights.' + r + '.title' | translate }}</strong>
+					{{ 'privacy.rights.' + r + '.description' | translate }}
+				</li>
+			</ul>
+		</section>
+
+		<section class="section">
+			<h4>{{ 'privacy.contact.title' | translate }}</h4>
+			<p>{{ 'privacy.contact.description' | translate }}</p>
+			<p>
+				{{ 'privacy.contact.cta' | translate }}
+				<a href="mailto:info&#64;gemeentepassen.eu">info&#64;gemeentepassen.eu</a>
+			</p>
+		</section>
+
+		<section class="section">
+			<h4>{{ 'privacy.complaint.title' | translate }}</h4>
+			<p [innerHTML]="'privacy.complaint.description' | translate"></p>
+		</section>
+
+		<section class="section">
+			<h4>{{ 'privacy.info_sheet.title' | translate }}</h4>
+			<p>{{ 'privacy.info_sheet.subtitle' | translate }}</p>
+			<ul class="info-list">
+				<li *ngFor="let i of [1, 2, 3, 4, 5, 6]">
+					{{ 'privacy.info_sheet.item_' + i | translate }}
+				</li>
+			</ul>
+		</section>
+	</div>
+</div>
+<div mat-dialog-actions>
+	<centric-button
+		ariaAttributes
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="closeDialog()">
+		{{ 'general.button.close' | translate }}
+	</centric-button>
+</div>

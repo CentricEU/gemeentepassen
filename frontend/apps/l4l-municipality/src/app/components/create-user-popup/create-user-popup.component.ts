@@ -4,16 +4,19 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { FormUtil, ModalData, UserService, WarningDialogData } from '@frontend/common';
 import { CreateUserDto } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 
 @Component({
 	selector: 'frontend-create-user-popup-popup',
 	templateUrl: './create-user-popup.component.html',
+	standalone: false,
 })
 export class CreateUserPopupComponent implements OnInit {
 	public createUserForm: FormGroup;
 
 	public hasFormControlRequiredErrors = FormUtil.hasFormControlRequiredErrors;
+	public validationNoSpaceFunctionError = FormUtil.validationNoSpaceFunctionError;
+
 	public validationFunctionError = FormUtil.validationFunctionError;
 	public emailValidator = FormUtil.validateEmail(false);
 	public getEmailErrorMessage = FormUtil.getEmailErrorMessage;
@@ -86,8 +89,8 @@ export class CreateUserPopupComponent implements OnInit {
 
 	private initForm(): void {
 		this.createUserForm = this.formBuilder.group({
-			firstName: ['', [Validators.required]],
-			lastName: ['', [Validators.required]],
+			firstName: ['', [Validators.required, this.validationNoSpaceFunctionError]],
+			lastName: ['', [Validators.required, this.validationNoSpaceFunctionError]],
 			email: ['', [Validators.required, this.emailValidator]],
 		});
 	}

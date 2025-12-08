@@ -1,27 +1,26 @@
-@import '../../../../../shared-assets/_styles/mixins.scss';
+@use '../../../../../shared-assets/_styles/mixins.scss' as mixins;
+@use '../../../../../shared-assets/_styles/login-layout-common.scss';
 
-$login-image: '/assets/images/login.svg';
 
 :host {
 	::ng-deep {
 		.centric-login-wrapper .login-template-content .form-login-template {
-			padding: 32px;
+			@extend .login-form-padding;
 		}
 
 		.centric-login-wrapper .login-template-content .title {
-			margin: 32px 0 16px 0;
+			@extend .login-title-margin;
 		}
 
 		.centric-login-wrapper {
-			@include size(100%, 100%);
-			background: url($login-image) no-repeat center;
-			background-size: cover;
+			--login-image: url('/assets/images/login-layout.svg');
+			@extend .login-background;
 		}
 	}
 }
 
 .forgot-section {
-	@include flex(row, space-between);
+	@include mixins.flex(row, space-between);
 }
 
 .forgot-section>* {

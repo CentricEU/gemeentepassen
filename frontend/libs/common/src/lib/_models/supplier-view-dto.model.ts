@@ -21,7 +21,7 @@ export class SupplierViewDto extends GenericTableData {
 		category: string,
 		date: Date,
 		status: string,
-		hasStatusUpdate: boolean = false,
+		hasStatusUpdate = false,
 		logo?: string,
 	) {
 		super();

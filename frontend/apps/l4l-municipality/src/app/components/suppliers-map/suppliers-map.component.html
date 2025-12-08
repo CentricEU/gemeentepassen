@@ -1,4 +1,4 @@
-<ng-container *ngIf="!showEmptyState; else noDataState">
+<ng-container *ngIf="!showEmptyState && showMap; else noDataState">
 	<div id="map" class="map"></div>
 </ng-container>
 

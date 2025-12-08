@@ -20,9 +20,28 @@
 					formControlName="invitationMessage"
 					[ariaLabelClearIcon]="'general.label.clear' | translate"
 					[placeholder]="'inviteSuppliers.invitationDescription' | translate"
-					[maxLength]="1024"
-					[counterMessages]="counterMessages"
-					[validationFunction]="validationFunctionError.bind(this, 'invitationMessage', inviteSuppliersForm)">
+					[validationFunction]="validationFunctionError.bind(this, 'invitationMessage', inviteSuppliersForm)"
+					(textareaValueChanged)="characterLimitMessageService.onTextareaValueChanged($event, maxLength)"
+					(clearValue)="characterLimitMessageService.onClearValue(maxLength)">
+					@if (!characterLimitMessageService.isOverCharacterLimit) {
+						<ng-container hints>
+							<span class="centric-hint-message">
+								{{
+									characterLimitMessageService.messageKey
+										| translate: { count: characterLimitMessageService.messageCount }
+								}}
+							</span>
+						</ng-container>
+					} @else {
+						<ng-container errors>
+							<span class="centric-error-message">
+								{{
+									characterLimitMessageService.messageKey
+										| translate: { count: characterLimitMessageService.messageCount }
+								}}
+							</span>
+						</ng-container>
+					}
 					<ng-container errors *ngIf="hasFormControlRequiredErrors('invitationMessage', inviteSuppliersForm)">
 						<span class="centric-error-message">
 							{{ 'inviteSuppliers.invitationMessageRequired' | translate }}
@@ -70,7 +89,7 @@
 	</form>
 </section>
 <section mat-dialog-actions>
-	<centric-button ariaAttributes type="button-link-dark" (click)="close()">
+	<centric-button ariaAttributes type="ghost-greyscale" (click)="close()">
 		{{ 'general.button.cancel' | translate }}
 	</centric-button>
 	<centric-button ariaAttributes (click)="sendInvitations()" [disabled]="!isFormValid()">

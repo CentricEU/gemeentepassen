@@ -80,8 +80,8 @@ describe('CustomDialog', () => {
 				cancelButtonText: successModal.cancelButtonText,
 				acceptButtonText: successModal.acceptButtonText,
 				disableClosing: successModal.disableClosing,
-				acceptButtonType: 'button-success',
-				cancelButtonType: 'button-link-dark',
+				acceptButtonType: 'high-emphasis-success',
+				cancelButtonType: 'ghost-greyscale',
 				comments: '',
 				modalTypeClass: '',
 				optionalText: undefined,
@@ -118,8 +118,8 @@ describe('CustomDialog', () => {
 				cancelButtonText: successModal.cancelButtonText,
 				acceptButtonText: successModal.acceptButtonText,
 				disableClosing: successModal.disableClosing,
-				acceptButtonType: 'button-warning',
-				cancelButtonType: 'button-link-dark',
+				acceptButtonType: 'high-emphasis-warning',
+				cancelButtonType: 'ghost-greyscale',
 				comments: '',
 				modalTypeClass: 'warning',
 				optionalText: undefined,
@@ -133,16 +133,16 @@ describe('CustomDialog', () => {
 	});
 
 	describe('getAcceptedButtonType', () => {
-		it('should set acceptButtonType to button-warning when modalTypeClass is "warning"', () => {
+		it('should set acceptButtonType to high-emphasis-warning when modalTypeClass is "warning"', () => {
 			const config: MatDialogConfig = { data: {} };
 			CustomDialogConfigUtil['getAcceptedButtonType']('warning', config);
-			expect(config.data.acceptButtonType).toBe('button-warning');
+			expect(config.data.acceptButtonType).toBe('high-emphasis-warning');
 		});
 
-		it('should set acceptButtonType to button-alert when modalTypeClass is "alert"', () => {
+		it('should set acceptButtonType to high-emphasis-danger when modalTypeClass is "danger"', () => {
 			const config: MatDialogConfig = { data: {} };
-			CustomDialogConfigUtil['getAcceptedButtonType']('alert', config);
-			expect(config.data.acceptButtonType).toBe('button-alert');
+			CustomDialogConfigUtil['getAcceptedButtonType']('danger', config);
+			expect(config.data.acceptButtonType).toBe('high-emphasis-danger');
 		});
 
 		it('should not change acceptButtonType when modalTypeClass is not "warning" or "alert"', () => {

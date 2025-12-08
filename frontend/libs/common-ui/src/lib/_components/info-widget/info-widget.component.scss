@@ -1,15 +1,15 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
 
 .info-widget {
-	@include flex(row);
-	@include size(300px, 96px);
+	@include mixins.flex(row);
+	@include mixins.size(300px, 96px);
 	align-items: center;
 	padding: 16px;
 	gap: 16px;
 
 	.info-widget-icon {
-		@include size(64px, 64px);
-		@include flex(column, center);
+		@include mixins.size(64px, 64px);
+		@include mixins.flex(column, center);
 		background: var(--greyscale-50);
 		border-radius: 50%;
 	}

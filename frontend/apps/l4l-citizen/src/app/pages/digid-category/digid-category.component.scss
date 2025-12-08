@@ -1,0 +1,32 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
+
+:host {
+	.container {
+		@include mixins.size(100%, 100%);
+		@include mixins.flex(column);
+		align-items: center;
+		padding-top: 272px;
+		gap: 32px;
+	}
+
+	.buttons-container {
+		@include mixins.flex(row);
+		gap: 16px;
+	}
+}
+
+@media (max-width: 500px) {
+	:host {
+		.citizen-enrollment-view {
+			@include mixins.flex(column, center, center);
+			gap: 16px;
+			padding: 0 16px;
+
+			.buttons-container {
+				flex-direction: column;
+				gap: 16px;
+				width: 100%;
+			}
+		}
+	}
+}

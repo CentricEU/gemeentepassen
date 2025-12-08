@@ -25,6 +25,8 @@ describe('UserService', () => {
 		isProfileSet: true,
 		isApproved: true,
 		status: SupplierStatus.APPROVED,
+		firstName: 'firstName',
+		lastName: 'lastName',
 	};
 
 	beforeEach(() => {
@@ -84,5 +86,121 @@ describe('UserService', () => {
 		expect(request.request.body).toEqual(createUserDto);
 
 		request.flush({});
+	});
+
+	it('should return the count of admin users', () => {
+		const count = 5;
+
+		service.countAdminUsers().subscribe((data) => {
+			expect(data).toBe(count);
+		});
+
+		const req = httpMock.expectOne(`${environmentMock.apiPath}/users/admins/count`);
+		expect(req.request.method).toBe('GET');
+
+		req.flush(count);
+	});
+
+	it('should propagate an error when the request fails', () => {
+		const errorMessage = 'Server error';
+
+		service.countAdminUsers().subscribe({
+			next: () => {
+				throw new Error('Expected error, but got success');
+			},
+			error: (err) => {
+				expect(err.status).toBe(500);
+				expect(err.statusText).toBe('Server Error');
+			},
+		});
+
+		const req = httpMock.expectOne(`${environmentMock.apiPath}/users/admins/count`);
+		expect(req.request.method).toBe('GET');
+
+		req.flush({ message: errorMessage }, { status: 500, statusText: 'Server Error' });
+	});
+
+	it('should call GET /users/admins/paginated with correct params and return UserTableDto[]', () => {
+		const page = 1;
+		const size = 10;
+		const mockResponse = [
+			{
+				id: '1',
+				fullName: 'User 1',
+				email: 'email@test 1',
+			},
+		];
+
+		service.getUsersPaged(page, size).subscribe((res) => {
+			expect(res).toEqual(mockResponse);
+		});
+
+		const req = httpMock.expectOne(
+			(r) =>
+				r.url === `${environmentMock.apiPath}/users/admins/paginated` &&
+				r.params.get('page') === page.toString() &&
+				r.params.get('size') === size.toString(),
+		);
+		expect(req.request.method).toBe('GET');
+
+		req.flush(mockResponse);
+	});
+
+	it('should handle errors when getUsersPaged fails', () => {
+		let errorResponse: any;
+		const page = 2;
+		const size = 5;
+
+		service.getUsersPaged(page, size).subscribe({
+			error: (err) => (errorResponse = err),
+		});
+
+		const req = httpMock.expectOne(
+			(r) =>
+				r.url === `${environmentMock.apiPath}/users/admins/paginated` &&
+				r.params.get('page') === page.toString() &&
+				r.params.get('size') === size.toString(),
+		);
+		req.flush('Error', { status: 404, statusText: 'Not Found' });
+
+		expect(errorResponse).toBeTruthy();
+		expect(errorResponse.status).toBe(404);
+		expect(errorResponse.statusText).toBe('Not Found');
+	});
+
+	it('should call GET /users/cashiers/{supplierId} and return string[]', () => {
+		const mockResponse = ['cashier1@test.com', 'cashier2@test.com'];
+		const supplierId = 'SupplierID';
+		service.getCashierEmailsForSupplier(supplierId).subscribe((res) => {
+			expect(res).toEqual(mockResponse);
+		});
+
+		const req = httpMock.expectOne(`${environmentMock.apiPath}/suppliers/${supplierId}/cashiers`);
+		expect(req.request.method).toBe('GET');
+
+		req.flush(mockResponse);
+	});
+
+	it('should propagate an error when getCashierEmailsForSupplier fails', () => {
+		let errorResponse: any;
+		const supplierId = 'SupplierID';
+
+		service.getCashierEmailsForSupplier(supplierId).subscribe({
+			next: () => {
+				throw new Error('Expected error, but got success');
+			},
+			error: (err) => {
+				errorResponse = err;
+			},
+		});
+
+		const req = httpMock.expectOne(`${environmentMock.apiPath}/suppliers/${supplierId}/cashiers`);
+		expect(req.request.method).toBe('GET');
+
+		req.flush({ message: 'Not found' }, { status: 404, statusText: 'Not Found' });
+
+		expect(errorResponse).toBeTruthy();
+		expect(errorResponse.status).toBe(404);
+		expect(errorResponse.statusText).toBe('Not Found');
 	});
 });

@@ -1,0 +1,244 @@
+<section mat-dialog-title>
+	<h3>{{ 'citizenGroup.addNew' | translate }}</h3>
+	<button
+		class="close-button"
+		ariaAttributes
+		[attr.ariaLabel]="'general.button.close' | translate"
+		[ariaLabelTranslation]="'general.button.close'"
+		(click)="close()">
+		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+	</button>
+</section>
+<section mat-dialog-content>
+	<form centric-complex-form [formGroup]="createCitizenGroupForm">
+		<centric-form-item-group class="l4l-form-item-group">
+			<div class="title-group">{{ 'generalInformation.header' | translate }}</div>
+			<centric-form-item-group [type]="'inline'">
+				<centric-form-item [width]="'0%'">
+					<centric-form-label [attrFor]="'group-name-id'">
+						{{ 'citizenGroup.groupName' | translate }}
+					</centric-form-label>
+					<centric-form-control frontendRequiredInput>
+						<windmill-input
+							ariaAttributes
+							frontendHtmlContentValidator
+							formControlName="groupName"
+							[id]="'group-name-id'"
+							[ariaLabelClearIcon]="'general.label.clear' | translate"
+							[hasClearIcon]="true"
+							[placeholder]="'citizenGroup.groupNamePlaceholder' | translate"
+							[maxLength]="64"
+							[ariaDescribedby]="
+								createCitizenGroupForm.get('groupName')?.errors &&
+								createCitizenGroupForm.get('groupName')?.touched
+									? 'id-errors-groupName'
+									: ''
+							"
+							[validationFunction]="
+								validationFunctionError.bind(this, 'groupName', createCitizenGroupForm)
+							">
+							@if (hasFormControlRequiredErrors('groupName', createCitizenGroupForm)) {
+								<ng-container errors>
+									<div id="id-errors-groupName">
+										<span class="centric-error-message" [attr.id]="'group-name-error'">
+											{{ 'citizenGroup.groupNameFormControlRequired' | translate }}
+										</span>
+									</div>
+								</ng-container>
+							}
+						</windmill-input>
+					</centric-form-control>
+				</centric-form-item>
+				<centric-form-item>
+					<centric-form-label [attrFor]="'age-group-id'">
+						{{ 'citizenGroup.ageGroup' | translate }}
+					</centric-form-label>
+					<centric-form-control frontendRequiredInput>
+						<windmill-select
+							formControlName="ageGroup"
+							ariaAttributes
+							[ariaLabelClearButton]="'general.label.clear' | translate"
+							[id]="'age-group-id'"
+							[hasClearIcon]="true"
+							[multiple]="true"
+							[placeholder]="'citizenGroup.ageGroupPlaceholder' | translate"
+							[source]="ageGroupSource"
+							[selectAll]="true"
+							[selectAllLabel]="'general.selectAll' | translate"
+							[displayPropertyName]="'value'"
+							[ariaDescribedby]="
+								createCitizenGroupForm.get('ageGroup')?.errors &&
+								createCitizenGroupForm.get('ageGroup')?.touched
+									? 'id-errors-ageGroup'
+									: ''
+							"
+							[validationFunction]="
+								validationFunctionError.bind(this, 'ageGroup', createCitizenGroupForm)
+							">
+						</windmill-select>
+					</centric-form-control>
+					@if (hasControlRequiredErrorAndTouched('ageGroup', createCitizenGroupForm)) {
+						<ng-container errors>
+							<div id="id-errors-ageGroup">
+								<span class="centric-error-message" [attr.id]="'age-group-error'"
+									>{{ 'citizenGroup.ageGroupFormControlRequired' | translate }}
+								</span>
+							</div>
+						</ng-container>
+					}
+				</centric-form-item>
+			</centric-form-item-group>
+			<centric-form-item>
+				<centric-form-label>{{ 'citizenGroup.includesDependentChildren' | translate }}</centric-form-label>
+				<centric-form-control frontendRequiredInput>
+					<centric-radio-group formControlName="dependentChildren" [inline]="true" [ngModel]="actionsList[0]">
+						@for (action of actionsList; track action) {
+							<centric-radio
+								ariaAttributes
+								frontendHtmlContentValidator
+								[value]="action"
+								[label]="action | translate"
+								[id]="'id-radio-action-' + action"
+								[ariaLabelTranslation]="'citizenGroup.includesDependentChildren' | translate">
+							</centric-radio>
+						}
+					</centric-radio-group>
+				</centric-form-control>
+			</centric-form-item>
+		</centric-form-item-group>
+		<centric-form-item-group class="l4l-form-item-group">
+			<div class="title-group">{{ 'citizenGroup.incomeThresholds' | translate }}</div>
+			<p>
+				{{ 'citizenGroup.incomeThresholdsLine1' | translate: { wage: wage } }}<br />
+				{{ 'citizenGroup.incomeThresholdsLine2' | translate }}
+			</p>
+			<centric-form-item>
+				<centric-form-label>{{ 'citizenGroup.minimumWage' | translate }}</centric-form-label>
+				<centric-form-control>
+					<p>{{ wage }}</p>
+				</centric-form-control>
+			</centric-form-item>
+			<centric-form-item-group [type]="'inline'">
+				<centric-form-item [width]="'0%'">
+					<centric-form-label [attrFor]="'id-threshold'">
+						{{ 'citizenGroup.threshold' | translate }}
+					</centric-form-label>
+					<centric-form-control frontendRequiredInput>
+						<windmill-input
+							ariaAttributes
+							frontendHtmlContentValidator
+							formControlName="threshold"
+							min="1"
+							max="200"
+							[id]="'id-threshold'"
+							[ariaLabelClearIcon]="'general.label.clear' | translate"
+							[hasClearIcon]="true"
+							[mask]="'separator.2'"
+							[decimalMarker]="'.'"
+							[placeholder]="'citizenGroup.thresholdPlaceholder' | translate"
+							[suffix]="' %'"
+							[ariaDescribedby]="
+								createCitizenGroupForm.get('threshold')?.errors &&
+								createCitizenGroupForm.get('threshold')?.touched
+									? 'id-errors-threshold'
+									: ''
+							"
+							[validationFunction]="
+								validationFunctionError.bind(this, 'threshold', createCitizenGroupForm)
+							">
+							<ng-container errors>
+								<div id="id-errors-threshold">
+									@if (hasFormControlRequiredErrors('threshold', createCitizenGroupForm)) {
+										<span class="centric-error-message" [attr.id]="'threshold-error'">
+											{{ 'citizenGroup.thresholdFormControlRequired' | translate }}
+										</span>
+									}
+									@if (hasControlMinMaxErrors('threshold', createCitizenGroupForm)) {
+										<span class="centric-error-message" [attr.id]="'threshold-error'">
+											{{ 'citizenGroup.thresholdFormControlMinMaxError' | translate }}
+										</span>
+									}
+									@if (createCitizenGroupForm.get('threshold')?.hasError('isHTML')) {
+										<span class="centric-error-message" [attr.id]="'threshold-error'">
+											{{ 'errors.htmlContent' | translate }}
+										</span>
+									}
+								</div>
+							</ng-container>
+						</windmill-input>
+					</centric-form-control>
+				</centric-form-item>
+				<centric-form-item>
+					<centric-form-label [attrFor]="'id-maxincome'">
+						{{ 'citizenGroup.calculatedMaxIncome' | translate }}
+					</centric-form-label>
+					<centric-form-control frontendRequiredInput>
+						<windmill-input
+							ariaAttributes
+							frontendHtmlContentValidator
+							formControlName="maxIncome"
+							[id]="'id-maxincome'"
+							[class.disabled]="true"
+							[placeholder]="'citizenGroup.calculatedMaxIncomePlaceholder' | translate"
+							[prefix]="'€'"
+							[disabled]="true"
+							[validationFunction]="
+								validationFunctionError.bind(this, 'maxIncome', createCitizenGroupForm)
+							">
+						</windmill-input>
+					</centric-form-control>
+				</centric-form-item>
+			</centric-form-item-group>
+		</centric-form-item-group>
+		<centric-form-item-group>
+			<div class="title-group">{{ 'citizenGroup.eligibilityCriteriaTitle' | translate }}</div>
+			<centric-form-item>
+				<centric-form-label [attr.id]="'idCheckboxGroupCriteria'" class="eligibility-criteria-label">
+					{{ 'citizenGroup.criteriaOptions.formLabel' | translate }}
+				</centric-form-label>
+				<centric-form-control frontendRequiredInput class="citizen-group-block">
+					<div role="group" [attr.aria-labelledby]="'idCheckboxGroupCriteria'">
+						@for (i of eligibilityCriterias; track i) {
+							<windmill-checkbox
+								class="citizen-group-block citizen-group-checkbox"
+								[formControlName]="i.formControl"
+								[label]="'citizenGroup.criteriaOptions.' + i.translateKey | translate"
+								[id]="i.id"
+								[testCheckboxId]="i.dataTestId">
+							</windmill-checkbox>
+						}
+					</div>
+				</centric-form-control>
+			</centric-form-item>
+		</centric-form-item-group>
+		<centric-form-item-group>
+			<div class="title-group">{{ 'citizenGroup.requiredDocumentsTitle' | translate }}</div>
+			<centric-form-item>
+				<centric-form-label [attr.id]="'idCheckboxGroupDocuments'" class="eligibility-criteria-label">
+					{{ 'citizenGroup.requiredDocuments.formLabel' | translate }}
+				</centric-form-label>
+				<centric-form-control frontendRequiredInput class="citizen-group-block">
+					<div role="group" [attr.aria-labelledby]="'idCheckboxGroupDocuments'">
+						@for (i of requiredDocuments; track i) {
+							<windmill-checkbox
+								class="citizen-group-block citizen-group-checkbox"
+								[formControlName]="i.formControl"
+								[label]="'citizenGroup.requiredDocuments.' + i.translateKey | translate"
+								[id]="i.id"
+								[testCheckboxId]="i.dataTestId">
+							</windmill-checkbox>
+						}
+					</div>
+				</centric-form-control>
+			</centric-form-item>
+		</centric-form-item-group>
+	</form>
+</section>
+<section mat-dialog-actions>
+	<centric-button ariaAttributes type="ghost-greyscale" (click)="close()">
+		{{ 'general.button.cancel' | translate }}
+	</centric-button>
+	<centric-button ariaAttributes (click)="createCitizenGroup()" [disabled]="saveButtonDisabled">
+		{{ 'general.button.save' | translate }}
+	</centric-button>
+</section>

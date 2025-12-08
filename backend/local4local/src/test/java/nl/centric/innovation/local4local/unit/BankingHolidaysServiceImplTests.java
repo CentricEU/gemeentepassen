@@ -53,7 +53,7 @@ public class BankingHolidaysServiceImplTests {
     @Test
     @SneakyThrows
     public void GivenNotPresentYear_WhenGetBankHolidaysFromApi_ThanShouldSave() {
-        Integer year = 2024;
+        Integer year = 2025;
         when(bankHolidayRepository.countByYear(year)).thenReturn(0);
 
         List<BankHoliday> holidays = new ArrayList<>();

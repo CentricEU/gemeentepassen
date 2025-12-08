@@ -27,7 +27,7 @@
 					<ng-container
 						errors
 						*ngIf="
-							shouldDisplayDoubleFieldValidityError(
+							shouldShowRequiredErrorForEitherFields(
 								createOfferForm,
 								'minPrice',
 								'maxPrice',
@@ -35,7 +35,7 @@
 							)
 						">
 						<span class="centric-error-message">
-							{{ getErrorMessageForPriceRange(false) }}
+							{{ errorMessages['VALIDITY_ERROR'] | translate }}
 						</span>
 					</ng-container>
 					<ng-container
@@ -43,7 +43,16 @@
 						*ngIf="shouldDisplayCompareError(createOfferForm, 'minPrice', 'maxPrice', 'priceRange')">
 						<div class="states-messages">
 							<span class="centric-error-message">
-								{{ getErrorMessageForPriceRange(true) }}
+								{{ errorMessages['COMPARISON_ERROR'] | translate }}
+							</span>
+						</div>
+					</ng-container>
+					<ng-container
+						errors
+						*ngIf="isValidIfAtLeastOneFieldIsZeroOrEmpty(createOfferForm, 'minPrice', 'maxPrice')">
+						<div class="states-messages">
+							<span class="centric-error-message">
+								{{ errorMessages['GREATER_THAN_ZERO'] | translate }}
 							</span>
 						</div>
 					</ng-container>

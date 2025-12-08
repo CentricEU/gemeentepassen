@@ -130,9 +130,11 @@ describe('DragFileComponent', () => {
 		expect(text).toEqual(component['translateService'].instant('upload.description'));
 	});
 
-	it('should return tooManyFilesErrorMessage', () => {
-		const text = component.tooManyFilesErrorMessage();
-		expect(text).toEqual(component['translateService'].instant('upload.warningFilesNumber'));
+	it('should return fileUploadDescriptionReplace when file is present', () => {
+		const file = new File(['fileContent'], 'test-file.txt', { type: 'text/plain' });
+		component.uploadedFile = file;
+		const text = component.fileUploadDescriptionText();
+		expect(text).toEqual(component['translateService'].instant('upload.descriptionReplace'));
 	});
 
 	it('should return FileWarning class from warnings getter', () => {

@@ -1,3 +1,4 @@
+//[PDF Invoice] This service class is no longer used, but kept for reference or future use
 package nl.centric.innovation.local4local.service.impl;
 
 import com.itextpdf.html2pdf.HtmlConverter;
@@ -9,7 +10,6 @@ import nl.centric.innovation.local4local.entity.SupplierProfile;
 import nl.centric.innovation.local4local.entity.Tenant;
 import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
 import nl.centric.innovation.local4local.exceptions.InvoiceGenerationException;
-import nl.centric.innovation.local4local.service.interfaces.SupplierService;
 import nl.centric.innovation.local4local.util.DateUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

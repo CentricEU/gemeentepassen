@@ -5,7 +5,7 @@ import { map, Observable, Subject, tap } from 'rxjs';
 import { Environment } from '../_models/environment.model';
 import { ProfileDropdownsDto } from '../_models/profile-dropdowns-dto.model';
 import { SupplierProfile } from '../_models/supplier-profile.model';
-import { SupplierProfileDto } from '../_models/supplier-profile-dto.model';
+import { SupplierProfilePatchDto } from '../_models/supplier-profile-patch-dto.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -34,8 +34,15 @@ export class SupplierProfileService {
 		return this.httpClient.get<ProfileDropdownsDto>(`${this.environment.apiPath}/supplier-profiles/dropdown-data`);
 	}
 
-	public updateSupplierProfile(supplierProfileDto: SupplierProfileDto): Observable<void> {
-		return this.httpClient.put<void>(`${this.environment.apiPath}/supplier-profiles`, supplierProfileDto);
+	public updateSupplierProfile(supplierProfileDto: SupplierProfilePatchDto): Observable<void> {
+		return this.httpClient.patch<void>(`${this.environment.apiPath}/supplier-profiles`, supplierProfileDto);
+	}
+
+	public reapplySupplierProfile(supplierProfileDto: SupplierProfilePatchDto): Observable<void> {
+		return this.httpClient.patch<void>(
+			`${this.environment.apiPath}/supplier-profiles/reapplication`,
+			supplierProfileDto,
+		);
 	}
 
 	public getSupplierProfile(supplierId: string): Observable<SupplierProfile> {

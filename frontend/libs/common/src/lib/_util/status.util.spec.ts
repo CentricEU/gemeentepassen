@@ -1,3 +1,4 @@
+import { CitizenGroupAge, CitizenGroupAgeMapping } from '../_enums/citizen-group-age.enum';
 import { GenericStatusEnum } from '../_enums/generic-status.enum';
 import { StatusUtil } from './status.util';
 
@@ -13,7 +14,7 @@ describe('StatusUtil', () => {
 
 	it('should get SVG icon for status correctly', () => {
 		expect(StatusUtil.getSvgIconForStatus(GenericStatusEnum.ACTIVE)).toBe('check-circle_b');
-		expect(StatusUtil.getSvgIconForStatus(GenericStatusEnum.EXPIRED)).toBe('minus-circle_b');
+		expect(StatusUtil.getSvgIconForStatus(GenericStatusEnum.EXPIRED)).toBe('minus_b');
 		expect(StatusUtil.getSvgIconForStatus(GenericStatusEnum.PENDING)).toBe('clock_b');
 		expect(StatusUtil.getSvgIconForStatus(GenericStatusEnum.REJECTED)).toBe('cancel-circle_b');
 		expect(StatusUtil.getSvgIconForStatus(null as unknown as GenericStatusEnum)).toBe('');
@@ -47,5 +48,17 @@ describe('StatusUtil', () => {
 		[false, 'general.no'],
 	])('should get message for registered column (%s)', (input, expected) => {
 		expect(StatusUtil.getMessagesForIsAnswerYesNo(input)).toBe(expected);
+	});
+
+	describe('getCitizenGroupAgeLabelFromEnum', () => {
+		it('should return correct labels for given age groups', () => {
+			const ageGroups = [CitizenGroupAge.UNDER_18, CitizenGroupAge.AGE_18_64];
+			const expectedLabels = ['citizenGroup.under18', CitizenGroupAgeMapping().get(CitizenGroupAge.AGE_18_64)];
+			expect(StatusUtil.getCitizenGroupAgeLabelFromEnum(ageGroups)).toEqual(expectedLabels);
+		});
+
+		it('should return an empty array for an empty array', () => {
+			expect(StatusUtil.getCitizenGroupAgeLabelFromEnum([])).toEqual([]);
+		});
 	});
 });

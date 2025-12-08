@@ -1,7 +1,6 @@
 package nl.centric.innovation.local4local.repository.impl;
 
 import nl.centric.innovation.local4local.dto.FilterOfferRequestDto;
-import nl.centric.innovation.local4local.entity.Grant;
 import nl.centric.innovation.local4local.entity.Offer;
 import nl.centric.innovation.local4local.enums.OfferAttributeEnum;
 import nl.centric.innovation.local4local.repository.OfferRepositoryFilterCustom;
@@ -15,8 +14,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -43,7 +40,7 @@ public class OfferRepositoryFilterCustomImpl implements OfferRepositoryFilterCus
 
         EntityGraph<Offer> entityGraph = entityManager.createEntityGraph(Offer.class);
         entityGraph.addAttributeNodes(
-                OfferAttributeEnum.GRANTS.getAttributeName(),
+                OfferAttributeEnum.BENEFIT.getAttributeName(),
                 OfferAttributeEnum.SUPPLIER.getAttributeName());
 
         TypedQuery<Offer> typedQuery = entityManager.createQuery(query)
@@ -82,8 +79,12 @@ public class OfferRepositoryFilterCustomImpl implements OfferRepositoryFilterCus
                                     .get(OfferAttributeEnum.OFFER_TYPE_ID.getAttributeName()), typeId.toString()))
                     .ifPresent(predicates::add);
 
-            Optional.ofNullable(filterParams.grantId())
-                    .ifPresent(grantIds -> addGrantIdPredicate(grantIds, root, predicates));
+
+            Optional.ofNullable(filterParams.benefitId())
+                    .map(benefitId -> criteriaBuilder.equal(
+                            root.get(OfferAttributeEnum.BENEFIT.getAttributeName())
+                                    .get(OfferAttributeEnum.ID.getAttributeName()), benefitId))
+                    .ifPresent(predicates::add);
 
             predicates.add(criteriaBuilder.equal(
                     root.get(OfferAttributeEnum.SUPPLIER.getAttributeName())
@@ -98,10 +99,4 @@ public class OfferRepositoryFilterCustomImpl implements OfferRepositoryFilterCus
         Optional.ofNullable(value)
                 .ifPresent(val -> predicates.add(criteriaBuilder.equal(attribute, val)));
     }
-
-    private void addGrantIdPredicate(UUID grantId, Root<Offer> root, List<Predicate> predicates) {
-        Join<Offer, Grant> grants = root.join(OfferAttributeEnum.GRANTS.getAttributeName(), JoinType.LEFT);
-        predicates.add(grants.get(OfferAttributeEnum.ID.getAttributeName()).in(grantId));
-    }
-
 }

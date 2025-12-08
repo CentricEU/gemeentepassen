@@ -1,9 +1,9 @@
-@import 'mixins.scss';
+@use 'mixins.scss' as mixins;
 
 :host {
 	::ng-deep {
 		mat-dialog-container [mat-dialog-content] {
-			@include flex(column, center, flex-start);
+			@include mixins.flex(column, center, flex-start);
 			gap: 16px;
 		}
 	}

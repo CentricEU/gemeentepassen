@@ -1,10 +1,10 @@
-@import '../../../../../../libs/shared-assets/_styles/full-size-pannel';
-@import '@windmill/windmill/src/lib/assets/utils/mixins';
+@use '../../../../../../libs/shared-assets/_styles/full-size-pannel';
+@use '@windmill/windmill/src/lib/assets/utils/mixins' as mixins;
 
 :host {
 	::ng-deep {
 		table {
-			@include grid-cols(48px, auto, auto, auto, auto, auto, auto, auto, 120px);
+			@include mixins.grid-cols(220px, auto, auto, auto, auto, auto, auto, auto, 120px);
 		}
 	}
 }

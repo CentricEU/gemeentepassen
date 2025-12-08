@@ -4,6 +4,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 @Component({
 	selector: 'frontend-chip-remaining-dialog',
 	templateUrl: './chip-remaining-dialog.component.html',
+	standalone: false,
 })
 export class ChipRemainingDialogComponent {
 	public arrayOfChips: [];

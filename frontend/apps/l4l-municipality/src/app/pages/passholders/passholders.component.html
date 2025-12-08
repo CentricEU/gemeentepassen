@@ -1,11 +1,8 @@
-<ng-container *ngIf="isDataExisting; else noData">
+@if (isDataExisting) {
 	<frontend-table
 		#passholdersTable
 		class="table-pannel"
 		[columns]="allColumns"
-		[hasCheckbox]="true"
-		[typeOfT]="typeOfModal"
-		[columnWithChips]="'grants'"
 		[listLength]="dataCount"
 		[showFooter]="true"
 		[showHeader]="true"
@@ -16,23 +13,14 @@
 			<span class="left-container">{{ 'general.pages.passholders' | translate }} </span>
 			<ng-container *ngIf="isDataExisting">
 				<section class="right-container">
-					<ng-container *ngIf="isMultipleSelect">
-						<centric-button
-							ariaAttributes
-							type="button-link-dark"
-							[ariaLabelTranslation]="'general.button.assign'"
-							(click)="assignMultipleGrants()">
-							{{ 'general.button.assign' | translate }}
-						</centric-button>
-					</ng-container>
 					<centric-button
 						ariaAttributes
 						windmill-tooltip
 						class="item"
-						type="icon-button-fourth-dark"
+						type="icon-ghost-greyscale"
 						iconId="slider-vert_b"
 						size="small"
-						tooltipColor="dark-grey"
+						tooltipColor="surface"
 						tooltipPosition="above"
 						[ariaLabelTranslation]="'modal.manageColumns.title'"
 						[tooltipText]="'modal.manageColumns.title' | translate"
@@ -40,15 +28,7 @@
 
 					<centric-button
 						ariaAttributes
-						type="button-theme"
-						iconId="filter_b"
-						[ariaLabelTranslation]="'general.button.filter'">
-						{{ 'general.button.filter' | translate }}
-					</centric-button>
-
-					<centric-button
-						ariaAttributes
-						type="button-default"
+						type="high-emphasis-theme"
 						iconId="plus_b"
 						[ariaLabelTranslation]="'passholders.import'"
 						(click)="openPassholdersModal()">
@@ -58,21 +38,30 @@
 			</ng-container>
 		</ng-container>
 	</frontend-table>
-</ng-container>
-
-<ng-template #noData>
+} @else {
 	<centric-panel class="table-pannel" [class.full-size-panel]="true" [showFooter]="false" [header]="true">
 		<ng-container panel-header>
 			<span class="left-container">{{ 'general.pages.passholders' | translate }} </span>
 		</ng-container>
 		<ng-container panel-content>
-			<frontend-no-data
-				[noDataTitle]="'passholders.noData.title'"
-				[noDataDescription]="'passholders.noData.description'">
-				<centric-button type="button-default" iconId="plus_b" (click)="openPassholdersModal()">
-					{{ 'passholders.import' | translate }}
-				</centric-button>
-			</frontend-no-data>
+			@if (showCreateCitizenGroupState) {
+				<frontend-no-data
+					[imageName]="'no-groups.svg'"
+					[noDataTitle]="'passholders.noData.title'"
+					[noDataDescription]="'passholders.noData.descriptionNoCitizenGroup'">
+					<centric-button type="high-emphasis-theme" iconId="arrow-right_r" (click)="goToProfilePage()">
+						{{ 'benefitsPage.goToProfilePage' | translate }}
+					</centric-button>
+				</frontend-no-data>
+			} @else {
+				<frontend-no-data
+					[noDataTitle]="'passholders.noData.title'"
+					[noDataDescription]="'passholders.noData.description'">
+					<centric-button type="high-emphasis-theme" iconId="plus_b" (click)="openPassholdersModal()">
+						{{ 'passholders.import' | translate }}
+					</centric-button>
+				</frontend-no-data>
+			}
 		</ng-container>
 	</centric-panel>
-</ng-template>
+}

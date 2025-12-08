@@ -31,8 +31,8 @@ describe('LoginComponent', () => {
 
 	beforeEach(() => {
 		TestBed.configureTestingModule({
-			declarations: [LoginComponent, AriaAttributesDirective],
-			imports: [ReactiveFormsModule, TranslateModule.forRoot(), CommonUiModule],
+			declarations: [AriaAttributesDirective],
+			imports: [ReactiveFormsModule, TranslateModule.forRoot(), CommonUiModule, LoginComponent],
 			providers: [
 				FormBuilder,
 				{ provide: AuthService, useValue: authServiceMock },
@@ -87,7 +87,7 @@ describe('LoginComponent', () => {
 		});
 		component.userIsBlocked = true;
 		component.login();
-		expect(authServiceMock.login).toBeCalledTimes(0);
+		expect(authServiceMock.login).toHaveBeenCalledTimes(0);
 	});
 
 	it('should not perform login when form is invalid', () => {
@@ -282,6 +282,18 @@ describe('LoginComponent', () => {
 				expect(component.form.get('recaptcha')?.hasValidator(Validators.required)).toBe(true);
 			});
 			captchaService.displayCaptchaSubject.next(expectedStatus);
+		});
+	});
+
+	describe('shouldDisplayRegister', () => {
+		it('should return false when appLoginPage is municipality', () => {
+			component.appLoginPage = AppType.municipality;
+			expect(component.shouldDisplayRegister).toBeFalsy();
+		});
+
+		it('should return true when appLoginPage is supplier', () => {
+			component.appLoginPage = AppType.supplier;
+			expect(component.shouldDisplayRegister).toBeTruthy();
 		});
 	});
 });

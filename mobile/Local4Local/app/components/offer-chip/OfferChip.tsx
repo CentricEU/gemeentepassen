@@ -1,14 +1,16 @@
-import {Chip} from "react-native-paper";
-import {Text, View} from "react-native";
+import { Chip } from "react-native-paper";
+import { Text, View } from "react-native";
 import common from "../../common-style/CommonStyle";
 import styles from "./OfferChipStyle";
-import {getOfferTypeData} from "../../utils/models/OfferType";
+import { getOfferTypeData } from "../../utils/models/OfferType";
+import { useTranslation } from "react-i18next";
 
 interface OfferChipProps {
 	typeId: number;
 }
 
-export default function OfferChip({typeId}: OfferChipProps) {
+export default function OfferChip({ typeId }: OfferChipProps) {
+	const { t } = useTranslation("common");
 
 	const offerData = getOfferTypeData(typeId);
 
@@ -26,7 +28,7 @@ export default function OfferChip({typeId}: OfferChipProps) {
 				]}
 				textStyle={[common.clearDefaults, styles.offerChipLabel]}
 			>
-				<Text>{offerData.label}</Text>
+				<Text>{t(offerData.label)}</Text>
 			</Chip>
 		</View>
 	);

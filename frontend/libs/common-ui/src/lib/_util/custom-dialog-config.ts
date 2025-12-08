@@ -11,9 +11,9 @@ export class CustomDialogConfigUtil {
 			mainContent: '',
 			secondaryContent: '',
 			disableClosing: true,
-			cancelButtonType: 'button-link-dark',
+			cancelButtonType: 'ghost-greyscale',
 			cancelButtonText: '',
-			acceptButtonType: 'button-success',
+			acceptButtonType: 'high-emphasis-success',
 			acceptButtonText: '',
 			modalTypeClass: '',
 			fileName: '',
@@ -43,8 +43,8 @@ export class CustomDialogConfigUtil {
 	}
 
 	private static getAcceptedButtonType(modalTypeClass: string | undefined, config: MatDialogConfig): void {
-		if (modalTypeClass === 'warning' || modalTypeClass === 'alert') {
-			config.data.acceptButtonType = `button-${modalTypeClass}`;
+		if (modalTypeClass === 'warning' || modalTypeClass === 'danger') {
+			config.data.acceptButtonType = `high-emphasis-${modalTypeClass}`;
 		}
 	}
 }

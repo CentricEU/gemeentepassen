@@ -6,6 +6,7 @@ import { FormUtil } from '@frontend/common';
 	selector: 'frontend-time-business-hours',
 	templateUrl: './time-business-hours.component.html',
 	styleUrls: ['./time-business-hours.component.scss'],
+	standalone: false,
 })
 export class TimeBusinessHoursComponent implements OnInit {
 	@Input() day!: string;
@@ -17,6 +18,10 @@ export class TimeBusinessHoursComponent implements OnInit {
 	public shouldDisplayCompareDoubleFieldError = FormUtil.shouldDisplayCompareDoubleFieldError;
 	public setErrorToFormField = FormUtil.setErrorToFormField;
 	public onFieldsCleanValidators = FormUtil.onFieldsCleanValidators;
+
+	get isEnabledControl(): AbstractControl | null {
+		return this.hoursForm?.get('isEnabled') || null;
+	}
 
 	constructor(private rootFormGroup: FormGroupDirective) {}
 
@@ -55,15 +60,25 @@ export class TimeBusinessHoursComponent implements OnInit {
 	}
 
 	private subscribeToCheckboxChange(): void {
-		this.hoursForm.get('isEnabled')?.valueChanges.subscribe((data) => {
-			if (!data) {
-				this.hoursForm.get('schedule')?.disable();
-				this.hoursForm.get('schedule')?.reset();
-				return;
-			}
-			this.hoursForm.get('schedule')?.enable();
-			this.enableAndSetErrors();
+		this.isEnabledControl?.valueChanges.subscribe((isEnabled) => {
+			this.toggleScheduleByCheckbox(isEnabled);
 		});
+
+		this.initializeScheduleState();
+	}
+
+	private toggleScheduleByCheckbox(isEnabled: boolean): void {
+		if (isEnabled) {
+			this.schedule.enable();
+			this.enableAndSetErrors();
+			return;
+		}
+		this.schedule.reset();
+		this.schedule.disable();
+	}
+
+	private initializeScheduleState(): void {
+		this.toggleScheduleByCheckbox(this.isEnabledControl?.value);
 	}
 
 	private enableAndSetErrors(): void {

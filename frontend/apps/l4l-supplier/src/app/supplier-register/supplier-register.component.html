@@ -2,8 +2,7 @@
 	<centric-register>
 		<ng-container title>
 			<div class="form-header">
-				<img src="/assets/images/tilburg-logo.png" alt="L4L Logo" class="l4l-logo" />
-				<h1 class="title">{{ 'register.title' | translate }}</h1>
+				<frontend-logo-title [title]="'register.title'" [isVerticalOrientation]="true"></frontend-logo-title>
 			</div>
 		</ng-container>
 		<ng-container form>
@@ -113,6 +112,7 @@
 							dropdownPlaceholder="{{ 'register.municipalityPlaceholder' | translate }}"
 							[source]="updatedSource"
 							[hasClearIcon]="true"
+							[readonly]="!!routeTenantId"
 							[ariaLabelTranslation]="'register.municipalityPlaceholder'"
 							[validationFunction]="validationFunctionError.bind(this, 'municipality', registerForm)"
 							(valueChanged)="onValueChangedTenantId($event)"
@@ -205,17 +205,16 @@
 							[ariaLabelTranslation]="'general.checkbox'"></windmill-checkbox>
 						<span class="agreement-message"
 							>{{ 'register.agreements' | translate }}
-							<a href="./patterns/user-authentication" target="_blank">{{
+							<a href="#" (click)="openTermsAndConditionModal(); $event.preventDefault()">{{
 								'register.termsAndConditions' | translate
-							}}</a
-							>{{ 'register.middleKeyword' | translate }}
-							<a href="./patterns/user-authentication" target="_blank">{{
-								'register.privacyPolicy' | translate
-							}}</a></span
-						>
+							}}</a>
+						</span>
 					</div>
 				</ng-container>
-				<centric-button class="account-button" [disabled]="!registerForm.valid" (click)="saveSupplier()">
+				<centric-button
+					class="account-button"
+					[disabled]="!registerForm.valid || !registerForm.get('agreement')?.value"
+					(click)="saveSupplier()">
 					{{ 'register.registerButton' | translate }}
 				</centric-button>
 				<ng-container register>

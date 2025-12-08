@@ -6,8 +6,46 @@
 		[(ngModel)]="isToggleActive"
 		(click)="toggleEnableDays()"></centric-slide-toggle2>
 </div>
+
+<div class="circle-days-container" role="group" [attr.aria-label]="'general.weekdaysGroup' | translate">
+	<ng-container *ngFor="let day of days">
+		<label class="day-label">
+			<input
+				windmill-tooltip
+				class="pointer"
+				type="checkbox"
+				[id]="day.toLowerCase()"
+				[formControl]="getIsEnabledControl(day)"
+				[tooltipColor]="'surface'"
+				[tooltipPosition]="'above'"
+				[tooltipShowDelay]="200"
+				[tooltipText]="'general.weekdays.' + day | translate"
+				[attr.aria-label]="'general.weekdays.' + day | translate" />
+			<span>
+				{{ 'general.weekdays.' + day | translate | slice: 0 : 1 }}
+			</span>
+		</label>
+	</ng-container>
+</div>
+
 <ng-container *ngIf="workingHoursForm">
 	<form centric-complex-form [formGroup]="workingHoursForm">
-		<frontend-time-business-hours *ngFor="let day of days" [day]="day"> </frontend-time-business-hours>
+		<ng-container *ngFor="let day of days">
+			<ng-container *ngIf="workingHoursForm.get(day.toLowerCase())?.get('isEnabled')?.value">
+				<div class="day-schedule-section">
+					<frontend-time-business-hours [day]="day"> </frontend-time-business-hours>
+					<ng-container *ngIf="day === firstSelectedDay">
+						<centric-button
+							[type]="'ghost-theme'"
+							[size]="'small'"
+							[iconId]="'copy_b'"
+							[disabled]="!canCopyToAll"
+							(click)="copyToAll(getDayFormGroup(day))">
+							{{ 'workingHours.copyToAll' | translate }}
+						</centric-button>
+					</ng-container>
+				</div>
+			</ng-container>
+		</ng-container>
 	</form>
 </ng-container>

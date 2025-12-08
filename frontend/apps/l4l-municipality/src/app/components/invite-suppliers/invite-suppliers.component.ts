@@ -1,10 +1,17 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { CommonUtil, FormUtil, ModalData, RegexUtil, WarningDialogData } from '@frontend/common';
+import {
+	CharacterLimitMessageService,
+	CommonUtil,
+	FormUtil,
+	ModalData,
+	RegexUtil,
+	TEXT_AREA_MAX_LENGTH,
+	WarningDialogData,
+} from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
-import { TranslateService } from '@ngx-translate/core';
-import { CentricCounterMessages, DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 
 import { InviteSuppliersDto } from '../../_models/invite-suppliers-dto.model';
 import { MunicipalitySupplierService } from '../../_services/suppliers.service';
@@ -13,6 +20,7 @@ import { MunicipalitySupplierService } from '../../_services/suppliers.service';
 	selector: 'frontend-invite-suppliers',
 	templateUrl: './invite-suppliers.component.html',
 	styleUrls: ['./invite-suppliers.component.scss'],
+	standalone: false,
 })
 export class InviteSuppliersComponent implements OnInit {
 	public inviteSuppliersForm: FormGroup;
@@ -21,14 +29,16 @@ export class InviteSuppliersComponent implements OnInit {
 	public hasFormControlRequiredErrors = FormUtil.hasFormControlRequiredErrors;
 	public validationFunctionError = FormUtil.validationFunctionError;
 	public getEmailErrorMessage = FormUtil.getEmailErrorMessage;
-	public counterMessages: CentricCounterMessages = FormUtil.getTextAreaCounterMessages(this.translateService);
+	public characterLimitMessage = '';
+	public isOverCharacterLimit = false;
+	public maxLength = TEXT_AREA_MAX_LENGTH;
 
 	constructor(
+		public readonly characterLimitMessageService: CharacterLimitMessageService,
 		private readonly dialogRef: MatDialogRef<InviteSuppliersComponent>,
 		private formBuilder: FormBuilder,
 		private suppliersService: MunicipalitySupplierService,
 		private dialogService: DialogService,
-		private translateService: TranslateService,
 		@Inject(MAT_DIALOG_DATA) public data?: { email: string },
 	) {}
 
@@ -134,8 +144,10 @@ export class InviteSuppliersComponent implements OnInit {
 	}
 
 	private initForm(): void {
+		this.characterLimitMessageService.messageCount = TEXT_AREA_MAX_LENGTH;
+
 		this.inviteSuppliersForm = this.formBuilder.group({
-			invitationMessage: ['', [Validators.required, Validators.maxLength(1024)]],
+			invitationMessage: ['', [Validators.required, Validators.maxLength(TEXT_AREA_MAX_LENGTH)]],
 			email: [''],
 		});
 	}

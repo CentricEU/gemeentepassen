@@ -1,5 +1,7 @@
 package nl.centric.innovation.local4local.util;
 
+import nl.centric.innovation.local4local.enums.TimeIntervalPeriod;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -74,6 +76,20 @@ public class DateUtils {
     public static LocalDate getLastDayOfMonth(LocalDate firstDay) {
         YearMonth yearMonth = YearMonth.of(firstDay.getYear(), firstDay.getMonth());
         return yearMonth.atEndOfMonth();
+    }
+
+    public static DateTimeFormatter getDefaultDateTimeFormatter() {
+        return DateTimeFormatter.ofPattern(PATTERNS.get("DATE_DEFAULT"));
+    }
+
+    public static LocalDateTime calculateCreatedDate(TimeIntervalPeriod period) {
+        LocalDateTime now = LocalDateTime.now();
+
+        return switch (period) {
+            case MONTHLY -> DateUtils.toStartOfDay(now.withDayOfMonth(1));
+            case QUARTERLY -> DateUtils.calculateQuarterlyStartDate(now);
+            case YEARLY -> DateUtils.toStartOfDay(now.withDayOfYear(1));
+        };
     }
 
 }

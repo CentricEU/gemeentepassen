@@ -1,3 +1,4 @@
+import { CitizenGroupAge, CitizenGroupAgeMapping } from '../_enums/citizen-group-age.enum';
 import { GenericStatusEnum } from '../_enums/generic-status.enum';
 
 export class StatusUtil {
@@ -24,7 +25,7 @@ export class StatusUtil {
 			case GenericStatusEnum.APPROVED:
 				return 'check-circle_b';
 			case GenericStatusEnum.EXPIRED:
-				return 'minus-circle_b';
+				return 'minus_b';
 			case GenericStatusEnum.REJECTED:
 				return 'cancel-circle_b';
 			case GenericStatusEnum.PENDING:
@@ -60,5 +61,13 @@ export class StatusUtil {
 
 	public static getMessagesForIsAnswerYesNo(isAnswerYesNo: boolean): string {
 		return isAnswerYesNo ? 'general.yes' : 'general.no';
+	}
+
+	public static getCitizenGroupAgeLabelFromEnum(ageGroups: CitizenGroupAge[]): string[] {
+		return ageGroups.map((ageGroup) =>
+			ageGroup === CitizenGroupAge.UNDER_18
+				? 'citizenGroup.under18'
+				: CitizenGroupAgeMapping().get(ageGroup) || '',
+		);
 	}
 }

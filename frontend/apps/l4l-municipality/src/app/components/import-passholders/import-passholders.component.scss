@@ -1,1 +1,11 @@
 @use '../../../../../../libs/shared-assets/_styles/modal-content';
+	::ng-deep {
+		.centric-complex-form > *:not(:last-child) {
+			margin-bottom: 16px;
+		}
+	}
+    
+    .align-left {
+        align-self: flex-start;
+    }
+

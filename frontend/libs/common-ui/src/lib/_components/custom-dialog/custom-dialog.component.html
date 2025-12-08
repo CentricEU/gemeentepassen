@@ -8,7 +8,7 @@
 			class="close-button"
 			[attr.ariaLabel]="'general.button.close' | translate"
 			[ariaLabelTranslation]="'general.button.close'"
-			[tooltipColor]="data.tooltipColor"
+			[tooltipColor]="'tooltipSurfaceColor'"
 			[tooltipText]="'general.button.close' | translate"
 			(click)="close()">
 			<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
@@ -25,6 +25,7 @@
 			<h4>{{ data.mainContent | translate }}</h4>
 		</ng-container>
 		<p
+			[class.rejection-text]="isRejectionDialog"
 			[innerHTML]="
 				data.secondaryContent
 					| translate

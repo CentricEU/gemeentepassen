@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react-native';
 import { Login } from './Login';
 import { TouchableOpacity, View } from 'react-native';

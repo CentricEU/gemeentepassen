@@ -1,9 +1,11 @@
-import {StyleSheet} from "react-native"
+import { StyleSheet } from 'react-native';
+import { colors } from '../../common-style/Palette';
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 16
+		backgroundColor: colors.SURFACE_50
 	}
-})
-export default style;
+});
+
+export default styles;

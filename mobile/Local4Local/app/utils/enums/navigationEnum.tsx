@@ -11,4 +11,5 @@ export enum NavigationEnum {
 	personalInfo = "PersonalInformation",
 	discountCode = "DiscountCode",
 	discounts = "Discounts",
+	forgotPassword = "ForgotPassword",
 }

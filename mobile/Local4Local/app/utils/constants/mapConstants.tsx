@@ -1,7 +1,7 @@
-import {LatLng} from "react-native-maps";
+import { LatLng } from 'react-native-maps';
 
-export const DEFAULT_LONGITUDE = 4.89;
-export const DEFAULT_LATITUDE = 52.37;
+export const DEFAULT_LONGITUDE = 4.9041; // Amsterdam longitude
+export const DEFAULT_LATITUDE = 52.37; // Amsterdam latitude
 export const DEFAULT_COORDINATES: LatLng = {
 	latitude: DEFAULT_LATITUDE,
 	longitude: DEFAULT_LONGITUDE
@@ -12,38 +12,38 @@ export const MAX_ZOOM_LEVEL = 1;
 
 export const MAP_STYLE = [
 	{
-		"featureType": "poi",
-		"elementType": "labels.icon",
-		"stylers": [
+		featureType: 'poi',
+		elementType: 'labels.icon',
+		stylers: [
 			{
-				"saturation": -50
+				saturation: -50
 			},
 			{
-				"lightness": 40
+				lightness: 40
 			}
 		]
 	},
 	{
-		"featureType": "poi",
-		"elementType": "labels.text",
-		"stylers": [
+		featureType: 'poi',
+		elementType: 'labels.text',
+		stylers: [
 			{
-				"saturation": -50
+				saturation: -50
 			},
 			{
-				"lightness": 40
+				lightness: 40
 			}
 		]
 	},
 	{
-		"featureType": "transit",
-		"elementType": "labels.icon",
-		"stylers": [
+		featureType: 'transit',
+		elementType: 'labels.icon',
+		stylers: [
 			{
-				"saturation": -50
+				saturation: -50
 			},
 			{
-				"lightness": 40
+				lightness: 40
 			}
 		]
 	}
@@ -55,6 +55,5 @@ export const MARKER_IMAGES = [
 	require('../../assets/markers/bogo.png'),
 	require('../../assets/markers/cash.png'),
 	require('../../assets/markers/freeEntry.png'),
-	require('../../assets/markers/other.png'),
-
+	require('../../assets/markers/other.png')
 ];

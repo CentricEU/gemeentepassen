@@ -2,18 +2,22 @@ import { ChangeDetectorRef, Component, HostListener, Inject, OnInit } from '@ang
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import {
+	BenefitDto,
+	BenefitService,
+	CharacterLimitMessageService,
 	CheckboxData,
+	CommonUtil,
 	FormUtil,
 	FrequencyOfUse,
-	GrantDto,
-	GrantService,
 	ModalData,
 	OfferDto,
 	RestrictionsDto,
+	TEXT_AREA_MAX_LENGTH,
 } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { CentricCounterMessages, DialogService, ToastrService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { ToastrService } from '@windmill/ng-windmill/toastr';
 import { forkJoin, Observable } from 'rxjs';
 
 import { CreateOfferFormFields } from '../../enums/create-offer-form-field.enum';
@@ -34,29 +38,35 @@ type Restriction = {
 	selector: 'frontend-create-offer',
 	templateUrl: './create-offer.component.html',
 	styleUrls: ['./create-offer.component.scss'],
+	standalone: false,
 })
 export class CreateOfferComponent implements OnInit {
 	public updatedSource: OfferTypeVisibility[] = [];
 	public dropdownSource: OfferTypeVisibility[] = [];
 
-	public availableGrants: GrantDto[] = [];
-	public updatedGrants: GrantDto[] = [];
+	public availableBenefits: BenefitDto[] = [];
+	public updatedBenefits: BenefitDto[] = [];
 	public clickedOutsideFieldPrice = false;
 	public clickedOutsideFieldTime = false;
 
-	public selectedGrants: string[] = [];
+	public selectedBenefit: string;
+
 	public selectedOfferTypeId: number | null;
 	public createOfferForm: FormGroup;
 	public restrictionFields: { restriction: string }[];
 	public otherFieldValue: string | number;
+	public characterLimitMessage = '';
+	public isOverCharacterLimit = false;
+	public maxTextAreaLength = TEXT_AREA_MAX_LENGTH;
 
 	public hasFormControlRequiredErrors = FormUtil.hasFormControlRequiredErrors;
 	public validationFunctionError = FormUtil.validationFunctionError;
+	public validationNoSpaceFunctionError = FormUtil.validationNoSpaceFunctionError;
+	public nonMaxBenefitAmountValidator = FormUtil.nonMaxBenefitAmountValidator;
 	public validationFunctionErrorMinFieldCompleted = FormUtil.validationFunctionErrorMinFieldCompleted;
 	public clearRestrictionValidatorsAndErrors = FormUtil.clearRestrictionValidatorsAndErrors;
 
 	public expirationDateInit = FormUtil.calculateExpirationDate;
-	public counterMessages: CentricCounterMessages = FormUtil.getTextAreaCounterMessages(this.translateService);
 
 	public restrictionsData: CheckboxData[];
 
@@ -99,17 +109,23 @@ export class CreateOfferComponent implements OnInit {
 		return this.selectedOfferTypeId === OfferTypeEnum.credit ? 14 : Number.MAX_SAFE_INTEGER;
 	}
 
+	public get benefitAmount(): number | null {
+		const benefit = this.getSelectedBenefit();
+		return benefit ? Number(benefit.amount) : null;
+	}
+
 	constructor(
+		public readonly characterLimitMessageService: CharacterLimitMessageService,
 		private readonly formBuilder: FormBuilder,
 		private readonly dialogRef: MatDialogRef<CreateOfferComponent>,
 		private readonly toastrService: ToastrService,
 		private readonly dialogService: DialogService,
 		private translateService: TranslateService,
 		private offerService: OfferService,
-		private grantService: GrantService,
+		private benefitsService: BenefitService,
 		private cdr: ChangeDetectorRef,
 		@Inject(MAT_DIALOG_DATA) public data?: { offerToReactivate: string },
-	) { }
+	) {}
 
 	@HostListener('click', ['$event'])
 	onClick() {
@@ -123,7 +139,8 @@ export class CreateOfferComponent implements OnInit {
 	}
 
 	public ngOnInit(): void {
-		this.getOfferTypeAndGrants();
+		this.characterLimitMessageService.messageCount = TEXT_AREA_MAX_LENGTH;
+		this.getOfferTypeAndBenefits();
 		this.initRestrictions();
 
 		this.restrictionFields = this.initRestrictionFields();
@@ -135,6 +152,25 @@ export class CreateOfferComponent implements OnInit {
 		}
 
 		this.onRestrictionValueChanges();
+		this.onAcceptedBenefitValuesChange();
+		this.onOfferTypeValueChange();
+	}
+
+	public getExpirationDateMax(minusOneDay = false): Date | null {
+		const expirationDate = this.getSelectedBenefit()?.expirationDate ?? null;
+		if (!expirationDate) {
+			return null;
+		}
+		const date = new Date(expirationDate);
+		if (minusOneDay) {
+			date.setDate(date.getDate() - 1);
+		}
+		return date;
+	}
+
+	public getInitDateMin(): Date | null {
+		const startDate = this.getSelectedBenefit()?.startDate;
+		return startDate ? new Date(startDate) : null;
 	}
 
 	public isTimeSlotChecked(restriction: any, changes: any): boolean {
@@ -202,8 +238,8 @@ export class CreateOfferComponent implements OnInit {
 				return this.translateService.instant('genericFields.amount.amountFormControlRequired');
 			case CreateOfferFormFields.validity:
 				return this.translateService.instant('offer.formRequired.validityFormControlRequired');
-			case CreateOfferFormFields.grantsIds:
-				return this.translateService.instant('offer.formRequired.grantsFormControlRequired');
+			case CreateOfferFormFields.benefitId:
+				return this.translateService.instant('offer.formRequired.benefitFormControlRequired');
 			default: {
 				return null;
 			}
@@ -225,12 +261,7 @@ export class CreateOfferComponent implements OnInit {
 	}
 
 	public onStartDateChange(): void {
-		const startDateValue = this.createOfferForm.controls['startDate'].value;
-		const expirationDateValue = this.createOfferForm.controls['expirationDate'].value;
-
-		if (startDateValue > expirationDateValue) {
-			this.createOfferForm.controls['expirationDate'].setValue('');
-		}
+		CommonUtil.enforceStartDateBeforeExpiration(this.createOfferForm);
 	}
 
 	public shouldDisplayReactivationAlert(): boolean {
@@ -291,31 +322,65 @@ export class CreateOfferComponent implements OnInit {
 		this.updatedSource = !event
 			? this.dropdownSource.filter((item) => item.visible === true)
 			: this.dropdownSource.filter(
-				(item) =>
-					item.visible === true && item.offerTypeLabel.toLowerCase().includes(event.trim().toLowerCase()),
-			);
+					(item) =>
+						item.visible === true && item.offerTypeLabel.toLowerCase().includes(event.trim().toLowerCase()),
+				);
 	}
 
-	public onSearchOnGrants(event: string): void {
-		this.updatedGrants = !event
-			? this.availableGrants
-			: this.availableGrants.filter((item) => item.title.toLowerCase().includes(event.trim().toLowerCase()));
+	public onSearchOnBenefits(event: string): void {
+		this.updatedBenefits = !event
+			? this.availableBenefits
+			: this.availableBenefits.filter((item) => item.name.toLowerCase().includes(event.trim().toLowerCase()));
 	}
 
-	public onValueChangeOnCheckedGrants(event: any): void {
-		if (this.selectedGrants.includes(event)) {
-			this.selectedGrants.splice(this.selectedGrants.indexOf(event), 1);
+	public onValueChangeOnCheckedBenefits(event: any): void {
+		this.selectedBenefit = event;
+	}
+
+	private setupAmountValidatorsOnChange(controlName: 'benefitId' | 'offerTypeId'): void {
+		if (!this.createOfferForm) {
 			return;
 		}
 
-		this.selectedGrants.push(event);
+		const amountControl = this.createOfferForm.get('amount');
+		this.createOfferForm.get(controlName)?.valueChanges.subscribe(() => {
+			const offerTypeId = this.createOfferForm.get('offerTypeId')?.value;
+			const benefitId = this.createOfferForm.get('benefitId')?.value;
+			const benefit = this.availableBenefits.find((b) => b.id === benefitId);
+			amountControl?.clearValidators();
+
+			if (benefit && (offerTypeId === OfferTypeEnum.freeEntry || offerTypeId === OfferTypeEnum.credit)) {
+				amountControl?.setValidators([
+					Validators.required,
+					FormUtil.nonZeroAmountValidator,
+					(control) => this.nonMaxBenefitAmountValidator(Number(control.value), Number(benefit.amount)),
+				]);
+			} else {
+				amountControl?.setValidators([Validators.required, FormUtil.nonZeroAmountValidator]);
+			}
+
+			amountControl?.updateValueAndValidity();
+			this.cdr.detectChanges();
+		});
+	}
+
+	private onAcceptedBenefitValuesChange(): void {
+		this.setupAmountValidatorsOnChange('benefitId');
+	}
+
+	private onOfferTypeValueChange(): void {
+		this.setupAmountValidatorsOnChange('offerTypeId');
+	}
+
+	private getSelectedBenefit(): BenefitDto | undefined {
+		return this.availableBenefits.find((benefit) => benefit.id === this.selectedBenefit);
 	}
 
 	private onOfferReactivated(): void {
 		this.close();
 
 		if (this.shouldDisplayApprovalMessage) {
-			this.displayPopupForOfferWithGrant();
+			this.displayPopupForOfferWithBenefits();
 			return;
 		}
 
@@ -363,23 +428,23 @@ export class CreateOfferComponent implements OnInit {
 		const toastText = this.translateService.instant('general.success.offerSavedText');
 		this.close(true);
 		this.toastrService.success(toastText, '', { toastBackground: 'toast-light' });
-		this.displayPopupForOfferWithGrant();
+		this.displayPopupForOfferWithBenefits();
 	}
 
-	private getRequestsObservable(): Observable<(GrantDto[] | OfferType[] | null)[]> {
-		const requests = [this.offerService.getOfferTypes(), this.grantService.getAllGrants(true)];
+	private getRequestsObservable(): Observable<(BenefitDto[] | OfferType[] | null)[]> {
+		const requests = [this.offerService.getOfferTypes(), this.benefitsService.getAllBenefits()];
 
 		return forkJoin(requests);
 	}
 
-	private getOfferTypeAndGrants(): void {
+	private getOfferTypeAndBenefits(): void {
 		this.getRequestsObservable().subscribe((data) => {
 			if (!data) {
 				return;
 			}
 
 			this.initializeOfferTypes(data[0] as OfferType[]);
-			this.initializeGrants(data[1] as GrantDto[]);
+			this.initializeBenefits(data[1] as BenefitDto[]);
 		});
 	}
 
@@ -398,13 +463,13 @@ export class CreateOfferComponent implements OnInit {
 		this.updatedSource = this.dropdownSource.filter((item) => item.visible === true);
 	}
 
-	private initializeGrants(data: GrantDto[]): void {
+	private initializeBenefits(data: BenefitDto[]): void {
 		if (!Array.isArray(data)) {
 			return;
 		}
 
-		this.availableGrants = data;
-		this.updatedGrants = this.availableGrants;
+		this.availableBenefits = data;
+		this.updatedBenefits = this.availableBenefits;
 	}
 
 	private initRestrictions(): void {
@@ -623,14 +688,6 @@ export class CreateOfferComponent implements OnInit {
 		});
 	}
 
-	private getAcceptedGrantsIds(grants?: GrantDto[]): string[] | null {
-		if (!grants) {
-			return null;
-		}
-
-		return grants.map((grant) => grant.id) as string[];
-	}
-
 	private setFieldsSpecificToRestrictions(restrictions?: RestrictionsDto): void {
 		if (!restrictions || this.selectedRestrictionValue) {
 			return;
@@ -668,7 +725,7 @@ export class CreateOfferComponent implements OnInit {
 			startDate: [new Date(), Validators.required],
 			expirationDate: ['', Validators.required],
 			amount: [offer.amount],
-			grantsIds: [{ value: this.getAcceptedGrantsIds(offer.grants), disabled: true }],
+			benefitId: [{ value: offer.benefitId, disabled: true }],
 			frequencyOfUse: [{ value: !!offer.restrictionRequestDto?.frequencyOfUse, disabled: true }],
 			timeSlots: [
 				{
@@ -708,14 +765,17 @@ export class CreateOfferComponent implements OnInit {
 		const defaultDisabledState = { value: '', disabled: true };
 
 		this.createOfferForm = this.formBuilder.group({
-			title: ['', defaultValidators],
-			description: ['', [...defaultValidators, Validators.maxLength(1024)]],
+			title: ['', [...defaultValidators, this.validationNoSpaceFunctionError]],
+			description: [
+				'',
+				[...defaultValidators, Validators.maxLength(TEXT_AREA_MAX_LENGTH), this.validationNoSpaceFunctionError],
+			],
 			citizenOfferType: ['offer.citizenWithPass', defaultValidators],
 			offerTypeId: ['', defaultValidators],
 			startDate: ['', defaultValidators],
 			expirationDate: ['', defaultValidators],
 			amount: [defaultDisabledState, [...defaultValidators, FormUtil.nonZeroAmountValidator]],
-			grantsIds: ['', defaultValidators],
+			benefitId: ['', defaultValidators],
 			frequencyOfUse: [''],
 			timeSlots: [''],
 			ageRestriction: [''],
@@ -750,26 +810,29 @@ export class CreateOfferComponent implements OnInit {
 	}
 
 	private getFormValuesToOfferDto(): OfferDto {
-		const createGrantFormData: OfferDto = {
+		const createBenefitFormData: OfferDto = {
 			...this.createOfferForm.value,
 			startDate: FormUtil.normalizeDate(this.createOfferForm.controls['startDate'].value),
 			expirationDate: FormUtil.normalizeDate(this.createOfferForm.controls['expirationDate'].value),
 		};
 
-		createGrantFormData.citizenOfferType = this.CITIZEN_WITH_PASS;
+		createBenefitFormData.citizenOfferType = this.CITIZEN_WITH_PASS;
 
-		return createGrantFormData;
+		return createBenefitFormData;
 	}
 
-	private displayPopupForOfferWithGrant(): void {
-		this.dialogService?.message(CustomDialogComponent, this.getOfferWithGrantMessage())?.afterClosed().subscribe();
+	private displayPopupForOfferWithBenefits(): void {
+		this.dialogService
+			?.message(CustomDialogComponent, this.getOfferWithBenefitsMessage())
+			?.afterClosed()
+			.subscribe();
 	}
 
-	private getOfferWithGrantMessage(): MatDialogConfig {
-		const grantApprovalModalData = new ModalData(
-			'offer.dialogOfferGrant.createSuccessful',
-			'offer.dialogOfferGrant.mainContent',
-			'offer.dialogOfferGrant.mainContentText',
+	private getOfferWithBenefitsMessage(): MatDialogConfig {
+		const benefitsApprovalModalData = new ModalData(
+			'offer.dialogOfferBenefits.createSuccessful',
+			'offer.dialogOfferBenefits.mainContent',
+			'offer.dialogOfferBenefits.mainContentText',
 			'general.button.cancel',
 			'general.button.understand',
 			false,
@@ -778,6 +841,6 @@ export class CreateOfferComponent implements OnInit {
 			'wait-clock.svg',
 		);
 
-		return { ...CustomDialogConfigUtil.createMessageModal(grantApprovalModalData), disableClose: true };
+		return { ...CustomDialogConfigUtil.createMessageModal(benefitsApprovalModalData), disableClose: true };
 	}
 }

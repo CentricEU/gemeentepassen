@@ -63,10 +63,15 @@ describe('SidenavComponent', () => {
 		expect(component.opened).toBe(true);
 	});
 
-	it('should return tenantName from tenantService', () => {
-		const tenant = { name: 'Sample Tenant' };
-		Object.defineProperty(tenantService, 'tenant', { get: () => tenant });
-		expect(component.tenantName).toBe(tenant.name);
+	it('should return tenantLogo with Base64 when logo exists', () => {
+		const base64Logo = 'iVBORw0KGgoAAAANSUhEUgAA...';
+		Object.defineProperty(tenantService, 'tenant', { get: () => ({ logo: base64Logo }) });
+		expect(component.tenantLogo).toBe('data:image/png;base64,' + base64Logo);
+	});
+
+	it('should return default logo path when logo does not exist', () => {
+		Object.defineProperty(tenantService, 'tenant', { get: () => ({}) });
+		expect(component.tenantLogo).toBe('/assets/images/citypasses-logo.png');
 	});
 
 	it('should check if all data is loaded', () => {

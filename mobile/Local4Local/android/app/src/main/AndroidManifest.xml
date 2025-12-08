@@ -11,10 +11,27 @@
     android:icon="@mipmap/ic_launcher"
     android:roundIcon="@mipmap/ic_launcher_round"
     android:allowBackup="false"
-    android:theme="@style/AppTheme">
+    android:theme="@style/AppTheme"
+    android:supportsRtl="true">
     <meta-data
       android:name="com.google.android.geo.API_KEY"
       android:value="AIzaSyC7KEkNaEvInkLUH5K1aUQ-5aw4WtEoDzA" />
+
+    <activity
+      android:name="net.openid.appauth.RedirectUriReceiverActivity"
+      android:exported="true">
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data
+          android:host="citizen.gemeentepassen.eu"
+          android:pathPrefix="/open-in-app"
+          android:scheme="https" />
+      </intent-filter>
+    </activity>
+
+
     <activity
       android:name=".MainActivity"
       android:label="@string/app_name"
@@ -22,16 +39,43 @@
       android:launchMode="singleTask"
       android:windowSoftInputMode="adjustResize"
       android:exported="true">
+
+      <!-- Existing launcher intent-filter -->
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
+
+      <!-- Existing custom scheme intent-filter -->
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="localforlocal" />
+        <data android:scheme="localforlocal-acceptance" />
       </intent-filter>
+
+      <!-- New Android App Links intent-filter for DigiD -->
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data
+          android:scheme="https"
+          android:host="citizen.testing.gemeentepassen.eu"
+          android:pathPrefix="/open-in-app" />
+      </intent-filter>
+
+       <!-- Reset Password App Link -->
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data
+          android:scheme="https"
+          android:host="citizen.testing.gemeentepassen.eu"
+          android:pathPrefix="/recover/reset-password" />
+      </intent-filter>
+
     </activity>
   </application>
 </manifest>

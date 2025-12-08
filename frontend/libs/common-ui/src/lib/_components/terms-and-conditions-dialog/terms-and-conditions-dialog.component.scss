@@ -1,0 +1,63 @@
+.privacy-container {
+	p {
+		margin-bottom: 1rem;
+	}
+
+	.intro {
+		.intro-statements {
+			margin-bottom: 0px;
+		}
+
+		.info-list {
+			margin-top: 0px;
+		}
+	}
+
+	.section {
+		padding-top: 16px;
+		&:first-child {
+			padding-top: 0;
+		}
+
+		border-bottom: 1px solid var(--surface-300);
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+
+	.promises-list,
+	.info-list,
+	.rights-list {
+		list-style: none;
+		margin-bottom: 16px;
+		padding: 0;
+
+		li {
+			position: relative;
+			padding: 4px 0 4px 30px;
+			margin-bottom: 4px;
+
+			&::before {
+				content: '•';
+				position: absolute;
+				left: 0;
+			}
+
+			strong {
+				margin-right: 4px;
+				display: inline;
+				margin-bottom: 0;
+			}
+		}
+	}
+
+	.rights-list li {
+		padding: 4px 20px;
+		strong {
+			display: block;
+			margin-bottom: 4px;
+			margin-right: 0;
+		}
+	}
+}

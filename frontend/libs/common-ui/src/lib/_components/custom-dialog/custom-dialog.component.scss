@@ -1,4 +1,4 @@
-@import '../../../../../shared-assets/_styles/mixins.scss';
+@use '../../../../../shared-assets/_styles/mixins.scss' as mixins;
 
 :host {
 	centric-icon2 {
@@ -18,19 +18,23 @@
 		text-align: center;
 	}
 
+	.rejection-text{
+		text-align: start;
+	}
+
 	.main-content {
-		@include flex(column);
+		@include mixins.flex(column);
 		gap: 16px;
 	}
 }
 
 :host ::ng-deep {
 	mat-dialog-container [mat-dialog-content] {
-		@include flex(column, center, center);
+		@include mixins.flex(column, center, center);
 		gap: 16px;
 	}
 }
 
 .image {
-	@include size(100%, 200px);
+	@include mixins.size(100%, 200px);
 }

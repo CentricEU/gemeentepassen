@@ -21,7 +21,10 @@ export * from './lib/_components/sidenav/sidenav.component';
 export * from './lib/_components/table/table.component';
 export * from './lib/_components/table-base/table-base.component';
 export * from './lib/_components/table-columns-manager/table-columns-manager.component';
+export * from './lib/_components/terms-and-conditions-dialog/terms-and-conditions-dialog.component';
 export * from './lib/_components/time-slots/time-slots.component';
+export * from './lib/_components/transaction-chart/transaction-chart.component';
+export * from './lib/_components/transactions-date-menu/transactions-date-menu.component';
 export * from './lib/_components/working-hours-edit/working-hours-edit.component';
 
 /**Utils */

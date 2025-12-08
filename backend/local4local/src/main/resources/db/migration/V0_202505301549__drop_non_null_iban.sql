@@ -1,0 +1,2 @@
+ALTER TABLE l4l_security.tenants
+ALTER COLUMN iban DROP NOT NULL;

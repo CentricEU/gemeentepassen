@@ -1,4 +1,3 @@
-import { GrantDto } from './grant-dto.model';
 import { RestrictionsDto } from './restrictions.model';
 
 export class OfferDto {
@@ -10,8 +9,8 @@ export class OfferDto {
 	public offerTypeId: number;
 	public startDate: Date;
 	public expirationDate: Date;
+	public benefitId: string;
 	public restrictionRequestDto?: RestrictionsDto;
-	public grants?: GrantDto[];
 	constructor(
 		id: string,
 		title: string,
@@ -21,6 +20,7 @@ export class OfferDto {
 		offerTypeId: number,
 		startDate: Date,
 		expirationDate: Date,
+		benefitId: string,
 		restrictions?: RestrictionsDto,
 	) {
 		this.id = id;
@@ -31,6 +31,7 @@ export class OfferDto {
 		this.offerTypeId = offerTypeId;
 		this.startDate = startDate;
 		this.expirationDate = expirationDate;
+		this.benefitId = benefitId;
 		this.restrictionRequestDto = restrictions;
 	}
 }

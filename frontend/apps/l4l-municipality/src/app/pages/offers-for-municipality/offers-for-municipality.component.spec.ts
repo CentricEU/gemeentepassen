@@ -12,7 +12,7 @@ import {
 } from '@frontend/common';
 import { ChipRemainingDialogComponent, TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { of } from 'rxjs';
 
 import { AppModule } from '../../app.module';
@@ -101,18 +101,44 @@ describe('OffersForMuniciaplityComponent', () => {
 			expect(component.initializeComponentData).toHaveBeenCalled();
 		});
 
-		it('should initialize columns', () => {
-			component.initializeColumns();
-			const expectedColumns: TableColumn[] = [
-				new TableColumn('general.supplier', 'supplierName', 'supplierName', true, true, ColumnDataType.DEFAULT),
-				new TableColumn('general.status', 'status', 'status', true, true, ColumnDataType.STATUS),
-				new TableColumn('offer.title', 'title', 'title', true, true),
-				new TableColumn('general.acceptedGrants', 'grants', 'grants', true, false, ColumnDataType.CHIPS),
-				new TableColumn('offer.validity', 'validity', 'validity', true, false),
-				new TableColumn('general.actions', 'actions', 'actions', true, true, ColumnDataType.DEFAULT, true),
-			];
+		describe('initializeColumns', () => {
+			it('should include supplier column when supplierId is not provided', () => {
+				component.supplierId = undefined;
+				component.initializeColumns();
 
-			expect(component.allColumns).toEqual(expectedColumns);
+				const expectedColumns: TableColumn[] = [
+					new TableColumn(
+						'general.supplier',
+						'supplierName',
+						'supplierName',
+						true,
+						true,
+						ColumnDataType.DEFAULT,
+					),
+					new TableColumn('general.status', 'status', 'status', true, true, ColumnDataType.STATUS),
+					new TableColumn('offer.title', 'title', 'title', true, true),
+					new TableColumn('general.acceptedBenefit', 'benefit', 'benefit', true, false, ColumnDataType.CHIPS),
+					new TableColumn('genericFields.validity.label', 'validity', 'validity', true, false),
+					new TableColumn('general.actions', 'actions', 'actions', true, true, ColumnDataType.DEFAULT, true),
+				];
+
+				expect(component.allColumns).toEqual(expectedColumns);
+			});
+
+			it('should not include supplier column when supplierId is provided', () => {
+				component.supplierId = 'supplier-123';
+				component.initializeColumns();
+
+				const expectedColumnsWithoutSupplier: TableColumn[] = [
+					new TableColumn('general.status', 'status', 'status', true, true, ColumnDataType.STATUS),
+					new TableColumn('offer.title', 'title', 'title', true, true),
+					new TableColumn('general.acceptedBenefit', 'benefit', 'benefit', true, false, ColumnDataType.CHIPS),
+					new TableColumn('genericFields.validity.label', 'validity', 'validity', true, false),
+					new TableColumn('general.actions', 'actions', 'actions', true, true, ColumnDataType.DEFAULT, true),
+				];
+
+				expect(component.allColumns).toEqual(expectedColumnsWithoutSupplier);
+			});
 		});
 
 		it('should call service on getOffers', () => {
@@ -139,6 +165,15 @@ describe('OffersForMuniciaplityComponent', () => {
 					GenericStatusEnum.EXPIRED,
 					'test',
 					'supplierId',
+					{
+						name: 'Benefit 1',
+						description: 'Benefit Description',
+						startDate: new Date('2023-01-01'),
+						expirationDate: new Date('2023-12-31'),
+						citizenGroupIds: [],
+						amount: 10,
+					},
+					'Benefit 1',
 				),
 				new OfferTableDto(
 					'1',
@@ -150,6 +185,15 @@ describe('OffersForMuniciaplityComponent', () => {
 					GenericStatusEnum.PENDING,
 					'test',
 					'supplierId',
+					{
+						name: 'Benefit 1',
+						description: 'Benefit Description',
+						startDate: new Date('2023-01-01'),
+						expirationDate: new Date('2023-12-31'),
+						citizenGroupIds: [],
+						amount: 10,
+					},
+					'Benefit 1',
 				),
 			];
 			component['dataCount'] = 3;
@@ -176,6 +220,15 @@ describe('OffersForMuniciaplityComponent', () => {
 				GenericStatusEnum.PENDING,
 				'test',
 				'supplierId',
+				{
+					name: 'Benefit 1',
+					description: 'Benefit Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2023-12-31'),
+					citizenGroupIds: [],
+					amount: 10,
+				},
+				'Benefit 1',
 			),
 		};
 
@@ -193,14 +246,23 @@ describe('OffersForMuniciaplityComponent', () => {
 			GenericStatusEnum.PENDING,
 			'test',
 			'supplierId',
+			{
+				name: 'Benefit 1',
+				description: 'Benefit Description',
+				startDate: new Date('2023-01-01'),
+				expirationDate: new Date('2023-12-31'),
+				citizenGroupIds: [],
+				amount: 10,
+			},
+			'Benefit 1',
 		);
 
-		component['openOfferWithGrantApprovalPopup'] = jest.fn();
+		component['openOfferWithBenefitApprovalPopup'] = jest.fn();
 		component['initSupplierProfileData'] = jest.fn();
 
 		component.onActionButtonClicked({ actionButton: 'file-2_approval-seal_bb', row: mockedRow });
 
-		expect(component['openOfferWithGrantApprovalPopup']).toHaveBeenCalledTimes(1);
+		expect(component['openOfferWithBenefitApprovalPopup']).toHaveBeenCalledTimes(1);
 		expect(component['initSupplierProfileData']).toHaveBeenCalledWith('supplierId');
 	});
 
@@ -210,12 +272,12 @@ describe('OffersForMuniciaplityComponent', () => {
 			row: { supplierId: 'supplierId' } as any,
 		};
 
-		component['openOfferWithGrantApprovalPopup'] = jest.fn();
+		component['openOfferWithBenefitApprovalPopup'] = jest.fn();
 		component['initSupplierProfileData'] = jest.fn();
 
 		component.onActionButtonClicked(mockEvent);
 
-		expect(component['openOfferWithGrantApprovalPopup']).toHaveBeenCalledWith(mockEvent.row);
+		expect(component['openOfferWithBenefitApprovalPopup']).toHaveBeenCalledWith(mockEvent.row);
 		expect(component['initSupplierProfileData']).toHaveBeenCalledWith(mockEvent.row.supplierId);
 	});
 
@@ -225,12 +287,12 @@ describe('OffersForMuniciaplityComponent', () => {
 			row: { supplierId: 456 } as any,
 		};
 
-		component['openOfferWithGrantApprovalPopup'] = jest.fn();
+		component['openOfferWithBenefitApprovalPopup'] = jest.fn();
 		component['initSupplierProfileData'] = jest.fn();
 
 		component.onActionButtonClicked(mockEvent);
 
-		expect(component['openOfferWithGrantApprovalPopup']).not.toHaveBeenCalled();
+		expect(component['openOfferWithBenefitApprovalPopup']).not.toHaveBeenCalled();
 		expect(component['initSupplierProfileData']).not.toHaveBeenCalled();
 	});
 
@@ -280,13 +342,22 @@ describe('OffersForMuniciaplityComponent', () => {
 			GenericStatusEnum.PENDING,
 			'test',
 			'supplierId',
+			{
+				name: 'Benefit 1',
+				description: 'Benefit Description',
+				startDate: new Date('2023-01-01'),
+				expirationDate: new Date('2023-12-31'),
+				citizenGroupIds: [],
+				amount: 10,
+			},
+			'Benefit 1',
 		);
 
 		const dialogServiceSpy = jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
 
 		const couldOffer = jest.spyOn(component as any, 'countOffers');
 
-		component['openOfferWithGrantApprovalPopup'](offerTableDto);
+		component['openOfferWithBenefitApprovalPopup'](offerTableDto);
 
 		expect(dialogServiceSpy).toHaveBeenCalledWith(OfferApprovalPopupComponent, {
 			id: 'accessible-first-dialog',
@@ -297,7 +368,7 @@ describe('OffersForMuniciaplityComponent', () => {
 				offer: offerTableDto,
 				mainContent: 'general.success.title',
 				secondContent: 'general.success.text',
-				acceptButtonType: 'button-success',
+				acceptButtonType: 'high-emphasis-success',
 				acceptButtonText: 'register.continue',
 			},
 		});
@@ -321,13 +392,22 @@ describe('OffersForMuniciaplityComponent', () => {
 			GenericStatusEnum.PENDING,
 			'test',
 			'supplierId',
+			{
+				name: 'Benefit 1',
+				description: 'Benefit Description',
+				startDate: new Date('2023-01-01'),
+				expirationDate: new Date('2023-12-31'),
+				citizenGroupIds: [],
+				amount: 10,
+			},
+			'Benefit 1',
 		);
 
 		const dialogServiceSpy = jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
 
 		const couldOffer = jest.spyOn(component as any, 'countOffers');
 
-		component['openOfferWithGrantApprovalPopup'](offerTableDto);
+		component['openOfferWithBenefitApprovalPopup'](offerTableDto);
 
 		expect(dialogServiceSpy).toHaveBeenCalledWith(OfferApprovalPopupComponent, {
 			id: 'accessible-first-dialog',
@@ -338,7 +418,7 @@ describe('OffersForMuniciaplityComponent', () => {
 				offer: offerTableDto,
 				mainContent: 'general.success.title',
 				secondContent: 'general.success.text',
-				acceptButtonType: 'button-success',
+				acceptButtonType: 'high-emphasis-success',
 				acceptButtonText: 'register.continue',
 			},
 		});
@@ -358,6 +438,15 @@ describe('OffersForMuniciaplityComponent', () => {
 				GenericStatusEnum.EXPIRED,
 				'test',
 				'supplierId',
+				{
+					name: 'Benefit 1',
+					description: 'Benefit Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2023-12-31'),
+					citizenGroupIds: [],
+					amount: 10,
+				},
+				'Benefit 1',
 			),
 			new OfferTableDto(
 				'1',
@@ -369,6 +458,15 @@ describe('OffersForMuniciaplityComponent', () => {
 				GenericStatusEnum.REJECTED,
 				'test',
 				'supplierId',
+				{
+					name: 'Benefit 2',
+					description: 'Benefit Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2023-12-31'),
+					citizenGroupIds: [],
+					amount: 10,
+				},
+				'Benefit 2',
 			),
 			new OfferTableDto(
 				'1',
@@ -380,6 +478,15 @@ describe('OffersForMuniciaplityComponent', () => {
 				GenericStatusEnum.PENDING,
 				'test',
 				'supplierId',
+				{
+					name: 'Benefit 3',
+					description: 'Benefit Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2023-12-31'),
+					citizenGroupIds: [],
+					amount: 10,
+				},
+				'Benefit 3',
 			),
 		];
 		jest.spyOn(component, 'initializeComponentData');

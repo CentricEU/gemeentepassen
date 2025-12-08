@@ -25,7 +25,9 @@ export class PendingOffersService {
 	public getPendingOffers(page: number, size: number): Observable<OfferTableDto[]> {
 		const httpParams = new HttpParams().set('page', page).set('size', size);
 
-		return this.httpClient.get<OfferTableDto[]>(`${this.environment.apiPath}/offers/tenant`, { params: httpParams });
+		return this.httpClient.get<OfferTableDto[]>(`${this.environment.apiPath}/offers/tenant`, {
+			params: httpParams,
+		});
 	}
 
 	public getPendingOffersBySupplier(page: number, size: number, supplierId: string): Observable<OfferTableDto[]> {

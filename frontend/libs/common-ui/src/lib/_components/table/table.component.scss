@@ -4,6 +4,10 @@
 
 :host {
 	::ng-deep {
+		.centric-panel-container {
+			border-radius: 8px;
+		}
+
 		.centric-dg tbody td:not(.selection-control-not-centered) windmill-checkbox {
 			top: 0;
 

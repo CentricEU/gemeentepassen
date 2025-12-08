@@ -9,7 +9,7 @@ import nl.centric.innovation.local4local.entity.User;
 import nl.centric.innovation.local4local.service.impl.InvoiceService;
 import nl.centric.innovation.local4local.service.impl.OfferTransactionService;
 import nl.centric.innovation.local4local.service.impl.PrincipalService;
-import nl.centric.innovation.local4local.service.interfaces.SupplierService;
+import nl.centric.innovation.local4local.service.impl.SupplierService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

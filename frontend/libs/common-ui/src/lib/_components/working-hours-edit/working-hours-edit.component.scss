@@ -1,9 +1,66 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../libs/shared-assets/_styles/mixins';
 
 :host {
 	display: block;
-	width: fit-content;
+	max-width: 780px;
 	form {
+		margin-top: 16px;
+		gap: 16px;
 		width: fit-content;
+		min-width: 780px;
+	}
+
+	.circle-days-container {
+		display: flex;
+		gap: 24px;
+		margin-top: 20px;
+	}
+
+	::ng-deep {
+		.centric-complex-form > *:not(:last-child) {
+			margin-bottom: 0px;
+		}
+	}
+}
+
+.day-label {
+	position: relative;
+	user-select: none;
+	display: inline-block;
+}
+
+.day-label input[type='checkbox'] {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+}
+
+.day-label span {
+	@include mixins.flex(column, center, center);
+	@include mixins.size(32px, 32px);
+	border-radius: 50%;
+	background-color: var(--greyscale-50);
+	color: var(--greyscale-400);
+	transition: background-color 0.3s;
+	pointer-events: none;
+}
+
+.day-label input[type='checkbox']:checked + span {
+	background-color: var(--status-success-500);
+	color: var(--greyscale-0);
+}
+
+.day-label input[type='checkbox']:focus-visible + span {
+	outline: 2px solid var(--blackscale-900);
+	outline-offset: 4px;
+}
+
+.day-schedule-section {
+	min-width: 780px;
+	@include mixins.flex(row, false, center);
+	gap: 16px;
+
+	centric-button {
+		align-self: flex-start;
 	}
 }

@@ -1,0 +1,65 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
+
+:host {
+	@include mixins.flex(column, center, center);
+	@include mixins.size(100%, 100%);
+
+	::ng-deep {
+		.centric-horizontal-stepper-header-container {
+			@include mixins.pos(sticky, $t: 0px, $z: 1000);
+			background-color: var(--surface-100);
+		}
+	}
+
+	.stepper-container {
+		@include mixins.flex(column, flex-start);
+		@include mixins.size(100%, 100%);
+
+		max-width: 70vw;
+		padding-top: 32px;
+
+		h4 {
+			padding-bottom: 32px;
+			padding-left: 24px;
+		}
+	}
+
+	.action-buttons-container {
+		@include mixins.flex(row);
+		gap: 16px;
+		padding-top: 32px;
+
+		> :first-child {
+			margin-right: 34px;
+		}
+	}
+}
+
+:host ::ng-deep app-no-data {
+	@include mixins.flex(column, flex-start);
+
+	img {
+		@include mixins.size(64px, 64px);
+	}
+}
+
+@media (max-width: 600px) {
+	:host {
+		.stepper-container {
+			max-width: 100vw;
+		}
+	}
+}
+
+@media (max-width: 460px) {
+	:host {
+		.action-buttons-container {
+			@include mixins.flex(column-reverse);
+			gap: 16px;
+
+			> :first-child {
+				margin-right: 0;
+			}
+		}
+	}
+}

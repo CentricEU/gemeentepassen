@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AuthService, MAP_DEFAULTS } from '@frontend/common';
 import { getCenter } from 'ol/extent';
@@ -135,6 +136,7 @@ describe('SuppliersMapComponent', () => {
 				{ provide: MunicipalitySupplierService, useClass: MockMunicipalitySupplierService },
 				{ provide: AuthService, useClass: MockAuthService },
 			],
+			schemas: [NO_ERRORS_SCHEMA],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(SuppliersMapComponent);
@@ -187,13 +189,20 @@ describe('SuppliersMapComponent', () => {
 	});
 
 	it('should render the map element in the DOM', () => {
+		component.showMap = true;
+
+		fixture.detectChanges();
+
+		const mapElement = fixture.nativeElement.querySelector('#map');
+
 		expect(mapElement).toBeTruthy();
 		expect(mapElement.tagName).toBe('DIV');
 	});
 
 	it('should call initializeMap with data', () => {
 		const initializeMapSpy = jest.spyOn(component as any, 'initializeMap');
-		component.ngOnInit();
+		component.showMap = true;
+		component.ngOnChanges();
 		expect(initializeMapSpy).toHaveBeenCalled();
 	});
 
@@ -226,6 +235,7 @@ describe('SuppliersMapComponent', () => {
 		jest.spyOn(mockAuthService, 'extractSupplierInformation').mockReturnValue(tenantId);
 		const initializeMapSpy = jest.spyOn(component as any, 'initializeMap');
 
+		component.showMap = true;
 		component['initializeSuppliersData']();
 
 		if (shouldInitialize) {
@@ -237,10 +247,10 @@ describe('SuppliersMapComponent', () => {
 		}
 	});
 
-	it('should call initializeSuppliersData on ngOnInit', () => {
+	it('should call initializeSuppliersData on ngOnChanges', () => {
 		const initializeSuppliersDataSpy = jest.spyOn(component as any, 'initializeSuppliersData');
 
-		component.ngOnInit();
+		component.ngOnChanges();
 
 		expect(initializeSuppliersDataSpy).toHaveBeenCalled();
 	});
@@ -369,8 +379,14 @@ describe('SuppliersMapComponent', () => {
 					altitudeAccuracy: null,
 					heading: null,
 					speed: null,
+					toJSON: function () {
+						throw new Error('Function not implemented.');
+					},
 				},
 				timestamp: Date.now(),
+				toJSON: function () {
+					throw new Error('Function not implemented.');
+				},
 			};
 
 			const expectedCenter = getCenter(

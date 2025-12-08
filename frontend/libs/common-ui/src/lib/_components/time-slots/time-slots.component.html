@@ -54,7 +54,7 @@
 			<ng-container
 				errors
 				*ngIf="
-					shouldDisplayDoubleFieldValidityError(generalForm, 'timeFrom', 'timeTo', clickedOutsideFieldTime)
+					shouldShowRequiredErrorForEitherFields(generalForm, 'timeFrom', 'timeTo', clickedOutsideFieldTime)
 				">
 				<div class="states-messages">
 					<span class="centric-error-message">

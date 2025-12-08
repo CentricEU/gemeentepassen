@@ -1,0 +1,27 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
+@use '../../shared/styles/apply-for-pass-common.scss';
+
+:host {
+	@include mixins.size(100%, 100%);
+
+	.documents-needed {
+		padding: 12px 0 16px;
+	}
+
+	.uploaded-files-list {
+		padding-top: 12px;
+	}
+
+	.supported-documents {
+		padding-bottom: 8px;
+	}
+
+	.uploaded-file-item {
+		@include mixins.flex(row, space-between, flex-start);
+		gap: 8px;
+
+		.file-name {
+			padding-top: 8px;
+		}
+	}
+}

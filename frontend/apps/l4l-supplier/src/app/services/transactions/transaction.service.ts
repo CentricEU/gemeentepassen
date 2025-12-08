@@ -1,29 +1,26 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Environment, TransactionTableDto } from '@frontend/common';
+import { Environment, MonthYearEntry, TransactionTableDto, ValidatedCode } from '@frontend/common';
 import { Observable } from 'rxjs';
 
-import { MonthYearEntry } from '../../models/month-year-entry.model';
-import { ValidatedCode } from '../../models/validated-code.models';
-
 @Injectable({
-	providedIn: 'root'
+	providedIn: 'root',
 })
 export class TransactionService {
 	constructor(
 		@Inject('env') private environment: Environment,
-		private httpClient: HttpClient
+		private httpClient: HttpClient,
 	) {}
 
 	public getDistinctYearsForTransactions(): Observable<number[]> {
-		return this.httpClient.get<number[]>(`${this.environment.apiPath}/transactions/years`);
+		return this.httpClient.get<number[]>(`${this.environment.apiPath}/transactions/supplier/years`);
 	}
 
 	public getTransactions(
 		page: number,
 		size: number,
 		month?: number,
-		year?: number
+		year?: number,
 	): Observable<TransactionTableDto[]> {
 		let httpParams = new HttpParams().set('page', page).set('size', size);
 
@@ -33,13 +30,13 @@ export class TransactionService {
 		}
 
 		return this.httpClient.get<TransactionTableDto[]>(
-			`${this.environment.apiPath}/transactions/filter-by-month-and-year`,
-			{ params: httpParams }
+			`${this.environment.apiPath}/transactions/supplier/filter-by-month-and-year`,
+			{ params: httpParams },
 		);
 	}
 
 	public countAllTransactions(): Observable<number> {
-		return this.httpClient.get<number>(`${this.environment.apiPath}/transactions/count-all`);
+		return this.httpClient.get<number>(`${this.environment.apiPath}/transactions/supplier/count-all`);
 	}
 
 	public countCurrentMonthTransactions(selectedDate?: MonthYearEntry): Observable<number> {
@@ -49,14 +46,17 @@ export class TransactionService {
 			httpParams = this.addMonthAndYearToParams(httpParams, selectedDate);
 		}
 
-		return this.httpClient.get<number>(`${this.environment.apiPath}/transactions/count-by-month-and-year`, {
-			params: httpParams,
-			responseType: 'json'
-		});
+		return this.httpClient.get<number>(
+			`${this.environment.apiPath}/transactions/supplier/count-by-month-and-year`,
+			{
+				params: httpParams,
+				responseType: 'json',
+			},
+		);
 	}
 
 	public getAllValidatedCodes(): Observable<ValidatedCode[]> {
-		return this.httpClient.get<ValidatedCode[]>(`${this.environment.apiPath}/transactions/all`);
+		return this.httpClient.get<ValidatedCode[]>(`${this.environment.apiPath}/transactions/supplier/all`);
 	}
 
 	private addMonthAndYearToParams(httpParams: HttpParams, selectedDate: MonthYearEntry): HttpParams {

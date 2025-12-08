@@ -5,10 +5,12 @@ import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FrequencyOfUse, GrantDto, GrantHolder, GrantService, OfferDto, RestrictionsDto } from '@frontend/common';
+import { BenefitDto, BenefitService, FrequencyOfUse, OfferDto, RestrictionsDto } from '@frontend/common';
 import { WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CentricToastrModule, DialogService, ToastrService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { CentricToastrModule, ToastrService } from '@windmill/ng-windmill/toastr';
+import DOMPurify from 'dompurify';
 import { of } from 'rxjs';
 
 import { AppModule } from '../../app.module';
@@ -20,6 +22,12 @@ import { OfferTypeVisibility } from '../../models/offer-type-visibility.model';
 import { OfferService } from '../../services/offer-service/offer.service';
 import { CreateOfferComponent } from './create-offer.component';
 
+jest.mock('dompurify', () => ({
+	default: {
+		sanitize: jest.fn((value: any) => value),
+	},
+}));
+
 describe('CreateOfferComponent', () => {
 	let component: CreateOfferComponent;
 	let fixture: ComponentFixture<CreateOfferComponent>;
@@ -30,7 +38,7 @@ describe('CreateOfferComponent', () => {
 	let toastrService: ToastrService;
 	let dialogService: DialogService;
 	let formBuilder: FormBuilder;
-	let grantServiceMock: any;
+	let benefitServiceMock: any;
 
 	const offerToReactivate: OfferDto = {
 		id: '29',
@@ -41,6 +49,7 @@ describe('CreateOfferComponent', () => {
 		offerTypeId: 1,
 		startDate: new Date('2023-01-01'),
 		expirationDate: new Date('2030-01-01'),
+		benefitId: '5',
 	};
 
 	global.structuredClone = jest.fn((val) => {
@@ -52,6 +61,8 @@ describe('CreateOfferComponent', () => {
 			message: jest.fn(),
 		};
 
+		(DOMPurify.sanitize as jest.Mock).mockImplementation((value: any) => value);
+
 		offerServiceMock = {
 			createOffer: jest.fn().mockReturnValue(of({})),
 			getOfferTypes: jest.fn().mockReturnValue(of({})),
@@ -59,8 +70,8 @@ describe('CreateOfferComponent', () => {
 			reactivateOffer: jest.fn().mockReturnValue(of({})),
 		};
 
-		grantServiceMock = {
-			getAllGrants: jest.fn().mockReturnValue(of([])),
+		benefitServiceMock = {
+			getAllBenefits: jest.fn().mockReturnValue(of([])),
 		};
 
 		global.ResizeObserver = require('resize-observer-polyfill');
@@ -86,7 +97,7 @@ describe('CreateOfferComponent', () => {
 				{ provide: MatDialogRef, useValue: dialogRefStub },
 				{ provide: OfferService, useValue: offerServiceMock },
 				{ provide: DialogService, useValue: dialogServiceMock },
-				{ provice: GrantService, useValue: grantServiceMock },
+				{ provide: BenefitService, useValue: benefitServiceMock },
 				{ provide: MAT_DIALOG_DATA, useValue: null },
 			],
 		}).compileComponents();
@@ -409,7 +420,6 @@ describe('CreateOfferComponent', () => {
 			});
 
 			describe('Tests for onValueChangeOnOfferTypes method', () => {
-
 				it('should update selectedOfferTypeId, reset form values, and enable/disable form controls correctly for percentage offer type', () => {
 					component.selectedOfferTypeId = OfferTypeEnum.credit;
 
@@ -450,33 +460,17 @@ describe('CreateOfferComponent', () => {
 				});
 			});
 
-			describe('Tests for onValueChangeOnCheckedGrants method', () => {
-				it('should add item to selectedGrants if not already present', () => {
-					component.selectedGrants = ['grant1', 'grant2'];
+			describe('Tests for onValueChangeOnCheckedBenefits method', () => {
+				it('should add item to selectedBenefits if not already present', () => {
+					component.selectedBenefit = 'benefit1';
 
-					component.onValueChangeOnCheckedGrants('grant3');
+					component.onValueChangeOnCheckedBenefits('benefit3');
 
-					expect(component.selectedGrants).toEqual(['grant1', 'grant2', 'grant3']);
-				});
-
-				it('should remove item from selectedGrants if already present', () => {
-					component.selectedGrants = ['grant1', 'grant2', 'grant3'];
-
-					component.onValueChangeOnCheckedGrants('grant2');
-
-					expect(component.selectedGrants).toEqual(['grant1', 'grant3']);
+					expect(component.selectedBenefit).toEqual('benefit3');
 				});
 			});
 
 			describe('Tests for resetFormValue method', () => {
-				it('should reset form control value to the provided value', () => {
-					component.createOfferForm.get(CreateOfferFormFields.amount)?.setValue('initialValue');
-
-					component['resetFormValue'](CreateOfferFormFields.amount, 'newValue');
-
-					expect(component.createOfferForm.get(CreateOfferFormFields.amount)?.value).toBe('newValue');
-				});
-
 				it('should reset form control value to the default value if no value is provided', () => {
 					component.createOfferForm.get(CreateOfferFormFields.amount)?.setValue('initialValue');
 
@@ -531,173 +525,145 @@ describe('CreateOfferComponent', () => {
 				});
 			});
 
-			describe('Tests for onSearchOnGrants method', () => {
-				it('should include all available grants when search event is empty', () => {
-					component.availableGrants = [
+			describe('Tests for onSearchOnBenefits method', () => {
+				it('should include all available benefits when search event is empty', () => {
+					component.availableBenefits = [
 						{
-							title: 'Grant1',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 1',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 						{
-							title: 'Grant2',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 2',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 						{
-							title: 'Grant3',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 3',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 					];
 
-					component.onSearchOnGrants('');
+					component.onSearchOnBenefits('');
 
-					expect(component.updatedGrants).toEqual([
+					expect(component.updatedBenefits).toEqual([
 						{
-							title: 'Grant1',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 1',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 						{
-							title: 'Grant2',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 2',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 						{
-							title: 'Grant3',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 3',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 					]);
 				});
 
-				it('should filter available grants based on the provided search event', () => {
-					component.availableGrants = [
+				it('should filter available benefits based on the provided search event', () => {
+					component.availableBenefits = [
 						{
-							title: 'Grant1',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 1',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 						{
-							title: 'Grant2',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 2',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 						{
-							title: 'Grant3',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 3',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 					];
 
-					component.onSearchOnGrants('Grant2');
+					component.onSearchOnBenefits('Benefit 2');
 
-					expect(component.updatedGrants).toEqual([
+					expect(component.updatedBenefits).toEqual([
 						{
-							title: 'Grant2',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 2',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 					]);
 				});
 
-				it('should filter available grants based on the provided search event (case-insensitive)', () => {
-					component.availableGrants = [
+				it('should filter available benefits based on the provided search event (case-insensitive)', () => {
+					component.availableBenefits = [
 						{
-							title: 'Grant1',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 1',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 						{
-							title: 'Grant2',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 2',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 						{
-							title: 'Grant3',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 3',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 					];
 
-					component.onSearchOnGrants('grant2');
+					component.onSearchOnBenefits('benefit 2');
 
-					expect(component.updatedGrants).toEqual([
+					expect(component.updatedBenefits).toEqual([
 						{
-							title: 'Grant2',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 2',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 					]);
 				});
@@ -711,7 +677,6 @@ describe('CreateOfferComponent', () => {
 						amount: '123',
 						citizenOfferType: 'offer.citizenWithPass',
 						offerTypeId: 1,
-						grantsIds: '',
 						startDate: new Date('2023-01-01'),
 						expirationDate: new Date('2022-12-31'),
 						frequencyOfUse: 'Frequency of use',
@@ -725,6 +690,7 @@ describe('CreateOfferComponent', () => {
 						maxPrice: 90,
 						timeTo: '',
 						timeFrom: '',
+						benefitId: 'id',
 					});
 
 					const result: OfferDto = component['getFormValuesToOfferDto']();
@@ -739,7 +705,6 @@ describe('CreateOfferComponent', () => {
 						amount: '123',
 						citizenOfferType: 'offer.citizenWithPass',
 						offerTypeId: 1,
-						grantsIds: '',
 						startDate: new Date('2023-01-01'),
 						expirationDate: new Date('2022-12-31'),
 						frequencyOfUse: 'Frequency of use',
@@ -753,6 +718,7 @@ describe('CreateOfferComponent', () => {
 						maxPrice: 90,
 						timeTo: '',
 						timeFrom: '',
+						benefitId: 'id',
 					});
 
 					const result: OfferDto = component['getFormValuesToOfferDto']();
@@ -779,45 +745,39 @@ describe('CreateOfferComponent', () => {
 				});
 			});
 
-			describe('Tests for initializeGrants method', () => {
-				it('should initialize availableGrants and updatedGrants with the provided data', () => {
-					const testData: GrantDto[] = [
+			describe('Tests for initializeBenefits method', () => {
+				it('should initialize availableBenefits and updatedBenefits with the provided data', () => {
+					const testData: BenefitDto[] = [
 						{
-							title: 'Grant1',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 1',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 						{
-							title: 'Grant2',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 2',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 						{
-							title: 'Grant3',
-							description: 'Description',
-							amount: 20,
-							createFor: GrantHolder.PASS_CHILD,
-							startDate: new Date('2023-12-06'),
+							name: 'Benefit 3',
+							description: 'Benefit Description',
+							startDate: new Date('2023-01-01'),
 							expirationDate: new Date('2023-12-31'),
-							selected: false,
-							isCheckboxDisabled: false,
+							citizenGroupIds: [],
+							amount: 10,
 						},
 					];
 
-					component['initializeGrants'](testData);
+					component['initializeBenefits'](testData);
 
-					expect(component.availableGrants).toEqual(testData);
-					expect(component.updatedGrants).toEqual(testData);
+					expect(component.availableBenefits).toEqual(testData);
+					expect(component.updatedBenefits).toEqual(testData);
 				});
 			});
 
@@ -844,72 +804,78 @@ describe('CreateOfferComponent', () => {
 					]);
 				});
 
-				describe('Tests for getOfferTypeAndGrants method', () => {
-					it('should call initializeOfferTypes and initializeGrants with correct data', fakeAsync(() => {
+				describe('Tests for getOfferTypeAndBenefits method', () => {
+					it('should call initializeOfferTypes and initializeBenefits with correct data', fakeAsync(() => {
 						const offerTypesData: OfferTypeVisibility[] = [
 							{ offerTypeId: 1, offerTypeLabel: 'Type1', visible: true },
 							{ offerTypeId: 2, offerTypeLabel: 'Type2', visible: true },
 						];
 
-						const grantsData: GrantDto[] = [
+						const benefitsData: BenefitDto[] = [
 							{
-								title: 'Grant1',
-								description: 'Description',
-								amount: 20,
-								createFor: GrantHolder.PASS_CHILD,
-								startDate: new Date('2023-12-06'),
+								name: 'Benefit 1',
+								description: 'Benefit Description',
+								startDate: new Date('2023-01-01'),
 								expirationDate: new Date('2023-12-31'),
-								selected: false,
-								isCheckboxDisabled: false,
+								citizenGroupIds: [],
+								amount: 10,
+							},
+							{
+								name: 'Benefit 2',
+								description: 'Benefit Description',
+								startDate: new Date('2023-01-01'),
+								expirationDate: new Date('2023-12-31'),
+								citizenGroupIds: [],
+								amount: 10,
 							},
 						];
 
 						jest.spyOn(component as any, 'getRequestsObservable').mockReturnValue(
-							of([offerTypesData, grantsData]),
+							of([offerTypesData, benefitsData]),
 						);
 
 						const spyInitializeOfferTypes = jest.spyOn(component as any, 'initializeOfferTypes');
-						const spyInitializeGrants = jest.spyOn(component as any, 'initializeGrants');
+						const spyInitializeBenefits = jest.spyOn(component as any, 'initializeBenefits');
 
-						(component as any).getOfferTypeAndGrants();
+						(component as any).getOfferTypeAndBenefits();
 
 						tick();
 
 						expect(spyInitializeOfferTypes).toHaveBeenCalledWith(offerTypesData);
-						expect(spyInitializeGrants).toHaveBeenCalledWith(grantsData);
+						expect(spyInitializeBenefits).toHaveBeenCalledWith(benefitsData);
 					}));
 
-					it('should call initializeOfferTypes and initializeGrants with empty  data', fakeAsync(() => {
+					it('should call initializeOfferTypes and initializeBenefits with empty  data', fakeAsync(() => {
 						const offerTypesData = null;
 
-						const grantsData = null;
+						const benefitsData = null;
 
 						jest.spyOn(component as any, 'getRequestsObservable').mockReturnValue(
-							of([offerTypesData, grantsData]),
+							of([offerTypesData, benefitsData]),
 						);
 
 						const spyInitializeOfferTypes = jest.spyOn(component as any, 'initializeOfferTypes');
-						const spyInitializeGrants = jest.spyOn(component as any, 'initializeGrants');
+						const spyInitializeBenefits = jest.spyOn(component as any, 'initializeBenefits');
 
-						(component as any).getOfferTypeAndGrants();
+						(component as any).getOfferTypeAndBenefits();
 
 						tick();
 
 						expect(spyInitializeOfferTypes).toHaveBeenCalledWith(offerTypesData);
-						expect(spyInitializeGrants).toHaveBeenCalledWith(grantsData);
+						expect(spyInitializeBenefits).toHaveBeenCalledWith(benefitsData);
 					}));
 
 					it('should handle null data during initialization', fakeAsync(() => {
 						jest.spyOn(component as any, 'initializeOfferTypes');
-						jest.spyOn(component as any, 'initializeGrants');
+						jest.spyOn(component as any, 'initializeBenefits');
 
 						jest.spyOn(component as any, 'getRequestsObservable').mockReturnValue(of(null));
 
-						component['getOfferTypeAndGrants']();
+						component['getOfferTypeAndBenefits']();
 						tick();
 
 						expect(component['initializeOfferTypes']).not.toHaveBeenCalled();
-						expect(component['initializeGrants']).not.toHaveBeenCalled();
+						expect(component['initializeBenefits']).not.toHaveBeenCalled();
 					}));
 				});
 			});
@@ -1006,8 +972,8 @@ describe('CreateOfferComponent', () => {
 			expect(component.maxLength).toBe(Number.MAX_SAFE_INTEGER);
 		});
 
-		describe('Tests for displayPopupForOfferWithGrant method', () => {
-			it('should display popup for offer with grant', () => {
+		describe('Tests for displayPopupForOfferWithBenefits method', () => {
+			it('should display popup for offer with benefits', () => {
 				// eslint-disable-next-line @typescript-eslint/no-empty-function
 				jest.spyOn(component, 'close').mockImplementation(() => {});
 				jest.spyOn(translateService, 'instant');
@@ -1020,7 +986,6 @@ describe('CreateOfferComponent', () => {
 					amount: '123',
 					citizenOfferType: 'offer.citizenWithPass',
 					offerTypeId: OfferTypeEnum.credit,
-					grantsIds: '',
 					startDate: new Date('2023-01-01'),
 					expirationDate: new Date('2022-12-31'),
 					frequencyOfUse: 'Frequency of use',
@@ -1034,6 +999,7 @@ describe('CreateOfferComponent', () => {
 					maxPrice: 90,
 					timeTo: '',
 					timeFrom: '',
+					benefitId: 'id',
 				});
 
 				component.saveOffer();
@@ -1527,52 +1493,6 @@ describe('CreateOfferComponent', () => {
 			flush();
 		}));
 
-		it('should take the GrantDtos of the offer and return their ids', () => {
-			jest.spyOn(component as any, 'getAcceptedGrantsIds');
-
-			const grants: GrantDto[] = [
-				{
-					id: '29',
-					title: 'Grant1',
-					description: 'Description',
-					amount: 20,
-					createFor: GrantHolder.PASS_CHILD,
-					startDate: new Date('2023-12-06'),
-					expirationDate: new Date('2023-12-31'),
-					selected: false,
-					isCheckboxDisabled: false,
-				},
-				{
-					id: '12',
-					title: 'Grant2',
-					description: 'Description',
-					amount: 20,
-					createFor: GrantHolder.PASS_CHILD,
-					startDate: new Date('2023-12-06'),
-					expirationDate: new Date('2023-12-31'),
-					selected: false,
-					isCheckboxDisabled: false,
-				},
-				{
-					id: '11',
-					title: 'Grant3',
-					description: 'Description',
-					amount: 20,
-					createFor: GrantHolder.PASS_CHILD,
-					startDate: new Date('2023-12-06'),
-					expirationDate: new Date('2023-12-31'),
-					selected: false,
-					isCheckboxDisabled: false,
-				},
-			];
-
-			const expectedGrantIds = ['29', '12', '11'];
-
-			component['getAcceptedGrantsIds'](grants);
-
-			expect(component['getAcceptedGrantsIds']).toHaveReturnedWith(expectedGrantIds);
-		});
-
 		describe('reactivation alert', () => {
 			it('should not display alert when an offer is not being reactivated', () => {
 				jest.spyOn(component, 'shouldDisplayReactivationAlert');
@@ -1601,28 +1521,28 @@ describe('CreateOfferComponent', () => {
 		});
 
 		describe('after reactivating', () => {
-			it('should display approval popup for offer with grants', () => {
+			it('should display approval popup for offer with benefits', () => {
 				component.shouldDisplayApprovalMessage = true;
 				jest.spyOn(translateService, 'instant');
 				jest.spyOn(toastrService, 'success');
-				jest.spyOn(component as any, 'displayPopupForOfferWithGrant');
+				jest.spyOn(component as any, 'displayPopupForOfferWithBenefits');
 
 				component['onOfferReactivated']();
 
-				expect(component['displayPopupForOfferWithGrant']).toHaveBeenCalled();
+				expect(component['displayPopupForOfferWithBenefits']).toHaveBeenCalled();
 				expect(translateService.instant).not.toHaveBeenCalled();
 				expect(toastrService.success).not.toHaveBeenCalled();
 			});
 
-			it('should display approval toaster for offers without grants', () => {
+			it('should display approval toaster for offers without benefits', () => {
 				component.shouldDisplayApprovalMessage = false;
 				jest.spyOn(translateService, 'instant');
 				jest.spyOn(toastrService, 'success');
-				jest.spyOn(component as any, 'displayPopupForOfferWithGrant');
+				jest.spyOn(component as any, 'displayPopupForOfferWithBenefits');
 
 				component['onOfferReactivated']();
 
-				expect(component['displayPopupForOfferWithGrant']).not.toHaveBeenCalled();
+				expect(component['displayPopupForOfferWithBenefits']).not.toHaveBeenCalled();
 				expect(translateService.instant).toHaveBeenCalled();
 				expect(toastrService.success).toHaveBeenCalled();
 			});
@@ -1743,44 +1663,535 @@ describe('CreateOfferComponent', () => {
 		beforeEach(() => {
 			component = setup(null);
 		});
-	
+
 		it('should reset the offerTypeId form value', () => {
 			jest.spyOn(component as any, 'resetFormValue');
-	
+
 			component.onTypeChange();
-	
-			expect(component["resetFormValue"]).toHaveBeenCalledWith(CreateOfferFormFields.offerTypeId);
+
+			expect(component['resetFormValue']).toHaveBeenCalledWith(CreateOfferFormFields.offerTypeId);
 		});
-	
+
 		it('should reset the amount form value to an empty string', () => {
 			jest.spyOn(component as any, 'resetFormValue');
-	
+
 			component.onTypeChange();
-	
-			expect(component["resetFormValue"]).toHaveBeenCalledWith(CreateOfferFormFields.amount, '');
+
+			expect(component['resetFormValue']).toHaveBeenCalledWith(CreateOfferFormFields.amount, '');
 		});
-	
+
 		it('should set selectedOfferTypeId to null', () => {
 			component.selectedOfferTypeId = OfferTypeEnum.credit;
 			component.onTypeChange();
-	
+
 			expect(component.selectedOfferTypeId).toBeNull();
 		});
-	
+
 		it('should update the updatedSource with visible dropdown items', () => {
 			component.dropdownSource = [
 				{ offerTypeId: 1, offerTypeLabel: 'Type1', visible: true },
 				{ offerTypeId: 2, offerTypeLabel: 'Type2', visible: false },
-				{ offerTypeId: 3, offerTypeLabel: 'Type3', visible: true }
+				{ offerTypeId: 3, offerTypeLabel: 'Type3', visible: true },
 			];
-	
+
 			component.onTypeChange();
-	
+
 			expect(component.updatedSource).toEqual([
 				{ offerTypeId: 1, offerTypeLabel: 'Type1', visible: true },
-				{ offerTypeId: 3, offerTypeLabel: 'Type3', visible: true }
+				{ offerTypeId: 3, offerTypeLabel: 'Type3', visible: true },
 			]);
 		});
 	});
-	
+	describe('isTimeSlotChecked', () => {
+		it('should return true when restriction.formControl is timeSlots and changes[timeSlots] is truthy', () => {
+			component = setup(null);
+			const restriction = { formControl: RestrictionFormFields.timeSlots };
+			const changes = { [RestrictionFormFields.timeSlots]: true };
+			const result = component.isTimeSlotChecked(restriction, changes);
+			expect(result).toBe(true);
+		});
+
+		it('should return false when restriction.formControl is not timeSlots', () => {
+			component = setup(null);
+			const restriction = { formControl: 'notTimeSlots' };
+			const changes = { [RestrictionFormFields.timeSlots]: true };
+			const result = component.isTimeSlotChecked(restriction, changes);
+			expect(result).toBe(false);
+		});
+
+		it('should return false when changes[timeSlots] is falsy', () => {
+			component = setup(null);
+			const restriction = { formControl: RestrictionFormFields.timeSlots };
+			const changes = { [RestrictionFormFields.timeSlots]: false };
+			const result = component.isTimeSlotChecked(restriction, changes);
+			expect(result).toBe(false);
+		});
+	});
+
+	describe('isPriceRangeChecked', () => {
+		it('should return true when restriction.formControl is priceRange and changes[priceRange] is truthy', () => {
+			component = setup(null);
+			const restriction = { formControl: RestrictionFormFields.priceRange };
+			const changes = { [RestrictionFormFields.priceRange]: true };
+			const result = component.isPriceRangeChecked(restriction, changes);
+			expect(result).toBe(true);
+		});
+
+		it('should return false when restriction.formControl is not priceRange', () => {
+			component = setup(null);
+			const restriction = { formControl: 'notPriceRange' };
+			const changes = { [RestrictionFormFields.priceRange]: true };
+			const result = component.isPriceRangeChecked(restriction, changes);
+			expect(result).toBe(false);
+		});
+
+		it('should return false when changes[priceRange] is falsy', () => {
+			component = setup(null);
+			const restriction = { formControl: RestrictionFormFields.priceRange };
+			const changes = { [RestrictionFormFields.priceRange]: false };
+			const result = component.isPriceRangeChecked(restriction, changes);
+			expect(result).toBe(false);
+		});
+	});
+	describe('onRestrictionValueChanges', () => {
+		let component: CreateOfferComponent;
+		let fixture: ComponentFixture<CreateOfferComponent>;
+
+		beforeEach(() => {
+			component = setup(null);
+		});
+
+		it('should not throw if createOfferForm is not defined', () => {
+			component.createOfferForm = undefined as any;
+			expect(() => (component as any).onRestrictionValueChanges()).not.toThrow();
+		});
+
+		it('should set selectedRestrictionValue and call cdr.detectChanges on valueChanges', () => {
+			const detectChangesSpy = jest.spyOn((component as any).cdr, 'detectChanges');
+			// Mock atLeastOneFieldGreaterThanZero to prevent TypeError
+			(component as any).atLeastOneFieldGreaterThanZero = jest.fn().mockReturnValue(true);
+			component.createOfferForm.setValue({
+				title: '',
+				description: '',
+				citizenOfferType: 'offer.citizenWithPass',
+				offerTypeId: '',
+				startDate: '',
+				expirationDate: '',
+				amount: '',
+				frequencyOfUse: '',
+				timeSlots: '',
+				ageRestriction: '',
+				priceRange: '',
+				frequencyOfUseValue: '',
+				ageRestrictionValue: '',
+				ageRestrictionOtherValue: '',
+				timeTo: '',
+				timeFrom: '',
+				minPrice: '',
+				maxPrice: '',
+				benefitId: 'id',
+			});
+			(component as any).updatingFormValues = false;
+			component.restrictionsData = [
+				{ formControl: 'frequencyOfUse', label: '', id: '', dataTestId: '' },
+				{ formControl: 'timeSlots', label: '', id: '', dataTestId: '' },
+				{ formControl: 'ageRestriction', label: '', id: '', dataTestId: '' },
+				{ formControl: 'priceRange', label: '', id: '', dataTestId: '' },
+			];
+			(component as any).onRestrictionValueChanges();
+			component.createOfferForm.patchValue({ frequencyOfUse: true });
+			expect(component['selectedRestrictionValue']).toBeTruthy();
+			expect(detectChangesSpy).toHaveBeenCalled();
+		});
+
+		it('should set updatingFormValues to true and back to false during valueChanges', () => {
+			component.restrictionsData = [{ formControl: 'frequencyOfUse', label: '', id: '', dataTestId: '' }];
+			const spy = jest.spyOn(component as any, 'manageRadioButtonOption');
+			(component as any).onRestrictionValueChanges();
+			component.createOfferForm.patchValue({ frequencyOfUse: true });
+			expect(spy).toHaveBeenCalled();
+			expect((component as any).updatingFormValues).toBe(false);
+		});
+
+		it('should call manageRadioButtonOption for restriction types not in excludedValues', () => {
+			component.restrictionsData = [{ formControl: 'frequencyOfUse', label: '', id: '', dataTestId: '' }];
+			const spy = jest.spyOn(component as any, 'manageRadioButtonOption');
+			(component as any).onRestrictionValueChanges();
+			component.createOfferForm.patchValue({ frequencyOfUse: true });
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('should call resetTimeSlotsAndPriceRangeRestriction if isTimeSlotsOrPriceRangeUnchecked returns true', () => {
+			component.restrictionsData = [{ formControl: 'timeSlots', label: '', id: '', dataTestId: '' }];
+			jest.spyOn(component as any, 'shouldNotIncludeAnyRestrictions').mockReturnValue(false);
+			jest.spyOn(component as any, 'isTimeSlotsOrPriceRangeUnchecked').mockReturnValue(true);
+			const spy = jest.spyOn(component as any, 'resetTimeSlotsAndPriceRangeRestriction');
+			(component as any).onRestrictionValueChanges();
+			component.createOfferForm.patchValue({ timeSlots: false });
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('should call manageTimeSlotsRestriction if isTimeSlotChecked returns true', fakeAsync(() => {
+			component.restrictionsData = [{ formControl: 'timeSlots', label: '', id: '', dataTestId: '' }];
+			(component as any).isValidIfAtLeastOneFieldIsZeroOrEmpty = jest.fn().mockReturnValue(true);
+			jest.spyOn(component as CreateOfferComponent, 'shouldNotIncludeAnyRestrictions').mockReturnValue(false);
+			jest.spyOn(component as CreateOfferComponent, 'isTimeSlotsOrPriceRangeUnchecked').mockReturnValue(false);
+			jest.spyOn(component as CreateOfferComponent, 'isTimeSlotChecked').mockReturnValue(true);
+			const spy = jest.spyOn(component as any, 'manageTimeSlotsRestriction');
+
+			(component as CreateOfferComponent)['onRestrictionValueChanges']();
+
+			component.createOfferForm.patchValue({ timeSlots: true });
+
+			tick();
+
+			expect(spy).toHaveBeenCalled();
+		}));
+
+		it('should call managePriceRangeRestriction if isPriceRangeChecked returns true', () => {
+			component.restrictionsData = [{ formControl: 'priceRange', label: '', id: '', dataTestId: '' }];
+			jest.spyOn(component as any, 'shouldNotIncludeAnyRestrictions').mockReturnValue(false);
+			jest.spyOn(component as any, 'isTimeSlotsOrPriceRangeUnchecked').mockReturnValue(false);
+			jest.spyOn(component as any, 'isTimeSlotChecked').mockReturnValue(false);
+			jest.spyOn(component as any, 'isPriceRangeChecked').mockReturnValue(true);
+			const spy = jest.spyOn(component as any, 'managePriceRangeRestriction');
+			(component as any).onRestrictionValueChanges();
+			component.createOfferForm.patchValue({ priceRange: true });
+			expect(spy).toHaveBeenCalled();
+		});
+
+		describe('Tests for getOfferTypeAndBenefits method', () => {
+			it('should call initializeOfferTypes and initializeBenefits with correct data', fakeAsync(() => {
+				const mockOfferTypes: OfferType[] = [
+					{ offerTypeId: 1, offerTypeLabel: 'Type1' },
+					{ offerTypeId: 2, offerTypeLabel: 'Type2' },
+				];
+				const mockBenefits: BenefitDto[] = [
+					{
+						name: 'Benefit 1',
+						description: 'Benefit Description',
+						startDate: new Date('2023-01-01'),
+						expirationDate: new Date('2023-12-31'),
+						citizenGroupIds: [],
+						amount: 10,
+					},
+				];
+
+				offerServiceMock.getOfferTypes.mockReturnValue(of(mockOfferTypes));
+				benefitServiceMock.getAllBenefits.mockReturnValue(of(mockBenefits));
+
+				jest.spyOn(component as any, 'initializeOfferTypes');
+				jest.spyOn(component as any, 'initializeBenefits');
+
+				component['getOfferTypeAndBenefits']();
+
+				tick();
+
+				expect(offerServiceMock.getOfferTypes).toHaveBeenCalled();
+				expect(benefitServiceMock.getAllBenefits).toHaveBeenCalled();
+				expect(component['initializeOfferTypes']).toHaveBeenCalledWith(mockOfferTypes);
+				expect(component['initializeBenefits']).toHaveBeenCalledWith(mockBenefits);
+			}));
+
+			it('should call initializeOfferTypes and initializeBenefits with empty data', fakeAsync(() => {
+				const mockOfferTypes: OfferType[] = [];
+				const mockBenefits: BenefitDto[] = [];
+
+				offerServiceMock.getOfferTypes.mockReturnValue(of(mockOfferTypes));
+				benefitServiceMock.getAllBenefits.mockReturnValue(of(mockBenefits));
+
+				jest.spyOn(component as any, 'initializeOfferTypes');
+				jest.spyOn(component as any, 'initializeBenefits');
+
+				component['getOfferTypeAndBenefits']();
+
+				tick();
+
+				expect(component['initializeOfferTypes']).toHaveBeenCalledWith(mockOfferTypes);
+				expect(component['initializeBenefits']).toHaveBeenCalledWith(mockBenefits);
+			}));
+			describe('confirmDialog', () => {
+				it('should call reactivateOffer when isReactivating is true', () => {
+					component.isReactivating = true;
+					const reactivateOfferSpy = jest.spyOn(component, 'reactivateOffer');
+					component.confirmDialog();
+					expect(reactivateOfferSpy).toHaveBeenCalled();
+				});
+
+				it('should call saveOffer when isReactivating is false', () => {
+					component.createOfferForm.setValue({
+						title: 'Title',
+						description: 'Description',
+						amount: '123',
+						citizenOfferType: 'offer.citizenWithPass',
+						offerTypeId: OfferTypeEnum.credit,
+						startDate: new Date('2023-01-01'),
+						expirationDate: new Date('2022-12-31'),
+						frequencyOfUse: 'Frequency of use',
+						frequencyOfUseValue: 'Frequency of use value',
+						timeSlots: 'Time slots',
+						ageRestriction: 'Age restriction',
+						ageRestrictionValue: 'Age restriction value',
+						ageRestrictionOtherValue: 'Age restriction other value',
+						priceRange: 'Eligible price range',
+						minPrice: 70,
+						maxPrice: 90,
+						timeTo: '',
+						timeFrom: '',
+						benefitId: 'id',
+					});
+					component.isReactivating = false;
+					const saveOfferSpy = jest.spyOn(component, 'saveOffer');
+					component.confirmDialog();
+					expect(saveOfferSpy).toHaveBeenCalled();
+				});
+			});
+			describe('getExpirationDateMax', () => {
+				it('should return null if no selected benefit', () => {
+					component.availableBenefits = [];
+					component.selectedBenefit = 'nonexistent';
+					const result = component.getExpirationDateMax();
+					expect(result).toBeNull();
+				});
+
+				it('should return expirationDate of selected benefit when minusOneDay is false', () => {
+					const expirationDate = new Date('2030-01-01');
+					component.availableBenefits = [
+						{
+							id: 'benefit1',
+							expirationDate,
+							startDate: new Date(),
+							name: '',
+							description: '',
+							citizenGroupIds: [],
+							amount: 0,
+						},
+					];
+					component.selectedBenefit = 'benefit1';
+					const result = component.getExpirationDateMax(false);
+					expect(result).toEqual(expirationDate);
+				});
+
+				it('should return expirationDate minus one day when minusOneDay is true', () => {
+					const expirationDate = new Date('2030-01-01T00:00:00.000Z');
+					component.availableBenefits = [
+						{
+							id: 'benefit1',
+							expirationDate,
+							startDate: new Date(),
+							name: '',
+							description: '',
+							citizenGroupIds: [],
+							amount: 0,
+						},
+					];
+					component.selectedBenefit = 'benefit1';
+					const result = component.getExpirationDateMax(true);
+					const expectedDate = new Date(expirationDate);
+					expectedDate.setDate(expectedDate.getDate() - 1);
+					expect(result).toEqual(expectedDate);
+				});
+
+				describe('getInitDateMin', () => {
+					it('should return null if no selected benefit', () => {
+						component.availableBenefits = [];
+						component.selectedBenefit = 'nonexistent';
+						const result = component.getInitDateMin();
+						expect(result).toBeNull();
+					});
+
+					it('should return startDate of selected benefit', () => {
+						const startDate = new Date('2025-01-01');
+						component.availableBenefits = [
+							{
+								id: 'benefit1',
+								expirationDate: new Date('2030-01-01'),
+								startDate,
+								name: '',
+								description: '',
+								citizenGroupIds: [],
+								amount: 0,
+							},
+						];
+						component.selectedBenefit = 'benefit1';
+						const result = component.getInitDateMin();
+						expect(result).toEqual(startDate);
+					});
+				});
+				describe('setupAmountValidatorsOnChange', () => {
+					it('should not throw if createOfferForm is undefined', () => {
+						component.createOfferForm = undefined as any;
+						expect(() => (component as any).setupAmountValidatorsOnChange('benefitId')).not.toThrow();
+					});
+
+					it('should set correct validators for amount when benefit and offerTypeId are freeEntry', () => {
+						component.createOfferForm = formBuilder.group({
+							amount: [''],
+							offerTypeId: [OfferTypeEnum.freeEntry],
+							benefitId: ['benefit1'],
+						});
+						component.availableBenefits = [{ id: 'benefit1', amount: 100 } as any];
+						const amountControl = component.createOfferForm.get('amount');
+						const spySetValidators = jest.spyOn(amountControl!, 'setValidators');
+						const spyUpdateValueAndValidity = jest.spyOn(amountControl!, 'updateValueAndValidity');
+						(component as any).setupAmountValidatorsOnChange('benefitId');
+						component.createOfferForm.get('benefitId')!.setValue('benefit1');
+						expect(spySetValidators).toHaveBeenCalledWith([
+							expect.any(Function),
+							expect.any(Function),
+							expect.any(Function),
+						]);
+						expect(spyUpdateValueAndValidity).toHaveBeenCalled();
+					});
+
+					it('should set correct validators for amount when benefit and offerTypeId are credit', () => {
+						component.createOfferForm = formBuilder.group({
+							amount: [''],
+							offerTypeId: [OfferTypeEnum.credit],
+							benefitId: ['benefit1'],
+						});
+						component.availableBenefits = [{ id: 'benefit1', amount: 50 } as any];
+						const amountControl = component.createOfferForm.get('amount');
+						const spySetValidators = jest.spyOn(amountControl!, 'setValidators');
+						const spyUpdateValueAndValidity = jest.spyOn(amountControl!, 'updateValueAndValidity');
+						(component as any).setupAmountValidatorsOnChange('offerTypeId');
+						component.createOfferForm.get('offerTypeId')!.setValue(OfferTypeEnum.credit);
+						expect(spySetValidators).toHaveBeenCalledWith([
+							expect.any(Function),
+							expect.any(Function),
+							expect.any(Function),
+						]);
+						expect(spyUpdateValueAndValidity).toHaveBeenCalled();
+					});
+
+					it('should set default validators for amount when benefit is not found', () => {
+						component.createOfferForm = formBuilder.group({
+							amount: [''],
+							offerTypeId: [OfferTypeEnum.percentage],
+							benefitId: ['unknown'],
+						});
+						component.availableBenefits = [{ id: 'benefit1', amount: 50 } as any];
+						const amountControl = component.createOfferForm.get('amount');
+						const spySetValidators = jest.spyOn(amountControl!, 'setValidators');
+						const spyUpdateValueAndValidity = jest.spyOn(amountControl!, 'updateValueAndValidity');
+						(component as any).setupAmountValidatorsOnChange('benefitId');
+						component.createOfferForm.get('benefitId')!.setValue('unknown');
+						expect(spySetValidators).toHaveBeenCalledWith([expect.any(Function), expect.any(Function)]);
+						expect(spyUpdateValueAndValidity).toHaveBeenCalled();
+					});
+
+					it('should call detectChanges after updating validators', () => {
+						component.createOfferForm = formBuilder.group({
+							amount: [''],
+							offerTypeId: [OfferTypeEnum.credit],
+							benefitId: ['benefit1'],
+						});
+						component.availableBenefits = [{ id: 'benefit1', amount: 10 } as any];
+						const spyDetectChanges = jest.spyOn(component['cdr'], 'detectChanges');
+						(component as any).setupAmountValidatorsOnChange('benefitId');
+						component.createOfferForm.get('benefitId')!.setValue('benefit1');
+						expect(spyDetectChanges).toHaveBeenCalled();
+					});
+
+					describe('setupAmountValidatorsOnChange', () => {
+						it('should not throw if createOfferForm is undefined', () => {
+							component.createOfferForm = undefined as any;
+							expect(() => (component as any).setupAmountValidatorsOnChange('benefitId')).not.toThrow();
+						});
+
+						it('should set correct validators for amount when benefit and offerTypeId are freeEntry', () => {
+							component.createOfferForm = formBuilder.group({
+								amount: [''],
+								offerTypeId: [OfferTypeEnum.freeEntry],
+								benefitId: ['benefit1'],
+							});
+							component.availableBenefits = [{ id: 'benefit1', amount: 100 } as any];
+							const amountControl = component.createOfferForm.get('amount');
+							const spySetValidators = jest.spyOn(amountControl!, 'setValidators');
+							const spyUpdateValueAndValidity = jest.spyOn(amountControl!, 'updateValueAndValidity');
+							(component as any).setupAmountValidatorsOnChange('benefitId');
+							component.createOfferForm.get('benefitId')!.setValue('benefit1');
+							expect(spySetValidators).toHaveBeenCalledWith([
+								expect.any(Function),
+								expect.any(Function),
+								expect.any(Function),
+							]);
+							expect(spyUpdateValueAndValidity).toHaveBeenCalled();
+						});
+
+						it('should set correct validators for amount when benefit and offerTypeId are credit', () => {
+							component.createOfferForm = formBuilder.group({
+								amount: [''],
+								offerTypeId: [OfferTypeEnum.credit],
+								benefitId: ['benefit1'],
+							});
+							component.availableBenefits = [{ id: 'benefit1', amount: 50 } as any];
+							const amountControl = component.createOfferForm.get('amount');
+							const spySetValidators = jest.spyOn(amountControl!, 'setValidators');
+							const spyUpdateValueAndValidity = jest.spyOn(amountControl!, 'updateValueAndValidity');
+							(component as any).setupAmountValidatorsOnChange('offerTypeId');
+							component.createOfferForm.get('offerTypeId')!.setValue(OfferTypeEnum.credit);
+							expect(spySetValidators).toHaveBeenCalledWith([
+								expect.any(Function),
+								expect.any(Function),
+								expect.any(Function),
+							]);
+							expect(spyUpdateValueAndValidity).toHaveBeenCalled();
+						});
+
+						it('should set default validators for amount when benefit is not found', () => {
+							component.createOfferForm = formBuilder.group({
+								amount: [''],
+								offerTypeId: [OfferTypeEnum.percentage],
+								benefitId: ['unknown'],
+							});
+							component.availableBenefits = [{ id: 'benefit1', amount: 50 } as any];
+							const amountControl = component.createOfferForm.get('amount');
+							const spySetValidators = jest.spyOn(amountControl!, 'setValidators');
+							const spyUpdateValueAndValidity = jest.spyOn(amountControl!, 'updateValueAndValidity');
+							(component as any).setupAmountValidatorsOnChange('benefitId');
+							component.createOfferForm.get('benefitId')!.setValue('unknown');
+							expect(spySetValidators).toHaveBeenCalledWith([expect.any(Function), expect.any(Function)]);
+							expect(spyUpdateValueAndValidity).toHaveBeenCalled();
+						});
+
+						it('should call detectChanges after updating validators', () => {
+							component.createOfferForm = formBuilder.group({
+								amount: [''],
+								offerTypeId: [OfferTypeEnum.credit],
+								benefitId: ['benefit1'],
+							});
+							component.availableBenefits = [{ id: 'benefit1', amount: 10 } as any];
+							const spyDetectChanges = jest.spyOn(component['cdr'], 'detectChanges');
+							(component as any).setupAmountValidatorsOnChange('benefitId');
+							component.createOfferForm.get('benefitId')!.setValue('benefit1');
+							expect(spyDetectChanges).toHaveBeenCalled();
+						});
+					});
+					describe('benefitAmount getter', () => {
+						it('should return the amount of the selected benefit as a number', () => {
+							component.availableBenefits = [
+								{ id: '1', name: 'Benefit 1', amount: 42 } as BenefitDto,
+								{ id: '2', name: 'Benefit 2', amount: 99 } as BenefitDto,
+							];
+							component.selectedBenefit = '2';
+							expect(component.benefitAmount).toBe(99);
+						});
+
+						it('should return null if no benefit is selected', () => {
+							component.availableBenefits = [{ id: '1', name: 'Benefit 1', amount: 42 } as BenefitDto];
+							component.selectedBenefit = undefined as any;
+							expect(component.benefitAmount).toBeNull();
+						});
+
+						it('should return null if selectedBenefit does not match any available benefit', () => {
+							component.availableBenefits = [{ id: '1', name: 'Benefit 1', amount: 42 } as BenefitDto];
+							component.selectedBenefit = 'non-existent-id';
+							expect(component.benefitAmount).toBeNull();
+						});
+					});
+				});
+			});
+		});
+	});
 });

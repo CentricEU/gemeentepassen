@@ -9,6 +9,7 @@ import {
 	FormInitializationType,
 	SupplierProfile,
 	SupplierProfileService,
+	UserService,
 } from '@frontend/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject } from 'rxjs';
@@ -19,7 +20,11 @@ import { ContactInformationComponent } from './contact-information.component';
 describe('ContactInformationComponent', () => {
 	let component: ContactInformationComponent;
 	let fixture: ComponentFixture<ContactInformationComponent>;
-	let httpClientSpy: { get: jest.Mock; post: jest.Mock };
+	const httpClientSpy: { get: jest.Mock; post: jest.Mock } = {
+		get: jest.fn(),
+		post: jest.fn(),
+	};
+
 	let translate: TranslateService;
 	let supplierProfileServiceMock: jest.Mocked<SupplierProfileService>;
 
@@ -49,6 +54,13 @@ describe('ContactInformationComponent', () => {
 		supplierId: '123',
 	};
 
+	const userServiceMock = {
+		getUserInformation: jest.fn(),
+		userInformation: {
+			supplierId: 123,
+		},
+	};
+
 	beforeEach(async () => {
 		supplierProfileServiceMock = {
 			supplierProfileInformationObservable: new BehaviorSubject({}),
@@ -62,6 +74,8 @@ describe('ContactInformationComponent', () => {
 			providers: [
 				{ provide: 'env', useValue: environmentMock },
 				{ provide: HttpClient, useValue: httpClientSpy },
+				{ provide: UserService, useValue: userServiceMock },
+
 				{ provide: SupplierProfileService, useValue: supplierProfileServiceMock },
 			],
 		}).compileComponents();

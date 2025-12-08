@@ -1,10 +1,9 @@
 <ng-container *ngIf="shouldDisplayButton">
 	<centric-button
-		type="icon-button-secondary"
+		type="icon-low-emphasis"
 		[size]="'small'"
 		[iconId]="'list-bullet_search_rb'"
-		[ariaLabel]="'Search items'"
-		(click)="openDialogWithTable([row])">
+		[ariaLabel]="'Search items'">
 	</centric-button>
 </ng-container>
 
@@ -12,18 +11,17 @@
 	[ariaLabel]="'general.chip.title' | translate"
 	[ariaDescription]="'general.chip.description' | translate">
 	<ng-container *ngFor="let chip of arrayOfChips">
-		<centric-chip [message]="chip['title']" [hasTitle]="true" [readonly]="true" [size]="'small'"> </centric-chip>
+		<centric-chip [message]="chip['name']" [hasTitle]="true" [readonly]="true" [size]="'small'"> </centric-chip>
 	</ng-container>
 
 	<ng-container *ngIf="remainingChips && remainingChips > 0">
 		<centric-button
 			role="listitem"
-			type="icon-button-secondary"
+			type="icon-low-emphasis"
 			class="remaining-chips"
 			size="small"
 			[ariaLabel]="'general.chip.moreButton' | translate"
-			[ariaDescription]="'general.chip.moreButton' | translate"
-			(click)="openDialogWithTable([row])">
+			[ariaDescription]="'general.chip.moreButton' | translate">
 			+{{ remainingChips }}
 		</centric-button>
 	</ng-container>

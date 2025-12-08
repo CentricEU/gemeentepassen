@@ -1,0 +1,48 @@
+<div tabindex="0">
+	<div class="header">
+		<p class="generic-color-text bold">{{ 'citizenDocumentsUpload.title' | translate }}</p>
+	</div>
+
+	<ul class="documents-needed">
+		@for (document of requiredDocuments; let i = $index; track document.id) {
+			<li class="detail-item">
+				<span>{{ i + 1 }}. {{ 'citizenGroup.requiredDocuments.' + document.translateKey | translate }}</span>
+			</li>
+		}
+	</ul>
+</div>
+
+<div id="supported-documents-info" class="supported-documents">
+	{{ 'citizenDocumentsUpload.supportedDocuments' | translate }}
+</div>
+
+<centric-upload-area
+	buttonText="{{ 'citizenDocumentsUpload.uploadFilesButton' | translate }}"
+	class="upload-area"
+	[type]="'button'"
+	[files]="files"
+	[multiple]="true"
+	[ariaDescribedButtonUpload]="'supported-documents-info'"
+	(filesUploaded)="onFilesUploaded($event)"
+	(fileDuplicated)="onFilesDuplicated($event)"></centric-upload-area>
+
+@if (files && files.length > 0) {
+	<div tabindex="0">
+		<ul class="uploaded-files-list">
+			@for (file of files; let idx = $index; track file) {
+				<li class="uploaded-file-item">
+					<span id="file-{{ idx }}" class="file-name ellipsis">{{ idx + 1 }}. {{ file.name }}</span>
+					<centric-button
+						windmill-tooltip
+						[size]="'small'"
+						[type]="'icon-ghost-greyscale'"
+						[iconId]="'trash_b'"
+						[ariaLabelledby]="'file-' + idx"
+						[tooltipText]="'citizenDocumentsUpload.removeDocument' | translate"
+						[tooltipColor]="'surface'"
+						(click)="removeFile(idx)"></centric-button>
+				</li>
+			}
+		</ul>
+	</div>
+}

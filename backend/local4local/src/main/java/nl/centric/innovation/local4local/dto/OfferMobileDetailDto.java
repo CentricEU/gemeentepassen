@@ -3,8 +3,8 @@ package nl.centric.innovation.local4local.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.NonNull;
+import nl.centric.innovation.local4local.entity.Benefit;
 import nl.centric.innovation.local4local.entity.Offer;
-import nl.centric.innovation.local4local.entity.OfferTransaction;
 import nl.centric.innovation.local4local.entity.OfferType;
 import nl.centric.innovation.local4local.enums.GenericStatusEnum;
 
@@ -33,8 +33,7 @@ public record OfferMobileDetailDto(@NonNull UUID id,
                                    @NonNull String companyCategory,
                                    RestrictionViewDto restrictions,
                                    String companyLogo,
-                                   @JsonInclude(JsonInclude.Include.NON_NULL)
-                                   Set<GrantViewDto> grants,
+                                   @NonNull BenefitLightDto benefit,
                                    @JsonInclude(JsonInclude.Include.NON_NULL)
                                    List<WorkingHoursDto> workingHours,
                                    String discountCode,
@@ -61,7 +60,7 @@ public record OfferMobileDetailDto(@NonNull UUID id,
                 .companyCategory(offer.getSupplier().getProfile().getCategory().getCategoryLabel())
                 .restrictions(offer.getRestriction() != null ? entityToRestrictionViewDto(offer.getRestriction()) : null)
                 .companyLogo(offer.getSupplier().getProfile().getLogo())
-                .grants(offer.getGrants().stream().map(GrantViewDto::entityToGrantViewDto).collect(Collectors.toSet()))
+                .benefit(BenefitLightDto.entityToBenefitTableDto(offer.getBenefit()))
                 .workingHours(offer.getSupplier().getWorkingHours().stream().map(WorkingHoursDto::workingHoursEntityToDto).collect(Collectors.toList()))
                 .discountCode(discountCode)
                 .isActive(isActive)

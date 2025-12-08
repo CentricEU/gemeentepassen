@@ -21,6 +21,7 @@ import { MunicipalitySupplierService } from '../../_services/suppliers.service';
 @Component({
 	selector: 'frontend-active-suppliers',
 	templateUrl: './active-suppliers.component.html',
+	standalone: false,
 })
 export class ActiveSuppliersComponent extends TableBaseComponent implements OnInit {
 	@ViewChild('suppliersTable') suppliersTable: TableComponent<SupplierViewDto>;
@@ -62,7 +63,6 @@ export class ActiveSuppliersComponent extends TableBaseComponent implements OnIn
 
 	public initializeColumns(): void {
 		this.allColumns = [
-			new TableColumn('checkbox', 'checkbox', 'checkbox', true, true, ColumnDataType.DEFAULT, true),
 			new TableColumn('general.status', 'status', 'status', true, true, ColumnDataType.STATUS),
 			new TableColumn('general.name', 'name', 'companyName', true, true),
 			new TableColumn('general.category', 'category', 'category', true),
@@ -102,13 +102,13 @@ export class ActiveSuppliersComponent extends TableBaseComponent implements OnIn
 				'',
 				ActionButtonIcons.uncontained,
 			),
-			new TableActionButton(
-				ActionButtons.circlePause,
-				'actionButtons.suspendSupplier',
-				false,
-				'',
-				ActionButtonIcons.uncontained,
-			),
+			// new TableActionButton(
+			// 	ActionButtons.circlePause,
+			// 	'actionButtons.suspendSupplier',
+			// 	false,
+			// 	'',
+			// 	ActionButtonIcons.uncontained,
+			// ),
 		];
 	}
 }

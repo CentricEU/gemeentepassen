@@ -8,6 +8,7 @@ import { RestrictionFormFields } from '../../enums/restriction.enum';
 	selector: 'frontend-age-restriction',
 	templateUrl: './age-restriction.component.html',
 	styleUrls: ['./age-restriction.component.scss'],
+	standalone: false,
 })
 export class AgeRestrictionComponent {
 	@Input() showDecimal: string;

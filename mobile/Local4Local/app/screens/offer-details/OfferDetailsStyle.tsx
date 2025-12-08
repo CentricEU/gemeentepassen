@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
 		marginTop: 16,
 		gap: 16
 	},
-	grantsList: {
+	benefitList: {
 		...common.clearDefaults,
 		flex: 1,
 		flexDirection: 'row',

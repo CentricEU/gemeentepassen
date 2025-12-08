@@ -3,4 +3,6 @@ export enum SilentErrorCode {
 	timeSlotsError = 40031,
 	offerInactiveError = 40033,
 	codeNotFoundOrInactiveError = 40034,
+	refreshTokenNotPresent = 40042,
+	offerUsageLimitReached = 40058
 }

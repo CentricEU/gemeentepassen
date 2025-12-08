@@ -50,6 +50,7 @@ describe('GeneralInformationComponent', () => {
 
 	const userServiceMock = {
 		getUserInformation: jest.fn(),
+		getCashierEmailsForSupplier: jest.fn(() => of([])),
 		userInformation: {
 			supplierId: 123,
 		},
@@ -243,6 +244,9 @@ describe('GeneralInformationComponent', () => {
 			group: 'group',
 			category: 'category',
 			subcategory: 'subcategory',
+			bic: 'ABNANL2A',
+			iban: 'NL91ABNA0417164300',
+			cashierEmails: '',
 		};
 		component.generalInformationForm.setValue(generalInformationDataMock);
 		component['updateLocalStorage']();
@@ -398,8 +402,10 @@ describe('GeneralInformationComponent', () => {
 			companyName: null,
 			adminEmail: null,
 			group: null,
-			subcategory: null,
 			logo: null,
+			bic: null,
+			iban: null,
+			cashierEmails: '',
 		});
 	});
 
@@ -816,5 +822,170 @@ describe('GeneralInformationComponent', () => {
 	it('should return the correct type for dropdownLabelTypes', () => {
 		const result = component.dropdownLabelTypes;
 		expect(result).toEqual(DropdownLabel);
+	});
+
+	it('should return true when isReadonly is true', () => {
+		component.isReadonly = true;
+		component.isEditProfileComponent = false;
+		component.cashierEmailsList.clear();
+
+		expect(component.isCashierEmailsFieldValid).toBe(true);
+	});
+
+	it('should return true when isEditProfileComponent is true', () => {
+		component.isReadonly = false;
+		component.isEditProfileComponent = true;
+		component.cashierEmailsList.clear();
+
+		expect(component.isCashierEmailsFieldValid).toBe(true);
+	});
+
+	it('should return true when cashierEmailsList has at least one email and not readonly or edit', () => {
+		component.isReadonly = false;
+		component.isEditProfileComponent = false;
+		component.cashierEmailsList.clear();
+		component.cashierEmailsList.add('cashier@example.com');
+
+		expect(component.isCashierEmailsFieldValid).toBe(true);
+	});
+
+	it('should return false when cashierEmailsList is empty and not readonly or edit', () => {
+		component.isReadonly = false;
+		component.isEditProfileComponent = false;
+		component.cashierEmailsList.clear();
+
+		expect(component.isCashierEmailsFieldValid).toBe(false);
+	});
+
+	it('should add e-mail to list if it is valid when enter key is pressed', () => {
+		const emailControl = component.generalInformationForm.get('cashierEmails');
+		emailControl?.setValue('email@domain.com');
+
+		component.handleKeydown(new KeyboardEvent('keydown', { key: 'Enter' }));
+
+		expect([...component.cashierEmailsList]).toEqual(['email@domain.com']);
+	});
+
+	it('should display an error when trying to add an e-mail that is already in the list', () => {
+		component.cashierEmailsList.add('email@domain.com');
+
+		const emailControl = component.generalInformationForm.get('cashierEmails');
+		emailControl?.setValue('email@domain.com');
+
+		component.handleKeydown(new KeyboardEvent('keydown', { key: 'Enter' }));
+
+		expect(component.emailError).toEqual('inviteSuppliers.emailAlreadyInList');
+	});
+
+	it('should remove given email from list', () => {
+		component.cashierEmailsList = new Set<string>();
+		component.cashierEmailsList.add('email1@domain.com');
+		component.cashierEmailsList.add('email2@domain.com');
+
+		component.removeEmailFromList('email1@domain.com');
+
+		expect([...component.cashierEmailsList]).toEqual(['email2@domain.com']);
+	});
+
+	it('handleKeyPressed should set emailError when email is missing or invalid', () => {
+		// invalid email
+		component.cashierEmailsList = new Set<string>();
+		component.generalInformationForm.get('cashierEmails')?.setValue('invalid-email');
+		(component as any).handleKeyPressed();
+		expect(component.emailError).toBe('genericFields.email.validEmail');
+		expect(component.cashierEmailsList.size).toBe(0);
+
+		// empty email
+		component.generalInformationForm.get('cashierEmails')?.setValue('');
+		(component as any).handleKeyPressed();
+		expect(component.emailError).toBe('genericFields.email.validEmail');
+		expect(component.cashierEmailsList.size).toBe(0);
+	});
+
+	it('handleKeyPressed should set emailError when email is already in the list', () => {
+		component.cashierEmailsList = new Set<string>();
+
+		component.cashierEmailsList.add('exists@domain.com');
+		component.generalInformationForm.get('cashierEmails')?.setValue('exists@domain.com');
+
+		(component as any).handleKeyPressed();
+
+		expect(component.emailError).toBe('inviteSuppliers.emailAlreadyInList');
+		expect(component.cashierEmailsList.size).toBe(1);
+	});
+
+	it('handleKeyPressed should add valid email, clear error and reset control', () => {
+		component.cashierEmailsList = new Set<string>();
+		component.generalInformationForm.get('cashierEmails')?.setValue('new@domain.com');
+
+		(component as any).handleKeyPressed();
+
+		expect(component.cashierEmailsList.has('new@domain.com')).toBe(true);
+		expect(component.emailError).toBe('');
+		expect(component.generalInformationForm.controls['cashierEmails'].value).toBe('');
+	});
+
+	it('should clear emailError when cashierEmails is empty string', () => {
+		component.generalInformationForm.get('cashierEmails')?.setValue('');
+		const event = new KeyboardEvent('keydown', { key: 'a' });
+
+		component.handleKeydown(event);
+
+		expect(component.emailError).toBe('');
+	});
+
+	it('should NOT clear emailError if cashierEmails has a value', () => {
+		component.generalInformationForm.get('cashierEmails')?.setValue('test@email.com');
+		component.emailError = 'Some error';
+		const event = new KeyboardEvent('keydown', { key: 'a' });
+
+		component.handleKeydown(event);
+
+		expect(component.emailError).toBe('Some error');
+	});
+
+	describe('initLocalStorageCashiers', () => {
+		it('should initialize cashierEmailsList with data from localStorage', () => {
+			const mockCashiers = ['email1@example.com', 'email2@example.com'];
+			localStorage.setItem('generalInformationCashiers', JSON.stringify(mockCashiers));
+
+			component['initLocalStorageCashiers']();
+
+			expect(component.cashierEmailsList).toEqual(new Set(mockCashiers));
+		});
+
+		it('should not modify cashierEmailsList if localStorage data is null', () => {
+			localStorage.removeItem('generalInformationCashiers');
+			component.cashierEmailsList = new Set<string>();
+
+			component['initLocalStorageCashiers']();
+
+			expect(component.cashierEmailsList.size).toBe(0);
+		});
+
+		it('should handle invalid JSON data in localStorage gracefully', () => {
+			localStorage.setItem('generalInformationCashiers', 'invalid-json');
+			component.cashierEmailsList = new Set<string>();
+
+			expect(() => component['initLocalStorageCashiers']()).not.toThrow();
+			expect(component.cashierEmailsList.size).toBe(0);
+		});
+	});
+
+	describe('updateCashiersOnLocalStorage', () => {
+		it('should update local storage with the current cashier emails list', () => {
+			const mockEmails = ['email1@example.com', 'email2@example.com'];
+			component.cashierEmailsList = new Set(mockEmails);
+			component['updateCashiersOnLocalStorage']();
+			const storedEmails = localStorage.getItem('generalInformationCashiers');
+			expect(storedEmails).toBe(JSON.stringify(mockEmails));
+		});
+
+		it('should store an empty array in local storage when the cashier emails list is empty', () => {
+			component.cashierEmailsList = new Set();
+			component['updateCashiersOnLocalStorage']();
+			const storedEmails = localStorage.getItem('generalInformationCashiers');
+			expect(storedEmails).toBe(JSON.stringify([]));
+		});
 	});
 });

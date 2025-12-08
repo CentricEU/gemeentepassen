@@ -10,6 +10,7 @@
 			"viewMap": "View map",
 			"viewDetails": "See more",
 			"cancel": "Cancel",
+			"close": "Close",
 			"createNewAccount": "Create new account",
 			"done": "Done",
 			"saveChanges": "Save changes",
@@ -17,13 +18,22 @@
 			"viewDiscounts": "View your discounts",
 			"addApple": "Add to Apple Wallet",
 			"addAndroid": "Add to Google Wallet",
-			"exploreOffers": "Explore offers"
+			"exploreOffers": "Explore offers",
+			"ok": "OK",
+			"confirm": "Confirm",
+			"back": "Back",
+			"backToLogin": "Back to login"
 		},
 		"errors": {
 			"requiredField": "This field is required",
 			"invalidEmail": "Invalid email address",
 			"passwordMatch": "Password and Confirm Password do not match",
-			"passwordRule": "Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long,"
+			"passwordRule": "Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long,",
+			"unauthorized": "Your login session has ended. Kindly log in again.",
+			"requestError": "There is an error in processing your request. Please try again later.",
+			"roleNotAllowed": "This email address is not authorized to use this application.",
+			"mailRequirementsNotMet": "Failed to send email. The provided email address appears to be invalid. Please double-check and try again.",
+			"notFound": "The requested resource was not found."
 		},
 		"weekDays": {
 			"monday": "Monday",
@@ -34,19 +44,31 @@
 			"saturday": "Saturday",
 			"sunday": "Sunday"
 		},
-		"welcome": "Welcome back to Stadspassen",
-		"balance": "Balance: "
+		"frecquency": {
+			"singleUse": "Single use",
+			"daily": "Daily",
+			"weekly": "Weekly",
+			"monthly": "Monthly",
+			"yearly": "Yearly"
+		},
+		"welcome": "Welcome back to Gemeentepassen",
+		"balance": "Balance: ",
+		"status": {
+			"active": "Active",
+			"expired": "Expired"
+		}
 	},
 	"navigation": {
 		"offers": "Offers",
-		"scan": "Scan",
 		"transactions": "Transactions",
 		"profile": "Profile",
-		"discounts": "Discounts"
+		"discounts": "Discounts",
+		"benefits": "Benefits",
+		"discountCode": "Discount Code"
 	},
 	"landingPage": {
-		"title": "Welcome to Stadspassen!",
-		"description": "Whether you use your grants or not, you could benefit from our supplier offers."
+		"title": "Welcome to Gemeentepassen!",
+		"description": "Whether you use your benefits or not, you could benefit from our supplier offers."
 	},
 	"getStartedPage": {
 		"title": "Get started",
@@ -86,6 +108,7 @@
 		"wrongCredentials": "Your e-mail or password is incorrect.",
 		"requestError": "There is an error in logging you into this application. Please try again later.",
 		"accountNotConfirmed": "Your account is not validated yet. Please check your email and confirm your email address to complete the registration process.",
+		"accountDeactivated": "Your account has been deactivated. Please contact customer support for assistance.",
 		"account": "Don't have an account?",
 		"captchaError": "Your attempt was unsuccessful multiple times. Please complete the ReCAPTCHA to proceed."
 	},
@@ -97,12 +120,16 @@
 			"all": "All discounts",
 			"credit": "Credit",
 			"bogo": "BOGO",
-			"percentage": "Percentage",
-			"grant": "Grant",
-			"freeEntry": "Free entry"
+			"freeEntry": "Free entry/Product",
+			"percentage": "Discount"
 		},
 		"offerGroup": "Offer group ({{number}})",
-		"availableWith": "Available starting with {{startDate}}"
+		"availableWith": "Available starting {{startDate}}",
+		"noResultsFound": "No results match.",
+		"noResultsDescription": "No offers match your selected criteria.",
+		"seeAllOffers": "See all offers",
+		"noOffersYetTitle": "No offers available yet",
+		"noOffersYetDescription": "We're still waiting for suppliers to add their offers. Please check back soon!"
 	},
 	"offerDetailsPage": {
 		"title": "Offer details",
@@ -111,7 +138,7 @@
 		"description": "Description",
 		"validFrom": "Valid from",
 		"validity": "{{startDate}} to {{endDate}}",
-		"acceptedGrants": "Accepted grants",
+		"acceptedBenefit": "Accepted benefit",
 		"bogo": "Buy one, get one (BOGO)",
 		"amount": "Discount amount",
 		"frecquency": "Frequency of use",
@@ -123,13 +150,14 @@
 		"priceRange": "Minimum €{{startPrice}} - Maximum €{{endPrice}}",
 		"successMessage": "You have successfully used this offer.",
 		"seeDiscountCode": "See the discount code",
-		"inactive": "This offer isn’t available yet. Check back on {{startDate}}!"
+		"inactive": "This offer isn’t available yet. Check back on {{startDate}}!",
+		"useOfferError": "There was an error while using the offer. Please try again later.",
+		"passExpired": "Your pass has expired and cannot be used for this offer.",
+		"benefitExpired": "This benefit has expired and cannot be redeemed."
 	},
 	"termsAndConditions": {
-		"textDescription1": "By signing up you agree to Stadspassen's ",
+		"textDescription1": "By signing up, you agree to our",
 		"textDescription2": "Terms and Conditions",
-		"textDescription3": " and ",
-		"textDescription4": "Privacy Policy.",
 		"question": "Already have an account?",
 		"logIn": "Log in"
 	},
@@ -192,7 +220,7 @@
 	},
 	"deleteAccount": {
 		"sorryMessage": "We're really sorry to see you go!",
-		"descritpion": "This process will permanently delete your Stadspassen account details. We can't retrieve this data once it's deleted, but you can create a new account any time.",
+		"descritpion": "This process will permanently delete your account. We will no longer be able to recover your data afterwards, but you can create a new account.",
 		"selectReasons": "Select the reason(s) why you are deleting your account:",
 		"successfullyDeleted": "Account successfully deleted",
 		"successfullyDeletedMessage": "Your account and data have been succesfully deleted!",
@@ -212,11 +240,10 @@
 	},
 	"offer": {
 		"types": {
-			"freeEntry": "Free entry",
-			"percentage": "Percentage",
+			"freeEntry": "Free entry/Product",
+			"percentage": "Discount",
 			"bogo": "BOGO",
-			"credit": "Credit",
-			"grant": "Grant"
+			"credit": "Credit"
 		},
 		"offerType": "Offer type: ",
 		"expirationDate": "Expiration date: ",
@@ -225,8 +252,6 @@
 	"discounts": {
 		"noDiscountsTitle": "Welcome to your discounts",
 		"noDiscountsDescription": "It looks like you have no discounts yet. Explore offers to get your discounts!",
-		"activeDiscounts": "Active",
-		"expiredDiscounts": "Expired",
 		"noExpiredDiscounts": "You have no expired discounts.",
 		"noActiveDiscounts": "You have no active discounts.\nExplore offers to get your discounts!",
 		"expirationDate": "Expire:",
@@ -234,6 +259,164 @@
 	},
 	"search": {
 		"searchBarTextOffer": "Search for offer",
-		"searchBarTextDiscounts": "Search for discounts"
+		"searchBarTextDiscounts": "Search for discounts",
+		"searchBarTextTransactions": "Search for transactions",
+		"gettingStarted": "Get started!",
+		"searchHistory": "Your search history will appear here.",
+		"recent": "Recent",
+		"minimumCharactersWarning": "Please enter at least 3 characters to search."
+	},
+	"months": {
+		"01": "January",
+		"02": "February",
+		"03": "March",
+		"04": "April",
+		"05": "May",
+		"06": "June",
+		"07": "July",
+		"08": "August",
+		"09": "September",
+		"10": "October",
+		"11": "November",
+		"12": "December"
+	},
+	"transactions": {
+		"noTransactionsTitle": "No transactions yet.",
+		"noTransactionsDescription": "Once you start using the app, your activity will appear here.",
+		"noTransactionsThisMonth": "No transactions this month."
+	},
+	"map": {
+		"locationDisabledTitle": "Enable location acccess in settings.",
+		"locationDisabledMessage": "Your location could not be retrieved."
+	},
+	"benefits": {
+		"noBenefitsTitle": "Welcome to your benefits",
+		"noBenefitsDescription": "Your benefits will appear here once they’re assigned by the municipality.",
+		"noExpiredBenefits": "You have no expired benefits.",
+		"noActiveBenefits": "You have no active benefits.",
+		"validUntil": "Valid until",
+		"usage": "Usage",
+		"remainingAmount": "{{amount}} remaining"
+	},
+	"forgotPassword": {
+		"hyperlink": "Forgot password",
+		"title": "Forgot your password?",
+		"description": "Please enter the following information to set a new password.",
+		"send": "Send me link",
+		"captcha": "Captcha: \"I am not a robot\" type",
+		"emailPlaceholder": "Enter your e-mail address",
+		"recoveryExceedLimit": "You can only initiate three password recovery attempts per day.",
+		"dialog": {
+			"description": "We've sent you an email with a link to reset your password.",
+			"title": "Check your inbox",
+			"dialogTitle": "E-mail sent successfully!"
+		}
+	},
+	"changePassword": {
+		"title": "Set new password",
+		"sameAsOldPassword": "Your new password cannot be the same as your old password.",
+		"tokenExpiredError": "The password reset link has expired. Please request a new one.",
+		"dialog": {
+			"description": "Your password was successfully changed!",
+			"title": "Congratulations!",
+			"dialogTitle": "Password changed successfully!",
+			"buttonText": "Continue to Login"
+		}
+	},
+	"privacy": {
+		"title": "Privacy Statement",
+		"intro": {
+			"paragraph_1": "We see the protection of personal data as a very important part of our business operations and services. Protecting this data is the foundation of our reliability as a supplier and partner. By personal data we mean in this case: all information about an identified and/or identifiable natural person.",
+			"paragraph_2": "In this privacy statement you can read about the personal data that we collect from you. We collect this information because we have an agreement with you or are in contact with you about our services and products.",
+			"paragraph_3": "In this statement you can read:",
+			"item_1": "why we process personal data",
+			"item_2": "how long we keep personal data",
+			"item_3": "how you can view and modify the personal data we hold on you",
+			"item_4": "how your personal data is protected with us"
+		},
+		"promises": {
+			"title": "Our Privacy Promises",
+			"subtitle": "Our privacy promises are defined by the following rules of thumb:",
+			"purpose": {
+				"title": "Purpose determination and purpose limitation",
+				"description": "We only use personal data for explicitly defined and justified purposes."
+			},
+			"basis": {
+				"title": "Basis",
+				"description": "We base the processing of personal data on a legal base."
+			},
+			"minimization": {
+				"title": "Data minimization",
+				"description": "When processing personal data, we ensure that the amount of data remains limited."
+			},
+			"transparency": {
+				"title": "Transparency",
+				"description": "We account transparently to those involved, such as citizens, suppliers, and employees of the municipality, about the use of their personal data."
+			},
+			"safety": {
+				"title": "Safety",
+				"description": "We take privacy seriously. In every choice we make, we take measures to protect privacy as much as possible."
+			}
+		},
+		"security": {
+			"title": "Personal Data Security",
+			"description": "We do our utmost best to handle personal data with the utmost care. We also do everything in our power to protect this data against loss and/or any form of unlawful use or processing. We use appropriate technical and organizational measures, for example of the latest innovations in security. If we have to share your personal data with third parties in order to carry out its tasks, we make agreements for this purpose."
+		},
+		"breach": {
+			"title": "Security Breach",
+			"paragraph_1": "Despite all our efforts, if a security breach happens, we will deal with such an incident in accordance with an internal procedure drawn up for this purpose. In the case of a security breach, we will do everything in our power to minimize the consequences of the breach.",
+			"paragraph_2": "If the breach constitutes a privacy risk, we will report this to the Dutch Authority of Personal Data (Autoriteit Persoonsgegevens). If it is desirable - and in any case the law requires it - we will also inform those concerned about the breach."
+		},
+		"rights": {
+			"title": "What Are Your Rights?",
+			"subtitle": "In accordance with the General Data Protection Regulation (GDPR, in Dutch: Algemene Verordening Gegevensbescherming or AGV), you have the following rights:",
+			"access": {
+				"title": "Access",
+				"description": "You have the right to view the personal data that we process about you."
+			},
+			"correction": {
+				"title": "Correction and supplementation",
+				"description": "You have the right to have your personal data processed by us to be changed."
+			},
+			"forgotten": {
+				"title": "Be forgotten",
+				"description": "You have the right to have your personal data deleted."
+			},
+			"portability": {
+				"title": "Data portability",
+				"description": "You have the right to have personal data transferred from us to another party."
+			},
+			"restriction": {
+				"title": "Restriction of processing",
+				"description": "You have the right to have less data processed by us."
+			},
+			"automated": {
+				"title": "Automated decision-making and profiling",
+				"description": "You have the right to a human opinion when making decisions that we make (as opposed to automated decision-making)."
+			},
+			"objection": {
+				"title": "Objection",
+				"description": "You have the right to object to data processing with us."
+			}
+		},
+		"contact": {
+			"title": "How Do You Exercise Your Rights?",
+			"description": "We take the privacy of your personal data very seriously. That's why we have appointed a privacy officer who handles all your questions about privacy rights.",
+			"cta": "Contact our privacy officer at: "
+		},
+		"complaint": {
+			"title": "The Right to File a Complaint",
+			"description": "We handle your data as transparently and carefully as possible. If you do have a complaint about the processing of your data, please contact our privacy officer first by sending a message to info@Gemeentepassen.eu. We will then do our utmost to resolve your complaint. If you unexpectedly do not agree with the measure taken, please contact the Dutch Authority of Personal Data (Autoriteit Persoonsgegevens)."
+		},
+		"info_sheet": {
+			"title": "Information Sheet Per Data Processing",
+			"subtitle": "In addition to the privacy statement, we have opted to draw up an information sheet for specific processing/parts. This information sheet specifically addresses the following sub-topics:",
+			"item_1": "Why do we use your personal data?",
+			"item_2": "What types of personal data do we process?",
+			"item_3": "Who has access to your personal data?",
+			"item_4": "What is the legal basis for the processing of your personal data?",
+			"item_5": "How long do we keep your data?",
+			"item_6": "Which security measures are in place?"
+		}
 	}
 }

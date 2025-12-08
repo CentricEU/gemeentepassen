@@ -1,39 +1,39 @@
-@import 'mixins.scss';
+@use 'mixins.scss' as mixins;
 
 .flex-column-center {
-	@include flex(column, center, center);
+	@include mixins.flex(column, center, center);
 }
 
 .flex-column-start {
-	@include flex(column, center, flex-start);
+	@include mixins.flex(column, center, flex-start);
 }
 
 .flex-column-end {
-	@include flex(column, center, flex-end);
+	@include mixins.flex(column, center, flex-end);
 }
 
 .flex-row-center {
-	@include flex(row, center, center);
+	@include mixins.flex(row, center, center);
 }
 
 .flex-row-spaced {
-	@include flex(row, space-between, center);
+	@include mixins.flex(row, space-between, center);
 }
 
 .flex-column-spaced {
-	@include flex(column, space-between, center);
+	@include mixins.flex(column, space-between, center);
 }
 
 .flex-row-end {
-	@include flex(row, flex-end, center);
+	@include mixins.flex(row, flex-end, center);
 }
 
 .flex-row-start {
-	@include flex(row, flex-start, center);
+	@include mixins.flex(row, flex-start, center);
 }
 
 .flex-row-start-start {
-	@include flex(row, flex-start, flex-start);
+	@include mixins.flex(row, flex-start, flex-start);
 }
 
 .pointer {

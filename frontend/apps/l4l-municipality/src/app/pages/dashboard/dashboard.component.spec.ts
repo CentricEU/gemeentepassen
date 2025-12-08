@@ -3,37 +3,60 @@ import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AuthService } from '@frontend/common';
+import {
+	AuthService,
+	DashboardService,
+	MunicipalityStatistics,
+	TimeIntervalPeriod,
+	UserService,
+} from '@frontend/common';
 import { WindmillModule } from '@frontend/common-ui';
 import { TranslateModule } from '@ngx-translate/core';
+import { WindmillComboButtonMenuItem } from '@windmill/ng-windmill/combo-button';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { CentricToastrModule } from '@windmill/ng-windmill/toastr';
 import { of } from 'rxjs';
 
-import { PassholdersService } from '../../_services/passholders.service';
-import { MunicipalitySupplierService } from '../../_services/suppliers.service';
 import { DashboardComponent } from './dashboard.component';
 
 describe('DashboardComponent', () => {
 	let component: DashboardComponent;
 	let fixture: ComponentFixture<DashboardComponent>;
-	let municipalitySupplierServiceMock: any;
-	let passholdersServiceMock: any;
-	let authServiceMock: any;
+	let dashboardServiceMock: Record<string, jest.Mock>;
+	let dialogService: DialogService;
+	let authServiceSpy: { extractSupplierInformation: jest.Mock };
+	let userService: { getUserInformation: jest.Mock };
 
-	const SUPPLIER_COUNT = 12;
-	const PASSHOLDERS_COUNT = 2;
-	const TENANT_ID = 'tenantId';
+	const STATS: MunicipalityStatistics = {
+		suppliersCount: 12,
+		transactionsCount: 8,
+		passholdersCount: 2,
+	};
+
+	const environmentMock = {
+		production: false,
+		envName: 'dev',
+		apiPath: '/api',
+	};
 
 	beforeEach(async () => {
-		municipalitySupplierServiceMock = {
-			countSuppliers: jest.fn(),
+		dialogService = {
+			message: jest.fn(),
+		} as unknown as DialogService;
+
+		authServiceSpy = {
+			extractSupplierInformation: jest.fn().mockReturnValue('123'),
 		};
 
-		passholdersServiceMock = {
-			countPassholders: jest.fn(),
+		userService = {
+			getUserInformation: jest.fn().mockReturnValue(of({})),
 		};
 
-		authServiceMock = {
-			extractSupplierInformation: jest.fn(),
+		dashboardServiceMock = {
+			getMuniciplaityStatistics: jest.fn(),
+			initDropdownData: jest.fn(),
+			translatedTimePeriodToEnum: jest.fn(),
+			getTransactionStatistics: jest.fn().mockReturnValue(of([])),
 		};
 
 		await TestBed.configureTestingModule({
@@ -44,50 +67,149 @@ describe('DashboardComponent', () => {
 				BrowserAnimationsModule,
 				HttpClientModule,
 				TranslateModule.forRoot(),
+				CentricToastrModule.forRoot(),
 			],
 			declarations: [DashboardComponent],
 			providers: [
-				{ provide: MunicipalitySupplierService, useValue: municipalitySupplierServiceMock },
-				{ provide: PassholdersService, useValue: passholdersServiceMock },
-				{ provide: AuthService, useValue: authServiceMock },
+				{ provide: DashboardService, useValue: dashboardServiceMock },
+				{ provide: DialogService, useValue: dialogService },
+				{ provide: AuthService, useValue: authServiceSpy },
+				{ provide: 'env', useValue: environmentMock },
+				{ provide: UserService, useValue: userService },
 			],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(DashboardComponent);
 		component = fixture.componentInstance;
-
-		municipalitySupplierServiceMock.countSuppliers.mockReturnValue(of(SUPPLIER_COUNT));
-		passholdersServiceMock.countPassholders.mockReturnValue(of(PASSHOLDERS_COUNT));
+		(component as any).transactionChart = {
+			loadChartData: jest.fn(),
+		};
 	});
 
 	it('should create', () => {
+		dashboardServiceMock['getMuniciplaityStatistics'].mockReturnValue(of(STATS));
 		fixture.detectChanges();
 		expect(component).toBeTruthy();
 	});
 
-	describe('tenant is present', () => {
-		beforeEach(() => {
-			authServiceMock.extractSupplierInformation.mockReturnValue(TENANT_ID);
-			fixture.detectChanges();
+	describe('openProvideBankDetailsDialog', () => {
+		it('should call dialogService.message with correct parameters', () => {
+			const afterClosedMock = { afterClosed: jest.fn().mockReturnValue(of(false)) };
+			dialogService.message = jest.fn().mockReturnValue(afterClosedMock);
+
+			component.openProvideBankDetailsDialog();
+
+			expect(dialogService.message).toHaveBeenCalledWith(expect.any(Function), {
+				width: '520px',
+				disableClose: true,
+				ariaDescribedBy: 'dialog-description',
+			});
 		});
 
-		it('should call the proper services to initialize the widgets', () => {
-			expect(authServiceMock.extractSupplierInformation).toHaveBeenCalled();
-			expect(passholdersServiceMock.countPassholders).toHaveBeenCalled();
-			expect(municipalitySupplierServiceMock.countSuppliers).toHaveBeenCalled();
+		it('should not call showToaster if dialog is closed without confirmation', () => {
+			const afterClosedMock = { afterClosed: jest.fn().mockReturnValue(of(false)) };
+			dialogService.message = jest.fn().mockReturnValue(afterClosedMock);
+			const showToasterSpy = jest.spyOn(component as unknown as { showToaster: () => void }, 'showToaster');
+
+			component.openProvideBankDetailsDialog();
+
+			expect(showToasterSpy).not.toHaveBeenCalled();
+		});
+
+		it('should call showToaster if dialog is closed with confirmation', async () => {
+			const afterClosedMock = { afterClosed: jest.fn().mockReturnValue(of(true)) };
+			dialogService.message = jest.fn().mockReturnValue(afterClosedMock);
+
+			const showToasterSpy = jest.spyOn(component as any, 'showToaster');
+
+			dashboardServiceMock['getMuniciplaityStatistics'].mockReturnValue(
+				of({
+					suppliersCount: 0,
+					passholdersCount: 0,
+					transactionsCount: 0,
+				}),
+			);
+
+			component.openProvideBankDetailsDialog();
+
+			await fixture.whenStable();
+
+			expect(showToasterSpy).toHaveBeenCalled();
 		});
 	});
 
-	describe('tenant is not present', () => {
-		beforeEach(() => {
-			authServiceMock.extractSupplierInformation.mockReturnValue(null);
-			fixture.detectChanges();
+	it('should call dashboardService.getMuniciplaityStatistics and populate counts on init', () => {
+		dashboardServiceMock['getMuniciplaityStatistics'].mockReturnValue(of(STATS));
+		fixture.detectChanges();
+
+		expect(dashboardServiceMock['getMuniciplaityStatistics']).toHaveBeenCalled();
+		expect(component.suppliersCount).toBe(STATS.suppliersCount);
+		expect(component.passholdersCount).toBe(STATS.passholdersCount);
+		expect(component.transactionsCount).toBe(STATS.transactionsCount);
+	});
+
+	it('should update dashboardService.activeTimePeriod and call initChart with translated period', () => {
+		const mockEvent: WindmillComboButtonMenuItem = {
+			title: 'dashboard.offers.thisMonth',
+		};
+
+		const translatedEnum = TimeIntervalPeriod.MONTHLY;
+		dashboardServiceMock['translatedTimePeriodToEnum'].mockReturnValue(translatedEnum);
+		const initChartSpy = jest.spyOn(
+			component as unknown as { initChart: (period: TimeIntervalPeriod) => void },
+			'initChart',
+		);
+
+		component.onTimePeriodChange(mockEvent);
+
+		expect(component.activeTimePeriod).toBe(mockEvent.title);
+		expect(dashboardServiceMock['translatedTimePeriodToEnum']).toHaveBeenCalledWith(mockEvent.title);
+		expect(initChartSpy).toHaveBeenCalledWith(translatedEnum);
+	});
+
+	describe('shouldDisplayBankInfoDialog', () => {
+		it('should not call openProvideBankDetailsDialog if userId is falsy', () => {
+			authServiceSpy.extractSupplierInformation.mockReturnValue(null);
+			const openDialogSpy = jest.spyOn(component, 'openProvideBankDetailsDialog');
+
+			component.shouldDisplayBankInfoDialog();
+
+			expect(openDialogSpy).not.toHaveBeenCalled();
 		});
 
-		it('should not call other services if the auth service does not return a tenant id', () => {
-			expect(authServiceMock.extractSupplierInformation).toHaveBeenCalled();
-			expect(passholdersServiceMock.countPassholders).not.toHaveBeenCalled();
-			expect(municipalitySupplierServiceMock.countSuppliers).not.toHaveBeenCalled();
+		it('should not call openProvideBankDetailsDialog if user is approved', () => {
+			authServiceSpy.extractSupplierInformation.mockReturnValue('123');
+			const openDialogSpy = jest.spyOn(component, 'openProvideBankDetailsDialog');
+
+			(userService.getUserInformation as jest.Mock).mockReturnValue(of({ isApproved: true }));
+
+			component.shouldDisplayBankInfoDialog();
+
+			expect(openDialogSpy).not.toHaveBeenCalled();
+		});
+
+		it('should call openProvideBankDetailsDialog if user is not approved', async () => {
+			const afterClosedMock = { afterClosed: jest.fn().mockReturnValue(of(true)) };
+			const openDialogSpy = jest.spyOn(component, 'openProvideBankDetailsDialog');
+
+			dialogService.message = jest.fn().mockReturnValue(afterClosedMock);
+			dashboardServiceMock['getMuniciplaityStatistics'].mockReturnValue(
+				of({
+					suppliersCount: 0,
+					passholdersCount: 0,
+					transactionsCount: 0,
+				}),
+			);
+
+			authServiceSpy.extractSupplierInformation.mockReturnValue('123');
+
+			(userService.getUserInformation as jest.Mock).mockReturnValue(of({ isApproved: false }));
+
+			component.shouldDisplayBankInfoDialog();
+
+			await fixture.whenStable();
+
+			expect(openDialogSpy).toHaveBeenCalled();
 		});
 	});
 });

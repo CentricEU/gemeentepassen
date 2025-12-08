@@ -2,8 +2,6 @@ package nl.centric.innovation.local4local.service.interfaces;
 
 
 public interface EmailService {
-    void sendEmail(String fromAddr, String[] toAddr, String subject, String htmlContent, String textContent);
-
     void sendProfileCreatedEmail(String url, String[] toAddress, String language, String receiverName, String supplierName, String repName);
 
     void sendApproveProfileEmail(String url, String[] toAddress, String language, String receiverName, String municipalityName);
@@ -23,4 +21,8 @@ public interface EmailService {
     void sendConfirmAccountEmail(String url, String language, String username, String toAddress);
 
     void sendEmailAfterUserCreated(String url, String language, String toAddress);
+
+    void sendNoCategoryEmail(String url, String toAddress, String language, String message);
+
+    void sendEmailAfterCashierCreated(String url, String language, String toAddress);
 }

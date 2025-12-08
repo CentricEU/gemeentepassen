@@ -6,23 +6,23 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
-import nl.centric.innovation.local4local.dto.AssignPassholderGrantsDto;
-import nl.centric.innovation.local4local.entity.Grant;
+import nl.centric.innovation.local4local.entity.CitizenGroup;
 import nl.centric.innovation.local4local.entity.User;
+import nl.centric.innovation.local4local.repository.CitizenGroupRepository;
+import nl.centric.innovation.local4local.repository.TenantRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,10 +40,8 @@ import nl.centric.innovation.local4local.exceptions.CsvManipulationException;
 import nl.centric.innovation.local4local.exceptions.DtoValidateException;
 import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
 import nl.centric.innovation.local4local.repository.PassholderRepository;
-import nl.centric.innovation.local4local.service.interfaces.TenantService;
 import nl.centric.innovation.local4local.util.CsvUtil;
 import nl.centric.innovation.local4local.util.LocalDateParser;
-import nl.centric.innovation.local4local.util.ModelConverter;
 
 import static nl.centric.innovation.local4local.dto.PassholderViewDto.entityToPassholderViewDto;
 
@@ -51,15 +49,17 @@ import static nl.centric.innovation.local4local.dto.PassholderViewDto.entityToPa
 @RequiredArgsConstructor
 public class PassholderService {
 
-    private final TenantService tenantService;
-
-    private final GrantService grantService;
+    private final TenantRepository tenantRepository;
 
     private final PrincipalService principalService;
 
     private final PassholderRepository passholderRepository;
 
+    private final CitizenGroupRepository citizenGroupRepository;
+
     private final LocalDateParser dateParser;
+
+    private final CitizenBenefitService citizenBenefitService;
 
     @Value("${error.entity.notfound}")
     private String errorEntityNotFound;
@@ -73,10 +73,25 @@ public class PassholderService {
     @Value("${error.passholder.unique}")
     private String errorPassholderUnique;
 
+    @Value("${error.general.entityValidate}")
+    private String errorEntityValidate;
+
+    @Value("${error.passholder.required}")
+    private String errorPassholderRequiredFields;
+
     public static final String ORDER_CRITERIA = "name";
 
-    public List<Passholder> saveFromCSVFile(MultipartFile file) throws CsvManipulationException, DtoValidateException {
+    @Transactional
+    public List<Passholder> saveFromCSVFile(MultipartFile file, UUID citizenGroupId)
+            throws CsvManipulationException, DtoValidateException {
         Tenant tenant = getTenant();
+
+        CitizenGroup citizenGroup = citizenGroupRepository.findById(citizenGroupId)
+                .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
+
+        if(!citizenGroup.getTenantId().equals(tenant.getId())) {
+            throw new DtoValidateException(errorEntityValidate);
+        }
 
         List<CSVRecord> csvRecords;
 
@@ -86,7 +101,7 @@ public class PassholderService {
             throw new CsvManipulationException(errorCsvManipulation);
         }
 
-        List<Passholder> passholderList = parseCsvFile(csvRecords, tenant);
+        List<Passholder> passholderList = parseCsvFile(csvRecords, tenant, citizenGroup);
 
         // this handles the case when the BSN or the Passnumber already exists in the database
         try {
@@ -100,7 +115,7 @@ public class PassholderService {
         UUID tenantId = principalService.getTenantId();
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(ORDER_CRITERIA));
-        Page<Passholder> passholders = passholderRepository.findAllByTenantId(tenantId, pageable);
+        Page<Passholder> passholders = passholderRepository.findAllByTenantIdOrderByCreatedDateDesc(tenantId, pageable);
         return passholders.stream().map(PassholderViewDto::entityToPassholderViewDto).collect(Collectors.toList());
     }
 
@@ -109,29 +124,17 @@ public class PassholderService {
         return passholderRepository.countByTenantId(tenantId);
     }
 
-    public PassholderViewDto updatePassholder(@Valid PassholderViewDto passholderDto) throws DtoValidateNotFoundException {
+    //TODO Refactor this method both BE and FE
+    public PassholderViewDto updatePassholder(@Valid PassholderViewDto passholderDto) throws DtoValidateException {
         Tenant tenant = getTenant();
-        Passholder passholder = ModelConverter.passholderViewDtoToEntity(passholderDto, tenant);
-        passholder.setId(passholderDto.id());
-        return entityToPassholderViewDto(passholderRepository.save(passholder));
-    }
+        Passholder passholder = passholderRepository.findById(passholderDto.id())
+                .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
 
-    @Transactional
-    public List<PassholderViewDto> assignPassholders(@Valid AssignPassholderGrantsDto assignPassholderGrantsDto) throws DtoValidateNotFoundException {
+        Passholder passholderToSave = Passholder.passholderViewDtoToEntity(passholderDto, tenant);
+        passholderToSave.setId(passholderDto.id());
+        passholderToSave.setUser(passholder.getUser());
 
-        Set<Grant> grantsToAssign = grantService.getAllInIds(assignPassholderGrantsDto.grantsIds());
-        List<Passholder> passholders = passholderRepository.findAllById(assignPassholderGrantsDto.passholderIds());
-
-        List<Passholder> passHoldersToSave = passholders.stream()
-                .map(passholder -> {
-                    List<Grant> allGrants = mergeGrantsToExistingOnes(passholder.getGrants(), grantsToAssign);
-                    passholder.setGrants(allGrants);
-                    return passholder;
-                })
-                .collect(Collectors.toList());
-
-        List<Passholder> savedPassholders = passholderRepository.saveAll(passHoldersToSave);
-        return savedPassholders.stream().map(PassholderViewDto::entityToPassholderViewDto).collect(Collectors.toList());
+        return entityToPassholderViewDto(passholderRepository.save(passholderToSave));
     }
 
     public void deletePassholder(UUID passholderId) throws DtoValidateNotFoundException {
@@ -153,19 +156,28 @@ public class PassholderService {
     public void saveUserForPassholder(Passholder passholder, User user) {
         passholder.setUser(user);
         passholderRepository.save(passholder);
+        citizenBenefitService.createCitizenBenefitForUserIdAndBenefits(user.getId(), passholder.getCitizenGroup().getBenefits());
+
     }
 
-    private List<Passholder> parseCsvFile(List<CSVRecord> csvRecords, Tenant tenant) throws DtoValidateException {
+    private List<Passholder> parseCsvFile(List<CSVRecord> csvRecords, Tenant tenant, CitizenGroup citizenGroup) throws DtoValidateException {
         List<Passholder> passholderList = new ArrayList<Passholder>();
         for (CSVRecord record : csvRecords) {
             Passholder passholder = CsvUtil.parsePassholderFromRecord(record);
+
+            if (isPassholderInvalid(passholder)) {
+                throw new DtoValidateException(errorPassholderRequiredFields);
+            }
+
             String expiringDate = record.get(PassholderColumnsEnum.EXPIRING_DATE.getCsvColumn());
             Optional<LocalDate> localDate = dateParser.parseDateString(expiringDate);
             if (localDate.isEmpty()) {
                 throw new DtoValidateException(invalidDateFormat);
             }
+
             passholder.setExpiringDate(localDate.get());
             passholder.setTenant(tenant);
+            passholder.setCitizenGroup(citizenGroup);
             passholderList.add(passholder);
         }
 
@@ -183,7 +195,7 @@ public class PassholderService {
 
     private Tenant getTenant() throws DtoValidateNotFoundException {
         UUID tenantUUID = principalService.getTenantId();
-        Optional<Tenant> tenant = tenantService.findByTenantId(tenantUUID);
+        Optional<Tenant> tenant = tenantRepository.findById(tenantUUID);
 
         if (tenant.isEmpty()) {
             throw new DtoValidateNotFoundException(errorEntityNotFound);
@@ -191,13 +203,16 @@ public class PassholderService {
         return tenant.get();
     }
 
-    private List<Grant> mergeGrantsToExistingOnes(List<Grant> passholderExistingGrants, Set<Grant> assigningGrants) {
-        Set<Grant> mergedGrants = new HashSet<>(assigningGrants);
-        mergedGrants.addAll(passholderExistingGrants);
-
-        return mergedGrants.stream().collect(Collectors.toList());
+    private UUID getTenantId() {
+        return principalService.getTenantId();
     }
 
-
+    private boolean isPassholderInvalid(Passholder passholder) {
+        return StringUtils.isBlank(passholder.getAddress()) ||
+                StringUtils.isBlank(passholder.getName()) ||
+                StringUtils.isBlank(passholder.getBsn()) ||
+                StringUtils.isBlank(passholder.getPassNumber()) ||
+                StringUtils.isBlank(passholder.getResidenceCity());
+    }
 
 }

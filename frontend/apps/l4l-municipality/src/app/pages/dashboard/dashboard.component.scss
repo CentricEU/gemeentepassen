@@ -1,10 +1,10 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
 
 :host {
 	::ng-deep {
 		.mdc-card.centric-card .mat-mdc-card-content {
-			@include flex(column);
-			@include size(100%, 100%);
+			@include mixins.flex(column);
+			@include mixins.size(100%, 100%);
 			padding: 0 !important;
 		}
 
@@ -12,6 +12,10 @@
 			.mdc-card.centric-card.mat-mdc-card {
 				height: 100%;
 			}
+		}
+
+		.windmill-combo-button.dropdown .dropdown-combo-button .combo-button-text {
+			white-space: nowrap;
 		}
 	}
 }
@@ -22,12 +26,12 @@
 	padding-bottom: 16px;
 
 	.widgets-section {
-		@include flex(column);
+		@include mixins.flex(column);
 		gap: 16px;
 	}
 
 	.transactions-section {
-		@include size(100%, auto);
+		@include mixins.size(100%, auto);
 		flex: 3;
 	}
 }

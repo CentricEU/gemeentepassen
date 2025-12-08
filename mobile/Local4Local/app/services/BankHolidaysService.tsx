@@ -1,6 +1,7 @@
-import { apiPath } from "../utils/constants/api";
-import { AUTH_HEADER } from "../utils/constants/headers";
+import api from "../utils/auth/api-interceptor";
 import { trackPromise } from "react-promise-tracker";
+import { AUTH_HEADER } from "../utils/constants/headers";
+import { StatusCode } from "../utils/enums/statusCode.enum";
 
 class BankHolidaysService {
 
@@ -14,13 +15,13 @@ class BankHolidaysService {
 				headers: HEADERS_WITH_AUTH,
 			};
 
-			const response = await trackPromise( fetch(`${apiPath}/bank-holidays?year=${year}`, requestObj));
+			const response = await trackPromise(api.get(`/bank-holidays?year=${year}`, requestObj));
 
-			if (!response.ok) {
+			if (response.status !== StatusCode.Ok) {
 				throw Error(response.status.toString());
 			}
 
-			return response.json();
+			return response.data;
 		} catch (error) {
 			throw error;
 		}

@@ -6,6 +6,7 @@ import { TableColumn } from '@frontend/common';
 	selector: 'frontend-table-columns-manager',
 	templateUrl: './table-columns-manager.component.html',
 	styleUrls: ['./table-columns-manager.component.scss'],
+	standalone: false,
 })
 export class TableColumnsManagerComponent implements OnInit {
 	public tableColumns: TableColumn[];

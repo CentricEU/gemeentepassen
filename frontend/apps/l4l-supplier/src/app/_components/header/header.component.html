@@ -1,0 +1,19 @@
+<centric-header [type]="'grey-header-type-2'">
+	<div class="header-container">
+		<section class="left-header-container">
+			<img src="{{ tenantLogo }}" alt="Logo image" />
+			<p windmill-tooltip class="supplier-name ellipsis" [frontendTooltipOnEllipsis]="supplierName">
+				{{ supplierName }}
+			</p>
+		</section>
+		<div class="right-header-container">
+			<centric-button
+				iconId="logout-arrow_r"
+				type="ghost-theme"
+				[ariaLabel]="'general.logout' | translate"
+				(click)="logout()">
+				{{ 'general.logout' | translate }}
+			</centric-button>
+		</div>
+	</div>
+</centric-header>

@@ -1,7 +1,7 @@
 package nl.centric.innovation.local4local.unit;
 
 import nl.centric.innovation.local4local.entity.Tenant;
-import nl.centric.innovation.local4local.service.interfaces.SupplierService;
+import nl.centric.innovation.local4local.service.impl.SupplierService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,11 +21,6 @@ import nl.centric.innovation.local4local.service.impl.PrincipalService;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-
 
 @ExtendWith(MockitoExtension.class)
 class PrincipalServiceImplTests {

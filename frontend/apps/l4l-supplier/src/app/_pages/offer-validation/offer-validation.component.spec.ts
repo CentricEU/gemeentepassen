@@ -151,6 +151,9 @@ describe('OfferValidationComponent', () => {
 		expect(component.getValidationCodeErrorMessage(SilentErrorCode.offerAlreadyUsed)).toBe(
 			'validationPage.errorMessageAlreadyUsed',
 		);
+		expect(component.getValidationCodeErrorMessage(SilentErrorCode.offerUsageLimitReached)).toBe(
+			'validationPage.errorMessageUsageLimitReached',
+		);
 	});
 
 	it('should handle validation error gracefully', () => {
@@ -323,6 +326,51 @@ describe('OfferValidationComponent', () => {
 		component['handleValidationSuccess'](validatedCode);
 
 		expect(updateValidationStatusSpy).toHaveBeenCalledWith(validatedCode);
+	});
+
+	it('should not call updateValidationStatus if result is null', () => {
+		const validatedCode = new CodeValidationDto('VALID', '12:00:00');
+		const discountType = 'percentage';
+
+		const updateValidationStatusSpy = jest.spyOn(component as any, 'updateValidationStatus');
+
+		component.openApplyDiscountModal(validatedCode, discountType);
+
+		expect(dialogMock.open).toHaveBeenCalledWith(DiscountModalComponent, {
+			width: '520px',
+			data: { validatedCode, discountType },
+		});
+
+		dialogMock
+			.open()
+			.afterClosed()
+			.subscribe((result: any) => {
+				expect(updateValidationStatusSpy).not.toHaveBeenCalled();
+			});
+	});
+
+	it('should call handleValidationError when result is an error code', () => {
+		const validatedCode = new CodeValidationDto('VALID', '12:00:00');
+		const discountType = 'percentage';
+		const errorCode = SilentErrorCode.offerInactiveError;
+
+		const handleValidationErrorSpy = jest.spyOn(component as any, 'handleValidationError');
+		const updateValidationStatusSpy = jest.spyOn(component as any, 'updateValidationStatus');
+		component.openApplyDiscountModal(validatedCode, discountType);
+
+		expect(dialogMock.open).toHaveBeenCalledWith(DiscountModalComponent, {
+			width: '520px',
+			data: { validatedCode, discountType },
+		});
+
+		dialogMock
+			.open()
+			.afterClosed()
+			.subscribe((result: any) => {
+				result = errorCode; // Simulate error code result
+				expect(handleValidationErrorSpy).toHaveBeenCalledWith(errorCode);
+				expect(updateValidationStatusSpy).not.toHaveBeenCalled();
+			});
 	});
 
 	it.each([

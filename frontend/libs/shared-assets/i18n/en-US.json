@@ -1,7 +1,7 @@
 {
 	"general": {
 		"logout": "Log out",
-		"welcomeL4L": "Welcome to Stadspassen!",
+		"welcomeL4L": "Welcome to Gemeentepassen!",
 		"hello": "Hello",
 		"password": "Password",
 		"filter": "Filter",
@@ -19,10 +19,12 @@
 		"remainingItems": "Remaining items",
 		"supplier": "Supplier",
 		"valuePlaceholder": "Value",
+		"selectAll": "Select all",
+		"citizenGroup": "Citizen group",
 		"success": {
 			"title": "Congratulations",
 			"accountCreatedText": "Your account has been successfully created!",
-			"accountCreatedTextForCitizen": "Your account has been successfully created!<br>Please go to your Stadspassen mobile app to log in.",
+			"accountCreatedTextForCitizen": "Your account has been successfully created!<br>Please go to your Gemeentepassen mobile app to log in.",
 			"recoverPasswordText": "Password recovery email sent!",
 			"confirmEmailText": "We have sent the confirmation e-mail.",
 			"passwordUpdateText": "Your password has been successfully updated!",
@@ -31,6 +33,8 @@
 			"offerReactivatedText": "Your offer has been reactivated."
 		},
 		"button": {
+			"generateSEPA": "Generate SEPA",
+			"finish": "Finish setup",
 			"close": "Close",
 			"cancel": "Cancel",
 			"import": "Import",
@@ -39,7 +43,7 @@
 			"addOffer": "Add offer",
 			"addColumn": "Add column",
 			"filter": "Filter",
-			"login": "Login",
+			"login": "Log in",
 			"sendLink": "Send me link",
 			"back": "Go back",
 			"confirm": "Confirm",
@@ -55,8 +59,12 @@
 			"understand": "I understand",
 			"delete": "Delete",
 			"sendInvite": "Send invite",
-			"assign": "Assign grant",
-			"clearFilter": "Clear filter"
+			"clearFilter": "Clear filter",
+			"reapply": "Reapply",
+			"sendMessage": "Send message",
+			"stepperNext": "Next",
+			"stepperBack": "Back",
+			"send": "Send"
 		},
 		"chip": {
 			"title": "Chosen items",
@@ -66,8 +74,9 @@
 		"resultsPerPage": "Results per page",
 		"status": "Status",
 		"amount": "Amount",
-		"acceptedGrants": "Accepted grants",
+		"acceptedBenefit": "Accepted benefit",
 		"date": "Date",
+		"createdDate": "Created date",
 		"time": "Time",
 		"name": "Name",
 		"category": "Category",
@@ -81,28 +90,30 @@
 		"to": "To",
 		"description": "Description",
 		"closed": "Closed",
+		"closingWarning": "Closing warning",
 		"pages": {
 			"dashboard": "Dashboard",
 			"suppliers": "Suppliers",
 			"passholders": "Passholders",
-			"grants": "Grants",
-			"editProfile": "Instellingen",
+			"editProfile": "Profile",
 			"offers": "Offers",
 			"pendingOffers": "Pending offers",
 			"invitations": "Invitations",
 			"supplierDetails": "Details",
 			"userManagement": "User management",
 			"offerValidation": "Offer Validation",
-			"transactions": "Transactions"
+			"transactions": "Transactions",
+			"profile": "Profile",
+			"benefits": "Benefits"
 		},
-		"welcome": "Welcome!",
+		"welcome": "Welcome, {{name}}!",
 		"warning": "Warning",
 		"label": {
 			"close": "close",
 			"label": "label",
 			"clear": "clear",
-			"charactersLeft": "characters left",
-			"charactersOverTheLimit": "characters over the limit"
+			"charactersLeft": "{{count}} characters left",
+			"charactersOverTheLimit": "{{count}} characters over the limit"
 		},
 		"hourFormat": "00:00",
 		"weekdays": {
@@ -131,9 +142,38 @@
 		"month": "Month",
 		"registered": "Registered",
 		"yes": "Yes",
-		"no": "No"
+		"no": "No",
+		"monthPrefix": {
+			"january": "Jan.",
+			"february": "Feb.",
+			"march": "Mar.",
+			"april": "Apr",
+			"may": "May",
+			"june": "Jun.",
+			"july": "Jul.",
+			"august": "Aug.",
+			"september": "Sep.",
+			"october": "Oct.",
+			"november": "Nov.",
+			"december": "Dec."
+		},
+		"weekdaysGroup": "Weekdays group",
+		"logoDescription": "Logo image"
 	},
 	"genericFields": {
+		"bic": {
+			"field": "BIC",
+			"bicPlaceholder": "Enter the BIC",
+			"bicFormControlRequired": "BIC is required.",
+			"bicInvalid": "Please enter a valid Dutch BIC.",
+			"mismatchedBicIban": "IBAN and BIC do not match. Please ensure they belong to the same bank."
+		},
+		"iban": {
+			"field": "IBAN",
+			"ibanPlaceholder": "Enter the IBAN",
+			"ibanFormControlRequired": "IBAN is required.",
+			"ibanInvalid": "Please enter a valid Dutch IBAN."
+		},
 		"firstName": {
 			"title": "First name",
 			"requiredError": "First name is required."
@@ -158,10 +198,15 @@
 		},
 		"amount": {
 			"amountFormControlRequired": "Amount is required.",
-			"nonZeroAmount": "Value must be greater than 0."
+			"nonZeroAmount": "Value must be greater than 0.",
+			"nonMaxBenefitAmountValidator": "Amount exceeds the {{amount}} € maximum allowed for the selected benefit."
 		},
 		"website": {
 			"invalidUrl": "Please enter a valid website URL. (e.g. www.example.com)."
+		},
+		"validity": {
+			"validityFormControlRequired": "Please enter valid dates in both fields using numbers only (DD/MM/YYYY).",
+			"label": "Validity"
 		}
 	},
 	"modal": {
@@ -169,12 +214,14 @@
 			"title": "Manage columns",
 			"description": "Select columns to display:"
 		},
-		"continueLogin": "Continue to Login"
+		"continueLogin": "Continue to Log in",
+		"continueToApp": "Continue to Dashboard"
 	},
 	"errors": {
 		"error": "Error",
 		"htmlContent": "This field cannot contain HTML content.",
 		"generic": "An error occurred. Please attempt again at a later time.",
+		"supplierNotApproved": "Your municipality should approve your supplier before you can access full-functionality.",
 		"400": "The server couldn't understand the request, please review and submit a valid request.",
 		"401": "Authentication failed. Please double-check your credentials and try again.",
 		"403": "Permission denied. Your current access level is insufficient for this operation.",
@@ -200,12 +247,24 @@
 		"40019": "Full functionality will be available once your municipal approval is complete, typically within 5 business days. Please wait for confirmation to access all features.",
 		"40020": "We could not parse the CSV file",
 		"40021": "Invalid date format in CSV file ",
+		"40022": "Your request could not be completed due to a data integrity constraint violation. Please review your data and try again.",
 		"40027": "You have already confirmed your email.",
 		"40025": "Your account is not validated yet. Please check your email and confirm your email address to complete the registration process.",
 		"40032": "This email address is already in use.",
 		"40036": "One of the BSN or Pass numbers you entered already exists.",
 		"40037": "The amount you entered is violating the eligibile price range.",
-		"40038": "This email address is not valid."
+		"40038": "This email address is not valid.",
+		"40039": "Import failed. Please make sure all required fields are filled in before trying again.",
+		"40044": "We couldn't verify your identity using DigiD. Please check your details and try again.",
+		"40045": "There was an issue communicating with DigiD. Please try again.",
+		"40046": "Your account has been deactivated. Please contact your municipality for assistance.",
+		"40048": "You must be assigned to a category to access the pass application form.",
+		"40050": "The document type you uploaded is not accepted. Please upload a supported file type.",
+		"40051": "You have uploaded too many documents. Please remove some and try again.",
+		"40052": "Some documents failed to upload. Please try again.",
+		"40053": "A document with this name has already been uploaded. Please rename your file and try again.",
+		"40054": "The uploaded document exceeds the maximum allowed size of 10 MB.",
+		"40055": "The uploaded document is empty, corrupted or unreadable. Please upload a valid document."
 	},
 	"alerts": {
 		"passwordAlertRequirements1": "Password must be at least 8 characters.",
@@ -226,7 +285,7 @@
 	},
 	"register": {
 		"registerButton": "Register",
-		"title": "Register to Stadspassen!",
+		"title": "Register to Gemeentepassensen!",
 		"companyName": "Company name",
 		"kvkNumber": "KvK number",
 		"municipality": "Municipality",
@@ -250,7 +309,7 @@
 		"passwordFormControlRequired": "Password is required.",
 		"kvkFormControlLength": "KVK number must have 8 digits",
 		"registrationSuccessful": "Registration successful!",
-		"continue": "Continue to Login",
+		"continue": "Continue to Log in",
 		"accountConfirmation": {
 			"title": "Check your e-mail!",
 			"content": "We have sent a confirmation e-mail to <b>{{email}}</b>.<br>Please follow instructions in the message to confirm your account.",
@@ -327,8 +386,10 @@
 		"uploadLogo": "Upload logo",
 		"next": "Next",
 		"removeLogo": "Remove logo",
+		"logoAlt": "Gemeente Tilburg logo",
 		"sizeExcedeedLogo": "The file you are trying to upload exceeds the maximum allowed file size of 200KB.",
-		"companyAdminstratorEmail": "Company administrator e-mail"
+		"companyAdminstratorEmail": "Company administrator e-mail",
+		"cashierEmails": "Cashiers"
 	},
 	"contactInformation": {
 		"header": "Contact information",
@@ -353,7 +414,6 @@
 		"websitePlaceholder": "Enter the supplier website",
 		"accountManager": "Account manager",
 		"accountManagerFormControlRequired": "Account manager name is required.",
-		"websiteFormControlRequired": "Website is required.",
 		"accountManagerPlaceholder": "Enter the account manager's name",
 		"validZipCode": "Please enter a valid branch zip code.",
 		"validTelephone": "Please enter a valid branch telephone."
@@ -365,7 +425,8 @@
 		"editSchedule": "Edit schedule",
 		"setupSchedule": "Setup schedule",
 		"setupText": "Please set up your working days and hours.",
-		"toggleText": "Selecting your schedule is required."
+		"toggleText": "Selecting your schedule is required.",
+		"copyToAll": "Copy to all"
 	},
 	"setupProfile": {
 		"setupSuccessful": "Wait for approval",
@@ -373,11 +434,11 @@
 			"text": "Municipality approval typically takes up to 5 business days.<br>Please note that you won't be able to post any offers until your request has been approved."
 		},
 		"continue": "I understand",
-		"finish": "Finish set up",
 		"setup": "Set up profile",
 		"successfulInfoMessage": "Municipality approval typically takes up to 5 business days. Please note that you won't be able to post any offers until your request has been approved.",
 		"invalidZipCode": "We couldn't complete your profile setup due to an invalid zip code entered. Please ensure that the zip code you provided is accurate and try again.",
-		"invalidZipCodeEdit": "We couldn't complete your editing action due to an invalid zip code entered. Please ensure that the zip code you provided is accurate and try again."
+		"invalidZipCodeEdit": "We couldn't complete your editing action due to an invalid zip code entered. Please ensure that the zip code you provided is accurate and try again.",
+		"passwordAlreadySetup": "Password has already been set up. Please log in."
 	},
 	"forgotPassword": {
 		"title": "Forgot your password?",
@@ -394,8 +455,6 @@
 		"remove": "Remove",
 		"viewSupplier": "View supplier",
 		"suspendSupplier": "Suspend supplier",
-		"viewGrant": "View grant",
-		"editGrant": "Edit grant",
 		"delete": "Delete",
 		"viewPassholder": "View passholder",
 		"rejected": "Rejected",
@@ -412,63 +471,36 @@
 		"descriptionListResults": "Choose the page size for your results"
 	},
 	"upload": {
-		"description": "Drag and drop 1 file here.",
+		"description": "Drag and drop 1 file here to upload or browse.",
+		"descriptionReplace": "Drag and drop 1 file here to replace file.",
 		"supports": "Supports: ",
 		"warningFilesNumber": "You can only upload <b>1 file </b>",
-		"warningFormat": "Unsupported file format. Please upload only {{ acceptedFormats }} files."
+		"warningFormat": "Unsupported file format. Please upload only <b>{{ acceptedFormats }} files.</b>"
 	},
 	"approvedModal": {
 		"header": "Request approved",
 		"title": "Your request was approved!",
-		"description": "Your request to join Stadspassen has been approved by {{municipality}}."
+		"description": "Your request to join Gemeentepassensen has been approved by {{municipality}}."
 	},
 	"passholders": {
 		"title": "Import passholders",
 		"noData": {
-			"title": "Welcome to Card holders Management",
-			"description": "It looks like you don't have any card holders yet. Let's get started by importing your list of card holders."
+			"title": "Welcome to Passholders",
+			"description": "It looks like you don't have any passholders yet.<br> Let's get started by importing your list of passholders.",
+			"descriptionNoCitizenGroup": "It looks like you haven’t created any citizen groups yet.<br> To import passholders, you'll need at least one group. Let's start by adding your first citizen group!"
 		},
 		"successDelete": "The passholder was successfully deleted.",
-		"successAssignGrants": "The grant(s) have been successfully assigned.",
 		"import": "Import CSV file",
-		"uploadDescription": "Automatically add passholders by importing from a CSV file.",
+		"uploadDescription": "Select the correct citizen category and upload a CSV of passholders to assign.",
 		"download": "Download CSV Template",
-		"successImport": "The file was successfully imported. The passholders were loaded",
-		"assignedGrants": "Assigned grants",
-		"assignGrants": "Assign grants",
-		"grantName": "Grant name",
-		"amoungGranted": "Amount granted",
+		"successImport": "The list of pass holders was successfully imported.",
+		"amountGranted": "Amount granted",
 		"delete": {
 			"title": "Delete passholder",
 			"content": "The selected passholder will be deleted </br> Deleted data cannot be recovered."
-		}
-	},
-	"grants": {
-		"noData": {
-			"title": "Welcome to Grants Management",
-			"description": "It looks like you don't have any grants yet. Let's get started by adding your first grant!"
 		},
-		"success": "The grant was successfully created.",
-		"assigning": "Assigning grant",
-		"warningMessage": "Assigning grant process will be canceled and unsaved changes will be discarded.",
-		"createGrant": "Create grant",
-		"title": "Grant title",
-		"description": "Grant description",
-		"createdFor": "Grant created for",
-		"validity": "Validity",
-		"titlePlaceholder": "Enter grant title",
-		"descriptionPlaceholder": "Enter grant description",
-		"amountPlaceholder": "Enter grant amount (Euro)",
-		"titleFormControlRequired": "Grant title is required.",
-		"descriptionFormControlRequired": "Grant description is required.",
-		"addGrant": "Add new grant",
-		"validityFormControlRequired": "Please enter valid dates in both fields using numbers only (DD/MM/YYYY).",
-		"cardHolder": "Card holder",
-		"childrenHolder": "Children of a card holder",
-		"beneficiaries": "Beneficiaries",
-		"nrBeneficiaries": "Number of beneficiaries",
-		"editGrant": "Edit grant",
-		"editWarningMessage": "Edit grant process will be canceled and unsaved changes will be discarded."
+		"citizenGroupPlaceholder": "Select citizen group",
+		"citizenGroupRequired": "Citizen group is required."
 	},
 	"offer": {
 		"noData": {
@@ -481,8 +513,7 @@
 		"reactivateAlert": "You are about to activate an offer that expired.",
 		"offer": "Offer",
 		"title": "Listing title",
-		"targetAudience": "Target audience (created for)",
-		"acceptedGrantsPlaceholder": "Select accepted grants",
+		"acceptedBenefitsPlaceholder": "Select accepted benefit",
 		"titlePlaceholder": "Enter listing title",
 		"typeOfOffer": "Type of offer",
 		"typeOfOfferPlaceholder": "Select type of offer",
@@ -493,7 +524,6 @@
 		"amountPercentagePlaceholder": "Insert the discount amount in percentage %",
 		"amountFreeEntryPlaceholder": "Insert the free entry discount amount in Euro (€)",
 		"offerCreatedFor": "Offer created for",
-		"validity": "Validity",
 		"restrictions": "Restrictions",
 		"frequencyOfUse": {
 			"label": "Frequency of use",
@@ -516,26 +546,29 @@
 			"label": "Eligible price range",
 			"minPrice": "Minimum price",
 			"maxPrice": "Maximum price",
-			"error": "Please fill in at least one price field"
+			"error": "Please fill in at least one price field",
+			"greaterThanZero": "Enter a price > 0 in at least one field."
 		},
 		"citizenWithPass": "Citizen with pass",
-		"dialogOfferGrant": {
+		"dialogOfferBenefits": {
 			"createSuccessful": "Wait for approval",
 			"mainContent": "Wait for approval",
-			"mainContentText": "You've set up an offer that allows citizens to make payments using municipal grants, which requires municipal approval. Municipality approval typically takes up to 5 business days."
+			"mainContentText": "You've set up an offer that allows citizens to make payments using municipal benefits, which requires municipal approval. Municipality approval typically takes up to 5 business days."
 		},
 		"formRequired": {
 			"titleFormControlRequired": "Offer title is required.",
 			"descriptionFormControlRequired": "Offer description is required.",
 			"validityFormControlRequired": "Please fill in both date input fields",
-			"grantsFormControlRequired": "Selecting minimum one grant is required."
+			"benefitFormControlRequired": "Selecting a benefit is required."
 		},
 		"types": {
-			"grant": "Grant",
-			"percentage": "Percentage",
+			"benefit": "Benefit",
+			"percentage": "Discount",
 			"bogo": "Buy one get one",
 			"credit": "Credit",
-			"freeEntry": "Free entry"
+			"percentageDiscount": "Percentage discount",
+			"creditDiscount": "Credit discount",
+			"freeEntry": "Free entry/Product"
 		},
 		"approve": {
 			"review": "Review supplier’s offer",
@@ -546,8 +579,8 @@
 				"createdFor": "Offer created for",
 				"title": "Listing title",
 				"tyoeOfOffer": "Type of offer",
-				"acceptedGrants": "Accepted grants",
-				"description": "Offer description"
+				"description": "Offer description",
+				"acceptedBenefit": "Accepted benefit"
 			}
 		},
 		"timeSlotFormControlRequired": "Please fill in at least one hour field.",
@@ -583,7 +616,7 @@
 		"placeHolderComments": "Enter your comments here",
 		"leavingWarning": "Reject supplier process will be canceled and unsaved changes will be discarded.",
 		"modal": {
-			"description": "Your request to join Stadspassen has been rejected at this time by {{municipality}}.<br><br><b>Rejection reason:</b> {{reason}}<br><b>Rejection details:</b> {{comments}}<br>"
+			"description": "Your request to join Gemeentepassensen has been rejected at this time by {{municipality}}.<br><br><b>Rejection reason:</b> {{reason}}<br><b>Rejection details:</b> {{comments}}<br>"
 		},
 		"reasons": {
 			"notInRegion": "Not in region",
@@ -591,7 +624,10 @@
 			"idle": "Idle",
 			"incompleteInformation": "Incomplete information",
 			"duplicate": "Duplicate"
-		}
+		},
+		"reasonPlaceholder": "Rejection reason:",
+		"commentPlaceholder": "Rejection details:",
+		"reapplication": "To reapply, please make the necessary adjustments based on the rejection reason and any comments provided:"
 	},
 	"rejectOffer": {
 		"success": "The offer has been successfully rejected.",
@@ -621,7 +657,9 @@
 			"transactions": "Number of transactions"
 		},
 		"transactions": {
-			"title": "Transactions"
+			"title": "Transactions",
+			"noData": "There is no transaction data yet.",
+			"valueOfTransactions": "Value of transactions"
 		},
 		"map": {
 			"title": "Suppliers in your city"
@@ -634,9 +672,16 @@
 			"thisYear": "This year"
 		},
 		"usedOffers": {
-			"header": "Used offers"
+			"header": "Used offers",
+			"noDataMessage": "There is no offer usage data yet.",
+			"legend": "Usage by offer type"
 		},
-		"addOfferDescription": "The citizens are eagerly awaiting your latest offers. Don't keep them waiting 🛒 💸 !"
+		"addOfferDescription": "The citizens are eagerly awaiting your latest offers. Don't keep them waiting 🛒 💸 !",
+		"bankDetails": {
+			"title": "Bank details required",
+			"description": "Please enter your municipality’s bank details. This is a one-time setup.",
+			"success": "Your bank details have been successfully saved."
+		}
 	},
 	"group": {
 		"types": {
@@ -684,7 +729,8 @@
 	},
 	"userManagement": {
 		"welcome": "Welcome to User Management",
-		"noData": "It looks like there aren’t any users registered yet."
+		"noData": "It looks like there aren’t any users registered yet.",
+		"newUser": "New user"
 	},
 	"createUser": {
 		"title": "Create user",
@@ -710,7 +756,8 @@
 		"errorMessageNotFound": " is inactive or not found!",
 		"errorMessageOfferInactive": " is associated to an offer that is inactive.",
 		"errorMessageTimeSlots": " is associated to an offer that is not valid for the current time slot.",
-		"errorMessageAlreadyUsed": " is associated with an offer that has a frequency violation."
+		"errorMessageAlreadyUsed": " is associated with an offer that has a frequency violation.",
+		"errorMessageUsageLimitReached": " is associated with an offer that has reached its usage limit."
 	},
 	"transactions": {
 		"passholderNumber": "Pass holder no.",
@@ -734,26 +781,36 @@
 		"noData": {
 			"title": "Welcome to Transactions Management",
 			"description": "It looks like there aren’t any transactions yet."
-		},
-		"generateInvoice": {
-			"title": "Generate invoice",
-			"description": "Your invoice will be generated in a .pdf file format.",
-			"invoiceNumber": "Invoice number",
-			"issueDate": "Issue date",
-			"dueDate": "Due date",
-			"invoiceNumberPlaceholder": "Enter invoice number",
-			"invoiceNumberRequired": "Invoice number is required.",
-			"issueDateRequired": "Issue date is required.",
-			"dueDateRequired": "Due date is required.",
-			"success": "Your invoice was successfully generated.",
-			"leaveWarning": "Generating the invoice will be canceled, and unsaved changes will be discarded.",
-			"invoiceNumberInvalid": "Please enter a valid invoice number.",
-			"days": {
-				"7days": "7 days",
-				"14days": "14 days",
-				"30days": "30 days"
-			}
 		}
+	},
+	"benefitsPage": {
+		"header": "Benefits",
+		"validityPeriod": "Validity period",
+		"eligibilityCriteria": "Eligibility criteria",
+		"requiredDocuments": "Required documents",
+		"beneficiaries": "Beneficiaries",
+		"welcome": "Welcome to Benefits",
+		"noData": "It looks like you don't have any benefits yet.<br>Let's get started by adding your first benefit!",
+		"noGroupsYet": "It looks like you haven’t created any citizen groups yet.<br>To assign benefits, you'll need at least one group. Let's start by adding your first citizen group!",
+		"buttonText": "Create benefit",
+		"goToProfilePage": "Go to Profile page",
+		"createBenefit": "Create benefit",
+		"createBenefitSuccess": "The benefit was successfully created."
+	},
+	"createBenefit": {
+		"title": "Add new benefit",
+		"name": "Benefit name",
+		"namePlaceholder": "Enter benefit name e.g. Free access benefit",
+		"nameFormControlRequired": "Benefit name is required.",
+		"descriptionPlaceholder": "E.g. “Grants access to museums, sporting facilities, etc., for low-income residents.”",
+		"descriptionFormControlRequired": "Description is required.",
+		"citizenGroups": "Who is the benefit for? (citizen groups)",
+		"citizenGroupsPlaceholder": "Select citizen groups",
+		"citizenGroupsFormControlRequired": "At least one citizen group must be selected.",
+		"areaLabelCounterOneItemFacilityTypes": "You have selected 1 item",
+		"areaLabelCounterMultipleItemsFacilityTypes": "You have selected {{count}} items",
+		"amountPlaceholder": "Enter benefit amount (Euro)",
+		"leavingWarning": "Create benefit process will be canceled and unsaved changes will be discarded."
 	},
 	"discount": {
 		"applyDiscount": "Apply discount",
@@ -761,5 +818,235 @@
 		"description": "The citizen is eligible for a <b>{{offerType}}</b> offer named <b>{{offerName}}</b>. Please enter the amount to apply the discount.",
 		"percentageDiscount": "percentage discount",
 		"bogoDiscount": "Buy One Get One (BOGO)"
+	},
+	"profilePage": {
+		"header": "Citizen groups",
+		"welcome": "Welcome to Citizen groups",
+		"noData": "It looks like you don't have any groups yet.<br>Let's get started by adding your first group!",
+		"citizenGroups": {
+			"title": "Citizen groups",
+			"addGroup": "Add new group",
+			"groupName": "Group name",
+			"thresholdAmount": "Threshold (%)",
+			"maxIncome": "Calculated max. income (€)"
+		}
+	},
+	"digiD": {
+		"button": "Log in with DigiD",
+		"logoAlt": "DigiD logo",
+		"fallback": {
+			"description": "Something went wrong during the DigiD login. Please open the Gemeentepassensen app and try again.",
+			"mobileButton": "Open Gemeentepassen App",
+			"imageAlt": "Illustration showing DigiD login fallback"
+		}
+	},
+	"citizenGroup": {
+		"createGroup": "Create group",
+		"ageGroup": "Age group",
+		"isDependentChildrenIncluded": "Dependent children",
+		"addNew": "Add new citizen group",
+		"groupName": "Group name",
+		"groupNamePlaceholder": "Enter category name e.g. Single",
+		"groupNameFormControlRequired": "Group name is required.",
+		"ageGroupPlaceholder": "Select age",
+		"ageGroupFormControlRequired": "Age group is required.",
+		"includesDependentChildren": "Includes dependent children?",
+		"incomeThresholds": "Income thresholds",
+		"incomeThresholdsLine1": "Income thresholds are tied to the minimum wage ({{ wage }}).",
+		"incomeThresholdsLine2": "Citizens in debt repayment programs may still be eligible.",
+		"minimumWage": "Minimum wage",
+		"threshold": "Threshold (%)",
+		"thresholdFormControlRequired": "Threshold is required.",
+		"thresholdFormControlMinMaxError": "Threshold must be between 1 and 200.",
+		"thresholdPlaceholder": "Enter threshold (%)",
+		"calculatedMaxIncome": "Calculated max income (€)",
+		"calculatedMaxIncomePlaceholder": "Calculated max income (€)",
+		"eligibilityCriteriaTitle": "Eligibility criteria",
+		"requiredDocumentsTitle": "Required documents",
+		"under18": "Under 18",
+		"criteriaOptions": {
+			"formLabel": "Choose the base conditions a citizen must meet.",
+			"hasDigiD": "Citizen has a DigiD",
+			"isAdult": "Citizen is 18 years or older",
+			"livesInCity": "Citizen lives in the city",
+			"notStudent": "Citizen is not a student"
+		},
+		"requiredDocuments": {
+			"formLabel": "Citizens will be asked to upload these documents when applying for the pass",
+			"proofOfIdentity": "Proof of identity (e.g. valid passport, national ID card, or residence permit)",
+			"incomeProof": "Income proof (e.g., payslip, benefits statement, annual income report)",
+			"assets": "Assets (bank statements, savings, property)",
+			"debtsOrAlimony": "Debts or alimony obligations"
+		},
+		"createGroupSuccess": "The citizen group was successfully created.",
+		"leavingWarning": "Create citizen group will be canceled and unsaved changes will be discarded."
+	},
+	"applyForPass": {
+		"description": "Apply for a free Gemeentepassen if you live in Netherlands and have a low income. The pass gives access to museums, sporting facilities, and more.",
+		"title": "Apply for Gemeentepassen",
+		"noExistingDigiD": "You don’t have DigiD yet?",
+		"createDigiD": "Click here to create a DigiD account.",
+		"noneFitMe": "None fit – help me",
+		"confirmCategory": "Yes, this applies to me",
+		"groupCitizenAssignmentFromDigiD": {
+			"title": "After the DigiD identification, you are part of the category:",
+			"maxIncome": " Max. income",
+			"changeCategory": "No, change category"
+		},
+		"groupCitizenAssignmentNotFittingDigiD": {
+			"title": "Select the category that best describes your situation:",
+			"noData": {
+				"title": "No categories available yet.",
+				"description": "The municipality has not created the category groups at this time.<br> Please check back later or contact your municipality for more details."
+			}
+		}
+	},
+	"noneCategoryFit": {
+		"title": "Need help finding the right category?",
+		"description": "It looks like none of the available categories match your current situation.</br>For personalized help, we recommend contacting <b>{{ municipalityName }} municipality</b> (your local municipality).",
+		"contactMunicipality": "Send them a message using the form below or contact them by phone at {{phoneNumber}} or by e-mail at {{emailAddress}}.",
+		"writeMessage": "Write message",
+		"messageFormControlRequired": "Message is required.",
+		"messageSentSucesfully": "Your message was successfully sent."
+	},
+	"citizenDocumentsUpload": {
+		"title": "Documents you need to upload:",
+		"supportedDocuments": "Supported file types: .doc, .docx, .pdf, and .txt. Maximum file size: 10 MB.",
+		"uploadFilesButton": "Upload file(s)",
+		"fileUploadAriaLabelButton": "Upload supported files",
+		"fileUploadAriaDescriptionButton": "Supported file types: TXT, PDF, DOC, DOCX",
+		"fileUploadFailDuplicated": "'{{fileName}}' file is already added.",
+		"fileUploadFailUnsupportedFormat": "Some of the uploaded files formats are not supported.",
+		"fileUploadFailExceedMaximumSize": "Some of the uploaded files exceeded the maximum 10 MB allowed.",
+		"removeDocument": "Remove document"
+	},
+	"applyForPassSetup": {
+		"stepper": {
+			"title": "Apply for a benefit pass",
+			"confirmIdentityStepLabel": "Confirm Identity",
+			"uploadDocumentsStepLabel": "Upload Documents",
+			"checkAndSendStepLabel": "Check and Send",
+			"confirmationStepLabel": "Confirmation"
+		},
+		"warningTitle": "Are you sure you want to cancel?",
+		"warningDescription": "This will stop the pass application process and discard any unsaved changes.",
+		"successTitle": "Application successfully summited!",
+		"successDescription": "We'll review your information and contact you at {{email}} or {{phoneNumber}} if anything is missing."
+	},
+	"confirmIdentity": {
+		"personalInformation": "Personal information",
+		"birthdate": "Birthdate",
+		"telephone": "Telephone",
+		"info": "To apply for a benefit pass, please confirm your identity and upload the required documents.<br> Once your application is submitted, it will be reviewed by the responsible authority. You’ll receive a confirmation when the review is complete."
+	},
+	"uploadDocumentsStep": {
+		"title": "Benefits you’re eligible for:",
+		"grantAccess": "Grants access to:",
+		"estimatedAmount": "Estimated amount:"
+	},
+	"additionalInformation": {
+		"title": "Additional information",
+		"description": "Add a message in case you have a mention.",
+		"writeMessage": "Write a message"
+	},
+	"checkAndSend": {
+		"info": "Please review your information in this preview. If you would like to make changes, you can return by clicking 'Back'.<br> <b>Clicking 'Send' will forward your information to the responsible department. </b>",
+		"documentsUploaded": "Documents you’ve uploaded:"
+	},
+	"privacy": {
+		"title": "Privacy Statement",
+		"intro": {
+			"paragraph_1": "We see the protection of personal data as a very important part of our business operations and services. Protecting this data is the foundation of our reliability as a supplier and partner. By personal data we mean in this case: all information about an identified and/or identifiable natural person.",
+			"paragraph_2": "In this privacy statement you can read about the personal data that we collect from you. We collect this information because we have an agreement with you or are in contact with you about our services and products.",
+			"paragraph_3": "In this statement you can read:",
+			"item_1": "why we process personal data",
+			"item_2": "how long we keep personal data",
+			"item_3": "how you can view and modify the personal data we hold on you",
+			"item_4": "how your personal data is protected with us"
+		},
+		"promises": {
+			"title": "Our Privacy Promises",
+			"subtitle": "Our privacy promises are defined by the following rules of thumb:",
+			"purpose": {
+				"title": "Purpose determination and purpose limitation",
+				"description": "We only use personal data for explicitly defined and justified purposes."
+			},
+			"basis": {
+				"title": "Basis",
+				"description": "We base the processing of personal data on a legal base."
+			},
+			"minimization": {
+				"title": "Data minimization",
+				"description": "When processing personal data, we ensure that the amount of data remains limited."
+			},
+			"transparency": {
+				"title": "Transparency",
+				"description": "We account transparently to those involved, such as citizens, suppliers, and employees of the municipality, about the use of their personal data."
+			},
+			"safety": {
+				"title": "Safety",
+				"description": "We take privacy seriously. In every choice we make, we take measures to protect privacy as much as possible."
+			}
+		},
+		"security": {
+			"title": "Personal Data Security",
+			"description": "We do our utmost best to handle personal data with the utmost care. We also do everything in our power to protect this data against loss and/or any form of unlawful use or processing. We use appropriate technical and organizational measures, for example of the latest innovations in security. If we have to share your personal data with third parties in order to carry out its tasks, we make agreements for this purpose."
+		},
+		"breach": {
+			"title": "Security Breach",
+			"paragraph_1": "Despite all our efforts, if a security breach happens, we will deal with such an incident in accordance with an internal procedure drawn up for this purpose. In the case of a security breach, we will do everything in our power to minimize the consequences of the breach.",
+			"paragraph_2": "If the breach constitutes a privacy risk, we will report this to the Dutch Authority of Personal Data (Autoriteit Persoonsgegevens). If it is desirable - and in any case the law requires it - we will also inform those concerned about the breach."
+		},
+		"rights": {
+			"title": "What Are Your Rights?",
+			"subtitle": "In accordance with the General Data Protection Regulation (GDPR, in Dutch: Algemene Verordening Gegevensbescherming or AGV), you have the following rights:",
+			"access": {
+				"title": "Access",
+				"description": "You have the right to view the personal data that we process about you."
+			},
+			"correction": {
+				"title": "Correction and supplementation",
+				"description": "You have the right to have your personal data processed by us to be changed."
+			},
+			"forgotten": {
+				"title": "Be forgotten",
+				"description": "You have the right to have your personal data deleted."
+			},
+			"portability": {
+				"title": "Data portability",
+				"description": "You have the right to have personal data transferred from us to another party."
+			},
+			"restriction": {
+				"title": "Restriction of processing",
+				"description": "You have the right to have less data processed by us."
+			},
+			"automated": {
+				"title": "Automated decision-making and profiling",
+				"description": "You have the right to a human opinion when making decisions that we make (as opposed to automated decision-making)."
+			},
+			"objection": {
+				"title": "Objection",
+				"description": "You have the right to object to data processing with us."
+			}
+		},
+		"contact": {
+			"title": "How Do You Exercise Your Rights?",
+			"description": "We take the privacy of your personal data very seriously. That's why we have appointed a privacy officer who handles all your questions about privacy rights.",
+			"cta": "Contact our privacy officer at:"
+		},
+		"complaint": {
+			"title": "The Right to File a Complaint",
+			"description": "We handle your data as transparently and carefully as possible. If you do have a complaint about the processing of your data, please contact our privacy officer first by sending a message to <a href=\"mailto:info@gemeentepassensen.eu\">info@gemeentepassensen.eu</a>. We will then do our utmost to resolve your complaint. If you unexpectedly do not agree with the measure taken, please contact the Dutch Authority of Personal Data (Autoriteit Persoonsgegevens)."
+		},
+		"info_sheet": {
+			"title": "Information Sheet Per Data Processing",
+			"subtitle": "In addition to the privacy statement, we have opted to draw up an information sheet for specific processing/parts. This information sheet specifically addresses the following sub-topics:",
+			"item_1": "Why do we use your personal data?",
+			"item_2": "What types of personal data do we process?",
+			"item_3": "Who has access to your personal data?",
+			"item_4": "What is the legal basis for the processing of your personal data?",
+			"item_5": "How long do we keep your data?",
+			"item_6": "Which security measures are in place?"
+		}
 	}
 }

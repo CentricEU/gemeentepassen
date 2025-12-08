@@ -1,7 +1,9 @@
 <ng-container *ngIf="!shouldDisplaySuccessfulDialog; else successfulRegistration">
 	<centric-forgot-password class="forgot-password-pattern">
 		<ng-container title>
-			<frontend-logo-title [title]="title"></frontend-logo-title>
+			<frontend-logo-title
+				[title]="title"
+				[isVerticalOrientation]="true"></frontend-logo-title>
 			<hr class="forgot-password-divider" />
 		</ng-container>
 		<ng-container form>
@@ -27,13 +29,15 @@
 				</centric-form-item>
 				<ng-container *ngIf="!isConfirmationEmailComponent()">
 					<re-captcha formControlName="recaptcha" class="recaptcha-container"></re-captcha>
-					<centric-button class="back-button" type="button-theme" (click)="navigateToLogin()">{{
-						'general.button.back' | translate
-					}}</centric-button>
 				</ng-container>
 				<centric-button class="form-button" [disabled]="!form.valid">{{
 					'general.button.sendLink' | translate
 				}}</centric-button>
+				<ng-container *ngIf="!isConfirmationEmailComponent()">
+					<centric-button class="back-button" type="outlined-theme" (click)="navigateToLogin()">{{
+						'general.button.back' | translate
+					}}</centric-button>
+				</ng-container>
 			</form>
 		</ng-container>
 	</centric-forgot-password>

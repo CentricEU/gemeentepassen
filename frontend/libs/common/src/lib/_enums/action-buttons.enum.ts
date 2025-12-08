@@ -6,4 +6,5 @@ export enum ActionButtons {
 	circlePause = 'circle-pause_b',
 	circlePlay = 'circle-play_b',
 	envelopeSend = 'envelope_send_bb',
+	minusCircle = 'minus_b',
 }

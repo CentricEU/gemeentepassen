@@ -21,7 +21,12 @@ public enum EmailStructureEnum {
     REJECT("contentReject"),
     SUPPLIER_NAME("supplier"),
     REPRESENTATIVE_NAME("name"),
-    REASON("reason");
+    REASON("reason"),
+    TENANT_NAME("tenantName"),
+    TENANT_TELEPHONE("tenantTelephone"),
+    TENANT_WEBSITE("tenantWebsite"),
+    TENANT_EMAIL("tenantEmail"),
+    END_NOTE("endNote");
 
     private final String structure;
 

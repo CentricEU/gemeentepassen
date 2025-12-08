@@ -1,4 +1,4 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
 
 ::ng-deep {
 	.ol-attribution,
@@ -10,13 +10,13 @@
 		border-radius: 0 0 8px 8px;
 	}
 	.custom-zoom-control {
-		@include pos(absolute, $r: 12px, $b: 12px);
-		@include flex(column, $gap: 8px);
+		@include mixins.pos(absolute, $r: 12px, $b: 12px);
+		@include mixins.flex(column, $gap: 8px);
 	}
 
 	.custom-zoom-control button {
-		@include flex(center, center);
-		@include size(40px, 40px);
+		@include mixins.flex(center, center);
+		@include mixins.size(40px, 40px);
 		color: transparent;
 		cursor: pointer;
 		border: none;
@@ -41,5 +41,5 @@
 }
 
 .map {
-	@include size(100%, 516px);
+	@include mixins.size(100%, 516px);
 }

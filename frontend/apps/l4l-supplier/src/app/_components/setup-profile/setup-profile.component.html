@@ -33,11 +33,11 @@
 		</div>
 	</div>
 	<div mat-dialog-actions>
-		<centric-button type="button-link-dark" [id]="data.acceptButtonText" [size]="'small'" (click)="logout()">{{
+		<centric-button type="ghost-greyscale" [id]="data.acceptButtonText" [size]="'small'" (click)="logout()">{{
 			'general.logout' | translate
 		}}</centric-button>
 		<centric-button
-			type="button-theme"
+			type="outlined-theme"
 			[disabled]="shouldDisableBackButton()"
 			[size]="'small'"
 			(click)="goToPreviousStep()">
@@ -59,7 +59,7 @@
 				[size]="'small'"
 				[disabled]="shouldDisableFinishButton()"
 				(click)="saveSupplierSetupProfile()">
-				{{ 'setupProfile.finish' | translate }}
+				{{ 'general.button.finish' | translate }}
 			</centric-button>
 		</ng-container>
 	</div>

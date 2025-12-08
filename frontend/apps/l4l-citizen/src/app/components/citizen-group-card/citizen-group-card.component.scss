@@ -1,0 +1,34 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
+
+:host {
+	.category-card {
+		@include mixins.size(320px, 188px);
+		@include mixins.flex(column);
+
+		padding: 32px;
+		border-radius: 16px;
+		gap: 8px;
+		border: 2px solid transparent;
+		cursor: pointer;
+
+		// States
+		&.unselected {
+			border-color: var(--greyscale-100);
+			background-color: var(--greyscale-0);
+		}
+
+		&.selected,
+		&:hover {
+			border-color: var(--a11y-theme-500);
+		}
+
+		&.selected {
+			background-color: var(--a11y-theme-50);
+		}
+	}
+
+	.title,
+	.details-item {
+		color: var(--greyscale-900);
+	}
+}

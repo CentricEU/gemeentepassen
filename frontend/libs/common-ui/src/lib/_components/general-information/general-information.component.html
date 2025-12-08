@@ -27,7 +27,7 @@
 			</windmill-input>
 		</centric-form-control>
 	</centric-form-item>
-	<ng-container *ngIf="shouldDisplayUploadLogo()">
+	<ng-container *ngIf="isCreateSupplierProfile()">
 		<centric-form-item class="full-width">
 			<div class="button-style">
 				<input
@@ -38,9 +38,9 @@
 					accept=".png, .svg, .jpg, .jpeg"
 					(click)="fileInputClick($event)"
 					(change)="onFileSelected($event)" />
-				<centric-button type="button-theme" class="upload-button" (click)="fileUpload.click()">
-					{{ logoUploadText() }}</centric-button
-				>
+				<centric-button type="outlined-theme" class="upload-button" (click)="fileUpload.click()">
+					{{ logoUploadText() }}
+				</centric-button>
 				<ng-container *ngIf="fileName">
 					<centric-icon2
 						windmill-tooltip
@@ -51,8 +51,7 @@
 						[tooltipColor]="'tooltipSurfaceColor'"
 						(click)="removeLogo()"></centric-icon2>
 				</ng-container>
-				<span
-					class="upload-text generic-color-text"
+				<span class="upload-text generic-color-text"
 					[innerHTML]="fileName ? fileName : ('generalInformation.uploadMessage' | translate)"></span>
 			</div>
 			<ng-container *ngIf="isSizeExceeded">
@@ -230,5 +229,44 @@
 				</windmill-dropdown-search>
 			</ng-container>
 		</centric-form-control>
+	</centric-form-item>
+
+	<frontend-bank-input [formGroup]="generalInformationForm" [isReadonly]="isReadonly" [isSetupProfileDialog]="true">
+	</frontend-bank-input>
+
+	<centric-form-item class="cashier-emails">
+		<centric-form-label>{{ 'generalInformation.cashierEmails' | translate }}</centric-form-label>
+		@if (isCreateSupplierProfile()) {
+			<centric-form-control frontendRequiredInput>
+				<windmill-input
+					ariaAttributes
+					formControlName="cashierEmails"
+					[ariaLabelClearIcon]="'general.label.clear' | translate"
+					[attr.ariaLabel]="'generalInformation.cashierEmails' | translate"
+					[ariaLabelTranslation]="'generalInformation.cashierEmails'"
+					(keydown)="handleKeydown($event)">
+					<ng-container hints>
+						<p>{{ 'inviteSuppliers.hintMessage' | translate }}</p>
+					</ng-container>
+				</windmill-input>
+			</centric-form-control>
+		}
+		<centric-chips-list class="email-chip-list">
+			@for (email of cashierEmailsList; track email) {
+				<centric-chip
+					class="email-chip"
+					[message]="email"
+					[hasTitle]="true"
+					[readonly]="!isCreateSupplierProfile()"
+					[ariaLabelDeleteButton]="'general.label.clear' | translate"
+					(deleteChip)="removeEmailFromList(email)">
+				</centric-chip>
+			}
+		</centric-chips-list>
+		@if (emailError) {
+			<span class="email-error-message">
+				{{ emailError | translate }}
+			</span>
+		}
 	</centric-form-item>
 </form>

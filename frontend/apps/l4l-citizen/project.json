@@ -1,0 +1,164 @@
+{
+	"name": "l4l-citizen",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"projectType": "application",
+	"prefix": "app",
+	"sourceRoot": "apps/l4l-citizen/src",
+	"tags": [],
+	"targets": {
+		"build": {
+			"executor": "@angular-devkit/build-angular:browser",
+			"outputs": [
+				"{options.outputPath}"
+			],
+			"options": {
+				"outputPath": "dist/apps/l4l-citizen",
+				"index": "apps/l4l-citizen/src/index.html",
+				"main": "apps/l4l-citizen/src/main.ts",
+				"polyfills": [
+					"zone.js"
+				],
+				"tsConfig": "apps/l4l-citizen/tsconfig.app.json",
+				"inlineStyleLanguage": "scss",
+				"assets": [
+					{
+						"glob": "**/*",
+						"input": "./libs/shared-assets/",
+						"output": "/assets/"
+					},
+					{
+						"input": "apps/l4l-citizen/src/assets/.well-known",
+						"glob": "**/*",
+						"output": "/.well-known/"
+					}
+				],
+				"styles": [
+					"apps/l4l-citizen/src/styles.scss"
+				],
+				"scripts": []
+			},
+			"configurations": {
+				"production": {
+					"budgets": [
+						{
+							"type": "initial",
+							"maximumWarning": "2mb",
+							"maximumError": "6mb"
+						},
+						{
+							"type": "anyComponentStyle",
+							"maximumWarning": "7kb",
+							"maximumError": "14kb"
+						}
+					],
+					"fileReplacements": [
+						{
+							"replace": "apps/l4l-citizen/src/environment/environment.ts",
+							"with": "apps/l4l-citizen/src/environment/environment.prod.ts"
+						}
+					],
+					"outputHashing": "all"
+				},
+				"beta": {
+					"budgets": [
+						{
+							"type": "initial",
+							"maximumWarning": "2mb",
+							"maximumError": "15mb"
+						},
+						{
+							"type": "anyComponentStyle",
+							"maximumWarning": "7kb",
+							"maximumError": "20kb"
+						}
+					],
+					"fileReplacements": [
+						{
+							"replace": "apps/l4l-citizen/src/environment/environment.ts",
+							"with": "apps/l4l-citizen/src/environment/environment.beta.ts"
+						}
+					],
+					"buildOptimizer": false,
+					"optimization": false,
+					"vendorChunk": true,
+					"extractLicenses": false,
+					"sourceMap": true,
+					"namedChunks": true
+				},
+				"acceptance": {
+					"budgets": [
+						{
+							"type": "initial",
+							"maximumWarning": "2mb",
+							"maximumError": "13mb"
+						},
+						{
+							"type": "anyComponentStyle",
+							"maximumWarning": "7kb",
+							"maximumError": "14kb"
+						}
+					],
+					"fileReplacements": [
+						{
+							"replace": "apps/l4l-citizen/src/environment/environment.ts",
+							"with": "apps/l4l-citizen/src/environment/environment.acceptance.ts"
+						}
+					],
+					"buildOptimizer": false,
+					"optimization": false,
+					"vendorChunk": true,
+					"extractLicenses": false,
+					"sourceMap": true,
+					"namedChunks": true
+				},
+				"development": {
+					"buildOptimizer": false,
+					"optimization": false,
+					"vendorChunk": true,
+					"extractLicenses": false,
+					"sourceMap": true,
+					"namedChunks": true
+				}
+			},
+			"defaultConfiguration": "production"
+		},
+		"serve": {
+			"executor": "@angular-devkit/build-angular:dev-server",
+			"configurations": {
+				"production": {
+					"buildTarget": "l4l-citizen:build:production"
+				},
+				"development": {
+					"buildTarget": "l4l-citizen:build:development"
+				}
+			},
+			"defaultConfiguration": "development"
+		},
+		"extract-i18n": {
+			"executor": "@angular-devkit/build-angular:extract-i18n",
+			"options": {
+				"buildTarget": "l4l-citizen:build"
+			}
+		},
+		"lint": {
+			"executor": "@nx/eslint:lint"
+		},
+		"test": {
+			"executor": "@nx/jest:jest",
+			"outputs": [
+				"{workspaceRoot}/coverage/{projectRoot}"
+			],
+			"options": {
+				"jestConfig": "apps/l4l-citizen/jest.config.ts"
+			}
+		},
+		"serve-static": {
+			"executor": "@nx/web:file-server",
+			"options": {
+				"buildTarget": "l4l-citizen:build",
+				"port": 4200,
+				"spa": true
+			}
+		}
+	}
+}

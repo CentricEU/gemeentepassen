@@ -1,7 +1,9 @@
 package nl.centric.innovation.local4local.config;
 
+import com.nimbusds.jwt.proc.BadJWTException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import java.util.HashMap;
 import nl.centric.innovation.local4local.exceptions.AuthenticationLoginException;
 import nl.centric.innovation.local4local.exceptions.CaptchaException;
 import nl.centric.innovation.local4local.exceptions.CsvManipulationException;
@@ -26,10 +31,9 @@ import nl.centric.innovation.local4local.exceptions.NotFoundException;
 import nl.centric.innovation.local4local.exceptions.PasswordSameException;
 import nl.centric.innovation.local4local.exceptions.RecoverException;
 import nl.centric.innovation.local4local.exceptions.TokenRefreshException;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import java.util.HashMap;
+import nl.centric.innovation.local4local.exceptions.SocialDomeinException;
+import nl.centric.innovation.local4local.exceptions.JwkNotFoundException;
+import nl.centric.innovation.local4local.exceptions.JwtValidationException;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,6 +47,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Value("${error.unexpected.role}")
     private String errorUnexpectedRole;
+
+    @Value("${error.unique.violation}")
+    private String uniqueViolation;
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -89,7 +96,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
     }
 
-    @ExceptionHandler(value = {AuthenticationLoginException.class, TokenRefreshException.class, InvalidPrincipalException.class})
+    @ExceptionHandler(JwtValidationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    protected ResponseEntity<Object> handleJwtValidationException(JwtValidationException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(value = {AuthenticationLoginException.class, InvalidPrincipalException.class, JwkNotFoundException.class, SocialDomeinException.class})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     protected ResponseEntity<Object> handleAuthenticationException(Exception ex) {
         if (ex instanceof AuthenticationLoginException) {
@@ -120,6 +133,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleSamePasswordException(
             PasswordSameException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(value = {TokenRefreshException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<Object> handleTokenRefreshException(TokenRefreshException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(BadJWTException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    protected ResponseEntity<Object> handleJwtException(BadJWTException ex) {
+        String message = ex.getMessage();
+        if (message != null && message.toLowerCase().contains("expired")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Token is expired"));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Invalid token"));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(uniqueViolation);
     }
 
 }

@@ -14,7 +14,7 @@ import {
 } from '@frontend/common';
 import { TableBaseComponent, TableComponent } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 
 import { GetSuppliersDto } from '../../_models/get-suppliers-dto.model';
 import { MunicipalitySupplierService } from '../../_services/suppliers.service';
@@ -23,6 +23,7 @@ import { SupplierReviewPopupComponent } from '../supplier-review-popup/supplier-
 @Component({
 	selector: 'frontend-supplier-req',
 	templateUrl: './supplier-req.component.html',
+	standalone: false,
 })
 export class SupplierReqComponent extends TableBaseComponent implements OnInit {
 	@ViewChild('supplierRequestTable') supplierRequestTable: TableComponent<SupplierViewDto>;
@@ -107,18 +108,17 @@ export class SupplierReqComponent extends TableBaseComponent implements OnInit {
 				data: {
 					mainContent: 'general.success.title',
 					secondContent: 'general.success.text',
-					acceptButtonType: 'button-success',
+					acceptButtonType: 'high-emphasis-success',
 					acceptButtonText: 'register.continue',
 				},
 			})
 			?.afterClosed()
 			.subscribe((response) => {
-				if (response) {
-					this.updateSuppliersLists(response);
+				if (!response) {
 					return;
 				}
 
-				this.loadData(this.supplierRequestTable.paginatedData);
+				this.updateSuppliersLists(response);
 			});
 	}
 

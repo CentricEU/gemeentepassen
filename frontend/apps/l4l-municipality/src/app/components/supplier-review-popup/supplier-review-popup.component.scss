@@ -1,9 +1,9 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
 
 :host {
 	::ng-deep {
 		mat-dialog-container [mat-dialog-content] {
-			@include flex(row, space-between, flex-start);
+			@include mixins.flex(row, space-between, flex-start);
 		}
 	}
 }

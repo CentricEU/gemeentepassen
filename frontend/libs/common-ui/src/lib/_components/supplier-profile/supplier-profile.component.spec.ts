@@ -7,6 +7,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import {
 	AuthService,
 	BreadcrumbService,
+	commonRoutingConstants,
 	ContactInformation,
 	GeneralInformation,
 	PdokService,
@@ -14,10 +15,10 @@ import {
 	SupplierCoordinates,
 	SupplierProfile,
 	SupplierProfileService,
-	UserInfo
+	UserInfo,
 } from '@frontend/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CentricToastrModule, ToastrService } from '@windmill/ng-windmill';
+import { CentricToastrModule, ToastrService } from '@windmill/ng-windmill/toastr';
 import { of } from 'rxjs';
 
 import { SupplierProfileComponent } from './supplier-profile.component';
@@ -40,13 +41,13 @@ describe('SupplierProfileComponent', () => {
 
 	const breadcrumbServiceMock = {
 		setBreadcrumbs: jest.fn(),
-		removeBreadcrumbs: jest.fn()
+		removeBreadcrumbs: jest.fn(),
 	};
 
 	const environmentMock = {
 		production: false,
 		envName: 'dev',
-		apiPath: '/api'
+		apiPath: '/api',
 	};
 
 	const mockSupplierProfile: SupplierProfile = {
@@ -66,7 +67,7 @@ describe('SupplierProfileComponent', () => {
 		group: 'Group',
 		category: 'Category',
 		subcategory: 'Subcategory',
-		supplierId: '123'
+		supplierId: '123',
 	};
 
 	beforeEach(async () => {
@@ -75,16 +76,17 @@ describe('SupplierProfileComponent', () => {
 		});
 
 		activatedRouteMock = {
-			paramMap: of({ get: jest.fn() })
+			paramMap: of({ get: jest.fn() }),
 		};
 
 		authServiceMock = {
-			extractSupplierInformation: jest.fn()
+			extractSupplierInformation: jest.fn(),
 		};
 
 		supplierProfileService = {
 			updateSupplierProfile: jest.fn(() => of({})),
-			getSupplierProfile: jest.fn(() => of({}))
+			reapplySupplierProfile: jest.fn(() => of({})),
+			getSupplierProfile: jest.fn(() => of({})),
 		} as any;
 
 		await TestBed.configureTestingModule({
@@ -95,7 +97,7 @@ describe('SupplierProfileComponent', () => {
 				HttpClientModule,
 				RouterModule.forRoot([]),
 				TranslateModule.forRoot(),
-				CentricToastrModule.forRoot()
+				CentricToastrModule.forRoot(),
 			],
 			declarations: [SupplierProfileComponent],
 			providers: [
@@ -105,8 +107,8 @@ describe('SupplierProfileComponent', () => {
 				{ provide: SupplierProfileService, useValue: supplierProfileService },
 				{ provide: BreadcrumbService, useValue: breadcrumbServiceMock },
 				ToastrService,
-				PdokService
-			]
+				PdokService,
+			],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(SupplierProfileComponent);
@@ -164,7 +166,7 @@ describe('SupplierProfileComponent', () => {
 		const supplierId = 'someSupplierId';
 		const mockSupplierProfileWithLogo: SupplierProfile = {
 			...mockSupplierProfile,
-			logo: 'base64mock'
+			logo: 'base64mock',
 		};
 
 		jest.spyOn(supplierProfileService, 'getSupplierProfile').mockReturnValue(of(mockSupplierProfileWithLogo));
@@ -248,7 +250,7 @@ describe('SupplierProfileComponent', () => {
 			companyName: ['company'],
 			adminEmail: ['email'],
 			group: ['group'],
-			subcategory: ['subcategory']
+			subcategory: ['subcategory'],
 		});
 		component.handleInformationFormEvent(contactForm, true);
 
@@ -265,7 +267,7 @@ describe('SupplierProfileComponent', () => {
 			companyName: ['company'],
 			adminEmail: ['email'],
 			group: ['group'],
-			subcategory: ['subcategory']
+			subcategory: ['subcategory'],
 		});
 
 		component.handleInformationFormEvent(generalForm, false);
@@ -283,7 +285,7 @@ describe('SupplierProfileComponent', () => {
 
 	it('should set the value of the input element to an empty string', () => {
 		const mockEvent: any = {
-			target: document.createElement('input')
+			target: document.createElement('input'),
 		};
 
 		const initialValue = 'value';
@@ -325,13 +327,13 @@ describe('SupplierProfileComponent', () => {
 		const file: Blob = new Blob(['sample content'], { type: 'image/png' });
 		const fileReaderMock: any = {
 			readAsDataURL,
-			addEventListener
+			addEventListener,
 		};
 		jest.spyOn(global, 'FileReader').mockImplementation(() => fileReaderMock);
 
 		const setValueMock = jest.fn();
 		const generalInformationFormMock: any = {
-			get: jest.fn(() => ({ setValue: setValueMock }))
+			get: jest.fn(() => ({ setValue: setValueMock })),
 		};
 		component.generalInformationForm = generalInformationFormMock;
 
@@ -370,13 +372,13 @@ describe('SupplierProfileComponent', () => {
 	it('should get the information from PDOK on', () => {
 		const mockPdokData = {
 			response: {
-				numFound: 1
-			}
+				numFound: 1,
+			},
 		};
 
 		const mockCoordinates: SupplierCoordinates = {
 			longitude: 26.1025,
-			latitude: 44.4268
+			latitude: 44.4268,
 		};
 
 		jest.spyOn(toastrService, 'success');
@@ -385,7 +387,7 @@ describe('SupplierProfileComponent', () => {
 		jest.spyOn(pdokService, 'getCoordinateFromAddress').mockReturnValue(of(mockPdokData));
 		jest.spyOn(PdokUtil, 'getCoordinatesFromPdok').mockReturnValue(mockCoordinates);
 
-		component.saveChanges();
+		component.saveChanges(false);
 
 		expect(pdokService.getCoordinateFromAddress).toHaveBeenCalled();
 		expect(PdokUtil.getCoordinatesFromPdok).toHaveBeenCalledWith(mockPdokData);
@@ -396,13 +398,13 @@ describe('SupplierProfileComponent', () => {
 	it('should not get the information from PDOK on when zipcode and location are invalid', () => {
 		const mockPdokData = {
 			response: {
-				numFound: 0
-			}
+				numFound: 0,
+			},
 		};
 
 		const mockCoordinates: SupplierCoordinates = {
 			longitude: 26.1025,
-			latitude: 44.4268
+			latitude: 44.4268,
 		};
 
 		jest.spyOn(toastrService, 'success');
@@ -411,7 +413,7 @@ describe('SupplierProfileComponent', () => {
 		jest.spyOn(pdokService, 'getCoordinateFromAddress').mockReturnValue(of(mockPdokData));
 		jest.spyOn(PdokUtil, 'getCoordinatesFromPdok').mockReturnValue(mockCoordinates);
 
-		component.saveChanges();
+		component.saveChanges(false);
 
 		expect(pdokService.getCoordinateFromAddress).toHaveBeenCalled();
 		expect(translateService.instant).toHaveBeenCalledWith('general.success.changesSavedText');
@@ -428,7 +430,9 @@ describe('SupplierProfileComponent', () => {
 			legalForm: 'legalForm',
 			group: 'group',
 			category: 'category',
-			subcategory: 'subcategory'
+			subcategory: 'subcategory',
+			bic: 'ABNANL2A',
+			iban: 'NL91ABNA0417164300',
 		};
 
 		const contactInformationForm: ContactInformation = {
@@ -439,14 +443,14 @@ describe('SupplierProfileComponent', () => {
 			branchTelephone: '+3112345678',
 			accountManager: 'account',
 			email: 'email',
-			website: 'website'
+			website: 'website',
 		};
 
 		const object = {
 			...generalInformationForm,
 			...contactInformationForm,
 			latLon: `{longitude: 26.1025,latitude: 44.4268}`,
-			supplierId: component['supplierId']
+			supplierId: component['supplierId'],
 		};
 
 		jest.spyOn(component as any, 'mapSupplierProfile').mockReturnValue(object);
@@ -465,7 +469,7 @@ describe('SupplierProfileComponent', () => {
 
 		expect(
 			JSON.stringify(component.initialContactInformationForm.value) !==
-				JSON.stringify(component.contactInformationForm.value)
+				JSON.stringify(component.contactInformationForm.value),
 		).toBe(false);
 	});
 
@@ -486,5 +490,64 @@ describe('SupplierProfileComponent', () => {
 		component.contactInformationForm.setValue({ field: 'changedValue' });
 
 		expect(component.areFormValuesChanged).toBe(false);
+	});
+
+	describe('updateSupplierProfile', () => {
+		let supplierProfilePatchDto: any;
+		let toastText: string;
+		let isRejectedStatus: boolean;
+
+		beforeEach(() => {
+			supplierProfilePatchDto = {
+				branchLocation: 'TestLocation',
+				branchZip: '1234AB',
+			};
+			toastText = 'Saved!';
+			isRejectedStatus = false;
+
+			jest.spyOn(pdokService, 'getCoordinateFromAddress').mockReturnValue(of({ response: { numFound: 1 } }));
+			jest.spyOn(PdokUtil, 'getCoordinatesFromPdok').mockReturnValue({ longitude: 1, latitude: 2 });
+			jest.spyOn(supplierProfileService, 'updateSupplierProfile').mockReturnValue(of(void 0));
+			jest.spyOn(supplierProfileService, 'reapplySupplierProfile').mockReturnValue(of(void 0));
+			jest.spyOn(toastrService, 'success');
+			jest.spyOn(toastrService, 'error');
+			jest.spyOn(translateService, 'instant').mockReturnValue('translated');
+			jest.spyOn(component as any, 'displayErrorToaster');
+			jest.spyOn(component['router'], 'navigate');
+			component.contactInformationForm = formBuilder.group({ field: ['value'] });
+			component.generalInformationForm = formBuilder.group({ field: ['value'] });
+		});
+
+		it('should call updateSupplierProfile and show success toast when PDOK returns coordinates and isRejectedStatus is false', () => {
+			component['updateSupplierProfile'](supplierProfilePatchDto, toastText, false);
+			expect(pdokService.getCoordinateFromAddress).toHaveBeenCalledWith('TestLocation', '1234AB');
+			expect(PdokUtil.getCoordinatesFromPdok).toHaveBeenCalled();
+			expect(supplierProfileService.updateSupplierProfile).toHaveBeenCalled();
+			expect(toastrService.success).toHaveBeenCalledWith(toastText, '', { toastBackground: 'toast-light' });
+		});
+
+		it('should call reapplySupplierProfile and navigate when isRejectedStatus is true', () => {
+			component['updateSupplierProfile'](supplierProfilePatchDto, toastText, true);
+			expect(pdokService.getCoordinateFromAddress).toHaveBeenCalledWith('TestLocation', '1234AB');
+			expect(PdokUtil.getCoordinatesFromPdok).toHaveBeenCalled();
+			expect(supplierProfileService.reapplySupplierProfile).toHaveBeenCalled();
+			expect(component['router'].navigate).toHaveBeenCalledWith([commonRoutingConstants.dashboard], {
+				queryParams: { reapply: true },
+			});
+		});
+
+		it('should call displayErrorToaster and not call updateSupplierProfile if PDOK returns numFound 0', () => {
+			(pdokService.getCoordinateFromAddress as jest.Mock).mockReturnValueOnce(of({ response: { numFound: 0 } }));
+			component['updateSupplierProfile'](supplierProfilePatchDto, toastText, false);
+			expect(component['displayErrorToaster']).toHaveBeenCalled();
+			expect(supplierProfileService.updateSupplierProfile).not.toHaveBeenCalled();
+			expect(supplierProfileService.reapplySupplierProfile).not.toHaveBeenCalled();
+		});
+
+		it('should not show success toast if result is null', () => {
+			(pdokService.getCoordinateFromAddress as jest.Mock).mockReturnValueOnce(of({ response: { numFound: 0 } }));
+			component['updateSupplierProfile'](supplierProfilePatchDto, toastText, false);
+			expect(toastrService.success).not.toHaveBeenCalled();
+		});
 	});
 });

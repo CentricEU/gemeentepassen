@@ -1,9 +1,7 @@
-@import '../../../../../../libs/shared-assets/_styles/form';
+@use '../../../../../../libs/shared-assets/_styles/form';
+
 :host {
 	width: fit-content;
-	&:first-child {
-		margin-top: 16px;
-	}
 	::ng-deep {
 		centric-input-timepicker2 {
 			width: 140px;
@@ -14,8 +12,8 @@
 			gap: 64px !important;
 		}
 
-		.day-checkbox {
-			width: 120px;
+		.day-label {
+			width: 100px;
 		}
 	}
 }

@@ -8,7 +8,7 @@ import { CategoryDto } from '../_models/category-dto.model';
 import { ProfileLabelDto } from '../_models/profile_label-dto.model';
 import { ProfileDropdownsDto } from '../_models/profile-dropdowns-dto.model';
 import { SupplierProfile } from '../_models/supplier-profile.model';
-import { SupplierProfileDto } from '../_models/supplier-profile-dto.model';
+import { SupplierProfilePatchDto } from '../_models/supplier-profile-patch-dto.model';
 import { SupplierProfileService } from './supplier-profile.service';
 
 describe('SupplierProfileService', () => {
@@ -75,7 +75,7 @@ describe('SupplierProfileService', () => {
 	});
 
 	it('should update supplier profile', () => {
-		const mockSupplierProfile: SupplierProfileDto = {
+		const mockSupplierProfilePatch: SupplierProfilePatchDto = {
 			companyBranchAddress: 'Address',
 			branchProvince: 'Province',
 			branchZip: 'Zip',
@@ -84,9 +84,6 @@ describe('SupplierProfileService', () => {
 			email: 'email@email.com',
 			website: 'Website',
 			accountManager: 'Manager',
-			companyName: 'Company',
-			adminEmail: 'Email',
-			kvkNumber: '12345678',
 			ownerName: 'Owner',
 			legalForm: 0,
 			group: 1,
@@ -95,11 +92,11 @@ describe('SupplierProfileService', () => {
 			supplierId: '123',
 		};
 
-		service.updateSupplierProfile(mockSupplierProfile).subscribe();
+		service.updateSupplierProfile(mockSupplierProfilePatch).subscribe();
 
 		const req = httpTestingController.expectOne(`${environmentMock.apiPath}/supplier-profiles`);
 
-		expect(req.request.method).toBe('PUT');
+		expect(req.request.method).toBe('PATCH');
 		expect(req.request.body).toEqual({
 			group: 1,
 			subcategory: 2,
@@ -113,9 +110,49 @@ describe('SupplierProfileService', () => {
 			email: 'email@email.com',
 			website: 'Website',
 			accountManager: 'Manager',
-			companyName: 'Company',
-			adminEmail: 'Email',
-			kvkNumber: '12345678',
+			ownerName: 'Owner',
+			supplierId: '123',
+		});
+
+		req.flush(null);
+	});
+
+	it('should reapply supplier profile', () => {
+		const mockSupplierProfilePatch: SupplierProfilePatchDto = {
+			companyBranchAddress: 'Address',
+			branchProvince: 'Province',
+			branchZip: 'Zip',
+			branchLocation: 'Location',
+			branchTelephone: 'Telephone',
+			email: 'email@email.com',
+			website: 'Website',
+			accountManager: 'Manager',
+			ownerName: 'Owner',
+			legalForm: 0,
+			group: 1,
+			category: 2,
+			subcategory: 2,
+			supplierId: '123',
+		};
+
+		service.reapplySupplierProfile(mockSupplierProfilePatch).subscribe();
+
+		const req = httpTestingController.expectOne(`${environmentMock.apiPath}/supplier-profiles/reapplication`);
+
+		expect(req.request.method).toBe('PATCH');
+		expect(req.request.body).toEqual({
+			group: 1,
+			subcategory: 2,
+			category: 2,
+			legalForm: 0,
+			companyBranchAddress: 'Address',
+			branchProvince: 'Province',
+			branchZip: 'Zip',
+			branchLocation: 'Location',
+			branchTelephone: 'Telephone',
+			email: 'email@email.com',
+			website: 'Website',
+			accountManager: 'Manager',
 			ownerName: 'Owner',
 			supplierId: '123',
 		});

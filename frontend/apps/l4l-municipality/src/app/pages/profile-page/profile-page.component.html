@@ -1,0 +1,37 @@
+@if (isDataExisting) {
+	<frontend-table
+		#citizenGroupsTable
+		class="table-pannel"
+		[columns]="allColumns"
+		[hasCheckbox]="false"
+		[listLength]="dataCount"
+		[showFooter]="true"
+		[showHeader]="true"
+		(loadDataEvent)="loadData($event)">
+		<ng-container>
+			<span id="table-label" class="left-container">{{ 'profilePage.citizenGroups.title' | translate }} </span>
+			<section class="right-container">
+				<centric-button
+					[type]="'high-emphasis-theme'"
+					[iconId]="'plus_b'"
+					[ariaLabel]="'profilePage.citizenGroups.addGroup' | translate"
+					(click)="save()">
+					{{ 'profilePage.citizenGroups.addGroup' | translate }}
+				</centric-button>
+			</section>
+		</ng-container>
+	</frontend-table>
+} @else {
+	<centric-panel class="table-pannel" [class.full-size-panel]="true" [showFooter]="false" [header]="true">
+		<ng-container panel-header>
+			<span class="left-container">{{ 'profilePage.header' | translate }} </span>
+		</ng-container>
+		<ng-container panel-content>
+			<frontend-no-data [noDataTitle]="'profilePage.welcome'" [noDataDescription]="'profilePage.noData'">
+				<centric-button type="high-emphasis-theme" iconId="plus_b" (click)="save()">
+					{{ 'citizenGroup.createGroup' | translate }}
+				</centric-button>
+			</frontend-no-data>
+		</ng-container>
+	</centric-panel>
+}

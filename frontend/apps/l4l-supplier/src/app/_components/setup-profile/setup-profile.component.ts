@@ -6,11 +6,12 @@ import {
 	FormUtil,
 	GeneralInformation,
 	ModalData,
+	NavigationService,
 	PdokService,
 	PdokUtil,
-	SidenavService,
 	SupplierCoordinates,
 	SupplierProfileDto,
+	SupplierProfilePatchDto,
 	UserDto,
 	UserService,
 } from '@frontend/common';
@@ -22,7 +23,9 @@ import {
 	WorkingHoursEditComponent,
 } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { CentricHorizontalStepperComponent, DialogService, ToastrService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
+import { CentricHorizontalStepperComponent } from '@windmill/ng-windmill/stepper';
+import { ToastrService } from '@windmill/ng-windmill/toastr';
 import { of, switchMap } from 'rxjs';
 
 import { SetupProfileService } from '../../services/supplier-profile-service/setup-profile-service/setup-profile.service';
@@ -32,6 +35,7 @@ import { SetupProfileService } from '../../services/supplier-profile-service/set
 	templateUrl: './setup-profile.component.html',
 	styleUrls: ['./setup-profile.component.scss'],
 	changeDetection: ChangeDetectionStrategy.OnPush,
+	standalone: false,
 })
 export class SetupProfileComponent implements AfterViewInit {
 	@ViewChild('contactInformation') contactInformation: ContactInformationComponent;
@@ -57,11 +61,15 @@ export class SetupProfileComponent implements AfterViewInit {
 		private cdr: ChangeDetectorRef,
 		private authService: AuthService,
 		private pdokService: PdokService,
-		private sidenavService: SidenavService,
+		private navigationService: NavigationService,
 		private toastrService: ToastrService,
 		private translateService: TranslateService,
 	) {
 		this.dialogRef.disableClose = true;
+	}
+
+	public get isFirstStepValid(): boolean {
+		return this.generalInformationForm?.valid && this.generalInformation?.isCashierEmailsFieldValid;
 	}
 
 	public ngAfterViewInit(): void {
@@ -73,14 +81,16 @@ export class SetupProfileComponent implements AfterViewInit {
 
 	public goToNextStep(): void {
 		this.horizontalStepper.next();
+		this.scrollToTop();
 	}
 
 	public goToPreviousStep(): void {
 		this.horizontalStepper.previous();
+		this.scrollToTop();
 	}
 
 	public shouldShowFinishButton(): boolean {
-		const isGeneralValid = this.contactInformationForm?.valid && this.generalInformationForm?.valid;
+		const isGeneralValid = this.contactInformationForm?.valid && this.isFirstStepValid;
 		const isLastStep = this.horizontalStepper?.selectedIndex === 2;
 		const isWorkingHoursValid = this.workingHoursEdit?.isFormValid();
 
@@ -98,10 +108,9 @@ export class SetupProfileComponent implements AfterViewInit {
 	public shouldDisableNextButton(): boolean {
 		const isFirstStep = this.horizontalStepper.selectedIndex === 0;
 		const isSecondStep = this.horizontalStepper.selectedIndex === 1;
-		const firstStepValid = this.generalInformationForm?.valid;
 		const secondStepValid = this.contactInformationForm?.valid;
 
-		return (isFirstStep && !firstStepValid) || (isSecondStep && !secondStepValid);
+		return (isFirstStep && !this.isFirstStepValid) || (isSecondStep && !secondStepValid);
 	}
 
 	public shouldDisableBackButton(): boolean {
@@ -117,7 +126,10 @@ export class SetupProfileComponent implements AfterViewInit {
 		const supplierProfileDto = this.mapSupplierProfile();
 
 		this.pdokService
-			.getCoordinateFromAddress(supplierProfileDto.branchLocation, supplierProfileDto.branchZip)
+			.getCoordinateFromAddress(
+				supplierProfileDto.supplierProfilePatchDto?.branchLocation,
+				supplierProfileDto.supplierProfilePatchDto?.branchZip,
+			)
 			.pipe(
 				switchMap((data) => {
 					if (!data.response.numFound) {
@@ -126,7 +138,7 @@ export class SetupProfileComponent implements AfterViewInit {
 					}
 
 					const coordinates: SupplierCoordinates = PdokUtil.getCoordinatesFromPdok(data);
-					supplierProfileDto.latlon = coordinates;
+					supplierProfileDto.supplierProfilePatchDto.latlon = coordinates;
 					return this.setupProfileService.saveSupplierProfile(supplierProfileDto);
 				}),
 			)
@@ -148,7 +160,14 @@ export class SetupProfileComponent implements AfterViewInit {
 	public logout(): void {
 		this.authService.logout();
 		this.dialogRef.close();
-		this.sidenavService.reloadCurrentRoute();
+		this.navigationService.reloadCurrentRoute();
+	}
+
+	private scrollToTop(): void {
+		const container = document.querySelector('div[mat-dialog-content]') as HTMLElement | null;
+		if (container) {
+			container.scrollTo({ top: 0 });
+		}
 	}
 
 	private displayApprovalWaitingPopup(): void {
@@ -178,19 +197,28 @@ export class SetupProfileComponent implements AfterViewInit {
 	}
 
 	private mapSupplierProfile(): SupplierProfileDto {
-		const { legalForm, group, category, subcategory, ...generalInformationFormValue }: GeneralInformation =
-			this.generalInformationForm.value;
+		const generalInformationFormValue: GeneralInformation = this.generalInformationForm.value;
 		const contactInformationFormValue = this.contactInformationForm.value;
 
-		const supplierProfileDto: SupplierProfileDto = {
+		const { adminEmail, kvkNumber, companyName, ...restGeneralInformation } = generalInformationFormValue;
+
+		const supplierProfilePatchDto: SupplierProfilePatchDto = {
+			...restGeneralInformation,
 			...contactInformationFormValue,
-			...generalInformationFormValue,
-			legalForm: parseInt(legalForm, 10),
-			group: parseInt(group, 10),
-			category: parseInt(category, 10),
-			subcategory: parseInt(subcategory, 10),
+			legalForm: parseInt(generalInformationFormValue.legalForm, 10),
+			group: parseInt(generalInformationFormValue.group, 10),
+			category: parseInt(generalInformationFormValue.category, 10),
+			subcategory: parseInt(generalInformationFormValue.subcategory, 10),
 			supplierId: this.supplierId,
 			workingHours: this.workingHoursEdit.mapWorkingHours(),
+			cashierEmails: [...this.generalInformation.cashierEmailsList],
+		};
+
+		const supplierProfileDto: SupplierProfileDto = {
+			companyName: generalInformationFormValue.companyName,
+			adminEmail: generalInformationFormValue.adminEmail,
+			kvkNumber: generalInformationFormValue.kvkNumber,
+			supplierProfilePatchDto,
 		};
 
 		return supplierProfileDto;

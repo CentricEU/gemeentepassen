@@ -11,7 +11,10 @@ public enum EmailTemplateEnum {
     REJECTED_OFFER("offerRejected"),
     SUPPLIER_INVITE("supplierInvite"),
     ACCOUNT_CONFIRMATION("accountConfirmation"),
-    SET_PASSWORD("setPassword");
+    SET_PASSWORD("setPassword"),
+    CASHIER_SET_PASSWORD("cashierSetPassword"),
+    NO_CATEGORY("noCategory"),
+    SUMMARY_EMAIL_AFTER_APPLY_FOR_PASS("applyForPassSummary");
 
 
     private final String template;

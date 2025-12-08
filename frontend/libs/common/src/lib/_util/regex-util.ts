@@ -6,7 +6,7 @@ export class RegexUtil {
 	public static passwordRegexPattern = new RegExp('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})');
 
 	public static emailRegexPattern = new RegExp(
-		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
 	);
 
 	public static zipCodeRegexPattern = new RegExp(/^\d{4}(?:\s)?[A-Za-z]{2}$/);
@@ -16,10 +16,15 @@ export class RegexUtil {
 	public static discountCodeRegexPattern = new RegExp(/^[A-Za-z0-9]{5}$/);
 
 	public static urlRegexPattern = new RegExp(
-		/^(?:(?:https?:)?\/\/)?(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}(?::[0-9]{1,5})?(?:\/[^\s]*)?$/
-	  );			
+		/^(?:(?:https?:)?\/\/)?(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}(?::[0-9]{1,5})?(?:\/[^\s]*)?$/,
+	);
 
+	// [PDF Invoice] This regex is no longer used, but kept for reference or future use
 	public static invoiceNumberRegexPattern = new RegExp(/^[a-zA-Z0-9/-]+$/);
 
-	public static htmlContentRegexPattern = new RegExp(/[<>&]/);
+	public static jsPattern = /<script.*?>[\s\S]*?<\/script>|on\w+="[\s\S]*?"|javascript:/i;
+
+	public static dutchIbanRegexPattern = new RegExp(/^NL\d{2}[A-Z]{4}\d{10}$/);
+
+	public static dutchBicRegexPattern = new RegExp(/^[A-Z0-9]{4}NL[A-Z0-9]{2}([A-Z0-9]{3})?$/);
 }

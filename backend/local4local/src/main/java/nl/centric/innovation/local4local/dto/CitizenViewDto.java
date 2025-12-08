@@ -1,13 +1,7 @@
 package nl.centric.innovation.local4local.dto;
 
 import lombok.Builder;
-import nl.centric.innovation.local4local.entity.Offer;
-import nl.centric.innovation.local4local.entity.OfferTransaction;
 import nl.centric.innovation.local4local.entity.User;
-import nl.centric.innovation.local4local.util.ModelConverter;
-
-import java.util.stream.Collectors;
-
 
 @Builder
 public record CitizenViewDto(

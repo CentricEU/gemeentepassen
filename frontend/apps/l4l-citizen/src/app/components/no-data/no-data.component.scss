@@ -1,0 +1,28 @@
+//     Will use it until migrate to standalone for Supplier/Municipality.
+//     Will be removed afterwards since it's duplicated but the other one it's
+//     not standalone and other dependend components will need to be migrated to standalone
+//
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
+
+:host {
+	@include mixins.flex(column, center, center);
+	height: 100%;
+	gap: 32px;
+	padding: 24px 0;
+
+	.no-data-description {
+		@include mixins.flex(column, center, center);
+		gap: 16px;
+		text-align: center;
+	}
+}
+
+@media only screen and (max-height: 576px) {
+	:host {
+		gap: 24px;
+
+		img {
+			height: 40vh;
+		}
+	}
+}

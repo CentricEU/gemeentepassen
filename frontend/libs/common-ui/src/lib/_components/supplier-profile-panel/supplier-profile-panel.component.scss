@@ -1,5 +1,5 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
-@import '../../../../../../libs/shared-assets/_styles/pallete';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+@use '../../../../../../libs/shared-assets/_styles/pallete';
 
 :host {
 	.footer-actions {
@@ -12,7 +12,7 @@
 		}
 
 		.panel-content {
-			@include flex(column, flex-start, flex-start);
+			@include mixins.flex(column, flex-start, flex-start);
 			gap: 16px;
 			height: 100%;
 			padding: 32px;
@@ -20,7 +20,7 @@
 		}
 
 		.custom-right-container {
-			@include flex(row, flex-end, center);
+			@include mixins.flex(row, flex-end, center);
 			align-self: center !important;
 			color: var(--greyscale-500) !important;
 			font-weight: bold;

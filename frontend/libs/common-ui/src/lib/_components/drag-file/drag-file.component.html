@@ -18,13 +18,13 @@
 		(closed)="hideWarning()">
 		<ng-container [ngSwitch]="fileWarning">
 			<ng-container *ngSwitchCase="warnings.TOO_MANY_FILES">
-				<p class="sub-message" [innerHTML]="tooManyFilesErrorMessage()"></p>
+				<p class="sub-message" [innerHTML]="'upload.warningFilesNumber' | translate"></p>
 			</ng-container>
 
 			<ng-container *ngSwitchCase="warnings.WRONG_FORMAT">
-				<p class="sub-message">
-					{{ 'upload.warningFormat' | translate: { acceptedFormats: suportedFormats } }}
-				</p>
+				<p
+					class="sub-message"
+					[innerHTML]="'upload.warningFormat' | translate: { acceptedFormats: suportedFormats }"></p>
 			</ng-container>
 		</ng-container>
 	</centric-alert>
@@ -40,7 +40,7 @@
 	</section>
 	<centric-button
 		ariaAttributes
-		type="icon-button-fourth"
+		type="icon-ghost-theme"
 		iconId="trash_r"
 		[ariaLabelTranslation]="'general.button.remove'"
 		(click)="removeFile()"></centric-button>

@@ -14,7 +14,7 @@ import {
 	TableColumn,
 } from '@frontend/common';
 import { ChipRemainingDialogComponent, TableBaseComponent, TableComponent } from '@frontend/common-ui';
-import { DialogService } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { iif } from 'rxjs';
 
 import { OfferApprovalPopupComponent } from '../../components/offer-approval-popup/offer-approval-popup.component';
@@ -24,6 +24,7 @@ import { PendingOffersService } from '../../pending-offers.service';
 	selector: 'frontend-offers-for-municipality',
 	templateUrl: './offers-for-municipality.component.html',
 	styleUrls: ['./offers-for-municipality.component.scss'],
+	standalone: false,
 })
 export class OffersForMuniciaplityComponent extends TableBaseComponent implements OnInit, OnDestroy {
 	@ViewChild('offersMunicipalityTable') offersMunicipalityTable: TableComponent<OfferTableDto>;
@@ -68,8 +69,8 @@ export class OffersForMuniciaplityComponent extends TableBaseComponent implement
 			...this.allColumns,
 			new TableColumn('general.status', 'status', 'status', true, true, ColumnDataType.STATUS),
 			new TableColumn('offer.title', 'title', 'title', true, true),
-			new TableColumn('general.acceptedGrants', 'grants', 'grants', true, false, ColumnDataType.CHIPS),
-			new TableColumn('offer.validity', 'validity', 'validity', true, false),
+			new TableColumn('general.acceptedBenefit', 'benefit', 'benefit', true, false, ColumnDataType.CHIPS),
+			new TableColumn('genericFields.validity.label', 'validity', 'validity', true, false),
 			new TableColumn('general.actions', 'actions', 'actions', true, true, ColumnDataType.DEFAULT, true),
 		];
 	}
@@ -81,7 +82,7 @@ export class OffersForMuniciaplityComponent extends TableBaseComponent implement
 
 	public onActionButtonClicked(event: { actionButton: string; row: OfferTableDto }): void {
 		if (event.actionButton === ActionButtons.approvalIcon) {
-			this.openOfferWithGrantApprovalPopup(event.row);
+			this.openOfferWithBenefitApprovalPopup(event.row);
 			this.initSupplierProfileData(event.row.supplierId);
 		}
 	}
@@ -140,7 +141,7 @@ export class OffersForMuniciaplityComponent extends TableBaseComponent implement
 		});
 	}
 
-	private openOfferWithGrantApprovalPopup(data: OfferTableDto): void {
+	private openOfferWithBenefitApprovalPopup(data: OfferTableDto): void {
 		this.dialogService
 			.message(OfferApprovalPopupComponent, {
 				id: 'accessible-first-dialog',
@@ -151,7 +152,7 @@ export class OffersForMuniciaplityComponent extends TableBaseComponent implement
 					offer: data,
 					mainContent: 'general.success.title',
 					secondContent: 'general.success.text',
-					acceptButtonType: 'button-success',
+					acceptButtonType: 'high-emphasis-success',
 					acceptButtonText: 'register.continue',
 				},
 			})

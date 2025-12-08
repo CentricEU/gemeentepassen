@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, FormGroupDirective, ReactiveFormsModule } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroupDirective, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CommonUiModule } from '../../common-ui.module';
@@ -64,12 +64,6 @@ describe('TimeBusinessHoursComponent', () => {
 		expect(component.displayValidityError('start', 'end')).toBe(true);
 	});
 
-	it('should validate specific time picker param', () => {
-		component.schedule.get('start').setValue('');
-		component.schedule.get('start').markAsTouched();
-		expect(component.validationFunction('start')).toBe(true);
-	});
-
 	it('should disable and reset the schedule if isEnabled is false', () => {
 		const isEnabledControl = component.hoursForm.get('isEnabled');
 		isEnabledControl.setValue(false);
@@ -89,5 +83,28 @@ describe('TimeBusinessHoursComponent', () => {
 		const result = component.validationFunction('start');
 
 		expect(result).toBe(false);
+	});
+
+	it('initializeScheduleState should call toggleScheduleByCheckbox with isEnabled = true', () => {
+		const toggleSpy = jest.spyOn(component, 'toggleScheduleByCheckbox');
+		component.hoursForm.get('isEnabled')?.setValue(true);
+
+		component['initializeScheduleState']();
+
+		expect(toggleSpy).toHaveBeenCalledWith(true);
+	});
+
+	it('initializeScheduleState should call toggleScheduleByCheckbox with isEnabled = false', () => {
+		const toggleSpy = jest.spyOn(component, 'toggleScheduleByCheckbox');
+		component.hoursForm.get('isEnabled')?.setValue(false);
+
+		component['initializeScheduleState']();
+
+		expect(toggleSpy).toHaveBeenCalledWith(false);
+	});
+
+	it('validateParam should return false if param has value', () => {
+		const control = { value: '10:00' } as AbstractControl;
+		expect(component['validateParam'](control)).toBe(false);
 	});
 });

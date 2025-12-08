@@ -1,0 +1,29 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+
+:host {
+    ::ng-deep {
+        header {
+            height: 80px;
+            padding: 16px;
+        }
+    }
+}
+
+.left-header-container {
+    @include mixins.flex(row, center, center);
+    gap: 16px;
+
+    img {
+        @include mixins.size(auto, 40px);
+        max-width: 156px;
+        object-fit: contain;
+        margin: 0;
+    }
+
+    .supplier-name {
+        color: var(--a11y-theme-500);
+        font-size: 20px;
+        font-weight: 700;
+        width: 800px;
+    }
+}

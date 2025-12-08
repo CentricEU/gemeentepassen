@@ -36,12 +36,12 @@
 		</centric-form-item>
 
 		<centric-form-item>
-			<centric-form-label>{{ 'offer.approve.information.acceptedGrants' | translate }}</centric-form-label>
+			<centric-form-label>{{ 'offer.approve.information.acceptedBenefit' | translate }}</centric-form-label>
 			<centric-form-control frontendRequiredInput [isVisible]="true">
 				<windmill-input
 					ariaAttributes
-					formControlName="acceptedGrants"
-					[ariaLabelTranslation]="'offer.approve.information.acceptedGrants'"
+					formControlName="acceptedBenefit"
+					[ariaLabelTranslation]="'offer.approve.information.acceptedBenefit'"
 					[readonly]="true">
 				</windmill-input>
 			</centric-form-control>
@@ -63,7 +63,7 @@
 
 	<centric-form-item-group [type]="'inline'" class="full-width">
 		<centric-form-item [width]="'100%'">
-			<centric-form-label>{{ 'offer.validity' | translate }}</centric-form-label>
+			<centric-form-label>{{ 'genericFields.validity.label' | translate }}</centric-form-label>
 			<centric-form-control role="group">
 				<section class="validity">
 					<label class="time-label"> {{ 'general.from' | translate }} </label>

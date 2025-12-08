@@ -1,10 +1,10 @@
 import { Component, Input, OnInit, Type } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
-import { DialogService } from '@windmill/ng-windmill';
+
 @Component({
 	selector: 'frontend-chip-cell',
 	templateUrl: './chip-cell.component.html',
 	styleUrls: ['./chip-cell.component.scss'],
+	standalone: false,
 })
 export class ChipCellComponent<T> implements OnInit {
 	@Input() public row: Record<string, any>;
@@ -16,36 +16,13 @@ export class ChipCellComponent<T> implements OnInit {
 	public noOfDisplayedChips = 5;
 	public remainingChips: number;
 
-	private assignGrantsDialogRef: MatDialogRef<T>;
-
-	constructor(private dialogService: DialogService) {}
-
-	public get arrayOfChips(): [] {
-		return this.row[this.columnWithChips].slice(0, this.noOfDisplayedChips);
+	public get arrayOfChips(): any[] {
+		const chips = this.row[this.columnWithChips];
+		return Array.isArray(chips) ? chips.slice(0, this.noOfDisplayedChips) : [chips];
 	}
 
 	public ngOnInit(): void {
 		this.updateRemainingChips();
-	}
-
-	public openDialogWithTable(parentRecord: Record<string, any>[]): void {
-		this.assignGrantsDialogRef = this.dialogService.prompt(this.typeOfT, {
-			width: '600px',
-			disableClose: false,
-			data: {
-				arrayOfChips: parentRecord[0][this.columnWithChips],
-				chipTitleColumn: this.chipTitleColumn,
-				parentRecord: parentRecord,
-			},
-		}) as MatDialogRef<T>;
-
-		if (!this.assignGrantsDialogRef) {
-			return;
-		}
-
-		this.assignGrantsDialogRef.afterClosed().subscribe(() => {
-			this.updateRemainingChips();
-		});
 	}
 
 	private updateRemainingChips(): void {

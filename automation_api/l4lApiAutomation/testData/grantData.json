@@ -1,0 +1,8 @@
+{
+	"title": "Automation Grant Test",
+	"description": "Automation Grant Test Description",
+	"amount": 120.15,
+	"createFor": "PASS_OWNER",
+	"startDate": "2025-06-01",
+	"expirationDate": "2026-07-02"
+}

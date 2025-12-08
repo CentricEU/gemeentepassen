@@ -1,7 +1,7 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { SupplierProfileDto } from '@frontend/common';
+import { SupplierProfileDto, SupplierProfilePatchDto } from '@frontend/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
@@ -39,16 +39,13 @@ describe('TenantService', () => {
 	});
 
 	it('should return a SupplierProfile object after successful save', () => {
-		const expectedResult: SupplierProfileDto = {
-			companyName: 'company',
+		const patchDto: SupplierProfilePatchDto = {
 			logo: 'logo',
-			kvkNumber: '12345678',
 			ownerName: 'owner',
 			legalForm: 0,
 			group: 0,
 			category: 0,
 			subcategory: 0,
-			adminEmail: 'admin@domain.com',
 			companyBranchAddress: 'address',
 			branchProvince: 'district',
 			branchZip: '1234fe',
@@ -63,6 +60,12 @@ describe('TenantService', () => {
 				latitude: 44.4268,
 			},
 			workingHours: [],
+		};
+		const expectedResult: SupplierProfileDto = {
+			companyName: 'company',
+			kvkNumber: '12345678',
+			adminEmail: 'admin@domain.com',
+			supplierProfilePatchDto: patchDto,
 		};
 
 		httpClientSpy.post.mockReturnValue(of(expectedResult));

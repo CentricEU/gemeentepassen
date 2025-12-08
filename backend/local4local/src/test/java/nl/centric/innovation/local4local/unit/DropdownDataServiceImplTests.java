@@ -5,7 +5,7 @@ import nl.centric.innovation.local4local.dto.EnumValueDto;
 import nl.centric.innovation.local4local.entity.OfferType;
 import nl.centric.innovation.local4local.enums.GenericStatusEnum;
 import nl.centric.innovation.local4local.repository.OfferTypeRepository;
-import nl.centric.innovation.local4local.service.impl.DropdownDataServiceImpl;
+import nl.centric.innovation.local4local.service.impl.DropdownDataService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,22 +14,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class DropdownDataServiceImplTests {
+class DropdownDataServiceImplTests {
 
     @InjectMocks
-    private DropdownDataServiceImpl dropdownDataService;
+    private DropdownDataService dropdownDataService;
 
     @Mock
     private OfferTypeRepository offerTypeRepository;
 
     @Test
-    public void GivenValidRequest_WhenGetAllDropdownsData_ThenReturnDropdownDataFilterDto() {
+    void GivenValidRequest_WhenGetAllDropdownsData_ThenReturnDropdownDataFilterDto() {
         // Given
         List<OfferType> mockOfferTypes = List.of(
                 new OfferType(1, "Type1"),
@@ -40,7 +39,7 @@ public class DropdownDataServiceImplTests {
 
         List<EnumValueDto> expectedStatusDto = Arrays.stream(GenericStatusEnum.values())
                 .map(status -> new EnumValueDto(status.name(), status.getKey()))
-                .collect(Collectors.toList());
+                .toList();
 
         // When
         DropdownDataFilterDto result = dropdownDataService.getAllDropdownsData();

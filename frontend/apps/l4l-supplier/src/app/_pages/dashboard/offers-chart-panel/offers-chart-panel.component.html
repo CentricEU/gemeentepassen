@@ -1,37 +1,50 @@
-<centric-panel [shadow]="true">
+<centric-panel [shadow]="true" [ngClass]="{ 'used-offer-chart': isUsedOfferChart }">
 	<ng-container panel-header>
 		<div>
-			<span class="line-clamp-1">{{ 'general.pages.offers' | translate }}</span>
+			<span class="line-clamp-1">{{ chartTitle | translate }}</span>
 			<windmill-combo-button
-				[menuItems]="dropdownData"
+				[menuItems]="dashboardServiceInstance.dropdownData"
 				[contentType]="'dropdown'"
 				[dropdownButtonText]="activeTimePeriod | translate"
 				[dropdownType]="'uncontained-greyscale'"
-				(menuItemSelected)="onTimePeriodChange($event)">
+				(menuItemSelected)="onTimePeriodChange($event)"
+				[disabled]="!isSupplierActive">
 			</windmill-combo-button>
 		</div>
 	</ng-container>
 
 	<ng-container panel-content>
-		<ng-container *ngIf="offersCount; else noOffers">
-			<p>{{ 'dashboard.offers.textOffersExist' | translate: { offersCount: offersCount } }}</p>
+		<ng-container *ngIf="!isUsedOfferChart; else usedOfferChartTemplate">
+			<p>
+				{{
+					offersCount > 0
+						? ('dashboard.offers.textOffersExist' | translate: { offersCount: offersCount })
+						: ('dashboard.offers.textNoOffers' | translate)
+				}}
+			</p>
 			<div class="outer-chart-container">
 				<div class="inner-chart-container">
 					<canvas
 						baseChart
 						[type]="'pie'"
-						[data]="chartData"
+						[data]="chartDataOffer"
 						[options]="chartOptions"
 						(chartClick)="onChartClick($event)">
 					</canvas>
 				</div>
 			</div>
 		</ng-container>
-
-		<ng-template #noOffers>
-			<p>{{ 'dashboard.offers.textNoOffers' | translate }}</p>
-			<div class="empty-chart-container">
-				<div class="empty-chart"></div>
+		<ng-template #usedOfferChartTemplate>
+			<div class="outer-chart-container used-chart">
+				<div class="inner-used-offers-container">
+					<canvas
+						baseChart
+						[type]="'bar'"
+						[data]="chartDataUsedOffer"
+						[options]="chartOptionsUsed"
+						[plugins]="[createCustomMessage, barValuePlugin]">
+					</canvas>
+				</div>
 			</div>
 		</ng-template>
 	</ng-container>

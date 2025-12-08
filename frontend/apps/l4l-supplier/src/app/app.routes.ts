@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { AppType, authGuardMunicipality, commonRoutingConstants, nonAuthGuard } from '@frontend/common';
+import { AppType, authGuard, authGuardSupplier, commonRoutingConstants, nonAuthGuard } from '@frontend/common';
 import { ChangePasswordComponent, LoginComponent } from '@frontend/common-ui';
 import { EmailActionComponent } from '@frontend/common-ui';
 
@@ -12,30 +12,40 @@ import { TransactionsComponent } from './_pages/transactions/transactions.compon
 import { SupplierRegisterComponent } from './supplier-register/supplier-register.component';
 
 export const appRoutes: Route[] = [
-	{ path: '', component: DashboardComponent, canActivate: [authGuardMunicipality] },
+	{ path: '', component: DashboardComponent, canActivate: [authGuard] },
 	{
 		path: commonRoutingConstants.editProfile,
 		component: SupplierEditComponent,
-		canActivate: [authGuardMunicipality],
+		canActivate: [authGuardSupplier],
 	},
-	{ path: commonRoutingConstants.offers, component: OffersComponent, canActivate: [authGuardMunicipality] },
+	{
+		path: commonRoutingConstants.offers,
+		component: OffersComponent,
+		canActivate: [authGuardSupplier],
+	},
 	{
 		path: commonRoutingConstants.offerValidation,
 		component: OfferValidationComponent,
-		canActivate: [authGuardMunicipality],
+		canActivate: [authGuardSupplier],
 	},
 	{
 		path: commonRoutingConstants.transactions,
 		component: TransactionsComponent,
-		canActivate: [authGuardMunicipality],
+		canActivate: [authGuardSupplier],
 	},
 	{
 		path: `${commonRoutingConstants.offers}/rejection-reason/:offerId`,
 		component: OffersComponent,
-		canActivate: [authGuardMunicipality],
+		canActivate: [authGuardSupplier],
 	},
 	{
-		path: commonRoutingConstants.register,
+		path: `${commonRoutingConstants.register}`,
+		component: SupplierRegisterComponent,
+		canActivate: [nonAuthGuard],
+		data: { app: AppType.supplier },
+	},
+	{
+		path: `${commonRoutingConstants.register}/:tenantId`,
 		component: SupplierRegisterComponent,
 		canActivate: [nonAuthGuard],
 		data: { app: AppType.supplier },
@@ -66,6 +76,12 @@ export const appRoutes: Route[] = [
 	},
 	{
 		path: `${commonRoutingConstants.recover}/reset-password/:token`,
+		component: ChangePasswordComponent,
+		canActivate: [nonAuthGuard],
+		data: { app: AppType.municipality },
+	},
+	{
+		path: `${commonRoutingConstants.setupPassword}/:token/:username`,
 		component: ChangePasswordComponent,
 		canActivate: [nonAuthGuard],
 		data: { app: AppType.municipality },

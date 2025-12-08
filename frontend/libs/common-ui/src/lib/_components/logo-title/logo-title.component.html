@@ -1,4 +1,8 @@
-<div class="title-section">
-	<img src="/assets/images/tilburg-logo.png" alt="Logo image" />
-	<h1 class="title">{{ title | translate }}</h1>
+<div class="title-section" [class.vertical]="isVerticalOrientation" [class.horizontal]="!isVerticalOrientation">
+	<img
+		[src]="'/assets/images/' + logoType"
+		[style.width]="logoWidth"
+		[style.height]="logoHeight"
+		alt="{{ 'generalInformation.logoAlt' | translate }}" />
+	<h2 class="title">{{ title | translate }}</h2>
 </div>

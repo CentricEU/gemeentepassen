@@ -11,10 +11,10 @@ import nl.centric.innovation.local4local.exceptions.AuthenticationLoginException
 import nl.centric.innovation.local4local.exceptions.CaptchaException;
 import nl.centric.innovation.local4local.exceptions.InvalidRoleException;
 import nl.centric.innovation.local4local.security.SecurityUtils;
-import nl.centric.innovation.local4local.service.impl.AuthenticationServiceImpl;
+import nl.centric.innovation.local4local.service.impl.AuthenticationService;
 import nl.centric.innovation.local4local.service.impl.CaptchaServiceImpl;
 import nl.centric.innovation.local4local.service.impl.LoginAttemptServiceImpl;
-import nl.centric.innovation.local4local.service.interfaces.RefreshTokenService;
+import nl.centric.innovation.local4local.service.impl.RefreshTokenService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,9 +39,9 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class AuthenticationServiceImplTests {
+class AuthenticationServiceImplTests {
     @InjectMocks
-    private AuthenticationServiceImpl authenticationService;
+    private AuthenticationService authenticationService;
 
     @Mock
     private UserDetailsService userDetailsService;
@@ -184,7 +184,7 @@ public class AuthenticationServiceImplTests {
 
     @Test
     @SneakyThrows
-    public void GivenRequestRememberMeTrue_WhenAuthenticateByRole_ThenExpectSuccess() {
+    void GivenRequestRememberMeTrue_WhenAuthenticateByRole_ThenExpectSuccess() {
         // Given
         ReflectionTestUtils.setField(authenticationService, "refreshTokenDuration", "2592000");
         LoginRequestDTO loginRequestDTO = loginRequestDTOBuilder(EMPTY_STRING, true);
@@ -232,7 +232,6 @@ public class AuthenticationServiceImplTests {
     void GivenDisabledUser_WhenAuthenticateByRole_ThenExpectAuthenticationLoginException() {
         // Given
         LoginRequestDTO loginRequestDTO = loginRequestDTOBuilder(VALID_RESPONSE, false);
-        String remoteAddress = "0.0.0.1";
 
         // When
         User disabledUser = User.builder().username("username").isEnabled(false).build();
@@ -246,6 +245,40 @@ public class AuthenticationServiceImplTests {
         assertThrows(AuthenticationLoginException.class, () ->
                 authenticationService.authenticateByRole(loginRequestDTO, request));
     }
+
+    @Test
+    void GivenCitizenRoleAndInactiveUser_WhenAuthenticateByRole_ThenExpectAuthenticationLoginException() {
+        // Given
+
+        LoginRequestDTO loginRequestDTO = LoginRequestDTO.builder()
+                .username(USERNAME)
+                .password(PASSWORD)
+                .role(Role.ROLE_CITIZEN)
+                .reCaptchaResponse(VALID_RESPONSE)
+                .rememberMe(false)
+                .build();
+
+        when(loginAttemptService.findByRemoteAddress(any())).thenReturn(Optional.empty());
+        when(captchaService.isResponseValid(any(), any())).thenReturn(true);
+
+        when(authenticationManager.authenticate(any())).thenReturn(
+                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(USERNAME, PASSWORD)
+        );
+
+        Role citizenRole = Role.builder().name(Role.ROLE_CITIZEN).id(2).build();
+        User inactiveCitizen = User.builder()
+                .username(USERNAME)
+                .role(citizenRole)
+                .isEnabled(true)
+                .isActive(false)
+                .build();
+        when(userDetailsService.loadUserByUsername(loginRequestDTO.username())).thenReturn(inactiveCitizen);
+
+        // When / Then
+        assertThrows(AuthenticationLoginException.class,
+                () -> authenticationService.authenticateByRole(loginRequestDTO, request));
+    }
+
 
     private LoginRequestDTO loginRequestDTOBuilder(String reCaptchaResponse, Boolean rememberMe) {
         return LoginRequestDTO.builder()

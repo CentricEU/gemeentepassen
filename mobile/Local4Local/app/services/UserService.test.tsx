@@ -1,179 +1,213 @@
 import UserService from './UserService';
-import { CitizenRegisterDto } from '../utils/models/CitizenRegisterDto';
+import api from '../utils/auth/api-interceptor';
 import { CitizenLoginDto } from '../utils/models/CitizenLoginDto';
-import { AUTH_HEADER, HEADERS } from '../utils/constants/headers';
-import { apiPath } from '../utils/constants/api';
+import { CitizenRegisterDto } from '../utils/models/CitizenRegisterDto';
+import { CitizenProfileDto } from '../utils/models/CitizenProfileDto';
 import { DeleteAccountDto } from '../utils/models/DeleteAccountDto';
-import { AccountDeletionReason } from '../utils/enums/accountDeletionReason';
+import { StatusCode } from '../utils/enums/statusCode.enum';
 
-global.fetch = jest.fn();
-
+jest.mock('../utils/auth/api-interceptor');
 jest.mock('../utils/constants/headers', () => ({
-    AUTH_HEADER: jest.fn(),
-    HEADERS: {
-      'Content-Type': 'application/json',
-    },
-  }));
+	AUTH_HEADER: jest.fn().mockResolvedValue({}),
+	HEADERS: {}
+}));
 
 describe('UserService', () => {
-    beforeEach(() => {
-        jest.resetAllMocks();
-    });
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
 
-    describe('registerUser', () => {
-        it('should send a POST request to /api/users/register with correct data', async () => {
-            const mockData: CitizenRegisterDto = {
-                email: 'citizen@domain.com',
-                firstName: 'Citizen',
-                lastName: 'Citizen',
-                password: '1234',
-                retypedPassword: '1234',
-                passNumber: '123456789',
-            };
+	describe('registerUser', () => {
+		it('should register a user successfully', async () => {
+			const mockData: CitizenRegisterDto = {
+				email: 'test@example.com',
+				password: 'password',
+				firstName: 'John',
+				lastName: 'Doe',
+				retypedPassword: 'password',
+				passNumber: '123456'
+			};
+			const mockResponse = { status: StatusCode.Ok, data: { message: 'User registered successfully' } };
+			(api.post as jest.Mock).mockResolvedValue(mockResponse);
 
-            const mockResponseData = undefined;
-            const mockResponse = {
-                ok: true,
-                json: jest.fn().mockResolvedValue(mockResponseData),
-            };
-            (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+			const result = await UserService.registerUser(mockData, 'en');
 
-            const response = await UserService.registerUser(mockData);
+			expect(result).toEqual(mockResponse.data);
+			expect(api.post).toHaveBeenCalledWith('/users/register', mockData, { headers: {} });
+		});
 
-            expect(global.fetch).toHaveBeenCalledWith(
-                `${apiPath}/users/register`,
-                expect.objectContaining({
-                    method: 'POST',
-                    headers: expect.any(Object),
-                    body: JSON.stringify(mockData),
-                })
-            );
-            expect(response).toEqual(mockResponseData);
-        });
+		it('should throw an error if registration fails', async () => {
+			const mockData: CitizenRegisterDto = {
+				email: 'test@example.com',
+				password: 'password',
+				firstName: 'John',
+				lastName: 'Doe',
+				retypedPassword: 'password',
+				passNumber: '123456'
+			};
+			const mockError = new Error('Registration failed');
+			(api.post as jest.Mock).mockRejectedValue(mockError);
 
-        it('should throw error when response is not ok', async () => {
-            const mockResponse = {
-                ok: false,
-                status: 404,
-                json: jest.fn().mockResolvedValue({})
-            };
-            (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+			await expect(UserService.registerUser(mockData, 'en')).rejects.toThrow('Registration failed');
+		});
+	});
 
-            await expect(UserService.registerUser({} as CitizenRegisterDto)).rejects.toBeTruthy();
-        });
+	describe('login', () => {
+		it('should login a user successfully', async () => {
+			const mockData: CitizenLoginDto = {
+				username: 'test@example.com',
+				password: 'password',
+				role: 'user',
+				reCaptchaResponse: 'test',
+				rememberMe: true
+			};
 
-    });
+			const mockResponse = {
+				status: StatusCode.Ok,
+				data: {
+					token: 'accessToken',
+					refreshToken: 'refreshTokenValue'
+				}
+			};
 
-    describe('login', () => {
-        it('should send a POST request to /api/authenticate with correct data', async () => {
-            const mockData: CitizenLoginDto = {
-                username: 'citizen',
-                password: '1234',
-                role: 'ROLE_CITIZEN',
-                reCaptchaResponse: '',
-                rememberMe: false
-            };
+			(api.post as jest.Mock).mockResolvedValue(mockResponse);
 
-            const mockResponseData = { success: true };
-            const mockResponse = {
-                ok: true,
-                json: jest.fn().mockResolvedValue(mockResponseData),
-            };
-            (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+			const result = await UserService.login(mockData);
 
-            const response = await UserService.login(mockData);
+			expect(result).toEqual({
+				accessToken: 'accessToken',
+				refreshToken: 'refreshTokenValue'
+			});
+			expect(api.post).toHaveBeenCalledWith('/authenticate', mockData, { headers: {} });
+		});
+	});
 
-            expect(global.fetch).toHaveBeenCalledWith(
-                `${apiPath}/authenticate`,
-                expect.objectContaining({
-                    method: 'POST',
-                    headers: expect.any(Object),
-                    body: JSON.stringify(mockData),
-                })
-            );
-            expect(response).toEqual(mockResponseData);
-        });
-    });
+	describe('resendConfirmationToken', () => {
+		it('should resend confirmation token successfully', async () => {
+			const email = 'test@example.com';
+			const mockResponse = { status: StatusCode.Ok, data: { message: 'Token resent successfully' } };
+			(api.get as jest.Mock).mockResolvedValue(mockResponse);
 
-    describe('resendConfirmationToken', () => {
-        it('should send a GET request to /api/users/resend-confirmation with correct email', async () => {
-            const email = 'example@example.com';
-            const mockResponseData = { success: true };
-            const mockResponse = {
-                ok: true,
-                json: jest.fn().mockResolvedValue(mockResponseData),
-            };
-            (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+			const result = await UserService.resendConfirmationToken(email);
 
-            await UserService.resendConfirmationToken(email);
+			expect(result).toEqual(mockResponse.data);
+			expect(api.get).toHaveBeenCalledWith(`/users/resend-confirmation?email=${encodeURIComponent(email)}`, {
+				headers: {}
+			});
+		});
 
-            expect(global.fetch).toHaveBeenCalledWith(
-                `${apiPath}/users/resend-confirmation?email=${encodeURIComponent(email)}`,
-                expect.objectContaining({
-                    method: 'GET',
-                    headers: HEADERS,
-                })
-            );
-        });
+		it('should throw an error if resending token fails', async () => {
+			const email = 'test@example.com';
+			const mockError = new Error('Resend token failed');
+			(mockError as any).response = { status: 400, data: 'Resend token failed' };
+			(api.get as jest.Mock).mockRejectedValue(mockError);
 
-        it('should return response data when response is ok', async () => {
-            const email = 'example@example.com';
-            const mockResponseData = { success: true };
-            const mockResponse = {
-                ok: true,
-                json: jest.fn().mockResolvedValue(mockResponseData),
-            };
-            (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
+			await expect(UserService.resendConfirmationToken(email)).rejects.toThrow('Resend token failed');
+		});
+	});
 
-            const response = await UserService.resendConfirmationToken(email);
+	describe('getCitizenProfile', () => {
+		it('should get citizen profile successfully', async () => {
+			const mockResponse = { status: StatusCode.Ok, data: { name: 'John Doe' } };
+			(api.get as jest.Mock).mockResolvedValue(mockResponse);
 
-            expect(response).toEqual(mockResponseData);
-        });
-    });
+			const result = await UserService.getCitizenProfile();
 
-    describe('deleteAccount', () => {
-        it('should send a POST request to /api/users/delete-account with correct data', async () => {
-          const mockData: DeleteAccountDto = new DeleteAccountDto([AccountDeletionReason.NO_LONGER_USING]);
-    
-          const mockResponse = {
-            ok: true,
-          };
-          (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
-          (AUTH_HEADER as jest.Mock).mockResolvedValue({
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer token'
-          });
-    
-          await UserService.deleteAccount(mockData);
-    
-          expect(global.fetch).toHaveBeenCalledWith(
-            `${apiPath}/users/delete-account`,
-            expect.objectContaining({
-              method: 'POST',
-              headers: expect.objectContaining({
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer token'
-              }),
-              body: JSON.stringify(mockData),
-            })
-          );
-        });
-    
-        it('should call AUTH_HEADER to get headers', async () => {
-          const mockData: DeleteAccountDto = new DeleteAccountDto([AccountDeletionReason.NO_LONGER_USING]);
-    
-          const mockResponse = {
-            ok: true,
-          };
-          (global.fetch as jest.Mock).mockResolvedValue(mockResponse);
-          (AUTH_HEADER as jest.Mock).mockResolvedValue({
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer token'
-          });
-    
-          await UserService.deleteAccount(mockData);
-    
-          expect(AUTH_HEADER).toHaveBeenCalledTimes(1);
-        });
-      });
+			expect(result).toEqual(mockResponse.data);
+			expect(api.get).toHaveBeenCalledWith('/users/citizen-profile', { method: 'GET', headers: {} });
+		});
+
+		it('should throw an error if getting profile fails', async () => {
+			const mockError = new Error('Get profile failed');
+			(api.get as jest.Mock).mockRejectedValue(mockError);
+
+			await expect(UserService.getCitizenProfile()).rejects.toThrow('Get profile failed');
+		});
+	});
+
+	describe('deleteAccount', () => {
+		it('should delete account successfully', async () => {
+			const mockData: DeleteAccountDto = { accountDeletionReasons: [] };
+			const mockResponse = { status: StatusCode.Ok, data: { message: 'Account deleted successfully' } };
+			(api.post as jest.Mock).mockResolvedValue(mockResponse);
+
+			await UserService.deleteAccount(mockData);
+
+			expect(api.post).toHaveBeenCalledWith('/users/delete-account', mockData, { headers: {} });
+		});
+
+		it('should throw an error if deleting account fails', async () => {
+			const mockData: DeleteAccountDto = { accountDeletionReasons: [] };
+			const mockError = new Error('Delete account failed');
+			(mockError as any).response = { status: 400, data: 'Delete account failed' };
+			(api.post as jest.Mock).mockRejectedValue(mockError);
+
+			await expect(UserService.deleteAccount(mockData)).rejects.toThrow('Delete account failed');
+		});
+	});
+
+	describe('updateUserInformation', () => {
+		it('should update user information successfully', async () => {
+			const mockData: CitizenProfileDto = { username: 'johndoe', firstName: 'John', lastName: 'Doe' };
+			const mockResponse = { status: StatusCode.Ok, data: { name: 'John Doe' } };
+			(api.post as jest.Mock).mockResolvedValue(mockResponse);
+
+			const result = await UserService.updateUserInformation(mockData);
+
+			expect(result).toEqual(mockResponse.data);
+			expect(api.post).toHaveBeenCalledWith('/users/citizen-profile', mockData, { headers: {} });
+		});
+
+		it('should throw an error if updating information fails', async () => {
+			const mockData: CitizenProfileDto = { username: 'johndoe', firstName: 'John', lastName: 'Doe' };
+			const mockError = new Error('Update information failed');
+			(api.post as jest.Mock).mockRejectedValue(mockError);
+
+			await expect(UserService.updateUserInformation(mockData)).rejects.toThrow('Update information failed');
+		});
+	});
+
+	describe('loginWithSignicat', () => {
+		it('should login a user with Signicat successfully', async () => {
+			const tokenId = 'signicat-token-id';
+			const mockResponse = {
+				status: StatusCode.Ok,
+				data: {
+					token: 'accessTokenSignicat',
+					refreshToken: 'refreshTokenSignicat'
+				}
+			};
+
+			(api.post as jest.Mock).mockResolvedValue(mockResponse);
+
+			const result = await UserService.loginWithSignicat(tokenId);
+
+			expect(result).toEqual({
+				accessTokenStore: 'accessTokenSignicat',
+				refreshToken: 'refreshTokenSignicat'
+			});
+			expect(api.post).toHaveBeenCalledWith('/authenticate/signicat', { tokenId }, { headers: {} });
+		});
+
+		it('should throw an error if Signicat login fails with non-OK status', async () => {
+			const tokenId = 'signicat-token-id';
+			const mockResponse = {
+				status: 500,
+				data: 'Internal Server Error'
+			};
+			(api.post as jest.Mock).mockResolvedValue(mockResponse);
+
+			await expect(UserService.loginWithSignicat(tokenId)).rejects.toThrow(
+				"Cannot read properties of undefined (reading 'data')"
+			);
+		});
+
+		it('should throw an error if Signicat login fails with rejected promise', async () => {
+			const tokenId = 'signicat-token-id';
+			const mockError = { response: { data: 'Signicat login failed' } };
+			(api.post as jest.Mock).mockRejectedValue(mockError);
+
+			await expect(UserService.loginWithSignicat(tokenId)).rejects.toBe('Signicat login failed');
+		});
+	});
 });

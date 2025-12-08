@@ -1,7 +1,7 @@
-@import '../../../../../../libs/shared-assets/_styles/mixins';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
 
 :host {
-	@include flex(row, flex-start, flex-start);
+	@include mixins.flex(row, flex-start, flex-start);
 	gap: 8px;
 
 	.remaining-chips {

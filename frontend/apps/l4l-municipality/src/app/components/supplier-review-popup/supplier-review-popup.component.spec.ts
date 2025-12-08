@@ -6,11 +6,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { SupplierProfileService } from '@frontend/common';
+import { SupplierProfileService, SupplierRejectionService } from '@frontend/common';
 import { WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill';
-import { CentricCounterMessages } from '@windmill/ng-windmill';
+import { DialogService } from '@windmill/ng-windmill/dialog';
 import { of, Subject } from 'rxjs';
 
 import { RejectSupplierDto } from '../../_models/reject-supplier-dto.model';
@@ -23,6 +22,7 @@ describe('SupplierReviewPopupComponent', () => {
 	let dialogRef: MatDialogRef<SupplierReviewPopupComponent>;
 	let dialogService: DialogService;
 	let supplierServiceMock: jest.Mocked<MunicipalitySupplierService>;
+	let supplierRejectionServiceMock: jest.Mocked<SupplierRejectionService>;
 	let supplierProfileServiceMock: jest.Mocked<SupplierProfileService>;
 	let translateServiceMock: jest.Mocked<TranslateService>;
 
@@ -44,7 +44,11 @@ describe('SupplierReviewPopupComponent', () => {
 
 		supplierServiceMock = {
 			approveSupplier: jest.fn(() => of()),
+		} as any;
+
+		supplierRejectionServiceMock = {
 			rejectSupplier: jest.fn(() => of()),
+			rejectionReasonValues: [{ key: 'reason.one' }, { key: 'reason.two' }],
 		} as any;
 
 		supplierProfileServiceMock = {
@@ -91,6 +95,7 @@ describe('SupplierReviewPopupComponent', () => {
 				{ provide: DialogService, useValue: dialogService },
 				{ provide: 'env', useValue: environmentMock },
 				{ provide: MunicipalitySupplierService, useValue: supplierServiceMock },
+				{ provide: SupplierRejectionService, useValue: supplierRejectionServiceMock },
 				{ provide: SupplierProfileService, useValue: supplierProfileServiceMock },
 			],
 		}).compileComponents();
@@ -133,7 +138,7 @@ describe('SupplierReviewPopupComponent', () => {
 
 			component.rejectSupplier();
 
-			expect(supplierServiceMock.rejectSupplier).toHaveBeenCalledWith(expectedDto);
+			expect(supplierRejectionServiceMock.rejectSupplier).toHaveBeenCalledWith(expectedDto);
 			expect(dialogRef.close).toHaveBeenCalled();
 		});
 
@@ -142,7 +147,7 @@ describe('SupplierReviewPopupComponent', () => {
 
 			component.rejectSupplier();
 
-			expect(supplierServiceMock.rejectSupplier).not.toHaveBeenCalled();
+			expect(supplierRejectionServiceMock.rejectSupplier).not.toHaveBeenCalled();
 		});
 	});
 
@@ -193,27 +198,5 @@ describe('SupplierReviewPopupComponent', () => {
 			component.onSearchValueChanged(null);
 			expect(component.reasonUpdatedSource).toEqual(reasonDropdownSource);
 		});
-	});
-
-	it('should update counterMessages when language changes', () => {
-		const newCounterMessages: CentricCounterMessages = {
-			validLengthText: 'general.label.charactersLeft',
-			invalidLengthText: 'general.label.charactersOverTheLimit',
-		};
-
-		translateServiceMock.instant = jest.fn().mockImplementation((key: string) => {
-			const translations: any = {
-				'general.label.charactersLeft': 'characters left',
-				'general.label.charactersOverTheLimit': 'characters over the limit',
-			};
-			return translations[key] || key;
-		});
-
-		translateServiceMock.onLangChange.next({
-			lang: 'en',
-			translations: {},
-		});
-
-		expect(component.counterMessages).toEqual(newCounterMessages);
 	});
 });
