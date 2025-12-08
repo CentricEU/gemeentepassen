@@ -100,10 +100,10 @@ aws configure
 ### 3️⃣ Frontend Setup (Angular)
 
 1. Open the `frontend` folder in **IDE** ( **VSCode** or any other IDE).
-2. Install Angular CLI 16 globally:
+2. Install Angular CLI 19 globally:
 
 ```bash
-npm i -g @16
+npm i -g @19
 ```
 
 3. Install project dependencies:
