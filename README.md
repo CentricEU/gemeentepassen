@@ -109,7 +109,7 @@ npm i -g @16
 3. Install project dependencies:
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 
 4. Run the project:
