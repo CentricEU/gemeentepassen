@@ -1,6 +1,10 @@
 # 🌍 CityPasses Project
 
-Welcome to the **CityPasses** project! This README provides all the necessary instructions to set up and run the application on your local machine. 
+Welcome to the **CityPasses** project! 'Localforlocal' project evolved into the 'Gemeentepassen' project. This README provides all the necessary instructions to set up and run the application on your local machine. 
+
+The repository for the 'LocalforLocal' project is here: https://github.com/CentricEU/local4local.
+
+The project is founded by the EU NGI Program.
 
 The project is composed of:
 
