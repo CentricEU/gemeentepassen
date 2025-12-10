@@ -1,10 +1,6 @@
 # 🌍 CityPasses Project
 
-Welcome to the **CityPasses** project! 'Localforlocal' project evolved into the 'Gemeentepassen' project. This README provides all the necessary instructions to set up and run the application on your local machine. 
-
-The repository for the 'LocalforLocal' project is here: https://github.com/CentricEU/local4local.
-
-The project is founded by the EU NGI Program.
+This project manages municipal passes and local services. It started as Local4Local and evolved into Gemeentepassen with funding from the EU NGI Program. The original repository is available at https://github.com/CentricEU/local4local.
 
 The project is composed of:
 
@@ -47,7 +43,7 @@ Before starting, ensure you have the following installed on your machine:
 ### 1️⃣ Database Setup
 
 1. Install PostGIS Spatial Extension and PostgreSQL Server.
-2. Create a new database named `local4local`.
+2. Create a new database named `local4local` in PostgreSQL using pgAdmin.
 3. Run Backend to execute migrations.
 3. Insert the first user (replace your email and tenant ID). Password is `'Password1!'`:
    You can find the tenant_id in l4l_security/tenants.
@@ -219,21 +215,77 @@ const API_BASE_URL = "http://your_ip_address:8080/api";
 
 ## 🐞 Troubleshooting
 
-### Backend Issues
+### Database Connection Issues
 
-- **Database Connection Error:** Ensure PostgreSQL is running and credentials in `application.properties` are correct.
-- **Port Conflicts:** Verify that port `8080` is free or update it in `application.properties`.
+**Symptoms:**
 
-### Frontend Issues
+- Backend fails to start
+- Connection refused errors in logs
 
-- **Dependency Errors:** Run `npm install` to ensure all dependencies are installed.
-- **Port Conflicts:** Verify that ports `4200/4201/4202` are free or update the Angular CLI configuration.
+**Solutions:**
 
-### Mobile Issues
+- Verify PostgreSQL service is running
+- Confirm credentials in `application.properties` match your database configuration
+- Ensure database name is `local4local` as specified in the connection URL
 
-- **Android Emulator Not Starting:** Verify Android Studio setup and AVD configuration.
-- **iOS Build Errors:** Ensure Xcode is updated and a Development Team is selected.
-- **API Connection Issues:** Check `api.tsx` for correct backend URL and network accessibility.
+### Port Conflicts
+
+**Symptoms:**
+
+- Application fails to start
+- "Address already in use" errors
+
+**Required Ports:**
+
+- Backend: 8080
+- Municipality frontend: 4200
+- Supplier frontend: 4201
+- Citizen frontend: 4202
+
+**Solutions:**
+
+- Check that required ports are available before starting applications
+- Stop conflicting services or modify port configuration in application properties or package.json
+
+### Frontend Dependency Errors
+
+**Symptoms:**
+
+- npm install fails
+- Peer dependency warnings
+
+**Solutions:**
+
+- Use the `--legacy-peer-deps` flag during installation
+- Verify Node.js version 20.19.5 is installed by running `node --version`
+
+### Mobile Build Failures
+
+**Android Issues:**
+
+- Incomplete Android Studio setup
+- Missing SDK or platform tools
+- USB debugging not enabled on physical devices
+
+**iOS Issues:**
+
+- Outdated Xcode version
+- No development team selected in project settings
+- CocoaPods dependencies not installed (check for `Pods` directory in iOS folder)
+
+### Mobile API Connection Problems
+
+**Symptoms:**
+
+- App cannot reach backend
+- Network request timeouts
+
+**Solutions:**
+
+- Verify endpoint configuration in `api.tsx`
+- Confirm device is on same network as development machine for local testing
+- Use `10.0.2.2` for Android emulators or your LAN IP for physical devices
+- Check your computer's IP with `ipconfig` (Windows) or `ifconfig` (macOS/Linux)
 
 ---
 
