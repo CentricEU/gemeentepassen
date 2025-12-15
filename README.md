@@ -17,7 +17,7 @@ Before starting, ensure you have the following installed on your machine:
 
 ### Required Software
 
-- **PgAdmin + PostgreSQL Server** ([Download PostgreSQL](https://www.postgresql.org/download/))
+- **pgAdmin + PostgreSQL Server** ([Download PostgreSQL](https://www.postgresql.org/download/))
 - **Java - JDK 17** ([Download JDK](https://www.oracle.com/java/technologies/javase-downloads.html))
 - **Node.js 20.19.5** ([Download Node.js](https://nodejs.org/))
 - **Python 3.13.7** ([Download Python](https://www.python.org/downloads/))
@@ -31,7 +31,7 @@ Before starting, ensure you have the following installed on your machine:
 - **Git** ([Download Git](https://git-scm.com/downloads))
 - **Android Studio** (for Android mobile development)
 - **Xcode** (for iOS mobile development, macOS only)
-- **CocoaPods** (for iOS dependencies)  
+- **CocoaPods** (for iOS dependencies)
   ```bash
   sudo gem install cocoapods
   ```
@@ -45,14 +45,19 @@ Before starting, ensure you have the following installed on your machine:
 1. Install PostGIS Spatial Extension and PostgreSQL Server.
 2. Create a new database named `local4local` in PostgreSQL using pgAdmin.
 3. Run Backend to execute migrations.
-3. Insert the first user (replace your email and tenant ID). Password is `'Password1!'`:
+
+```bash
+mvn install && mvn spring-boot:run
+```
+
+4. Insert the first user (replace your email and tenant ID). Password is `'Password1!'`:
    You can find the tenant_id in l4l_security/tenants.
 
 ```sql
 INSERT INTO l4l_security."user"(
     username, password, is_active, tenant_id, supplier_id, is_approved, first_name, last_name, is_enabled)
-VALUES ( 'your_email@example.com', 
-         '$2y$12$CFBzxx0/9JT5/x.x9/40gOIgJKCwMrfaWdSA4OxvtgkXrGrazWgqu', 
+VALUES ( 'your_email@example.com',
+         '$2y$12$CFBzxx0/9JT5/x.x9/40gOIgJKCwMrfaWdSA4OxvtgkXrGrazWgqu',
          true, 'tenant_id', null, true, 'First Name', 'Last Name', true);
 ```
 
@@ -74,7 +79,7 @@ VALUES ( 'user_id', 0);
 2. Update the database connection in `application.properties` if needed:
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/l4l
+spring.datasource.url=jdbc:postgresql://localhost:5432/local4local
 spring.datasource.username=postgres
 spring.datasource.password=admin
 ```
@@ -90,12 +95,13 @@ mvn install
 ```bash
 aws configure
 ```
+
 - Enter your AWS Access Key ID
 - Enter your AWS Secret Access Key
 - Default region name (e.g., us-east-1)
 - Default output format (e.g., json)
 
-5. Run the project.  
+5. Run the project.
 6. The backend service will be running at [http://localhost:8080](http://localhost:8080).
 
 ---
@@ -106,7 +112,7 @@ aws configure
 2. Install Angular CLI 19 globally:
 
 ```bash
-npm i -g @19
+npm install -g @angular/cli@19
 ```
 
 3. Install project dependencies:
@@ -120,16 +126,19 @@ npm install --legacy-peer-deps
 ```bash
 npm run start-municipality
 ```
+
 - Frontend: [http://localhost:4200](http://localhost:4200)
 
 ```bash
 npm run start-supplier
 ```
+
 - Frontend: [http://localhost:4201](http://localhost:4201)
 
 ```bash
 npm run start-citizen
 ```
+
 - Frontend: [http://localhost:4202](http://localhost:4202)
 
 ---
@@ -162,8 +171,8 @@ cd ..
 1. Open **Android Studio** and ensure the following are installed:
    - Android SDK
    - Android SDK Platform Tools
-   - Emulator (AVD)  
-2. Start an emulator via **AVD Manager** or connect a physical Android device via USB (enable developer mode).  
+   - Emulator (AVD)
+2. Start an emulator via **AVD Manager** or connect a physical Android device via USB (enable developer mode).
 3. Run the app:
 
 ```bash
@@ -172,8 +181,8 @@ npx react-native run-android
 
 #### Running on iOS (macOS Only)
 
-1. Open the `ios` folder in **Xcode** and select your target device or simulator.  
-2. Ensure a **Development Team** is selected to sign the app.  
+1. Open the `ios` folder in **Xcode** and select your target device or simulator.
+2. Ensure a **Development Team** is selected to sign the app.
 3. Run the app:
 
 ```bash
@@ -182,9 +191,9 @@ npx react-native run-ios
 
 #### Notes
 
-- Ensure the **backend API** is running at [http://localhost:8080](http://localhost:8080).  
-  - For real devices, use your computer’s LAN IP instead of `localhost`.  
-- On Android, the emulator can use `10.0.2.2` as the localhost address.   
+- Ensure the **backend API** is running at [http://localhost:8080](http://localhost:8080).
+  - For real devices, use your computer’s LAN IP instead of `localhost`.
+- On Android, the emulator can use `10.0.2.2` as the localhost address.
 
 ---
 
@@ -200,15 +209,15 @@ const API_BASE_URL = "https://api.acceptance.gemeentepassen.eu/api";
 const API_BASE_URL = "http://your_ip_address:8080/api";
 ```
 
-- **Hosted backend:** Use this for testing against the live API.  
-- **Local backend:** Use this for local development; ensure the device can reach your computer’s IP.  
+- **Hosted backend:** Use this for testing against the live API.
+- **Local backend:** Use this for local development; ensure the device can reach your computer’s IP.
 
 ---
 
 ## 🌐 Running the Application
 
 1. Ensure both the **backend** and **frontend** servers are running.
-2. Open your browser and navigate to the corresponding frontend URL.  
+2. Open your browser and navigate to the corresponding frontend URL.
 3. For mobile, ensure the app points to the correct API endpoint (`api.tsx`).
 
 ---
@@ -290,4 +299,3 @@ const API_BASE_URL = "http://your_ip_address:8080/api";
 ---
 
 ### 🌟 Thank you for using CityPasses!
-

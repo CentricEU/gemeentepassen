@@ -141,6 +141,450 @@
       "nx/target-defaults"
     ]
   },
+  "apps/l4l-citizen": {
+    "root": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "name": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "$schema": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "projectType": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "prefix": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "sourceRoot": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "tags": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.executor": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.outputs": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.defaultConfiguration": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.outputPath": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.index": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.main": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.polyfills": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.tsConfig": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.inlineStyleLanguage": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.assets": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.styles": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.scripts": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.production": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.production.budgets": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.production.fileReplacements": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.production.outputHashing": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.beta": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.beta.budgets": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.beta.fileReplacements": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.beta.buildOptimizer": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.beta.optimization": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.beta.vendorChunk": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.beta.extractLicenses": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.beta.sourceMap": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.beta.namedChunks": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.acceptance": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.acceptance.budgets": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.acceptance.fileReplacements": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.acceptance.buildOptimizer": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.acceptance.optimization": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.acceptance.vendorChunk": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.acceptance.extractLicenses": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.acceptance.sourceMap": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.acceptance.namedChunks": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.development": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.development.buildOptimizer": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.development.optimization": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.development.vendorChunk": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.development.extractLicenses": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.development.sourceMap": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.configurations.development.namedChunks": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.executor": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.configurations": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.defaultConfiguration": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.configurations.production": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.configurations.production.buildTarget": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.configurations.development": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.configurations.development.buildTarget": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.extract-i18n": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.extract-i18n.executor": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.extract-i18n.options": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.extract-i18n.options.buildTarget": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.executor": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.executor": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.outputs": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.options": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.test.options.jestConfig": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve-static": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve-static.executor": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve-static.options": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve-static.options.buildTarget": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve-static.options.port": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve-static.options.spa": [
+      "apps/l4l-citizen/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.dependsOn": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.inputs": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.build.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.lint.inputs": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.lint.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.test.inputs": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.test.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ]
+  },
+  "apps/l4l-citizen-e2e": {
+    "root": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "name": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "$schema": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "projectType": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "sourceRoot": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "tags": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "implicitDependencies": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "implicitDependencies.l4l-citizen": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.e2e": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.e2e.executor": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.e2e.options": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.e2e.configurations": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.e2e.options.cypressConfig": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.e2e.options.testingType": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.e2e.options.devServerTarget": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.e2e.configurations.production": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.e2e.configurations.production.devServerTarget": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.e2e.configurations.ci": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.e2e.configurations.ci.devServerTarget": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.executor": [
+      "apps/l4l-citizen-e2e/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.e2e.inputs": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.e2e.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.lint.inputs": [
+      "nx.json",
+      "nx/target-defaults"
+    ],
+    "targets.lint.parallelism": [
+      "nx.json",
+      "nx/target-defaults"
+    ]
+  },
   "apps/l4l-municipality": {
     "root": [
       "apps/l4l-municipality/project.json",
@@ -378,7 +822,7 @@
       "apps/l4l-municipality/project.json",
       "nx/core/project-json"
     ],
-    "targets.serve.configurations.production.browserTarget": [
+    "targets.serve.configurations.production.buildTarget": [
       "apps/l4l-municipality/project.json",
       "nx/core/project-json"
     ],
@@ -386,7 +830,7 @@
       "apps/l4l-municipality/project.json",
       "nx/core/project-json"
     ],
-    "targets.serve.configurations.development.browserTarget": [
+    "targets.serve.configurations.development.buildTarget": [
       "apps/l4l-municipality/project.json",
       "nx/core/project-json"
     ],
@@ -402,7 +846,7 @@
       "apps/l4l-municipality/project.json",
       "nx/core/project-json"
     ],
-    "targets.extract-i18n.options.browserTarget": [
+    "targets.extract-i18n.options.buildTarget": [
       "apps/l4l-municipality/project.json",
       "nx/core/project-json"
     ],
@@ -854,7 +1298,7 @@
       "apps/l4l-supplier/project.json",
       "nx/core/project-json"
     ],
-    "targets.serve.configurations.production.browserTarget": [
+    "targets.serve.configurations.production.buildTarget": [
       "apps/l4l-supplier/project.json",
       "nx/core/project-json"
     ],
@@ -862,7 +1306,7 @@
       "apps/l4l-supplier/project.json",
       "nx/core/project-json"
     ],
-    "targets.serve.configurations.development.browserTarget": [
+    "targets.serve.configurations.development.buildTarget": [
       "apps/l4l-supplier/project.json",
       "nx/core/project-json"
     ],
