@@ -42,33 +42,81 @@ Before starting, ensure you have the following installed on your machine:
 
 ### 1️⃣ Database Setup
 
-1. Install PostGIS Spatial Extension and PostgreSQL Server.
-2. Create a new database named `local4local` in PostgreSQL using pgAdmin.
-3. Run Backend to execute migrations.
+1. Install PostgreSQL Server. During installation, leave Stack Builder checked.
+2. Install PostGIS Spatial Extenstion from Application Stack Builder.
+3. Create a new database named `local4local` in PostgreSQL using pgAdmin.
+4. Run Backend to execute migrations.
 
 ```bash
 mvn install && mvn spring-boot:run
 ```
 
-4. Insert the first user (replace your email and tenant ID). Password is `'Password1!'`:
-   You can find the tenant_id in l4l_security/tenants.
+5. Choosing a tenant
+
+The application is multi-tenant.
+This means every user must belong to exactly one tenant, and users cannot exist without a tenant.
+
+Tenants are stored in the table:
+```sql
+l4l_security.tenants
+```
+Each tenant has a unique id(UUID). Before creating the first user, you must choose an existing tenant.
+
+6. Insert the first user
+
+Replace:
+- your_email@example.com
+- tenant_id → the tenant id copied above
+
+Password is `'Password1!'` (bcrypt hash already provided).
 
 ```sql
-INSERT INTO l4l_security."user"(
-    username, password, is_active, tenant_id, supplier_id, is_approved, first_name, last_name, is_enabled)
-VALUES ( 'your_email@example.com',
-         '$2y$12$CFBzxx0/9JT5/x.x9/40gOIgJKCwMrfaWdSA4OxvtgkXrGrazWgqu',
-         true, 'tenant_id', null, true, 'First Name', 'Last Name', true);
+INSERT INTO l4l_security."user" (
+    username,
+    password,
+    is_active,
+    tenant_id,
+    supplier_id,
+    is_approved,
+    first_name,
+    last_name,
+    is_enabled
+)
+VALUES (
+    'your_email@example.com',
+    '$2y$12$CFBzxx0/9JT5/x.x9/40gOIgJKCwMrfaWdSA4OxvtgkXrGrazWgqu',
+    true,
+    '7b8f9e8c-6e0e-4d1e-b8c0-8c0eaa123456', -- tenant_id
+    NULL,
+    true,
+    'First Name',
+    'Last Name',
+    true
+);
+```
+💡 If you need a different password, generate a bcrypt hash using: https://bcrypt-generator.com.
+
+7. Get the user ID
+
+After inserting the user, retrieve its ID:
+```sql
+SELECT id
+FROM l4l_security."user"
+WHERE username = 'your_email@example.com';
 ```
 
-For password generator you can use: https://bcrypt-generator.com.
+8. Assign a role to the user
 
-4. Insert a role for the user (replace `user_id` with the ID of the newly created user):
-
+Role 0 = Admin (adjust if needed).
 ```sql
-INSERT INTO l4l_security.user_role(
-    user_id, role_id)
-VALUES ( 'user_id', 0);
+INSERT INTO l4l_security.user_role (
+    user_id,
+    role_id
+)
+VALUES (
+    'user_id_from_previous_step',
+    0
+);
 ```
 
 ---
