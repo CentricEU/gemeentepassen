@@ -1,0 +1,26 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+
+:host {
+	::ng-deep {
+		mat-dialog-container [mat-dialog-content] {
+			@include mixins.flex(row, space-between, flex-start);
+		}
+	}
+
+	.button-bar {
+		@include mixins.flex(row, center, center);
+		position: relative;
+		width: 100%;
+	}
+
+	.button-bar > centric-button:first-child {
+		@include mixins.pos(absolute, $l: 0);
+	}
+
+	.button-group-center {
+		display: flex;
+		gap: 12px;
+		margin: 0 auto;
+	}
+
+}

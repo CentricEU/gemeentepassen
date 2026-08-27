@@ -1,10 +1,10 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import nl.centric.innovation.local4local.entity.User;
 import nl.centric.innovation.local4local.entity.UserProfile;
 
-import javax.validation.constraints.NotNull;
 
 @Builder
 public record UserProfileDto(

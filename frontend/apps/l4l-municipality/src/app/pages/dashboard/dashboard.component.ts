@@ -13,7 +13,7 @@ import {
 import { TransactionChartComponent } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
 import { WindmillComboButtonMenuItem } from '@windmill/ng-windmill/combo-button';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { ToastrService } from '@windmill/ng-windmill/toastr';
 
 import { BankDetailsDialogComponent } from '../../components/bank-details-dialog/bank-details-dialog.component';
@@ -34,6 +34,8 @@ export class DashboardComponent implements OnInit {
 	public activeTimePeriod = DASHBOARD_TRANSLATION_KEYS.THIS_MONTH;
 	public timePeriod: TimeIntervalPeriod = TimeIntervalPeriod.MONTHLY;
 	public isApproved = false;
+
+	private chartInitialized = false;
 
 	public get widgetsData(): InfoWidgetData[] {
 		return [
@@ -71,7 +73,13 @@ export class DashboardComponent implements OnInit {
 	public ngOnInit(): void {
 		this.shouldDisplayBankInfoDialog();
 		this.initInfoWidgetsData();
-		this.initChart(TimeIntervalPeriod.MONTHLY);
+		this.translateService.onLangChange.subscribe(() => {
+			this.initChartOnce();
+		});
+
+		setTimeout(() => {
+			this.initChartOnce();
+		});
 	}
 
 	public shouldDisplayBankInfoDialog(): void {
@@ -137,5 +145,14 @@ export class DashboardComponent implements OnInit {
 				this.passholdersCount = result.passholdersCount;
 				this.transactionsCount = result.transactionsCount;
 			});
+	}
+
+	private initChartOnce(): void {
+		if (this.chartInitialized) {
+			return;
+		}
+
+		this.chartInitialized = true;
+		this.initChart(TimeIntervalPeriod.MONTHLY);
 	}
 }

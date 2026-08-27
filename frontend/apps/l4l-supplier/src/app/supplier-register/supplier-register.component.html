@@ -1,4 +1,4 @@
-<ng-container *ngIf="!shouldDisplaySuccessfulRegistrationDialog; else successfulRegistration">
+@if (!shouldDisplaySuccessfulRegistrationDialog) {
 	<centric-register>
 		<ng-container title>
 			<div class="form-header">
@@ -18,20 +18,23 @@
 							[maxLength]="256"
 							[ariaLabelTranslation]="'register.firstNamePlaceholder'"
 							[validationFunction]="validationFunctionError.bind(this, 'firstName', registerForm)">
-							<ng-container errors *ngIf="hasFormControlRequiredErrors('firstName', registerForm)">
-								<span class="centric-error-message">
-									{{ getErrorMessageFormInputs('firstName') }}
-								</span>
-							</ng-container>
-							<ng-container errors *ngIf="registerForm.get('firstName')?.hasError('isHTML')">
-								<span class="centric-error-message">
-									{{ 'errors.htmlContent' | translate }}
-								</span>
-							</ng-container>
+							@if (hasFormControlRequiredErrors('firstName', registerForm)) {
+								<ng-container errors>
+									<span class="centric-error-message">
+										{{ getErrorMessageFormInputs('firstName') }}
+									</span>
+								</ng-container>
+							}
+							@if (registerForm.get('firstName')?.hasError('isHTML')) {
+								<ng-container errors>
+									<span class="centric-error-message">
+										{{ 'errors.htmlContent' | translate }}
+									</span>
+								</ng-container>
+							}
 						</windmill-input>
 					</centric-form-control>
 				</centric-form-item>
-
 				<centric-form-item>
 					<centric-form-label>{{ 'genericFields.lastName.title' | translate }}</centric-form-label>
 					<centric-form-control frontendRequiredInput>
@@ -43,20 +46,23 @@
 							[maxLength]="256"
 							[ariaLabelTranslation]="'register.lastNamePlaceholder'"
 							[validationFunction]="validationFunctionError.bind(this, 'lastName', registerForm)">
-							<ng-container errors *ngIf="hasFormControlRequiredErrors('lastName', registerForm)">
-								<span class="centric-error-message">
-									{{ getErrorMessageFormInputs('lastName') }}
-								</span>
-							</ng-container>
-							<ng-container errors *ngIf="registerForm.get('lastName')?.hasError('isHTML')">
-								<span class="centric-error-message">
-									{{ 'errors.htmlContent' | translate }}
-								</span>
-							</ng-container>
+							@if (hasFormControlRequiredErrors('lastName', registerForm)) {
+								<ng-container errors>
+									<span class="centric-error-message">
+										{{ getErrorMessageFormInputs('lastName') }}
+									</span>
+								</ng-container>
+							}
+							@if (registerForm.get('lastName')?.hasError('isHTML')) {
+								<ng-container errors>
+									<span class="centric-error-message">
+										{{ 'errors.htmlContent' | translate }}
+									</span>
+								</ng-container>
+							}
 						</windmill-input>
 					</centric-form-control>
 				</centric-form-item>
-
 				<centric-form-item>
 					<centric-form-label>{{ 'register.companyName' | translate }}</centric-form-label>
 					<centric-form-control frontendRequiredInput>
@@ -68,16 +74,20 @@
 							[maxLength]="256"
 							[ariaLabelTranslation]="'register.companyNamePlaceholder'"
 							[validationFunction]="validationFunctionError.bind(this, 'company', registerForm)">
-							<ng-container errors *ngIf="hasFormControlRequiredErrors('company', registerForm)">
-								<span class="centric-error-message">
-									{{ getErrorMessageFormInputs('company') }}
-								</span>
-							</ng-container>
-							<ng-container errors *ngIf="registerForm.get('company')?.hasError('isHTML')">
-								<span class="centric-error-message">
-									{{ 'errors.htmlContent' | translate }}
-								</span>
-							</ng-container>
+							@if (hasFormControlRequiredErrors('company', registerForm)) {
+								<ng-container errors>
+									<span class="centric-error-message">
+										{{ getErrorMessageFormInputs('company') }}
+									</span>
+								</ng-container>
+							}
+							@if (registerForm.get('company')?.hasError('isHTML')) {
+								<ng-container errors>
+									<span class="centric-error-message">
+										{{ 'errors.htmlContent' | translate }}
+									</span>
+								</ng-container>
+							}
 						</windmill-input>
 					</centric-form-control>
 				</centric-form-item>
@@ -87,22 +97,24 @@
 						<windmill-input
 							frontendNumericalInput
 							ariaAttributes
-							formControlName="kvk"
+							formControlName="kvkNumber"
 							[maxLength]="8"
 							[placeholder]="'register.kvkNumberPlaceholder' | translate"
 							[ariaLabelTranslation]="'register.kvkNumberPlaceholder'"
 							[validationFunction]="validationFunctionErrorForKVK.bind(this, registerForm)">
-							<ng-container errors *ngIf="validationFunctionErrorForKVK(registerForm)">
-								<span class="centric-error-message">
-									{{ getKVKErrorMessage() }}
-								</span>
-							</ng-container>
+							@if (validationFunctionErrorForKVK(registerForm)) {
+								<ng-container errors>
+									<span class="centric-error-message">
+										{{ getKVKErrorMessage() }}
+									</span>
+								</ng-container>
+							}
 						</windmill-input>
 					</centric-form-control>
 				</centric-form-item>
 				<centric-form-item>
 					<centric-form-label>{{ 'register.municipality' | translate }}</centric-form-label>
-					<ng-container *ngIf="updatedSource">
+					@if (updatedSource) {
 						<windmill-dropdown-search
 							frontendRequiredInput
 							ariaAttributes
@@ -117,13 +129,15 @@
 							[validationFunction]="validationFunctionError.bind(this, 'municipality', registerForm)"
 							(valueChanged)="onValueChangedTenantId($event)"
 							(searchValueChange)="onSearchValueChanged($event)">
-							<ng-container errors *ngIf="hasFormControlRequiredErrors('municipality', registerForm)">
-								<span class="centric-error-message"
-									>{{ getErrorMessageFormInputs('municipality') }}
-								</span>
-							</ng-container>
+							@if (hasFormControlRequiredErrors('municipality', registerForm)) {
+								<ng-container errors>
+									<span class="centric-error-message"
+										>{{ getErrorMessageFormInputs('municipality') }}
+									</span>
+								</ng-container>
+							}
 						</windmill-dropdown-search>
-					</ng-container>
+					}
 				</centric-form-item>
 				<centric-form-item>
 					<centric-form-label class="email-label"
@@ -140,11 +154,13 @@
 							[maxLength]="256"
 							[ariaLabelTranslation]="'register.emailAddressPlaceholder'"
 							[validationFunction]="validationFunctionError.bind(this, 'email', registerForm)">
-							<ng-container errors *ngIf="validationFunctionError('email', registerForm)">
-								<span class="centric-error-message">{{
-									getEmailErrorMessage(registerForm) | translate
-								}}</span>
-							</ng-container>
+							@if (validationFunctionError('email', registerForm)) {
+								<ng-container errors>
+									<span class="centric-error-message">{{
+										getEmailErrorMessage(registerForm) | translate
+									}}</span>
+								</ng-container>
+							}
 						</windmill-input>
 					</centric-form-control>
 				</centric-form-item>
@@ -160,11 +176,13 @@
 							[maxLength]="256"
 							[ariaLabelTranslation]="'genericFields.password.passwordPlaceholder'"
 							[validationFunction]="validationFunctionError.bind(this, 'password', registerForm)">
-							<ng-container errors *ngIf="hasFormControlRequiredErrors('password', registerForm)">
-								<span class="centric-error-message">
-									{{ getErrorMessageFormInputs('password') }}
-								</span>
-							</ng-container>
+							@if (hasFormControlRequiredErrors('password', registerForm)) {
+								<ng-container errors>
+									<span class="centric-error-message">
+										{{ getErrorMessageFormInputs('password') }}
+									</span>
+								</ng-container>
+							}
 						</windmill-input>
 					</centric-form-control>
 				</centric-form-item>
@@ -188,11 +206,11 @@
 							[ariaLabelTranslation]="'genericFields.password.confirmPasswordPlaceholder'"
 							[validationFunction]="validationFunctionError.bind(this, 'confirmPassword', registerForm)">
 							<ng-container errors>
-								<ng-container *ngIf="shouldDisplayPasswordConfirmationError()">
+								@if (shouldDisplayPasswordConfirmationError()) {
 									<span class="centric-error-message"
 										>{{ getConfirmPasswordErrorMessage(registerForm) | translate }}
 									</span>
-								</ng-container>
+								}
 							</ng-container>
 						</windmill-input>
 					</centric-form-control>
@@ -226,7 +244,6 @@
 			</form>
 		</ng-container>
 	</centric-register>
-</ng-container>
-<ng-template #successfulRegistration>
+} @else {
 	<section class="background-cover"></section>
-</ng-template>
+}

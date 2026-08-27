@@ -2,7 +2,7 @@
 
 :host {
 	::ng-deep {
-		.panel-header {
+		.card-header {
 			div {
 				windmill-combo-button {
 					margin: 0 0 0 auto;
@@ -10,7 +10,7 @@
 			}
 		}
 
-		.panel-content {
+		.card-content {
 			@include mixins.flex(column, space-between, space-between);
 			@include mixins.size(100%, 100%);
 			padding: 32px 32px 32px 16px;
@@ -38,7 +38,7 @@
 @media only screen and (max-width: 1536px) {
 	:host {
 		::ng-deep {
-			.panel-content {
+			.card-content {
 				@include mixins.flex(column, flex-start, flex-start);
 				gap: 16px;
 			}
@@ -49,7 +49,7 @@
 @media only screen and (max-width: 1366px) {
 	:host {
 		::ng-deep {
-			.panel-content {
+			.card-content {
 				.outer-chart-container {
 					padding: 32px;
 				}
@@ -61,7 +61,7 @@
 @media only screen and (max-width: 1180px) {
 	:host {
 		::ng-deep {
-			.panel-content {
+			.card-content {
 				.outer-chart-container {
 					padding: 16px;
 				}

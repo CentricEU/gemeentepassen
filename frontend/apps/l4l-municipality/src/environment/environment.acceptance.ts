@@ -3,4 +3,5 @@ export const environment = {
 	prefixes: 'localforlocal-acceptance://',
 	production: true,
 	envName: 'acceptance',
+	captchaSiteKey: '6Ld-jb4pAAAAAI34pOa8uqqGX407eykhcPLDTdO7',
 };

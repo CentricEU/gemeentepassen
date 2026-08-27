@@ -39,7 +39,7 @@ public class OfferTyperServiceImplTests {
         List<OfferType> mockOfferTypes = Arrays.asList(offerType1, offerType2);
 
         // Mock the behavior of the offerTypeRepository
-        when(offerTypeRepository.findAll()).thenReturn(mockOfferTypes);
+        when(offerTypeRepository.findAllByIsEnabledTrueOrderByOfferTypeLabel()).thenReturn(mockOfferTypes);
 
         // Call the method to be tested
         List<OfferType> result = offerTypeService.getAllOfferTypes();

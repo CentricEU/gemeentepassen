@@ -57,11 +57,11 @@ describe('MultilanguageService', () => {
 		jest.spyOn(cookieService, 'get').mockReturnValue('');
 		const setUsedLanguageSpy = jest.spyOn(service as any, 'setUsedLanguage');
 
-		service.setupLanguage(AppType.citizen);
+		service.setupLanguage(AppType.passholder);
 
 		expect(translateService.addLangs).toHaveBeenCalledWith([Languages.en, Languages.nl]);
 		expect(translateService.setDefaultLang).toHaveBeenCalledWith(Languages.nl);
-		expect(setUsedLanguageSpy).toHaveBeenCalledWith(Languages.nl, AppType.citizen);
+		expect(setUsedLanguageSpy).toHaveBeenCalledWith(Languages.nl, AppType.passholder);
 	});
 
 	it('should set up the default language and use the stored language if available', () => {
@@ -78,7 +78,7 @@ describe('MultilanguageService', () => {
 		it('makes expected calls', () => {
 			jest.spyOn(translateService, 'addLangs');
 			jest.spyOn(translateService, 'setDefaultLang');
-			service.setupLanguage(AppType.citizen);
+			service.setupLanguage(AppType.passholder);
 
 			expect(translateService.addLangs).toHaveBeenCalled();
 		});
@@ -116,12 +116,12 @@ describe('MultilanguageService', () => {
 			const setDocumentLangSpy = jest.spyOn<any, any>(service as any, 'setDocumentLang');
 			const setUsedLanguageSpy = jest.spyOn(service, 'setUsedLanguage');
 
-			service.setupLanguage(AppType.citizen);
+			service.setupLanguage(AppType.passholder);
 
 			expect(translateService.addLangs).toHaveBeenCalledWith([Languages.en, Languages.nl]);
-			expect(cookieService.get).toHaveBeenCalledWith('language_citizen');
+			expect(cookieService.get).toHaveBeenCalledWith('language_passholder');
 			expect(setDocumentLangSpy).toHaveBeenCalledWith('en-US');
-			expect(setUsedLanguageSpy).toHaveBeenCalledWith('en-US', AppType.citizen);
+			expect(setUsedLanguageSpy).toHaveBeenCalledWith('en-US', AppType.passholder);
 			expect(translateService.setDefaultLang).not.toHaveBeenCalled();
 		});
 
@@ -143,9 +143,9 @@ describe('MultilanguageService', () => {
 			const setDocumentLangSpy = jest.spyOn<any, any>(service as any, 'setDocumentLang');
 			const setUsedLanguageSpy = jest.spyOn(service, 'setUsedLanguage');
 
-			service.setupLanguage(AppType.citizen);
+			service.setupLanguage(AppType.passholder);
 			expect(setDocumentLangSpy).toHaveBeenCalledWith(Languages.nl);
-			expect(setUsedLanguageSpy).toHaveBeenCalledWith(Languages.nl, AppType.citizen);
+			expect(setUsedLanguageSpy).toHaveBeenCalledWith(Languages.nl, AppType.passholder);
 
 			service.setupLanguage(AppType.municipality);
 			expect(setDocumentLangSpy).toHaveBeenCalledWith(Languages.nl);

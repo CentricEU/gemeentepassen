@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { AuthService, Breadcrumb, BreadcrumbService, commonRoutingConstants, UserService } from '@frontend/common';
 import { WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of } from 'rxjs';
 
 import { AppModule } from '../../app.module';
@@ -214,7 +214,41 @@ describe('UserManagementComponent', () => {
 
 		component.loadData({ currentIndex: 0, pageSize: 10 } as any);
 
-		const expectedTransformed = rawData.map((d) => ({ ...d, actionButtons: [] }));
+		const expectedTransformed = rawData.map((d) => ({
+			...d,
+			role: 'createUser.roles.administrator',
+			actionButtons: [],
+		}));
 		expect(component.usersTable.afterDataLoaded).toHaveBeenCalledWith(expectedTransformed);
+	});
+
+	it('should map roles correctly based on isSuperAdmin', () => {
+		const rawData = [
+			{ fullName: 'Super User', email: 'super@test.com', isSuperAdmin: true },
+			{ fullName: 'Admin User', email: 'admin@test.com', isSuperAdmin: false },
+		] as any[];
+
+		component.usersTable = { afterDataLoaded: jest.fn() } as any;
+
+		jest.spyOn(component['translateService'], 'instant').mockImplementation((key: any) => key);
+
+		(component as any).afterDataLoaded(rawData);
+
+		expect(component.usersTable.afterDataLoaded).toHaveBeenCalledWith([
+			{
+				fullName: 'Super User',
+				email: 'super@test.com',
+				isSuperAdmin: true,
+				role: 'createUser.roles.superAdministrator',
+				actionButtons: [],
+			},
+			{
+				fullName: 'Admin User',
+				email: 'admin@test.com',
+				isSuperAdmin: false,
+				role: 'createUser.roles.administrator',
+				actionButtons: [],
+			},
+		]);
 	});
 });

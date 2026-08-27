@@ -9,7 +9,7 @@
 		[attr.ariaLabel]="'general.button.close' | translate"
 		[ariaLabelTranslation]="'general.button.close'"
 		(click)="close()">
-		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'16'"></centric-icon2>
+		<windmill-icon [svgIcon]="'cancel_b'" [size]="'16'"></windmill-icon>
 	</button>
 </section>
 <div mat-dialog-content>
@@ -27,11 +27,13 @@
 					[hasClearIcon]="true"
 					[ariaLabelTranslation]="'transactions.generateInvoice.invoiceNumber'"
 					[validationFunction]="validationFunctionError.bind(this, 'invoiceNumber', generateInvoiceForm)">
-					<ng-container errors *ngIf="validationFunctionError('invoiceNumber', generateInvoiceForm)">
-						<span class="centric-error-message">
-							{{ getInvoiceNumberErrorMessage() | translate }}
-						</span>
-					</ng-container>
+					@if (validationFunctionError('invoiceNumber', generateInvoiceForm)) {
+						<ng-container errors>
+							<span class="centric-error-message">
+								{{ getInvoiceNumberErrorMessage() | translate }}
+							</span>
+						</ng-container>
+					}
 				</windmill-input>
 			</centric-form-control>
 		</centric-form-item>
@@ -59,11 +61,13 @@
 					[ariaLabel]="'issueDate'"
 					[ariaLabelClearIcon]="'general.label.close' | translate"
 					[validationFunction]="validationFunctionError.bind(this, 'issueDate', generateInvoiceForm)">
-					<ng-container errors *ngIf="hasFormControlRequiredErrors('issueDate', generateInvoiceForm)">
-						<span class="centric-error-message"
-							>{{ 'transactions.generateInvoice.issueDateRequired' | translate }}
-						</span>
-					</ng-container>
+					@if (hasFormControlRequiredErrors('issueDate', generateInvoiceForm)) {
+						<ng-container errors>
+							<span class="centric-error-message"
+								>{{ 'transactions.generateInvoice.issueDateRequired' | translate }}
+							</span>
+						</ng-container>
+					}
 				</windmill-date-picker>
 			</centric-form-control>
 		</centric-form-item>
@@ -84,11 +88,13 @@
 				[ariaLabelTranslation]="'transactions.generateInvoice.dueDate'"
 				[validationFunction]="validationFunctionError.bind(this, 'dueDate', generateInvoiceForm)"
 				(searchValueChange)="onSearchValueChanged($event)">
-				<ng-container errors *ngIf="hasFormControlRequiredErrors('dueDate', generateInvoiceForm)">
-					<span class="centric-error-message"
-						>{{ 'transactions.generateInvoice.dueDateRequired' | translate }}
-					</span>
-				</ng-container>
+				@if (hasFormControlRequiredErrors('dueDate', generateInvoiceForm)) {
+					<ng-container errors>
+						<span class="centric-error-message"
+							>{{ 'transactions.generateInvoice.dueDateRequired' | translate }}
+						</span>
+					</ng-container>
+				}
 			</windmill-dropdown-search>
 		</centric-form-item>
 	</form>

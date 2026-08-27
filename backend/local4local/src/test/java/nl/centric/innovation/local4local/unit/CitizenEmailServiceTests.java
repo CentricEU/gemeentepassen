@@ -5,9 +5,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.model.SendEmailRequest;
-import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import nl.centric.innovation.local4local.entity.Tenant;
 import nl.centric.innovation.local4local.service.impl.CitizenEmailService;
 import nl.centric.innovation.local4local.service.impl.CitizenMailTemplateBuilderImpl;
@@ -19,12 +16,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import software.amazon.awssdk.services.sesv2.SesV2Client;
+import software.amazon.awssdk.services.sesv2.model.SendEmailRequest;
+import software.amazon.awssdk.services.sesv2.model.SendEmailResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class CitizenEmailServiceTests {
 
     @Mock
-    private AmazonSimpleEmailService amazonEmailService;
+    private SesV2Client amazonEmailService;
 
     @Mock
     private CitizenMailTemplateBuilderImpl citizenMailTemplateBuilder;
@@ -66,7 +66,7 @@ public class CitizenEmailServiceTests {
                 .build();
 
         when(citizenMailTemplateBuilder.buildEmailTemplate(any())).thenReturn("<html>Email</html>");
-        when(amazonEmailService.sendEmail(any(SendEmailRequest.class))).thenReturn(new SendEmailResult());
+        when(amazonEmailService.sendEmail(any(SendEmailRequest.class))).thenReturn(SendEmailResponse.builder().build());
 
         // When
         citizenEmailService.sendSummaryEmailAfterApplyForPass("citizen@example.com", "en", tenant);

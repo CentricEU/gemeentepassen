@@ -5,15 +5,19 @@
 	overflow: hidden;
 
 	::ng-deep {
-		centric-panel,
+		windmill-card,
 		windmill-tab-group {
 			height: 100%;
 		}
 
 		.windmill-tab {
 			height: 100%;
-			max-height: calc(100vh - 160px);
-			overflow-y: scroll;
+			max-height: calc(100vh - 162px);
+			overflow-y: auto;
+
+			.no-data {
+				height: calc(100vh - 166px);
+			}
 		}
 	}
 }

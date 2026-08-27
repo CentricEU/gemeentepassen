@@ -51,7 +51,7 @@
 			"monthly": "Maandelijks",
 			"yearly": "Jaarlijks"
 		},
-		"welcome": "Welkom terug bij Gemeentepassen",
+		"welcome": "Welkom terug bij Gemeentepas",
 		"balance": "Balans: ",
 		"status": {
 			"active": "Actief",
@@ -63,12 +63,12 @@
 		"transactions": "Transacties",
 		"profile": "Profiel",
 		"discounts": "Kortingen",
-		"benefits": "Voordelen",
+		"benefits": "Tegoeden",
 		"discountCode": "Kortingscode"
 	},
 	"landingPage": {
-		"title": "Welkom bij Gemeentepassen!",
-		"description": "Of je je voordelen nu gebruikt of niet, je kunt profiteren van onze aanbiedingen van leveranciers."
+		"title": "Welkom bij Gemeentepas!",
+		"description": "Of je je tegoeden nu gebruikt of niet, je kunt profiteren van onze aanbiedingen van aanbieders."
 	},
 	"getStartedPage": {
 		"title": "Ga aan de slag",
@@ -118,10 +118,11 @@
 		"seeAll": "Bekijk allemaal",
 		"chipList": {
 			"all": "Alle kortingen",
-			"credit": "Tegoed",
+			"storeCredit": "Tegoed",
 			"bogo": "Koop één, krijg één gratis",
-			"freeEntry": "Gratis toegang/Product",
-			"percentage": "Korting"
+			"membershipFee": "Lidmaatschapsbijdrage",
+			"freeEntry": "Toegang",
+			"freeProduct": "Product"
 		},
 		"offerGroup": "Aanbiedingengroep ({{number}})",
 		"availableWith": "Beschikbaar {{startDate}}",
@@ -129,7 +130,7 @@
 		"noResultsDescription": "Geen aanbiedingen komen overeen met je geselecteerde criteria.",
 		"seeAllOffers": "Bekijk alle aanbiedingen",
 		"noOffersYetTitle": "Nog geen aanbiedingen beschikbaar",
-		"noOffersYetDescription": "We wachten nog op leveranciers om hun aanbiedingen toe te voegen. Kom snel terug om te kijken!"
+		"noOffersYetDescription": "We wachten nog op aanbieders om hun aanbiedingen toe te voegen. Kom snel terug om te kijken!"
 	},
 	"offerDetailsPage": {
 		"title": "Aanbieding details",
@@ -140,7 +141,7 @@
 		"validity": "{{startDate}} tot {{endDate}}",
 		"acceptedBenefit": "Toegestane voordeel",
 		"bogo": "Koop één, krijg één gratis",
-		"amount": "Hoeveelheid korting",
+		"amount": "Prijs",
 		"frecquency": "Gebruiksfrequentie",
 		"timeSlots": "Tijdsloten",
 		"hourValidity": "Van {{startHour}} tot {{endHour}}",
@@ -200,14 +201,14 @@
 		"bankHolidaysWarning": "De openingstijden kunnen variëren. Neem contact op met de leverancier."
 	},
 	"category": {
-		"types": {
-			"culture": "Cultuur",
-			"music": "Muziek",
-			"foodAndDrinks": "Eten en drinken",
-			"courses": "Cursussen",
-			"sport": "Sport",
-			"dance": "Dans"
-		}
+		 "types": {
+            "culture": "Cultuur",
+            "music": "Muziek",
+            "foodAndDrinks": "Eten en drinken",
+            "sport": "Sport",
+            "other": "Overig",
+            "shop": "Winkel"
+        }
 	},
 	"dayOfWeek": {
 		"1": "Maandag",
@@ -240,10 +241,12 @@
 	},
 	"offer": {
 		"types": {
-			"freeEntry": "Gratis toegang/Product",
-			"percentage": "Korting",
+			"benefit": "Voordeel",
+			"storeCredit": "Tegoed",
 			"bogo": "Koop één, krijg één gratis",
-			"credit": "Tegoed"
+			"membershipFee": "Lidmaatschapsbijdrage",
+			"freeEntry": "Toegang",
+			"freeProduct": "Product"
 		},
 		"offerType": "Type aanbieding: ",
 		"expirationDate": "Vervaldatum: ",
@@ -290,10 +293,10 @@
 		"locationDisabledMessage": "Je locatie kon niet worden opgehaald."
 	},
 	"benefits": {
-		"noBenefitsTitle": "Welkom bij je voordelen",
-		"noBenefitsDescription": "Uw voordelen verschijnen hier zodra ze door de gemeente zijn toegewezen.",
-		"noExpiredBenefits": "Je hebt geen verlopen voordelen.",
-		"noActiveBenefits": "Je hebt geen actieve voordelen.",
+		"noBenefitsTitle": "Welkom bij je tegoeden",
+		"noBenefitsDescription": "Uw tegoeden verschijnen hier zodra ze door de gemeente zijn toegewezen.",
+		"noExpiredBenefits": "Je hebt geen verlopen tegoeden.",
+		"noActiveBenefits": "Je hebt geen actieve tegoeden.",
 		"validUntil": "Geldig tot",
 		"usage": "Gebruik",
 		"remainingAmount": "{{amount}} resterend"
@@ -301,7 +304,7 @@
 	"forgotPassword": {
 		"hyperlink": "Wachtwoord vergeten",
 		"title": "Wachtwoord vergeten?",
-		"description": "Vul de volgende informatie in om een nieuw wachtwoord in te stellen.",
+		"description": "Vul de volgende informatie in om een nieuw wachtwoord in te stellen:",
 		"send": "Stuur mij een link",
 		"captcha": "Captcha: \"Ik ben geen robot\" type",
 		"emailPlaceholder": "Vul je e-mailadres in",
@@ -310,7 +313,8 @@
 			"description": "We hebben je een e-mail gestuurd met een link om je wachtwoord te resetten.",
 			"title": "Controleer je inbox",
 			"dialogTitle": "E-mail succesvol verzonden!"
-		}
+		},
+		"notFound": "Er is geen account gevonden met dit e-mailadres."
 	},
 	"changePassword": {
 		"title": "Stel nieuw wachtwoord in",
@@ -321,7 +325,10 @@
 			"title": "Gefeliciteerd!",
 			"dialogTitle": "Wachtwoord succesvol gewijzigd!",
 			"buttonText": "Doorgaan naar inloggen"
-		}
+		},
+		"newPassword": "Nieuw wachtwoord",
+		"reenterNewPassword": "Voer uw nieuwe wachtwoord opnieuw in",
+		"newPasswordPlaceholder": "Voer uw nieuwe wachtwoord in"
 	},
 	"privacy": {
 		"title": "Privacyverklaring",
@@ -351,7 +358,7 @@
 			},
 			"transparency": {
 				"title": "Transparantie",
-				"description": "Wij leggen aan betrokkenen, zoals burgers, leveranciers en medewerkers van de gemeente, transparant verantwoording af over het gebruik van hun persoonsgegevens."
+				"description": "Wij leggen aan betrokkenen, zoals burgers, aanbieders en medewerkers van de gemeente, transparant verantwoording af over het gebruik van hun persoonsgegevens."
 			},
 			"safety": {
 				"title": "Veiligheid",
@@ -406,7 +413,7 @@
 		},
 		"complaint": {
 			"title": "Het recht om een klacht in te dienen bij de toezichthoudende autoriteit",
-			"description": "Wij gaan zo transparant en zorgvuldig mogelijk met je gegevens om. Als je toch een klacht heeft over de verwerking van je gegevens, verzoeken wij je eerst contact op te nemen met onze privacy officer. Dit kan door een bericht te sturen naar info@Gemeentepassen.eu. Wij doen vervolgens ons uiterste best om je klacht op te lossen. Mocht je het onverhoopt niet eens zijn met de genomen maatregel, dan kunt je zich wenden tot de Autoriteit Persoonsgegevens."
+			"description": "Wij gaan zo transparant en zorgvuldig mogelijk met je gegevens om. Als je toch een klacht heeft over de verwerking van je gegevens, verzoeken wij je eerst contact op te nemen met onze privacy officer. Dit kan door een bericht te sturen naar {email_link}. Wij doen vervolgens ons uiterste best om je klacht op te lossen. Mocht je het onverhoopt niet eens zijn met de genomen maatregel, dan kunt je zich wenden tot de Autoriteit Persoonsgegevens."
 		},
 		"info_sheet": {
 			"title": "Informatieblad per verwerking",

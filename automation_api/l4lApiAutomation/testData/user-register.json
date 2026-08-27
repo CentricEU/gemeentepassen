@@ -1,0 +1,8 @@
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "passNumber": "PASS123456",
+  "password": "Password123!",
+  "retypedPassword": "Password123!"
+}

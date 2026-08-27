@@ -11,7 +11,7 @@ import {
 	WarningDialogData,
 } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 
 import { InviteSuppliersDto } from '../../_models/invite-suppliers-dto.model';
 import { MunicipalitySupplierService } from '../../_services/suppliers.service';

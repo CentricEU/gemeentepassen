@@ -30,7 +30,7 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping("/statistics")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     @Operation(
             summary = "Get dashboard counts",
             description = "Returns the counts of passholders, suppliers, and transactions for the given supplier statuses."
@@ -55,12 +55,11 @@ public class DashboardController {
     @Operation(
             summary = "Get statistics of transactions",
             description = "Returns a list containing statistics of transactions.")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPPLIER})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN, Role.ROLE_SUPPLIER})
     public ResponseEntity<List<MonthlyTransactionDto>> getTransactionStatistics(
             @Parameter(description = "Time interval period, possible values: MONTHLY, QUARTERLY, YEARLY")
             @RequestParam TimeIntervalPeriod intervalPeriod) {
 
         return ResponseEntity.ok(dashboardService.getMonthlyTransactionStats(intervalPeriod));
-
     }
 }

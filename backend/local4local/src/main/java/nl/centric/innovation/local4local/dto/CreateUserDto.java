@@ -1,9 +1,9 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
 
 @Builder
 public record CreateUserDto(
@@ -16,5 +16,7 @@ public record CreateUserDto(
 
         @NotEmpty(message = "Email is required")
         @Email(message = "Invalid email format")
-        String email
+        String email,
+
+        boolean isSuperAdmin
 ) { }

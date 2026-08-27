@@ -1,21 +1,19 @@
 <div class="flex-column-start top-section">
 	<div class="flex-row-center logo-section">
-		<ng-container *ngIf="!isGenericState && decodedImage; else emptyLogo">
+		@if (!isGenericState && decodedImage) {
 			<div class="image-section img-fit" [style.backgroundImage]="'url(' + decodedImage + ')'">
-				<ng-container *ngIf="!isReadOnly">
+				@if (!isReadOnly) {
 					<ng-container *ngTemplateOutlet="editableLogo"></ng-container>
-				</ng-container>
+				}
 			</div>
-		</ng-container>
-
-		<ng-template #emptyLogo>
+		} @else {
 			<div class="generic-square">
-				<ng-container *ngIf="!isReadOnly">
+				@if (!isReadOnly) {
 					<ng-container *ngTemplateOutlet="editableLogo"></ng-container>
-				</ng-container>
-				<centric-icon2 [svgIcon]="'image_b'" [size]="'48'"></centric-icon2>
+				}
+				<windmill-icon [svgIcon]="'image_b'" [size]="'48'"></windmill-icon>
 			</div>
-		</ng-template>
+		}
 
 		<ng-template #editableLogo>
 			<div class="edit-logo" [tabIndex]="0" (keydown.enter)="openFileInput()">
@@ -27,11 +25,11 @@
 					accept=".png, .svg, .jpg, .jpeg"
 					(click)="fileInputClick($event)"
 					(change)="onFileSelected($event)" />
-				<centric-icon2
+				<windmill-icon
 					class="pointer"
 					(click)="fileUpload.click()"
 					[svgIcon]="'edit_b'"
-					[size]="'24'"></centric-icon2>
+					[size]="'24'"></windmill-icon>
 			</div>
 		</ng-template>
 
@@ -44,9 +42,9 @@
 			</p>
 		</div>
 	</div>
-	<ng-container *ngIf="isSizeExceeded">
+	@if (isSizeExceeded) {
 		<p class="error-message">{{ 'generalInformation.sizeExcedeedLogo' | translate }}</p>
-	</ng-container>
+	}
 </div>
 <div class="form-header">
 	<p class="generic-color-text bold">{{ 'generalInformation.header' | translate }}</p>
@@ -64,6 +62,6 @@
 	[isReadonly]="isReadOnly"
 	[isEditProfileComponent]="true"></frontend-contact-information>
 
-<ng-container *ngIf="!isReadOnly">
+@if (!isReadOnly) {
 	<frontend-working-hours></frontend-working-hours>
-</ng-container>
+}

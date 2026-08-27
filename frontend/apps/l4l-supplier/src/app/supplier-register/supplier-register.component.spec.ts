@@ -8,7 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Tenant, TenantService } from '@frontend/common';
 import { WindmillModule } from '@frontend/common-ui';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of } from 'rxjs';
 
 import { RegisterSupplier } from '../models/register-supplier.model';
@@ -93,7 +93,7 @@ describe('SupplierRegisterComponent', () => {
 		expect(component.registerForm.controls['firstName']).toBeTruthy();
 		expect(component.registerForm.controls['lastName']).toBeTruthy();
 		expect(component.registerForm.controls['company']).toBeTruthy();
-		expect(component.registerForm.controls['kvk']).toBeTruthy();
+		expect(component.registerForm.controls['kvkNumber']).toBeTruthy();
 		expect(component.registerForm.controls['municipality']).toBeTruthy();
 		expect(component.registerForm.controls['email']).toBeTruthy();
 		expect(component.registerForm.controls['password']).toBeTruthy();
@@ -135,7 +135,7 @@ describe('SupplierRegisterComponent', () => {
 	});
 
 	it('should mark KVK number as invalid when empty', () => {
-		const kvkControl = component.registerForm.get('kvk');
+		const kvkControl = component.registerForm.get('kvkNumber');
 
 		kvkControl?.setValue('');
 		expect(kvkControl?.valid).toBeFalsy();
@@ -191,7 +191,7 @@ describe('SupplierRegisterComponent', () => {
 		const firstNameControl = component.registerForm.get('firstName');
 		const lastNameControl = component.registerForm.get('lastName');
 		const companyControl = component.registerForm.get('company');
-		const kvkControl = component.registerForm.get('kvk');
+		const kvkControl = component.registerForm.get('kvkNumber');
 		const municipalityControl = component.registerForm.get('municipality');
 		const emailControl = component.registerForm.get('email');
 		const passwordControl = component.registerForm.get('password');
@@ -227,7 +227,7 @@ describe('SupplierRegisterComponent', () => {
 	});
 
 	it('should validate the length of kvk form control value', () => {
-		const kvkFormControl = component.registerForm.get('kvk');
+		const kvkFormControl = component.registerForm.get('kvkNumber');
 
 		// Set a value with an exact length of 8 characters
 		kvkFormControl?.setValue('12345678');
@@ -467,13 +467,13 @@ describe('SupplierRegisterComponent', () => {
 
 		Object.prototype.hasOwnProperty = originalHasOwnProperty;
 
-		expect(hasOwnPropertyMock).toHaveBeenCalledWith('kvk');
+		expect(hasOwnPropertyMock).toHaveBeenCalledWith('kvkNumber');
 		expect(result).toBe('register.kvkFormControlRequired');
 	});
 
 	it('should return a translated string when length for kvk is invalid', () => {
 		const form = new FormGroup({
-			kvk: new FormControl('123', Validators.minLength(8)),
+			kvkNumber: new FormControl('123', Validators.minLength(8)),
 		});
 		component.registerForm = form;
 
@@ -637,7 +637,7 @@ describe('SupplierRegisterComponent', () => {
 			lastName: 'Doe',
 			email: 'john@example.com',
 			company: 'Test Company',
-			kvk: '12345678',
+			kvkNumber: '12345678',
 			password: 'Password123!',
 			confirmPassword: 'Password123!',
 			agreement: true,

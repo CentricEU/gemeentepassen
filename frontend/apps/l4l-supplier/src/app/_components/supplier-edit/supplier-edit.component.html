@@ -1,20 +1,20 @@
 <div class="supplier-edit">
-	<ng-container *ngIf="isRejectedStatus">
-		<centric-alert type="warning">
-			<section message>
-				{{ 'rejectSupplier.reapplication' | translate }}
-				<ul>
-					<ng-container *ngFor="let item of rejectionDetailsList">
-						<li>
-							<span class="bold">{{ item.label | translate }}</span>
-							{{ item.value | translate }}.
-						</li>
-					</ng-container>
-				</ul>
-			</section>
-		</centric-alert>
-	</ng-container>
-	<div class="supplier-profile-panel">
-		<frontend-supplier-profile-panel [isRejectedStatus]="isRejectedStatus"></frontend-supplier-profile-panel>
-	</div>
+  @if (isRejectedStatus) {
+    <centric-alert type="warning">
+      <section message>
+        {{ 'rejectSupplier.reapplication' | translate }}
+        <ul>
+          @for (item of rejectionDetailsList; track $index) {
+            <li>
+              <span class="bold">{{ item.label | translate }}</span>
+              {{ item.value | translate }}.
+            </li>
+          }
+        </ul>
+      </section>
+    </centric-alert>
+  }
+  <div class="supplier-profile-panel">
+    <frontend-supplier-profile-panel [isRejectedStatus]="isRejectedStatus"></frontend-supplier-profile-panel>
+  </div>
 </div>

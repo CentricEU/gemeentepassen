@@ -1,3 +1,4 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NgZone } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -6,7 +7,6 @@ import { FormInitializationType, WorkingHoursDto } from '@frontend/common';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CommonUiModule } from '../../common-ui.module';
-import { WindmillModule } from '../../windmil.module';
 import { WorkingHoursEditComponent } from './working-hours-edit.component';
 
 describe('WorkingHoursEditComponent', () => {
@@ -20,8 +20,8 @@ describe('WorkingHoursEditComponent', () => {
 				ReactiveFormsModule,
 				TranslateModule.forRoot(),
 				CommonUiModule,
-				WindmillModule,
 				NoopAnimationsModule,
+				HttpClientTestingModule,
 			],
 			providers: [FormBuilder],
 		}).compileComponents();
@@ -45,9 +45,11 @@ describe('WorkingHoursEditComponent', () => {
 		const monday = component.workingHoursForm.get('monday');
 		monday?.get('isEnabled')?.setValue(true);
 
-		monday
-			?.get('schedule')
-			?.setValue({ start: 'Wed May 29 2024 01:00:00 GMT+0200', end: 'Wed May 29 2024 03:00:00 GMT+0200' });
+		const startDate = new Date();
+		startDate.setHours(1, 0, 0, 0);
+		const endDate = new Date();
+		endDate.setHours(3, 0, 0, 0);
+		monday?.get('schedule')?.setValue({ start: startDate, end: endDate });
 		const result = component.mapWorkingHours();
 
 		const expectedResult = [
@@ -175,6 +177,7 @@ describe('WorkingHoursEditComponent', () => {
 
 		expect(component['getFieldValue'](999 as any, 4)).toEqual(new WorkingHoursDto(4, '', '', false));
 	});
+
 	it('should copy schedule times to all enabled days except source', () => {
 		const form = component.workingHoursForm;
 		const monday = form.get('monday') as FormGroup;
@@ -192,5 +195,88 @@ describe('WorkingHoursEditComponent', () => {
 		const tuesdaySchedule = tuesday.get('schedule') as FormGroup;
 		expect(tuesdaySchedule.get('start')?.value).toBe('08:00');
 		expect(tuesdaySchedule.get('end')?.value).toBe('10:00');
+	});
+
+	// ─── populateForm ──────────────────────────────────────────────────────────
+
+	describe('populateForm', () => {
+		it('should NOT modify the form for a day where isChecked is false', () => {
+			// Arrange
+			const data = [new WorkingHoursDto(1, '08:00:00', '17:00:00', false)];
+
+			// Act
+			component.populateForm(data);
+
+			// Assert
+			const mondayEnabled = component.workingHoursForm.get('monday')?.get('isEnabled')?.value;
+			expect(mondayEnabled).toBe(false);
+		});
+
+		it('should set isEnabled and schedule start/end for a day where isChecked is true', () => {
+			// Arrange
+			const data = [new WorkingHoursDto(1, '09:00:00', '18:00:00', true, 'some-id')];
+
+			// Act
+			component.populateForm(data);
+
+			// Assert
+			const mondayGroup = component.workingHoursForm.get('monday') as FormGroup;
+			expect(mondayGroup.get('isEnabled')?.value).toBe(true);
+			expect(mondayGroup.get('schedule')?.get('start')?.value).toBeTruthy();
+			expect(mondayGroup.get('schedule')?.get('end')?.value).toBeTruthy();
+		});
+
+		it('should update the WorkingHoursDto entry in the array for a checked day', () => {
+			// Arrange
+			const data = [new WorkingHoursDto(1, '10:00:00', '16:00:00', true, 'test-id')];
+
+			// Act
+			component.populateForm(data);
+
+			// Assert
+			expect(data[0]).toBeInstanceOf(WorkingHoursDto);
+			expect(data[0].id).toBe('test-id');
+			expect(data[0].isChecked).toBe(true);
+		});
+
+		it('should skip entries with undefined savedDay without throwing', () => {
+			// Arrange - empty array means all slots resolve to undefined
+			const data: WorkingHoursDto[] = [];
+
+			// Act & Assert
+			expect(() => component.populateForm(data)).not.toThrow();
+		});
+	});
+
+	// ─── mapWorkingHours with workingHoursData ─────────────────────────────────
+
+	describe('mapWorkingHours with workingHoursData set', () => {
+		it('should include the ids from workingHoursData when it is provided', () => {
+			// Arrange
+			component.workingHoursData = [
+				new WorkingHoursDto(1, '08:00:00', '17:00:00', true, 'id-1'),
+				new WorkingHoursDto(2, '', '', false, 'id-2'),
+				new WorkingHoursDto(3, '', '', false, 'id-3'),
+				new WorkingHoursDto(4, '', '', false, 'id-4'),
+				new WorkingHoursDto(5, '', '', false, 'id-5'),
+				new WorkingHoursDto(6, '', '', false, 'id-6'),
+				new WorkingHoursDto(7, '', '', false, 'id-7'),
+			];
+
+			const mondayGroup = component.workingHoursForm.get('monday') as FormGroup;
+			mondayGroup.get('isEnabled')?.setValue(true);
+			const startDate = new Date();
+			startDate.setHours(8, 0, 0, 0);
+			const endDate = new Date();
+			endDate.setHours(17, 0, 0, 0);
+			mondayGroup.get('schedule')?.setValue({ start: startDate, end: endDate });
+
+			// Act
+			const result = component.mapWorkingHours();
+
+			// Assert
+			expect(result[0].id).toBe('id-1');
+			expect(result[1].id).toBe('id-2');
+		});
 	});
 });

@@ -1,3 +1,4 @@
+import { BenefitDto } from './benefit-dto.model';
 import { RestrictionsDto } from './restrictions.model';
 
 export class OfferDto {
@@ -9,8 +10,10 @@ export class OfferDto {
 	public offerTypeId: number;
 	public startDate: Date;
 	public expirationDate: Date;
-	public benefitId: string;
+	public benefits: BenefitDto[];
+	public version: number;
 	public restrictionRequestDto?: RestrictionsDto;
+	public benefitIds?: string[];
 	constructor(
 		id: string,
 		title: string,
@@ -20,8 +23,10 @@ export class OfferDto {
 		offerTypeId: number,
 		startDate: Date,
 		expirationDate: Date,
-		benefitId: string,
-		restrictions?: RestrictionsDto,
+		benefits: BenefitDto[],
+		version: number,
+		restrictionRequestDto?: RestrictionsDto,
+		benefitIds?: string[],
 	) {
 		this.id = id;
 		this.title = title;
@@ -31,7 +36,9 @@ export class OfferDto {
 		this.offerTypeId = offerTypeId;
 		this.startDate = startDate;
 		this.expirationDate = expirationDate;
-		this.benefitId = benefitId;
-		this.restrictionRequestDto = restrictions;
+		this.benefits = benefits;
+		this.restrictionRequestDto = restrictionRequestDto;
+		this.version = version;
+		this.benefitIds = benefitIds;
 	}
 }

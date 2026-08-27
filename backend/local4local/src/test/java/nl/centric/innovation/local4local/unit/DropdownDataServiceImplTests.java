@@ -31,8 +31,8 @@ class DropdownDataServiceImplTests {
     void GivenValidRequest_WhenGetAllDropdownsData_ThenReturnDropdownDataFilterDto() {
         // Given
         List<OfferType> mockOfferTypes = List.of(
-                new OfferType(1, "Type1"),
-                new OfferType(2, "Type2")
+                new OfferType(1, "Type1", true),
+                new OfferType(2, "Type2", true)
         );
 
         when(offerTypeRepository.findAll()).thenReturn(mockOfferTypes);

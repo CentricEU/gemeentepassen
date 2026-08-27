@@ -1,0 +1,28 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.local4local",
+            "sha256_cert_fingerprints": [
+                "FA:C6:17:45:DC:09:03:78:6F:B9:ED:E6:2A:96:2B:39:9F:73:48:F0:BB:6F:89:9B:83:32:66:75:91:03:3B:9C",
+                "43:8E:FF:A9:2F:92:8A:4D:8D:98:A3:4E:7D:C5:E6:7E:92:19:F6:3B:41:3D:F0:B8:2D:6D:55:B0:B8:32:98:71"
+            ]
+        }
+    },
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "com.citypassesacceptance",
+            "sha256_cert_fingerprints": [
+                "FA:C6:17:45:DC:09:03:78:6F:B9:ED:E6:2A:96:2B:39:9F:73:48:F0:BB:6F:89:9B:83:32:66:75:91:03:3B:9C",
+                "BD:F0:FF:1F:FB:4A:9D:54:DE:10:DB:AD:25:03:6B:92:A3:9D:CC:5A:4D:34:BD:EC:78:59:E6:3A:09:F0:69:8E"
+            ]
+        }
+    }
+]

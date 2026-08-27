@@ -10,9 +10,10 @@ import {
 } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { ToastrService } from '@windmill/ng-windmill/toastr';
 
+import { ApproveOfferDto } from '../../_models/approve-offer-dto.model';
 import { RejectOfferDto } from '../../_models/reject-offer-dto.model';
 import { PendingOffersService } from '../../pending-offers.service';
 
@@ -28,9 +29,14 @@ export class OfferApprovalPopupComponent implements OnInit {
 	public characterLimitMessage = '';
 	public isOverCharacterLimit = false;
 	public maxLength = TEXT_AREA_MAX_LENGTH;
+	public alertDismissed = false;
 
 	public validationFunctionError = FormUtil.validationFunctionError;
 	public hasFormControlRequiredErrors = FormUtil.hasFormControlRequiredErrors;
+
+	public get shouldDisplayEditedOfferAlert(): boolean {
+		return this.data?.offer?.version > 0 && !this.alertDismissed && !this.isRejecting;
+	}
 
 	constructor(
 		@Inject(MAT_DIALOG_DATA) public data: any,
@@ -75,7 +81,8 @@ export class OfferApprovalPopupComponent implements OnInit {
 	}
 
 	public approveOffer(): void {
-		this.pendingOfferService.approveOffer(this.data.offer.id).subscribe(() => {
+		const dto = new ApproveOfferDto(this.data.offer.id, this.data.offer.version);
+		this.pendingOfferService.approveOffer(dto).subscribe(() => {
 			this.showSuccessToaster('offer.approve.successfulApproval');
 			this.dialogRef.close(true);
 		});
@@ -111,7 +118,11 @@ export class OfferApprovalPopupComponent implements OnInit {
 	}
 
 	private createRejectOfferDto(): RejectOfferDto {
-		return new RejectOfferDto(this.data.offer.id, this.rejectionForm.get('rejectionReason')?.value);
+		return new RejectOfferDto(
+			this.data.offer.id,
+			this.rejectionForm.get('rejectionReason')?.value,
+			this.data.offer.version,
+		);
 	}
 
 	private showSuccessToaster(messageKey: string): void {

@@ -16,6 +16,7 @@ public class CORSConfigurationTesting implements WebMvcConfigurer {
                         "https://d2a0blilrck94b.cloudfront.net",
                         "https://supplier.testing.gemeentepassen.eu",
                         "https://municipality.testing.gemeentepassen.eu",
+                        "https://passholder.testing.gemeentepassen.eu",
                         "https://citizen.testing.gemeentepassen.eu")
                 .exposedHeaders("Set-Cookie")
                 .allowCredentials(true)

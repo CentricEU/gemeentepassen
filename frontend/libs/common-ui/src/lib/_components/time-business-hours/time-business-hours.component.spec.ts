@@ -107,4 +107,32 @@ describe('TimeBusinessHoursComponent', () => {
 		const control = { value: '10:00' } as AbstractControl;
 		expect(component['validateParam'](control)).toBe(false);
 	});
+
+	it('initializeScheduleState should handle null isEnabledControl', () => {
+		const toggleSpy = jest.spyOn(component, 'toggleScheduleByCheckbox');
+		jest.spyOn(component, 'isEnabledControl', 'get').mockReturnValue(null);
+
+		component['initializeScheduleState']();
+
+		expect(toggleSpy).toHaveBeenCalledWith(undefined);
+	});
+
+	it('validateParam should return true if param is null', () => {
+		expect(component['validateParam'](null)).toBe(undefined);
+	});
+
+	it('validateParam should return true if param has no value and is invalid', () => {
+		const control = { value: null, invalid: true, touched: true } as AbstractControl;
+		expect(component['validateParam'](control)).toBe(true);
+	});
+
+	it('should return null when hoursForm is null', () => {
+		component.hoursForm = null;
+		expect(component.isEnabledControl).toBeNull();
+	});
+
+	it('should return null when isEnabled control does not exist', () => {
+		jest.spyOn(component.hoursForm, 'get').mockReturnValue(null);
+		expect(component.isEnabledControl).toBeNull();
+	});
 });

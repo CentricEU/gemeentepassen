@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -17,7 +16,7 @@ import {
 } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { filter, merge } from 'rxjs';
 
 @Component({
@@ -25,7 +24,7 @@ import { filter, merge } from 'rxjs';
 	templateUrl: './create-benefit-popup.component.html',
 	styleUrls: ['./create-benefit-popup.component.scss'],
 	standalone: true,
-	imports: [CommonModule, CommonL4LModule, TranslateModule, WindmillModule],
+	imports: [CommonL4LModule, TranslateModule, WindmillModule],
 })
 export class CreateBenefitPopupComponent implements OnInit {
 	private readonly dialogService = inject(DialogService);
@@ -150,6 +149,7 @@ export class CreateBenefitPopupComponent implements OnInit {
 			expirationDate.value.format('YYYY-MM-DD'),
 			this.getSelectedCitizenGroupIds(),
 			amount?.value,
+			'',
 		);
 	}
 

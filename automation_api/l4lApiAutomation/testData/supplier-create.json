@@ -1,0 +1,11 @@
+{
+  "firstName": "Test",
+  "lastName": "Supplier",
+  "companyName": "Test Company",
+  "kvk": "32424242",
+  "tenantId": "00000000-0000-0000-0000-000000000000",
+  "email": "l4l.centric+automation1@gmail.com",
+  "password": "TestPassword123!",
+  "retypedPassword": "TestPassword123!",
+  "agreedTerms": true
+}

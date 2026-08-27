@@ -1,15 +1,15 @@
-<ng-container *ngIf="isAllDataLoaded()">
-	<centric-sidenav
-		[menuItems]="navigationItems"
-		[ariaLabelCloseButton]="'general.button.close' | translate"
-		[(opened)]="opened">
-		<section sidenav-header class="sidenav-header-section">
-			<img src="{{ tenantLogo }}" alt="Logo image" class="pointer" (click)="navigateToDashboard()" />
-		</section>
-		<section sidenav-footer>
-			<centric-button iconId="logout-arrow_r" type="ghost-theme" (click)="logout()">
-				{{ 'general.logout' | translate }}
-			</centric-button>
-		</section>
-	</centric-sidenav>
-</ng-container>
+@if (isAllDataLoaded()) {
+  <centric-sidenav
+    [menuItems]="navigationItems"
+    [ariaLabelCloseButton]="'general.button.close' | translate"
+    [(opened)]="opened">
+    <section sidenav-header class="sidenav-header-section">
+      <img src="{{ tenantLogo }}" alt="Logo image" class="pointer" (click)="navigateToDashboard()" />
+    </section>
+    <section sidenav-footer>
+      <centric-button iconId="logout-arrow_r" type="ghost-theme" (click)="logout()">
+        {{ 'general.logout' | translate }}
+      </centric-button>
+    </section>
+  </centric-sidenav>
+}

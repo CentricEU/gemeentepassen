@@ -4,5 +4,6 @@ export enum SilentErrorCode {
 	offerInactiveError = 40033,
 	codeNotFoundOrInactiveError = 40034,
 	refreshTokenNotPresent = 40042,
-	offerUsageLimitReached = 40058
+	offerUsageLimitReached = 40058,
+	cashierEmailDuplicated = 40061,
 }

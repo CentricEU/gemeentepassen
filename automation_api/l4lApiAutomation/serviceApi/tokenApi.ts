@@ -3,7 +3,7 @@ import { Roles } from '../utils/roles.enum';
 import { StatusCodes } from '../utils/status-codes.enum';
 
 export class GetToken extends BaseApi {
-	async getAccessToken(role: Roles) {
+	async getAccessToken(role: Roles): Promise<string> {
 		let email = '';
 		let roleName = '';
 
@@ -14,6 +14,10 @@ export class GetToken extends BaseApi {
 				break;
 			case Roles.SUPPLIER:
 				email = process.env.EMAIL_SUPPLIER;
+				roleName = process.env.ROLE_SUPPLIER;
+				break;
+			case Roles.SUPPLIER_REJECTED:
+				email = process.env.EMAIL_SUPPLIER_REJECTED;
 				roleName = process.env.ROLE_SUPPLIER;
 				break;
 			case Roles.CITIZEN:
@@ -27,7 +31,7 @@ export class GetToken extends BaseApi {
 			password: process.env.PASSWORD,
 			role: roleName,
 			reCaptchaResponse: '',
-			rememberMe: true
+			rememberMe: false
 		};
 
 		const response = await this.post('authenticate', data);
@@ -36,10 +40,31 @@ export class GetToken extends BaseApi {
 			throw new Error(`Failed to get access token for role ${role}. Status: ${response.status()}`);
 		}
 
-		const token = await response.json();
+		const body = await response.json();
+		return body.token;
+	}
 
-		process.env.TOKEN = token.token;
+	async getAccessTokenWithCredentials(email: string, password: string, role: Roles): Promise<string> {
+		const roleName =
+			role === Roles.MUNICIPALITY
+				? process.env.ROLE_MUNICIPALITY
+				: role === Roles.SUPPLIER
+					? process.env.ROLE_SUPPLIER
+					: process.env.ROLE_CITIZEN;
 
-		return response;
+		const data = {
+			username: email,
+			password: password,
+			role: roleName,
+			reCaptchaResponse: '',
+			rememberMe: false
+		};
+
+		const response = await this.post('authenticate', data);
+		if (response.status() !== StatusCodes.OK) {
+			throw new Error(`Failed to get access token. Status: ${response.status()}`);
+		}
+		const body = await response.json();
+		return body.token;
 	}
 }

@@ -1,6 +1,7 @@
-<centric-card [shadow]="true">
-	<centric-card-header>
-		<div centric-card-title>{{ 'dashboard.transactions.title' | translate }}</div>
+<windmill-card class="styled-content" [hasShadow]="true">
+	<ng-container card-header>
+		<div card-title class="card-title">
+		<span>{{ 'dashboard.transactions.title' | translate }}</span>
 		<windmill-combo-button
 			[menuItems]="dashboardService.dropdownData"
 			[contentType]="'dropdown'"
@@ -9,8 +10,9 @@
 			(menuItemSelected)="onTimePeriodChange($event)"
 			[disabled]="!isSupplierActive">
 		</windmill-combo-button>
-	</centric-card-header>
-	<div centric-card-content>
+		</div>
+	</ng-container>
+	<div card-content>
 		<frontend-transaction-chart #transactionChart> </frontend-transaction-chart>
 	</div>
-</centric-card>
+</windmill-card>

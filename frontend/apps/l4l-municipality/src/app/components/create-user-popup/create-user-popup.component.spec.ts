@@ -2,11 +2,11 @@ import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { UserService } from '@frontend/common';
+import { AuthService, Role, UserService } from '@frontend/common';
 import { CreateUserDto } from '@frontend/common';
 import { WindmillModule } from '@frontend/common-ui';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import DOMPurify from 'dompurify';
 import { of } from 'rxjs';
 
@@ -125,6 +125,8 @@ describe('CreateUserPopupComponent', () => {
 		component.createUserForm.get('firstName')?.setValue('First Name');
 		component.createUserForm.get('lastName')?.setValue('Last Name');
 		component.createUserForm.get('email')?.setValue('Email');
+		component.createUserForm.get('isSuperAdmin')?.setValue(true);
+		component.createUserForm.get('isSuperAdmin')?.markAsDirty();
 
 		jest.spyOn(dialogRefStub, 'close');
 		jest.spyOn(component as any, 'formValuesToCreateUserDto');
@@ -132,10 +134,22 @@ describe('CreateUserPopupComponent', () => {
 		component.createUser();
 
 		expect(component['formValuesToCreateUserDto']).toHaveReturnedWith(
-			new CreateUserDto('First Name', 'Last Name', 'Email'),
+			new CreateUserDto('First Name', 'Last Name', 'Email', true),
 		);
 
 		expect(dialogRefStub.close).toHaveBeenCalledWith(true);
 		expect(userServiceMock.createUser).toHaveBeenCalled();
+	});
+
+	it.each([
+		[{ name: Role.SUPER_ADMIN }, true],
+		[{ name: Role.MUNICIPALITY_ADMIN }, false],
+		[undefined, false],
+	])('should return %s for isSuperAdmin when userRole is %o', (userRole, expected) => {
+		const authService = TestBed.inject(AuthService);
+
+		jest.spyOn(authService, 'userRole', 'get').mockReturnValue(userRole as any);
+
+		expect(component.isSuperAdmin).toBe(expected);
 	});
 });

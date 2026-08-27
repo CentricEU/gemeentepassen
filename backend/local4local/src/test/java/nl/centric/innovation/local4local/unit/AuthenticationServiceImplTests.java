@@ -1,5 +1,6 @@
 package nl.centric.innovation.local4local.unit;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
 import nl.centric.innovation.local4local.authentication.JwtUtil;
 import nl.centric.innovation.local4local.dto.AuthResponseDto;
@@ -27,8 +28,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import nl.centric.innovation.local4local.entity.RefreshToken;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import javax.servlet.http.HttpServletRequest;
 
 import java.util.Optional;
 

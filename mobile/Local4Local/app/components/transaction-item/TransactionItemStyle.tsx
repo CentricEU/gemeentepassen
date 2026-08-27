@@ -29,7 +29,8 @@ export default StyleSheet.create({
 	},
 	transactionTitle: {
 		fontSize: BASE_UNIT,
-		fontWeight: 'bold'
+		fontWeight: 'bold',
+		color: colors.GREY_SCALE_7
 	},
 	transactionSupplier: {
 		fontSize: 14,

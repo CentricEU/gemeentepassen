@@ -24,24 +24,25 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
-	
-	@Autowired
+
+    @Autowired
     private Environment env;
-    public String extractUsername(String token) throws BadCredentialsException{
+
+    public String extractUsername(String token) throws BadCredentialsException {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public<T> T extractClaim(String token, Function<Claims, T> claimResolver) throws  BadCredentialsException{
+    public <T> T extractClaim(String token, Function<Claims, T> claimResolver) throws BadCredentialsException {
         Claims claims = extractAllClaims(token);
         return claimResolver.apply(claims);
     }
 
-    public boolean validateToken(String token) throws  ExpiredJwtException, BadCredentialsException{
+    public boolean validateToken(String token) throws ExpiredJwtException, BadCredentialsException {
         try {
-        	SecretKey secret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(env.getProperty("jwt.secret.key")));
-        	Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token);
+            SecretKey secret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(env.getProperty("jwt.secret.key")));
+            Jwts.parser().setSigningKey(secret).build().parseClaimsJws(token);
             return true;
-        }  catch (MalformedJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
+        } catch (MalformedJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
             throw new BadCredentialsException("INVALID_CREDENTIALS", ex);
         } catch (ExpiredJwtException ex) {
             throw ex;
@@ -49,7 +50,7 @@ public class JwtUtil {
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        Integer expirationTime = Integer.valueOf(env.getProperty("jwt.expiration.time")) ;
+        Integer expirationTime = Integer.valueOf(env.getProperty("jwt.expiration.time"));
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
@@ -73,7 +74,7 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
+        return Jwts.parser()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)

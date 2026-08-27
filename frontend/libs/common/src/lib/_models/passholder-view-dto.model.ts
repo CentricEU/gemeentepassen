@@ -9,7 +9,7 @@ export class PassholderViewDto extends GenericTableData {
 	public residenceCity: string;
 	public expiringDate: Date;
 	public citizenGroupName: string;
-
+	public isRegistered?: boolean;
 	constructor(
 		id: string,
 		address: string,

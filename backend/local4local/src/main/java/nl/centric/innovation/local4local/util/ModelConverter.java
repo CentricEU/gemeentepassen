@@ -1,13 +1,10 @@
 package nl.centric.innovation.local4local.util;
 
 import java.sql.Time;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 import nl.centric.innovation.local4local.dto.BenefitLightDto;
 import nl.centric.innovation.local4local.dto.CitizenViewDto;
 import nl.centric.innovation.local4local.dto.OfferViewDto;
-import nl.centric.innovation.local4local.dto.OfferViewTableDto;
 import nl.centric.innovation.local4local.dto.RegisterCitizenUserDto;
 import nl.centric.innovation.local4local.dto.RegisterSupplierDto;
 import nl.centric.innovation.local4local.dto.RegisterUserDto;
@@ -91,11 +88,6 @@ public class ModelConverter {
                 .build();
     }
 
-    private static String dateFormatter(LocalDate originalDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        return originalDate.format(formatter);
-    }
-
     public static OfferViewDto entityToOfferViewDto(Offer offer, Benefit benefit) {
         return OfferViewDto.builder()
                 .id(offer.getId())
@@ -113,48 +105,12 @@ public class ModelConverter {
                 .build();
     }
 
-    public static OfferViewTableDto entityToOfferViewTableDto(Offer offer) {
-        return OfferViewTableDto.builder()
-                .id(offer.getId())
-                .title(offer.getTitle())
-                .supplierName(offer.getSupplier().getCompanyName())
-                .supplierId(offer.getSupplier().getId())
-                .citizenOfferType("offer.citizenWithPass")
-                .startDate(offer.getStartDate())
-                .description(offer.getDescription())
-                .expirationDate(offer.getExpirationDate())
-                .offerType(offer.getOfferType().getOfferTypeLabel())
-                .amount(offer.getAmount())
-                .validity(dateFormatter(offer.getStartDate()) + " - " + dateFormatter(offer.getExpirationDate()))
-                .status(offer.getStatus())
-                .benefit(ModelConverter.entityToBenefitLightDto(offer.getBenefit()))
-                .build();
-
-    }
-
-    public static OfferViewDto entityToOfferViewDto(Offer offer) {
-        return OfferViewDto.builder()
-                .id(offer.getId())
-                .title(offer.getTitle())
-                .citizenOfferType(offer.getCitizenOfferType())
-                .offerType(offer.getOfferType())
-                .description(offer.getDescription())
-                .amount(offer.getAmount())
-                .startDate(offer.getStartDate())
-                .expirationDate(offer.getExpirationDate())
-                .coordinatesString(offer.getCoordinatesString())
-                .status(offer.getStatus())
-                .benefit(BenefitLightDto.entityToBenefitTableDto(offer.getBenefit()))
-                .companyName(offer.getSupplier().getCompanyName())
-                .build();
-    }
-
     public static Restriction restrictionRequestDtoToEntity(RestrictionRequestDto restrictionRequestDto) {
         return Restriction.builder()
-                .ageRestriction(restrictionRequestDto.ageRestriction())
+                .ageRestriction(null)
                 .frequencyOfUse(restrictionRequestDto.frequencyOfUse())
-                .maxPrice(restrictionRequestDto.maxPrice())
-                .minPrice(restrictionRequestDto.minPrice())
+                .maxPrice(null)
+                .minPrice(null)
                 .timeFrom(restrictionRequestDto.timeFrom() != null ?
                         Time.valueOf(restrictionRequestDto.timeFrom().toLocalTime()) : null)
                 .timeTo(restrictionRequestDto.timeTo() != null ?

@@ -61,7 +61,7 @@ export default function App() {
 	}, [setAuthState, handleClearWatch]);
 
 	const linking = {
-		prefixes: ['localforlocal//', 'https://citizen.testing.gemeentepassen.eu/'],
+		prefixes: ['localforlocal//', 'https://passholder.testing.gemeentepassen.eu/'],
 		config: {
 			screens: {
 				DeleteAccountSuccess: 'DeleteAccountSuccess',

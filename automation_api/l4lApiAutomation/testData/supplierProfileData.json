@@ -1,23 +1,75 @@
 {
-	"companyBranchAddress": "Vlagberg 43",
-	"branchProvince": "Noord-Brabant",
-	"branchZip": "5845 EC",
-	"branchLocation": "Sint Anthonis",
-	"branchTelephone": null,
-	"email": null,
-	"website": null,
-	"accountManager": "Canache Gabriel",
-	"logo": null,
-	"ownerName": "Canache Gabriel",
-	"kvkNumber": "23432423",
-	"companyName": "TestSupplier",
-	"adminEmail": "l4l.centric+suppenvtestsupp@gmail.com",
-	"iban": "NL55INGB8877477636",
-	"bic": null,
-	"legalForm": 2,
-	"group": 1,
-	"category": 2,
-	"subcategory": null,
-	"supplierId": "cd2ed64b-dd15-48ec-874c-a275c1cd2a4b",
-	"latlon": { "longitude": 5.84762548, "latitude": 51.6156415 }
+    "companyName": "Test Company",
+    "kvkNumber": "32424242",
+    "adminEmail": "l4l.centric+automation1@gmail.com",
+    "supplierProfilePatchDto": {
+        "logo": null,
+        "ownerName": "Test Supplier",
+        "legalForm": 1,
+        "group": 1,
+        "category": 2,
+        "subcategory": null,
+        "iban": "NL55INGB8877477636",
+        "bic": null,
+        "companyBranchAddress": " Rijnlaan 155",
+        "branchProvince": "Noord-Brabant",
+        "branchZip": "5704 HH",
+        "branchLocation": "Helmond",
+        "branchTelephone": null,
+        "email": "l4l.centric+automation1@gmail.com",
+        "website": null,
+        "accountManager": "Test Supplier",
+        "supplierId": "e7c7d906-eb3a-4b6a-8529-92381f163b1e",
+        "latlon": {
+            "latitude": 51.46930528,
+            "longitude": 5.6996877
+        },
+        "workingHours": [
+            {
+                "day": 1,
+                "openTime": "01:00:00",
+                "closeTime": "15:00:00",
+                "isChecked": true
+            },
+            {
+                "day": 2,
+                "openTime": "01:00:00",
+                "closeTime": "15:00:00",
+                "isChecked": true
+            },
+            {
+                "day": 3,
+                "openTime": "01:00:00",
+                "closeTime": "15:00:00",
+                "isChecked": true
+            },
+            {
+                "day": 4,
+                "openTime": "01:00:00",
+                "closeTime": "15:00:00",
+                "isChecked": true
+            },
+            {
+                "day": 5,
+                "openTime": "01:00:00",
+                "closeTime": "15:00:00",
+                "isChecked": true
+            },
+            {
+                "day": 6,
+                "openTime": "01:00:00",
+                "closeTime": "15:00:00",
+                "isChecked": true
+            },
+            {
+                "day": 7,
+                "openTime": "01:00:00",
+                "closeTime": "15:00:00",
+                "isChecked": true
+            }
+        ],
+        "cashierEmails": [
+            "l4l.centric+testestautomation2233@gmail.com"
+        ]
+    }
 }

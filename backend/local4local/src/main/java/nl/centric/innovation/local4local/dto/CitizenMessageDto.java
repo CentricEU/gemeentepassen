@@ -1,9 +1,9 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @Builder
 public record CitizenMessageDto(

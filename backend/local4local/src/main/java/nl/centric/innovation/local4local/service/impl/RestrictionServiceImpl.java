@@ -10,6 +10,7 @@ import nl.centric.innovation.local4local.util.ModelConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,11 @@ public class RestrictionServiceImpl implements RestrictionService {
         return restrictionRepository.save(restriction);
     }
 
+    @Override
+    public void deleteRestriction(UUID restrictionId) {
+        restrictionRepository.deleteById(restrictionId);
+    }
+
     private void validateRestriction(RestrictionRequestDto restrictionRequestDto) throws DtoValidateException {
 
         if (restrictionRequestDto.timeFrom() != null && restrictionRequestDto.timeTo() != null
@@ -34,9 +40,9 @@ public class RestrictionServiceImpl implements RestrictionService {
             throw new DtoValidateException(errorEntityValidate);
         }
 
-        if (restrictionRequestDto.maxPrice() != null && restrictionRequestDto.minPrice() != null
-                && restrictionRequestDto.maxPrice() - restrictionRequestDto.minPrice() < 1) {
-            throw new DtoValidateException(errorEntityValidate);
-        }
+//        if (restrictionRequestDto.maxPrice() != null && restrictionRequestDto.minPrice() != null
+//                && restrictionRequestDto.maxPrice() - restrictionRequestDto.minPrice() < 1) {
+//            throw new DtoValidateException(errorEntityValidate);
+//        }
     }
 }

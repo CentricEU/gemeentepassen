@@ -13,6 +13,7 @@ describe('DropdownDataService', () => {
 		production: false,
 		prefixes: 'localforlocal://',
 		envName: 'dev',
+		captchaSiteKey: 'test-captcha-key',
 		apiPath: '/api',
 	};
 

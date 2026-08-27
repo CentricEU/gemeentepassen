@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { EventEmitter, Inject, Injectable } from '@angular/core';
+
+import { EventEmitter, Inject, Injectable, DOCUMENT } from '@angular/core';
 import { DateAdapter } from '@angular/material/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CookieService } from 'ngx-cookie-service';

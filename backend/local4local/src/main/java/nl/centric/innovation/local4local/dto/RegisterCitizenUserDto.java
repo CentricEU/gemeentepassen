@@ -1,9 +1,9 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 
 @Builder
 public record RegisterCitizenUserDto(@NotNull(message = "First name is required")

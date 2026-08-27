@@ -3,6 +3,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import {
@@ -20,9 +21,11 @@ import {
 } from '@frontend/common';
 import { AriaAttributesDirective } from '@innovation/accesibility';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { BehaviorSubject, of, Subscription } from 'rxjs';
 
 import { WindmillModule } from '../../windmil.module';
+import { AddCashierModalComponent } from '../add-cashiers-modal/add-cashier-modal';
 import { GeneralInformationComponent } from './general-information.component';
 
 function createBlobWithSize(sizeInBytes: number): Blob {
@@ -36,6 +39,7 @@ describe('GeneralInformationComponent', () => {
 	let userSubscription: Subscription;
 	let supplierProfileServiceMock: jest.Mocked<SupplierProfileService>;
 	let mockRouter: { url: string };
+	let dialogService: DialogService;
 
 	const formBuilder: FormBuilder = new FormBuilder();
 	const environmentMock = {
@@ -73,12 +77,26 @@ describe('GeneralInformationComponent', () => {
 		supplierId: '1234ff',
 	};
 
+	const dialogRefStub = {
+		close: () => undefined,
+		afterClosed: jest.fn(() => of({})),
+		backdropClick: jest.fn(() => of({})),
+	};
+
 	beforeEach(async () => {
 		mockRouter = { url: '/some-url' };
+
+		const dialogServiceMock = {
+			message: jest.fn(),
+			prompt: jest.fn(),
+			alert: jest.fn(),
+			afterClosed: jest.fn(() => of(true)),
+		};
 
 		supplierProfileServiceMock = {
 			supplierProfileInformationObservable: new BehaviorSubject({}),
 			getAllDropdownsData: jest.fn(() => new BehaviorSubject({})),
+			addCashiersToProfile: jest.fn(),
 			isReadonly: false,
 		} as unknown as jest.Mocked<SupplierProfileService>;
 
@@ -90,6 +108,7 @@ describe('GeneralInformationComponent', () => {
 				CommonModule,
 				FormsModule,
 				HttpClientModule,
+				MatDialogModule,
 				TranslateModule.forRoot(),
 				ReactiveFormsModule,
 				BrowserAnimationsModule,
@@ -100,6 +119,8 @@ describe('GeneralInformationComponent', () => {
 				{ provide: FormBuilder, useValue: formBuilder },
 				{ provide: AuthService, useValue: authServiceMock },
 				{ provide: UserService, useValue: userServiceMock },
+				{ provide: MatDialogRef, useValue: dialogRefStub },
+				{ provide: DialogService, useValue: dialogServiceMock },
 				{ provide: SupplierProfileService, useValue: supplierProfileServiceMock },
 				{ provide: Router, useValue: mockRouter },
 			],
@@ -121,6 +142,7 @@ describe('GeneralInformationComponent', () => {
 		});
 		userSubscription = new Subscription();
 		component['userInformationSubscription'] = userSubscription;
+		dialogService = TestBed.inject(DialogService);
 		fixture.detectChanges();
 	});
 
@@ -262,7 +284,7 @@ describe('GeneralInformationComponent', () => {
 
 	test.each([
 		[GeneralInfoFormFields.ownerName, 'generalInformation.ownerNameFormControlRequired'],
-		[GeneralInfoFormFields.catgeory, 'generalInformation.catgeoryFormControlRequired'],
+		[GeneralInfoFormFields.category, 'generalInformation.catgeoryFormControlRequired'],
 		[GeneralInfoFormFields.group, 'generalInformation.groupFormControlRequired'],
 		[GeneralInfoFormFields.subcategory, 'generalInformation.subcategoryFormControlRequired'],
 		[GeneralInfoFormFields.commerceNumber, 'generalInformation.commerceNumberFormControlRequired'],
@@ -360,15 +382,6 @@ describe('GeneralInformationComponent', () => {
 		component['loadInitialData']();
 		expect(initLocalStorageDataSpy).toHaveBeenCalled();
 		expect(initFormSpy).toHaveBeenCalled();
-	});
-
-	it('should attempt to setup the form if there is data available', () => {
-		jest.spyOn(component as any, 'setupProfileForm');
-		supplierProfileServiceMock.supplierProfileInformation = testData;
-
-		component['getSupplierProfileInformation']();
-
-		expect(component['setupProfileForm']).toHaveBeenCalledWith(testData);
 	});
 
 	it('should receive undefined when logo is undefined and try to remove logo', () => {
@@ -824,39 +837,6 @@ describe('GeneralInformationComponent', () => {
 		expect(result).toEqual(DropdownLabel);
 	});
 
-	it('should return true when isReadonly is true', () => {
-		component.isReadonly = true;
-		component.isEditProfileComponent = false;
-		component.cashierEmailsList.clear();
-
-		expect(component.isCashierEmailsFieldValid).toBe(true);
-	});
-
-	it('should return true when isEditProfileComponent is true', () => {
-		component.isReadonly = false;
-		component.isEditProfileComponent = true;
-		component.cashierEmailsList.clear();
-
-		expect(component.isCashierEmailsFieldValid).toBe(true);
-	});
-
-	it('should return true when cashierEmailsList has at least one email and not readonly or edit', () => {
-		component.isReadonly = false;
-		component.isEditProfileComponent = false;
-		component.cashierEmailsList.clear();
-		component.cashierEmailsList.add('cashier@example.com');
-
-		expect(component.isCashierEmailsFieldValid).toBe(true);
-	});
-
-	it('should return false when cashierEmailsList is empty and not readonly or edit', () => {
-		component.isReadonly = false;
-		component.isEditProfileComponent = false;
-		component.cashierEmailsList.clear();
-
-		expect(component.isCashierEmailsFieldValid).toBe(false);
-	});
-
 	it('should add e-mail to list if it is valid when enter key is pressed', () => {
 		const emailControl = component.generalInformationForm.get('cashierEmails');
 		emailControl?.setValue('email@domain.com');
@@ -891,12 +871,6 @@ describe('GeneralInformationComponent', () => {
 		// invalid email
 		component.cashierEmailsList = new Set<string>();
 		component.generalInformationForm.get('cashierEmails')?.setValue('invalid-email');
-		(component as any).handleKeyPressed();
-		expect(component.emailError).toBe('genericFields.email.validEmail');
-		expect(component.cashierEmailsList.size).toBe(0);
-
-		// empty email
-		component.generalInformationForm.get('cashierEmails')?.setValue('');
 		(component as any).handleKeyPressed();
 		expect(component.emailError).toBe('genericFields.email.validEmail');
 		expect(component.cashierEmailsList.size).toBe(0);
@@ -986,6 +960,178 @@ describe('GeneralInformationComponent', () => {
 			component['updateCashiersOnLocalStorage']();
 			const storedEmails = localStorage.getItem('generalInformationCashiers');
 			expect(storedEmails).toBe(JSON.stringify([]));
+		});
+	});
+
+	describe('handleBlur', () => {
+		it('should not call handleKeyPressed when event is null', () => {
+			const handleKeyPressedSpy = jest.spyOn(component as any, 'handleKeyPressed');
+
+			component.handleBlur(null);
+
+			expect(handleKeyPressedSpy).not.toHaveBeenCalled();
+		});
+
+		it('should not call handleKeyPressed when event is undefined', () => {
+			const handleKeyPressedSpy = jest.spyOn(component as any, 'handleKeyPressed');
+
+			component.handleBlur(undefined);
+
+			expect(handleKeyPressedSpy).not.toHaveBeenCalled();
+		});
+
+		it('should not call handleKeyPressed when event is empty string', () => {
+			const handleKeyPressedSpy = jest.spyOn(component as any, 'handleKeyPressed');
+
+			component.handleBlur('');
+
+			expect(handleKeyPressedSpy).not.toHaveBeenCalled();
+		});
+
+		it('should call handleKeyPressed when event is a non-empty string', () => {
+			const handleKeyPressedSpy = jest.spyOn(component as any, 'handleKeyPressed');
+
+			component.handleBlur('valid@email.com');
+
+			expect(handleKeyPressedSpy).toHaveBeenCalled();
+		});
+
+		it('should call handleKeyPressed when event is a non-empty object', () => {
+			const handleKeyPressedSpy = jest.spyOn(component as any, 'handleKeyPressed');
+			const mockEvent = { target: 'input' };
+
+			component.handleBlur(mockEvent);
+
+			expect(handleKeyPressedSpy).toHaveBeenCalled();
+		});
+
+		it('should call handleKeyPressed when event is zero (falsy but not null/undefined/empty string)', () => {
+			const handleKeyPressedSpy = jest.spyOn(component as any, 'handleKeyPressed');
+
+			component.handleBlur(0);
+
+			expect(handleKeyPressedSpy).toHaveBeenCalled();
+		});
+
+		it('should call handleKeyPressed when event is false (falsy but not null/undefined/empty string)', () => {
+			const handleKeyPressedSpy = jest.spyOn(component as any, 'handleKeyPressed');
+
+			component.handleBlur(false);
+
+			expect(handleKeyPressedSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('openAddCashiersModal', () => {
+		it('should open the dialog with correct parameters', () => {
+			const messageSpyOn = jest.spyOn(dialogService, 'message').mockReturnValue({
+				afterClosed: jest.fn(() => of(new Set<string>())),
+			} as any);
+
+			component.openAddCashiersModal();
+
+			expect(messageSpyOn).toHaveBeenCalledWith(AddCashierModalComponent, {
+				width: '824px',
+				height: '400px',
+				disableClose: true,
+				ariaLabel: 'generalInformation.addCashiers',
+			});
+		});
+
+		it('should not process result when modal is closed without cashiers', () => {
+			const addCashiersSpy = jest.spyOn(supplierProfileServiceMock, 'addCashiersToProfile');
+
+			dialogService.message = jest.fn().mockReturnValue({
+				afterClosed: jest.fn(() => of(null)),
+			} as any);
+
+			component.openAddCashiersModal();
+
+			expect(addCashiersSpy).not.toHaveBeenCalled();
+		});
+
+		it('should not process result when modal returns empty set of cashiers', () => {
+			const addCashiersSpy = jest.spyOn(supplierProfileServiceMock, 'addCashiersToProfile');
+
+			dialogService.message = jest.fn().mockReturnValue({
+				afterClosed: jest.fn(() => of(new Set<string>())),
+			} as any);
+
+			component.openAddCashiersModal();
+
+			expect(addCashiersSpy).not.toHaveBeenCalled();
+		});
+
+		it('should call addCashiersToProfile when modal returns cashiers', () => {
+			const mockCashiers = new Set<string>(['cashier1@example.com', 'cashier2@example.com']);
+			const addCashiersSpy = jest
+				.spyOn(supplierProfileServiceMock, 'addCashiersToProfile')
+				.mockReturnValue(of(['testEmail@example.com']));
+
+			dialogService.message = jest.fn().mockReturnValue({
+				afterClosed: jest.fn(() => of(mockCashiers)),
+			} as any);
+
+			component.openAddCashiersModal();
+
+			expect(addCashiersSpy).toHaveBeenCalledWith(mockCashiers);
+		});
+
+		it('should not update cashierEmailsList when addCashiersToProfile returns false', () => {
+			const mockCashiers = new Set<string>(['cashier1@example.com']);
+			const initialCashiers = new Set<string>(['existing@example.com']);
+			component.cashierEmailsList = initialCashiers;
+
+			jest.spyOn(supplierProfileServiceMock, 'addCashiersToProfile').mockReturnValue(
+				of(undefined as unknown as string[]),
+			);
+
+			dialogService.message = jest.fn().mockReturnValue({
+				afterClosed: jest.fn(() => of(mockCashiers)),
+			} as any);
+
+			component.openAddCashiersModal();
+
+			expect(component.cashierEmailsList).toEqual(initialCashiers);
+		});
+
+		it('should update cashierEmailsList when addCashiersToProfile returns true', () => {
+			const mockCashiers = new Set<string>(['cashier1@example.com', 'cashier2@example.com']);
+			const initialCashiers = new Set<string>(['existing@example.com']);
+			component.cashierEmailsList = initialCashiers;
+
+			jest.spyOn(supplierProfileServiceMock, 'addCashiersToProfile').mockReturnValue(
+				of(['cashier1@example.com', 'cashier2@example.com']),
+			);
+
+			dialogService.message = jest.fn().mockReturnValue({
+				afterClosed: jest.fn(() => of(mockCashiers)),
+			} as any);
+
+			component.openAddCashiersModal();
+
+			expect([...component.cashierEmailsList].sort()).toEqual([...initialCashiers, ...mockCashiers].sort());
+		});
+
+		it('should merge new cashiers with existing ones', () => {
+			const existingCashiers = new Set<string>(['existing@example.com']);
+			const newCashiers = new Set<string>(['new1@example.com', 'new2@example.com']);
+			component.cashierEmailsList = existingCashiers;
+
+			jest.spyOn(supplierProfileServiceMock, 'addCashiersToProfile').mockReturnValue(
+				of(['new1@example.com', 'new2@example.com']),
+			);
+
+			dialogService.message = jest.fn().mockReturnValue({
+				afterClosed: jest.fn(() => of(newCashiers)),
+			} as any);
+
+			component.openAddCashiersModal();
+
+			expect(component.cashierEmailsList.size).toBe(3);
+			expect(component.cashierEmailsList.has('existing@example.com')).toBe(true);
+			expect(component.cashierEmailsList.has('new1@example.com')).toBe(true);
+			expect(component.cashierEmailsList.has('new2@example.com')).toBe(true);
 		});
 	});
 });

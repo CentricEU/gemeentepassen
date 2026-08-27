@@ -1,8 +1,8 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
-import javax.validation.constraints.NotBlank;
 
 @Builder
 public record SetupPasswordValidateDTO(@NotBlank(message = "Token must not be blank") String token,

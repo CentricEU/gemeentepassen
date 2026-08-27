@@ -8,13 +8,25 @@
 			}
 		}
 
+		.card-content {
+			max-height: calc(100vh - 220px);
+		}
+
 		.no-offers-data {
 			overflow: hidden !important;
 
-			.centric-panel-container {
+			.windmill-card-container {
 				height: 100vh;
 				max-height: calc(100vh - 80px);
 			}
+		}
+		
+		.panel-content {
+			overflow: hidden !important;
+		}
+
+		.centric-panel-container {
+			max-height: unset !important;
 		}
 	}
 }

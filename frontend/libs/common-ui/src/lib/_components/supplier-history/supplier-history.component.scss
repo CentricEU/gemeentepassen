@@ -1,0 +1,17 @@
+.timeline {
+    padding: 16px;
+}
+
+:host {
+    ::ng-deep {
+        .no-data {
+            .no-data-description {
+                width: 480px !important;
+            }    
+        }
+
+        .windmill-tab-body {
+            height: 100%;
+        }
+    }
+}

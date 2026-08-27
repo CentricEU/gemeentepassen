@@ -1,6 +1,6 @@
 import { HttpClient, HttpClientModule, HttpParams } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { MonthYearEntry, TransactionTableDto, ValidatedCode } from '@frontend/common';
+import { TransactionTableDto, ValidatedCode } from '@frontend/common';
 import { of } from 'rxjs';
 
 import { TransactionService } from './transaction.service';
@@ -59,24 +59,6 @@ describe('TransactionService', () => {
 		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/transactions/supplier/count-all`);
 	});
 
-	it('should return the number of all current month transactions', () => {
-		const selectedDate = { monthValue: 1, year: 2024 };
-		const httpParams = new HttpParams().set('month', selectedDate.monthValue).set('year', selectedDate.year);
-
-		const expectedUrl = `${environmentMock.apiPath}/transactions/supplier/count-by-month-and-year`;
-
-		httpClientSpy.get.mockReturnValue(of(15));
-
-		service.countCurrentMonthTransactions(new MonthYearEntry('january', 1, 2024)).subscribe((data) => {
-			expect(data).toEqual(15);
-		});
-
-		expect(httpClientSpy.get).toHaveBeenCalledWith(expectedUrl, {
-			params: httpParams,
-			responseType: 'json',
-		});
-	});
-
 	it('should return the number of all distinct years for transactions', () => {
 		const years = [2023, 2024, 2025];
 
@@ -89,75 +71,65 @@ describe('TransactionService', () => {
 		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/transactions/supplier/years`);
 	});
 
-	it('should return paginated transactions', () => {
-		const mockTransactions: TransactionTableDto[] = [
-			new TransactionTableDto('1', '1234567890', 'John Doe', 1000, '12/12/2024', '14:30'),
-			new TransactionTableDto('2', '0987654321', 'Jane Smith', 500, '12/12/2024', '09:00'),
-		];
+	it('should call count-all when countDateIntervalTransactions is invoked without dates', () => {
+		httpClientSpy.get.mockReturnValue(of(42));
 
-		const currentIndex = 0;
-		const pageSize = 1;
-		const expectedPagedTransactions = mockTransactions.slice(currentIndex, currentIndex + pageSize);
-
-		service.getTransactions = jest.fn().mockReturnValue(of(expectedPagedTransactions));
-
-		service.getTransactions(currentIndex, pageSize).subscribe((data) => {
-			expect(data).toEqual(expectedPagedTransactions);
+		service.countDateIntervalTransactions(undefined, undefined).subscribe((count) => {
+			expect(count).toBe(42);
 		});
 
-		expect(service.getTransactions).toHaveBeenCalledWith(currentIndex, pageSize);
+		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/transactions/supplier/count-all`);
 	});
 
-	it('should return paginated transactions', () => {
-		const mockTransactions: TransactionTableDto[] = [
-			new TransactionTableDto('1', '1234567890', 'John Doe', 1000, '12/12/2024', '14:30'),
-			new TransactionTableDto('2', '0987654321', 'Jane Smith', 500, '12/12/2024', '09:00'),
-		];
+	it('should call count with startDate and endDate params when both dates provided', () => {
+		const startDate = '2024-12-01';
+		const endDate = '2024-12-31';
 
-		const currentIndex = 0;
-		const pageSize = 1;
-		const expectedPagedTransactions = mockTransactions.slice(currentIndex, currentIndex + pageSize);
+		httpClientSpy.get.mockReturnValue(of(7));
 
-		httpClientSpy.get.mockReturnValue(of(expectedPagedTransactions));
-
-		service.getTransactions(currentIndex, pageSize).subscribe((data) => {
-			expect(data).toEqual(expectedPagedTransactions);
+		service.countDateIntervalTransactions(startDate, endDate).subscribe((count) => {
+			expect(count).toBe(7);
 		});
 
-		const expectedParams = new HttpParams().set('page', currentIndex.toString()).set('size', pageSize.toString());
-
-		const expectedQueryString = expectedParams.toString();
-		const actualQueryString = httpClientSpy.get.mock.calls[0][1].params.toString();
-
-		expect(actualQueryString).toBe(expectedQueryString);
+		const call = httpClientSpy.get.mock.calls[0];
+		expect(call[0]).toBe(`${environmentMock.apiPath}/transactions/supplier/count`);
+		const params: HttpParams = call[1].params;
+		expect(params.get('startDate')).toBe(startDate);
+		expect(params.get('endDate')).toBe(endDate);
 	});
 
-	it('should return paginated transactions with month and year filters', () => {
-		const mockTransactions: TransactionTableDto[] = [
-			new TransactionTableDto('1', '1234567890', 'John Doe', 1000, '12/12/2024', '14:30'),
-			new TransactionTableDto('2', '0987654321', 'Jane Smith', 500, '12/12/2024', '09:00'),
-		];
-
-		const currentIndex = 0;
-		const pageSize = 1;
-		const month = 12;
-		const year = 2024;
-		const expectedPagedTransactions = mockTransactions.slice(currentIndex, currentIndex + pageSize);
-
-		httpClientSpy.get.mockReturnValue(of(expectedPagedTransactions));
-
-		service.getTransactions(currentIndex, pageSize, month, year).subscribe((data) => {
-			expect(data).toEqual(expectedPagedTransactions);
+	it('should return empty array when getDateIntervalTransactions is called without dates', () => {
+		service.getDateIntervalTransactions(0, 10, undefined, undefined).subscribe((data) => {
+			expect(data).toEqual([]);
 		});
 
-		const expectedParams = new HttpParams()
-			.set('page', currentIndex.toString())
-			.set('size', pageSize.toString())
-			.set('month', month.toString())
-			.set('year', year.toString());
+		expect(httpClientSpy.get).not.toHaveBeenCalled();
+	});
 
-		const actualQueryString = httpClientSpy.get.mock.calls[0][1].params.toString();
+	it('should call filter endpoint with correct params when dates provided', () => {
+		const page = 2;
+		const size = 25;
+		const startDate = '2024-01-01';
+		const endDate = '2024-01-31';
 
-		expect(actualQueryString).toBe(expectedParams.toString());
+		const expected = [
+			new TransactionTableDto('1', '111', 'Alice', 100, '01/15/2024', '10:15'),
+			new TransactionTableDto('2', '222', 'Bob', 200, '01/20/2024', '11:30'),
+		];
+
+		httpClientSpy.get.mockReturnValue(of(expected));
+
+		service.getDateIntervalTransactions(page, size, startDate, endDate).subscribe((data) => {
+			expect(data).toEqual(expected);
+		});
+
+		const call = httpClientSpy.get.mock.calls[0];
+		expect(call[0]).toBe(`${environmentMock.apiPath}/transactions/supplier/filter`);
+
+		const params: HttpParams = call[1].params;
+		expect(params.get('page')).toBe(page.toString());
+		expect(params.get('size')).toBe(size.toString());
+		expect(params.get('startDate')).toBe(startDate);
+		expect(params.get('endDate')).toBe(endDate);
 	});
 });

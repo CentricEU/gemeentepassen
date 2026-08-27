@@ -70,7 +70,7 @@ export default function OffersGroupDrawer({ navigation }: any) {
 
           {offerDetails &&
             <OfferCard
-              offer={offerDetails as OfferMobileDetailDto}
+              offer={offerDetails as any}
               customStyle={styles.detailsCard}
               isOnMap={true}
               navigation={navigation}

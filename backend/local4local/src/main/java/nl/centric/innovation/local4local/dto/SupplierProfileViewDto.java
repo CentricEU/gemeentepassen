@@ -1,5 +1,7 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.NonNull;
 import nl.centric.innovation.local4local.entity.Supplier;
@@ -9,8 +11,6 @@ import nl.centric.innovation.local4local.util.annotation.ConsistentBankDetails;
 import nl.centric.innovation.local4local.util.annotation.ValidBic;
 import nl.centric.innovation.local4local.util.annotation.ValidIban;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import java.util.UUID;
 
 import static nl.centric.innovation.local4local.util.Constants.URL_REGEX;
@@ -28,7 +28,7 @@ public record SupplierProfileViewDto(
         Integer subcategory,
         @NonNull String adminEmail,
         @NonNull String companyBranchAddress,
-        @NonNull String branchProvince,
+        String branchProvince,
         @NonNull String branchZip,
         @NonNull String branchLocation,
         String branchTelephone,
@@ -42,7 +42,7 @@ public record SupplierProfileViewDto(
         String iban,
         @ValidBic
         String bic
-) implements BankDetailsProvider {
+) implements BankDetailsProvider, SupplierProfileResult {
     public static SupplierProfileViewDto entityToSupplierProfileViewDto(Supplier supplier) {
         SupplierProfile supplierProfile = supplier.getProfile();
         return SupplierProfileViewDto.builder()

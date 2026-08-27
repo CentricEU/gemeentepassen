@@ -22,16 +22,16 @@
 		</ng-container>
 	</frontend-table>
 } @else {
-	<centric-panel class="table-pannel" [class.full-size-panel]="true" [showFooter]="false" [header]="true">
-		<ng-container panel-header>
+	<windmill-card class="table-pannel" [class.full-size-panel]="true" [hasFooter]="false" [hasHeader]="true">
+		<ng-container card-header>
 			<span class="left-container">{{ 'profilePage.header' | translate }} </span>
 		</ng-container>
-		<ng-container panel-content>
+		<ng-container card-content>
 			<frontend-no-data [noDataTitle]="'profilePage.welcome'" [noDataDescription]="'profilePage.noData'">
 				<centric-button type="high-emphasis-theme" iconId="plus_b" (click)="save()">
 					{{ 'citizenGroup.createGroup' | translate }}
 				</centric-button>
 			</frontend-no-data>
 		</ng-container>
-	</centric-panel>
+	</windmill-card>
 }

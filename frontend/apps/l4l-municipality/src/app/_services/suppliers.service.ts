@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { GetSuppliersDto } from '../_models/get-suppliers-dto.model';
 import { InvitationDto } from '../_models/invitation-dto.model';
 import { InviteSuppliersDto } from '../_models/invite-suppliers-dto.model';
+import { SupplierRequestPatchDto } from '../_models/supplier-request-patch-dto.model.';
 
 @Injectable({
 	providedIn: 'root',
@@ -71,5 +72,9 @@ export class MunicipalitySupplierService {
 		const httpParams = new HttpParams().set('page', page).set('size', size);
 
 		return this.httpClient.get<InvitationDto[]>(`${this.environment.apiPath}/invitations`, { params: httpParams });
+	}
+
+	public patchSupplierProfile(supplierProfilePath: SupplierRequestPatchDto): Observable<void> {
+		return this.httpClient.put<void>(`${this.environment.apiPath}/suppliers/finalize`, supplierProfilePath);
 	}
 }

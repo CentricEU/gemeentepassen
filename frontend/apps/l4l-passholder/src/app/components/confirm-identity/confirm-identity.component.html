@@ -1,0 +1,118 @@
+<section mat-dialog-content>
+	@if (checkEmailControl()) {
+		<form centric-complex-form [formGroup]="confirmIdentityFormGroup">
+			<centric-alert [attr.aria-hidden]="!isStepActive">
+				<div message [innerHTML]="'confirmIdentity.info' | translate"></div>
+			</centric-alert>
+			<centric-form-item-group class="l4l-form-item-group">
+				<div class="header" id="personal-information-title-id" aria-hidden="true">
+					<p class="generic-color-text bold">{{ 'confirmIdentity.personalInformation' | translate }}</p>
+				</div>
+				<centric-form-item-group
+					[type]="'inline'"
+					role="group"
+					[attr.aria-labelledby]="'personal-information-title-id'">
+					@for (field of inputFields.slice(0, 2); track field) {
+						<centric-form-item [width]="'0%'">
+							<centric-form-label [attrFor]="field.id + controlSuffix">
+								{{ field.labelKey | translate }}
+							</centric-form-label>
+							<centric-form-control>
+								<windmill-input
+									ariaAttributes
+									[formControlName]="field.controlName"
+									[id]="field.id + controlSuffix"
+									[name]="field.name"
+									[readonly]="true">
+								</windmill-input>
+							</centric-form-control>
+						</centric-form-item>
+					}
+				</centric-form-item-group>
+
+				<centric-form-item-group [type]="'inline'">
+					@for (field of inputFields.slice(2, 4); track field) {
+						<centric-form-item [width]="'0%'">
+							<centric-form-label [attrFor]="field.id + controlSuffix">
+								{{ field.labelKey | translate }}
+							</centric-form-label>
+							<centric-form-control>
+								<windmill-input
+									ariaAttributes
+									[formControlName]="field.controlName"
+									[id]="field.id + controlSuffix"
+									[name]="field.name"
+									[readonly]="true">
+								</windmill-input>
+							</centric-form-control>
+						</centric-form-item>
+					}
+				</centric-form-item-group>
+			</centric-form-item-group>
+
+			<centric-form-item-group class="l4l-form-item-group">
+				<div class="header contact-information" id="contact-information-title-id" aria-hidden="true">
+					<p class="generic-color-text bold">{{ 'contactInformation.header' | translate }}</p>
+				</div>
+				<centric-form-item-group [type]="'inline'">
+					<centric-form-item [width]="'0%'">
+						<centric-form-label
+							[attrFor]="'telephone-id' + controlSuffix"
+							role="group"
+							[attr.aria-labelledby]="'contact-information-title-id'">
+							{{ 'confirmIdentity.telephone' | translate }}
+						</centric-form-label>
+						<centric-form-control>
+							<windmill-input
+								ariaAttributes
+								formControlName="telephone"
+								[id]="'telephone-id' + controlSuffix"
+								[name]="'telephone'"
+								[readonly]="true">
+							</windmill-input>
+						</centric-form-control>
+					</centric-form-item>
+
+					<centric-form-item [width]="'0%'">
+						<centric-form-label [attrFor]="'email-id' + controlSuffix">
+							{{ 'general.email' | translate }}
+						</centric-form-label>
+						<centric-form-control appRequiredInput>
+							<windmill-input
+								ariaAttributes
+								frontendHtmlContentValidator
+								formControlName="email"
+								[id]="'email-id' + controlSuffix"
+								[ariaLabelClearIcon]="'general.label.clear' | translate"
+								[hasClearIcon]="true"
+								[placeholder]="'genericFields.email.placeholder' | translate"
+								[maxLength]="64"
+								[ariaDescribedby]="
+									hasControlErrorsAndTouched('email', confirmIdentityFormGroup) ? 'email-error' : ''
+								"
+								[validationFunction]="
+									validationFunctionError.bind(this, 'email', confirmIdentityFormGroup)
+								"
+								(inputValueChanged)="onEmailValueChanged($event)">
+								@if (validationFunctionError('email', confirmIdentityFormGroup)) {
+									<ng-container errors>
+										<span class="centric-error-message" [attr.id]="'email-error'">
+											{{ getEmailErrorMessage(confirmIdentityFormGroup) | translate }}
+										</span>
+									</ng-container>
+								}
+								@if (confirmIdentityFormGroup.get('emailControlName')?.hasError('isHTML')) {
+									<ng-container errors>
+										<span class="centric-error-message" [attr.id]="'email-error'">
+											{{ 'errors.htmlContent' | translate }}
+										</span>
+									</ng-container>
+								}
+							</windmill-input>
+						</centric-form-control>
+					</centric-form-item>
+				</centric-form-item-group>
+			</centric-form-item-group>
+		</form>
+	}
+</section>

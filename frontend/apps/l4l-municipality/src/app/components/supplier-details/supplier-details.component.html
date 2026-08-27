@@ -1,7 +1,7 @@
 <windmill-tab-group [theme]="'underlined'" [selectedIndex]="tabIndex" (selectedTabChange)="tabChanged($event)">
 	<windmill-tab>
 		<ng-template windmill-tab-label>
-			<centric-icon2 [svgIcon]="'shop_b'" [size]="'20'"></centric-icon2>
+			<windmill-icon [svgIcon]="'shop_b'" [size]="'20'"></windmill-icon>
 			<span>{{ 'general.pages.supplierDetails' | translate }}</span>
 		</ng-template>
 		<ng-container card-content>
@@ -11,11 +11,21 @@
 
 	<windmill-tab>
 		<ng-template windmill-tab-label>
-			<centric-icon2 [svgIcon]="'star_b'" [size]="'20'"></centric-icon2>
+			<windmill-icon [svgIcon]="'star_b'" [size]="'20'"></windmill-icon>
 			<span>{{ 'general.pages.offers' | translate }}</span>
 		</ng-template>
 		<ng-container card-content>
 			<frontend-offers-for-municipality [supplierId]="supplierId"></frontend-offers-for-municipality>
+		</ng-container>
+	</windmill-tab>
+
+	<windmill-tab>
+		<ng-template windmill-tab-label>
+			<windmill-icon [svgIcon]="'timeline-bars-right_b'" [size]="'20'"></windmill-icon>
+			<span>{{ 'general.pages.history' | translate }}</span>
+		</ng-template>
+		<ng-container card-content>
+			<frontend-supplier-history [supplierId]="supplierId"></frontend-supplier-history>
 		</ng-container>
 	</windmill-tab>
 </windmill-tab-group>

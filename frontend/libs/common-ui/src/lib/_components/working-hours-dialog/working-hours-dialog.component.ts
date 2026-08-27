@@ -1,7 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, Inject, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { AuthService, FormUtil, UserInfo, WeekDays, WorkingHoursDto, WorkingHoursService } from '@frontend/common';
+import { AuthService, FormUtil, UserInfo, WorkingHoursDto, WorkingHoursService } from '@frontend/common';
 
 import { WorkingHoursEditComponent } from '../working-hours-edit/working-hours-edit.component';
 
@@ -50,28 +49,6 @@ export class WorkingHoursDialogComponent implements AfterViewInit {
 	}
 
 	private getWorkingHours(): void {
-		let countDay = 0;
-		Object.keys(WeekDays).forEach((day) => {
-			const savedDay = this.workingHoursData[countDay++];
-			if (!savedDay?.isChecked) {
-				return;
-			}
-			const dayLowercase = day.toLocaleLowerCase();
-
-			const dayFormGroup = this.workingHoursEdit.workingHoursForm.get(dayLowercase) as FormGroup;
-			dayFormGroup.get('isEnabled')?.setValue(true);
-
-			const scheduleGroup = dayFormGroup.get('schedule') as FormGroup;
-
-			scheduleGroup.controls['start'].setValue(this.createTimeDateFromString(savedDay.openTime));
-			scheduleGroup.controls['end']?.setValue(this.createTimeDateFromString(savedDay.closeTime));
-			this.workingHoursData[countDay - 1] = new WorkingHoursDto(
-				savedDay.day,
-				savedDay.openTime,
-				savedDay.closeTime,
-				savedDay.isChecked,
-				savedDay.id,
-			);
-		});
+		this.workingHoursEdit.populateForm(this.workingHoursData);
 	}
 }

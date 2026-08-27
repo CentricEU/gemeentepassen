@@ -11,7 +11,8 @@ export class CustomDialogComponent {
 	@Input() customButton: boolean;
 
 	public get isRejectionDialog(): boolean {
-		return !!this.data.optionalText?.reason;
+		const reason = this.data.optionalText?.reason;
+		return !!reason && reason !== '-';
 	}
 
 	public get isShown(): boolean {

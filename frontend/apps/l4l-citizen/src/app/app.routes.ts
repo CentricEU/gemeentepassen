@@ -1,67 +1,35 @@
 import { Route } from '@angular/router';
-import { AppType, authGuard, commonRoutingConstants, mobileOnlyGuard, nonAuthGuard } from '@frontend/common';
+import { AppType, authGuard, commonRoutingConstants, nonAuthGuard } from '@frontend/common';
+import { ChangePasswordComponent, EmailActionComponent, LoginComponent } from '@frontend/common-ui';
 
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { OffersComponent } from './pages/offers/offers.component';
+import { CitizenTransactionsComponent } from './pages/transactions/citizen-transactions';
+import { DiscountsComponent } from './pages/discounts/discounts';
+import { CitizenProfileComponent } from './pages/profile/citizen-profile';
 
 export const appRoutes: Route[] = [
-	{ path: '', component: DashboardComponent, canActivate: [authGuard] },
+	{ path: '', redirectTo: commonRoutingConstants.offers, pathMatch: 'full' },
 	{
 		path: commonRoutingConstants.login,
+		component: LoginComponent,
 		canActivate: [nonAuthGuard],
 		data: { app: AppType.citizen },
-		loadComponent: () =>
-			import('./pages/login-with-digid/login-with-digid.component').then((m) => m.LoginWithDigiDComponent),
 	},
 	{
-		path: commonRoutingConstants.dashboard,
-		canActivate: [authGuard],
-		data: { app: AppType.citizen },
-		loadComponent: () => import('./pages/dashboard/dashboard.component').then((m) => m.DashboardComponent),
-	},
-	{
-		path: commonRoutingConstants.digidCategory,
-		canActivate: [authGuard],
-		data: { app: AppType.citizen },
-		loadComponent: () =>
-			import('./pages/digid-category/digid-category.component').then((m) => m.DigiDCategoryComponent),
-	},
-	{
-		path: commonRoutingConstants.noneCategoryFit,
-		canActivate: [authGuard],
-		data: { app: AppType.citizen },
-		loadComponent: () =>
-			import('./pages/none-category-fit/none-category-fit.component').then((m) => m.NoneCategoryFitComponent),
-	},
-	{
-		path: commonRoutingConstants.citizenGroupAssignment,
-		canActivate: [authGuard],
-		data: { app: AppType.citizen },
-		loadComponent: () =>
-			import('./pages/citizen-group-assignment/citizen-group-assignment.component').then(
-				(m) => m.CitizenGroupAssignmentComponent,
-			),
-	},
-	{
-		path: commonRoutingConstants.openInApp,
-		canActivate: [nonAuthGuard, mobileOnlyGuard],
-		data: { app: AppType.citizen },
-		loadComponent: () => import('./pages/mobile-only/mobile-only.component').then((m) => m.MobileOnlyComponent),
-	},
-	{
-		path: commonRoutingConstants.applyForPass,
+		path: commonRoutingConstants.recover,
+		component: EmailActionComponent,
 		canActivate: [nonAuthGuard],
 		data: { app: AppType.citizen },
-		loadComponent: () =>
-			import('./pages/apply-for-pass/apply-for-pass.component').then((m) => m.ApplyForPassComponent),
 	},
+	{ path: commonRoutingConstants.offers, component: OffersComponent, canActivate: [authGuard] },
 	{
-		path: commonRoutingConstants.applyForPassSetup,
-		canActivate: [authGuard],
+		path: `${commonRoutingConstants.recover}/reset-password/:token`,
+		component: ChangePasswordComponent,
+		canActivate: [nonAuthGuard],
 		data: { app: AppType.citizen },
-		loadComponent: () =>
-			import('./pages/apply-for-pass-setup/apply-for-pass-setup.component').then(
-				(m) => m.ApplyForPassSetupComponent,
-			),
 	},
-	{ path: '**', redirectTo: '', pathMatch: 'full' },
+	{ path: commonRoutingConstants.transactions, component: CitizenTransactionsComponent, canActivate: [authGuard] },
+	{ path: commonRoutingConstants.discounts, component: DiscountsComponent, canActivate: [authGuard] },
+	{ path: commonRoutingConstants.editProfile, component: CitizenProfileComponent, canActivate: [authGuard] },
+	{ path: '**', redirectTo: commonRoutingConstants.offers, pathMatch: 'full' },
 ];

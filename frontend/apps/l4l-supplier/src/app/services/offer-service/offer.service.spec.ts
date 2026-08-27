@@ -1,13 +1,14 @@
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { GenericStatusEnum, OfferTableDto, TimeIntervalPeriod } from '@frontend/common';
+import { BenefitDto, GenericStatusEnum, OfferDto, OfferTableDto, TimeIntervalPeriod } from '@frontend/common';
 
 import { DeleteOffersDto } from '../../models/delete-offers-dto.model';
 import { FilterOfferRequestDto } from '../../models/filter-offer-request-dto.model';
 import { OfferRejectionReasonDto } from '../../models/offer-rejection-reason-dto.model';
 import { ReactivateOfferDto } from '../../models/reactivate-offer-dto.model';
 import { OfferService } from './offer.service';
+import { version } from 'os';
 
 describe('OfferService', () => {
 	let service: OfferService;
@@ -39,9 +40,20 @@ describe('OfferService', () => {
 			citizenOfferType: 'CITIZEN',
 			offerTypeId: 3,
 			amount: 50,
+			version: 0,
 			startDate: new Date('2021-01-01'),
 			expirationDate: new Date('2021-12-31'),
-			benefitId: 'benefit-123',
+			benefits: [
+				new BenefitDto(
+					'Benefit Name 2',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					[],
+					20,
+					'ACTIVE',
+				),
+			],
 		};
 
 		service.createOffer(offerData).subscribe((response) => {
@@ -404,5 +416,59 @@ describe('OfferService', () => {
 		expect(req.request.method).toBe('GET');
 
 		req.flush(mockOfferCounts);
+	});
+
+	it('should send a PATCH request to edit an offer', () => {
+		const offerId = '123';
+
+		const offerData = {
+			title: 'Test Grant',
+			description: 'Test Description',
+			citizenOfferType: 'CITIZEN',
+			offerTypeId: 3,
+			amount: 50,
+			version: 0,
+			startDate: new Date('2021-01-01'),
+			expirationDate: new Date('2021-12-31'),
+			benefits: [
+				new BenefitDto(
+					'Benefit Name 2',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					[],
+					20,
+					'ACTIVE',
+				),
+			],
+		};
+
+		const mockResponse = offerData;
+
+		service.editOffer(offerId, offerData).subscribe((response) => {
+			expect(response).toEqual(mockResponse);
+		});
+
+		const req = httpMock.expectOne(`${environmentMock.apiPath}/offers/edit/${offerId}`);
+
+		expect(req.request.method).toBe('PATCH');
+		expect(req.request.body).toEqual(offerData);
+		expect(req.request.headers).toBeTruthy();
+
+		req.flush(mockResponse);
+	});
+
+	it('should send a PATCH request to suspend an offer', () => {
+		const offerId = '123';
+
+		service.suspendOffer(offerId).subscribe((response) => {
+			expect(response).toBeTruthy();
+		});
+
+		const req = httpMock.expectOne(`${environmentMock.apiPath}/offers/suspend/${offerId}`);
+		expect(req.request.method).toBe('PATCH');
+		expect(req.request.body).toEqual({});
+
+		req.flush(null);
 	});
 });

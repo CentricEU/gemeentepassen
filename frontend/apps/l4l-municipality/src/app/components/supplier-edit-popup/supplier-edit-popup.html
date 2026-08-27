@@ -1,0 +1,70 @@
+@if (supplierId) {
+	<section mat-dialog-title>
+		<h3>
+			{{ 'suppliersApproval.reviewSuppliers' | translate }}
+		</h3>
+		<button
+			ariaAttributes
+			windmill-tooltip
+			class="close-button"
+			[attr.ariaLabel]="'general.button.close' | translate"
+			[tooltipColor]="'tooltipSurfaceColor'"
+			[tooltipText]="'general.button.close' | translate"
+			[ariaLabelTranslation]="'contactInformation.branchProvincePlaceholder'"
+			(click)="close()">
+			<windmill-icon ariaAttributes [svgIcon]="'cancel_b'" [size]="'20'"></windmill-icon>
+		</button>
+	</section>
+
+	<section mat-dialog-content>
+		<centric-alert class="edited-info" [type]="'info'">
+			<div [innerHTML]="'suppliersApproval.adminApproval' | translate"></div>
+		</centric-alert>
+
+		<div class="half-width">
+			<div class="form-header">
+				<p class="generic-color-text bold">{{ 'generalInformation.header' | translate }}</p>
+			</div>
+			<frontend-general-information
+				#generalInformation
+				(generalInformationEvent)="handleInformationFormEvent($event, false)"
+				[isReadonly]="false"
+				[hasDuplicateEmailError]="hasDuplicateError"
+				[isAdminEditing]="true"
+				[isEditProfileComponent]="true"></frontend-general-information>
+		</div>
+		<div class="half-width">
+			<div class="form-header">
+				<p class="generic-color-text bold">{{ 'contactInformation.header' | translate }}</p>
+			</div>
+			<frontend-contact-information
+				(contactInformationEvent)="handleInformationFormEvent($event, true)"
+				[isReadonly]="false"
+				[isEditProfileComponent]="true"></frontend-contact-information>
+		</div>
+
+		<div class="full-width">
+			<div class="form-header">
+				<p class="generic-color-text bold">{{ 'workingHours.header' | translate }}</p>
+			</div>
+
+			<frontend-working-hours-edit
+				#workingHoursEdit
+				[workingHoursData]="workingHoursData"
+				[style.padding-top.px]="24"></frontend-working-hours-edit>
+		</div>
+	</section>
+
+	<section mat-dialog-actions>
+		<centric-button ariaAttributes type="outlined-theme" (click)="close()">
+			{{ 'general.button.discard' | translate }}
+		</centric-button>
+		<centric-button
+			ariaAttributes
+			[disabled]="!isFormValid"
+			[type]="data.acceptButtonType"
+			(click)="saveSupplierPatch()">
+			{{ 'general.button.saveAndApprove' | translate }}
+		</centric-button>
+	</section>
+}

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnInit } from '@angular/core';
 import {
 	AuthService,
@@ -17,7 +17,7 @@ import { SupplierService } from '../../services/supplier-service/supplier.servic
 
 @Component({
 	selector: 'frontend-header',
-	imports: [CommonModule, TranslateModule, WindmillModule, CommonL4LModule],
+	imports: [TranslateModule, WindmillModule, CommonL4LModule],
 	templateUrl: './header.component.html',
 	styleUrl: './header.component.scss',
 })

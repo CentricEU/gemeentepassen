@@ -1,0 +1,27 @@
+<div class="citizen-enrollment-view">
+	<p class="bold">{{ 'applyForPass.groupCitizenAssignmentFromDigiD.title' | translate }}</p>
+	<!-- Mocked data for this moment (until we receive data from DigiD)-->
+	<app-citizen-group-card
+		[groupCardData]="{
+			categoryTitle: 'Single parent',
+			ageGroup: ageGroup,
+			dependentChildren: true,
+			maxIncome: 2245.85,
+			isReadonly: true,
+			selected: true,
+		}"></app-citizen-group-card>
+
+	<div class="buttons-container">
+		<centric-button
+			[type]="'outlined-theme'"
+			[ariaLabel]="'categoryAssignment.changeCategory' | translate"
+			(click)="changeCategory()"
+			>{{ 'applyForPass.groupCitizenAssignmentFromDigiD.changeCategory' | translate }}</centric-button
+		>
+		<centric-button
+			[ariaLabel]="'categoryAssignment.confirmCategory' | translate"
+			(click)="confirmAssignedCategory()">
+			{{ 'applyForPass.confirmCategory' | translate }}
+		</centric-button>
+	</div>
+</div>

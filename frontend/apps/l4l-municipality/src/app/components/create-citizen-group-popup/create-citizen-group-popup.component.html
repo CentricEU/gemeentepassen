@@ -6,7 +6,7 @@
 		[attr.ariaLabel]="'general.button.close' | translate"
 		[ariaLabelTranslation]="'general.button.close'"
 		(click)="close()">
-		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+		<windmill-icon [svgIcon]="'cancel_b'" [size]="'20'"></windmill-icon>
 	</button>
 </section>
 <section mat-dialog-content>
@@ -75,17 +75,17 @@
 							[validationFunction]="
 								validationFunctionError.bind(this, 'ageGroup', createCitizenGroupForm)
 							">
+							@if (hasControlRequiredErrorAndTouched('ageGroup', createCitizenGroupForm)) {
+								<ng-container errors>
+									<div id="id-errors-ageGroup">
+										<span class="centric-error-message" [attr.id]="'age-group-error'"
+											>{{ 'citizenGroup.ageGroupFormControlRequired' | translate }}
+										</span>
+									</div>
+								</ng-container>
+							}
 						</windmill-select>
 					</centric-form-control>
-					@if (hasControlRequiredErrorAndTouched('ageGroup', createCitizenGroupForm)) {
-						<ng-container errors>
-							<div id="id-errors-ageGroup">
-								<span class="centric-error-message" [attr.id]="'age-group-error'"
-									>{{ 'citizenGroup.ageGroupFormControlRequired' | translate }}
-								</span>
-							</div>
-						</ng-container>
-					}
 				</centric-form-item>
 			</centric-form-item-group>
 			<centric-form-item>
@@ -126,7 +126,6 @@
 					<centric-form-control frontendRequiredInput>
 						<windmill-input
 							ariaAttributes
-							frontendHtmlContentValidator
 							formControlName="threshold"
 							min="1"
 							max="200"

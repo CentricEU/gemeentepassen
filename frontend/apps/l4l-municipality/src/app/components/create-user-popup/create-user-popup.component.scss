@@ -1,0 +1,12 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+
+:host {
+	.info-text {
+		color: var(--greyscale-400);
+	}
+
+	.super-admin-section {
+		@include mixins.flex(column, flex-start, flex-start);
+		gap: 8px;
+	}
+}

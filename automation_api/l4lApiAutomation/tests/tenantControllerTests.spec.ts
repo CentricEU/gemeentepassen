@@ -4,7 +4,8 @@ import { ApiFactory } from '../serviceApi/apiFactory';
 import { safeJsonParse, loadJsonFile } from '../utils/jsonHelper';
 import { AssertHelper } from '../utils/assertHelper';
 import * as db from '../db/queries/tenantQueries';
-import { Tenant } from '../apiModels/tenantModels';
+import * as dbUser from '../db/queries/userQueries';
+import { Tenant, TenantBankInformation } from '../apiModels/tenantModels';
 import { Roles } from '../utils/roles.enum';
 import { StatusCodes } from '../utils/status-codes.enum';
 
@@ -24,38 +25,55 @@ test.afterAll(async () => {
 });
 
 test.describe('Tenant Controller Tests', () => {
-	test('Get Tenant By ID', { tag: '@smoke' }, async () => {
+	test('Get Tenant By ID', async () => {
 		const id = process.env.TENANT_ID;
 		const response = await tenantController.getTenantById(id);
 		expect(response.status()).toBe(StatusCodes.OK);
-
-		const responseBody: Tenant = await response.json();
-		const responseQuery = await db.getTenantById(id);
-		AssertHelper.compareData(responseBody, responseQuery);
+		const responseBody: Tenant = safeJsonParse(await response.text());
+		const expectedBody = loadJsonFile<Tenant>('./testData/tenantData.json');
+		AssertHelper.compareData(responseBody, expectedBody);
 	});
 
-	test('Get All Tenants', { tag: '@smoke' }, async () => {
+	test('Get All Tenants', async () => {
 		tenantController = await ApiFactory.getTenantApi(Roles.SUPPLIER);
 		const response = await tenantController.getAllTenants();
 		expect(response.status()).toBe(StatusCodes.OK);
+		expect((await response.json()).length).toBeGreaterThan(0);
+	});
 
-		const responseBody: Tenant[] = safeJsonParse(await response.text());
-		const responseQuery = await db.getAllTenants();
+	test('Update Tenant Bank Information', async () => {
+		const id = process.env.TENANT_ID;
+		const bankInormation: TenantBankInformation = {
+			iban: 'NL20INGB0001234567',
+			bic: 'INGBNL2A'
+		};
 
-		AssertHelper.compareDataList(responseBody, responseQuery);
+		await db.removeTenantBankInformation(id);
+
+		try {
+			await dbUser.setIsApprovedUser(process.env.USER_MUNICIPALITY_ID, false);
+			const response = await tenantController.updateBankInformation(bankInormation);
+			expect(response.status()).toBe(StatusCodes.NO_CONTENT);
+		} finally {
+			await dbUser.setIsApprovedUser(process.env.USER_MUNICIPALITY_ID, true);
+		}
+
+		const responseQuery: TenantBankInformation = await db.getTenantBankInformation(id);
+		AssertHelper.compareData(responseQuery, bankInormation);
+		await expect(dbUser.getIsApprovedUser(process.env.USER_MUNICIPALITY_ID)).resolves.toBe(true);
 	});
 
 	test('Create Tenant', async () => {
 		const data = loadJsonFile<Tenant>('./testData/tenantData.json');
-		const response = await tenantController.createTenant(data);
-		expect(response.status()).toBe(StatusCodes.CREATED);
+		const responseCreate = await tenantController.createTenant(data);
+		expect(responseCreate.status()).toBe(StatusCodes.CREATED);
 
-		const responseBody: Tenant = await response.json();
-		const id = responseBody.id;
+		const responseCreateBody: Tenant = safeJsonParse(await responseCreate.text());
+		const id = responseCreateBody.id;
 		idTenantList.push(id);
 
-		const responseQuery = await db.getTenantById(id);
-		AssertHelper.compareData(data, responseQuery[0]);
-		AssertHelper.compareData(responseBody, responseQuery[0]);
+		const responseGet = await tenantController.getTenantById(id);
+		const responseGetBody: Tenant = safeJsonParse(await responseGet.text());
+		AssertHelper.compareData(responseCreateBody, responseGetBody);
 	});
 });

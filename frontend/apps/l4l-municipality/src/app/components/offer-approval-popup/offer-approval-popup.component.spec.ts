@@ -9,10 +9,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { WarningDialogData } from '@frontend/common';
 import { CustomDialogComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { CentricToastrModule, ToastrService } from '@windmill/ng-windmill/toastr';
 import { of } from 'rxjs';
 
+import { ApproveOfferDto } from '../../_models/approve-offer-dto.model';
 import { RejectOfferDto } from '../../_models/reject-offer-dto.model';
 import { PendingOffersService } from '../../pending-offers.service';
 import { OfferApprovalPopupComponent } from './offer-approval-popup.component';
@@ -53,7 +54,7 @@ describe('OfferApprovalPopupComponent', () => {
 		} as any;
 
 		const mockDialogData = {
-			offer: { id: 'testOfferId' },
+			offer: { id: 'testOfferId', version: 0 },
 		};
 
 		const environmentMock = {
@@ -140,8 +141,12 @@ describe('OfferApprovalPopupComponent', () => {
 
 			component.rejectOffer();
 
-			expect(component['createRejectOfferDto']).toHaveReturnedWith(new RejectOfferDto('testOfferId', 'reason'));
-			expect(pendingOfferService.rejectOffer).toHaveBeenCalledWith(new RejectOfferDto('testOfferId', 'reason'));
+			expect(component['createRejectOfferDto']).toHaveReturnedWith(
+				new RejectOfferDto('testOfferId', 'reason', 0),
+			);
+			expect(pendingOfferService.rejectOffer).toHaveBeenCalledWith(
+				new RejectOfferDto('testOfferId', 'reason', 0),
+			);
 			expect(toastrService.success).toHaveBeenCalledWith('Successful Rejection', '', {
 				toastBackground: 'toast-light',
 			});
@@ -152,7 +157,7 @@ describe('OfferApprovalPopupComponent', () => {
 			component.rejectionForm.get('rejectionReason')?.setValue('reason');
 
 			const actualDto = component['createRejectOfferDto']();
-			const expectedDto = new RejectOfferDto('testOfferId', 'reason');
+			const expectedDto = new RejectOfferDto('testOfferId', 'reason', 0);
 
 			expect(expectedDto).toEqual(actualDto);
 		});
@@ -160,9 +165,10 @@ describe('OfferApprovalPopupComponent', () => {
 
 	describe('offer approval', () => {
 		it('should call approve offer if id is present', () => {
+			const dto = new ApproveOfferDto('testOfferId', 0);
 			component.approveOffer();
 
-			expect(pendingOfferService.approveOffer).toHaveBeenCalledWith('testOfferId');
+			expect(pendingOfferService.approveOffer).toHaveBeenCalledWith(dto);
 		});
 
 		it('should call approveOffer on approveOffer method', () => {
@@ -172,7 +178,9 @@ describe('OfferApprovalPopupComponent', () => {
 
 			component.approveOffer();
 
-			expect(pendingOfferService.approveOffer).toHaveBeenCalledWith('testOfferId');
+			const dto = new ApproveOfferDto('testOfferId', 0);
+
+			expect(pendingOfferService.approveOffer).toHaveBeenCalledWith(dto);
 			expect(toastrService.success).toHaveBeenCalledWith('Successful Approval', '', {
 				toastBackground: 'toast-light',
 			});
@@ -230,6 +238,43 @@ describe('OfferApprovalPopupComponent', () => {
 			component.openWarningModal();
 
 			expect(dialogRef.close).not.toHaveBeenCalledWith(false);
+		});
+	});
+
+	describe('shouldDisplayEditedOfferAlert getter', () => {
+		it('should return true when offer version is greater than 0 and alert is not dismissed', () => {
+			component.data = { offer: { id: 'testOfferId', version: 1 } };
+			component.alertDismissed = false;
+
+			expect(component.shouldDisplayEditedOfferAlert).toBe(true);
+		});
+
+		it('should return false when offer version is 0', () => {
+			component.data = { offer: { id: 'testOfferId', version: 0 } };
+			component.alertDismissed = false;
+
+			expect(component.shouldDisplayEditedOfferAlert).toBe(false);
+		});
+
+		it('should return false when alert is dismissed', () => {
+			component.data = { offer: { id: 'testOfferId', version: 1 } };
+			component.alertDismissed = true;
+
+			expect(component.shouldDisplayEditedOfferAlert).toBe(false);
+		});
+
+		it('should return false when offer is undefined', () => {
+			component.data = {};
+			component.alertDismissed = false;
+
+			expect(component.shouldDisplayEditedOfferAlert).toBe(false);
+		});
+
+		it('should return false when data is undefined', () => {
+			component.data = undefined;
+			component.alertDismissed = false;
+
+			expect(component.shouldDisplayEditedOfferAlert).toBe(false);
 		});
 	});
 });

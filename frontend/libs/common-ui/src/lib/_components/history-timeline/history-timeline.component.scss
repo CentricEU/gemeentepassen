@@ -1,0 +1,18 @@
+:host {
+	::ng-deep {
+		.description-content {
+			white-space: pre-line;
+		}
+
+		.date-content {
+			display: none;
+		}
+
+		.centric-timeline-container {
+			.header-content {
+				padding-top: 2px;
+				font-size: var(--font-size-20) !important;
+			}
+		}
+	}
+}

@@ -18,7 +18,7 @@
 import { AuthConfiguration } from "react-native-app-auth";
 
 export const getSignicatConfig = (lang: string): AuthConfiguration => {
-    const redirectBase = 'https://citizen.testing.gemeentepassen.eu/open-in-app';
+    const redirectBase = 'https://passholder.testing.gemeentepassen.eu/open-in-app';
     const redirectUrl = `${redirectBase}?lang=${encodeURIComponent(lang)}`;
 
     return {

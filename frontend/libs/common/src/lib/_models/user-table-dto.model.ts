@@ -5,4 +5,5 @@ export class UserTableDto extends GenericTableData {
 	public fullName: string;
 	public email: string;
 	public createdDate: string;
+	public isSuperAdmin: boolean;
 }

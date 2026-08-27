@@ -12,8 +12,8 @@ describe('FormUtil', () => {
 			email: ['', Validators.compose([Validators.required, FormUtil.validateEmail(true)])],
 			password: ['', FormUtil.validatePassword],
 			confirmPassword: [''],
-			kvk: [''],
-			telephone: ['', FormUtil.validateTelephone],
+			kvkNumber: [''],
+			branchTelephone: [''],
 			otherField: [''],
 		});
 
@@ -163,19 +163,19 @@ describe('FormUtil', () => {
 	});
 
 	it('should return false for an invalid form control', () => {
-		formGroup.get('kvk')?.setValue('invalid value');
+		formGroup.get('kvkNumber')?.setValue('invalid value');
 		const result = FormUtil.validationFunctionErrorForKVK(formGroup);
 		expect(result).toBe(false);
 	});
 
 	it('should return true for a form control with a length less than 8', () => {
-		formGroup.get('kvk')?.setValue('1234567');
+		formGroup.get('kvkNumber')?.setValue('1234567');
 		const result = FormUtil.validationFunctionErrorForKVK(formGroup);
 		expect(result).toBe(true);
 	});
 
 	it('should return false for a valid form control', () => {
-		formGroup.get('kvk')?.setValue('12345678');
+		formGroup.get('kvkNumber')?.setValue('12345678');
 		const result = FormUtil.validationFunctionErrorForKVK(formGroup);
 		expect(result).toBe(false);
 	});
@@ -230,7 +230,7 @@ describe('FormUtil', () => {
 	});
 
 	it('should validate zip code correctly when wrong', () => {
-		const kvkControl = formGroup.get('kvk');
+		const kvkControl = formGroup.get('kvkNumber');
 		if (kvkControl) {
 			kvkControl.setValue('12345');
 			expect(FormUtil.validatedZip(kvkControl)).toEqual({ validZip: true });
@@ -240,7 +240,7 @@ describe('FormUtil', () => {
 	});
 
 	it('should validate zip code correctly when valid', () => {
-		const kvkControl = formGroup.get('kvk');
+		const kvkControl = formGroup.get('kvkNumber');
 		if (kvkControl) {
 			kvkControl.setValue('1234ab');
 			expect(FormUtil.validatedZip(kvkControl)).toBeNull();
@@ -274,13 +274,10 @@ describe('FormUtil', () => {
 	});
 
 	it('should validate non-required fields', () => {
-		formGroup.get('telephone')?.setValue('invalidTelephone');
-		const telephoneControl = formGroup.get('telephone');
-		if (telephoneControl) {
-			telephoneControl.setValue('invalidTelephone');
-		}
+		const control = formGroup.get('branchTelephone');
+		control?.setValue('abc');
 
-		expect(FormUtil.formControlValidatorNonRequiredFields('telephone', formGroup)).toBe(true);
+		expect(FormUtil.formControlValidatorNonRequiredFields('branchTelephone', formGroup)).toBe(false);
 	});
 
 	it('should validate non-required email', () => {
@@ -332,13 +329,14 @@ describe('FormUtil', () => {
 	});
 
 	it('should return true if formControl is invalid', () => {
-		const controlName = 'telephone';
+		const controlName = 'email';
 		const formControl = formGroup.get(controlName);
 		formControl?.setErrors({ someError: true });
+		formControl?.markAsTouched();
 
 		const result = FormUtil.validationFunctionError(controlName, formGroup);
 
-		expect(result).toBe('');
+		expect(result).toBe(true);
 	});
 
 	it('should return false when control is confirmPassword and form has a "fieldsMismatch" error and value', () => {
@@ -593,9 +591,9 @@ describe('FormUtil', () => {
 
 		FormUtil.clearRestrictionValidatorsAndErrors = jest.fn();
 
-		FormUtil.onRestrictionTypeChange(createOfferForm, 'minPrice', 'maxPrice', field, 'someValue');
+		FormUtil.onRestrictionTypeChange(createOfferForm, 'minPrice', 'maxPrice');
 
-		expect(FormUtil.clearRestrictionValidatorsAndErrors).toHaveBeenCalledWith(createOfferForm, field);
+		expect(FormUtil.clearRestrictionValidatorsAndErrors).toHaveBeenCalledWith(createOfferForm, 'minPrice');
 	});
 
 	it('should clear restriction validators and errors for price range if either minPrice or maxPrice has a value', () => {
@@ -608,23 +606,21 @@ describe('FormUtil', () => {
 
 		FormUtil.clearRestrictionValidatorsAndErrors = jest.fn();
 
-		FormUtil.onRestrictionTypeChange(createOfferForm, 'minPrice', 'maxPrice', field, 'someValue');
+		FormUtil.onRestrictionTypeChange(createOfferForm, 'minPrice', 'maxPrice');
 
 		expect(FormUtil.clearRestrictionValidatorsAndErrors).not.toHaveBeenCalled();
 	});
 
 	it('should set error when firstField value is greater than or equal to secondField', () => {
-		const fullField = 'fullField';
 		const createOfferForm = new FormGroup({
-			[fullField]: new FormControl('someValue'),
 			['firstField']: new FormControl(100),
 			['secondField']: new FormControl(50),
 		});
 
-		const result = FormUtil.shouldDisplayCompareError(createOfferForm, 'firstField', 'secondField', fullField);
+		const result = FormUtil.shouldDisplayCompareError(createOfferForm, 'firstField', 'secondField');
 
 		expect(result).toBeTruthy();
-		expect(createOfferForm.controls.fullField.errors).toEqual({ required: true });
+		expect(createOfferForm.controls.firstField.errors).toEqual({ required: true });
 	});
 
 	it('should not set error when firstField value is less than secondField', () => {
@@ -635,7 +631,7 @@ describe('FormUtil', () => {
 			['secondField']: new FormControl(5),
 		});
 
-		const result = FormUtil.shouldDisplayCompareError(createOfferForm, 'firstField', 'secondField', fullField);
+		const result = FormUtil.shouldDisplayCompareError(createOfferForm, 'firstField', 'secondField');
 
 		expect(result).toBeFalsy();
 		expect(createOfferForm.controls.fullField.errors).toBeNull();
@@ -649,7 +645,7 @@ describe('FormUtil', () => {
 			['secondField']: new FormControl(5),
 		});
 
-		const result = FormUtil.shouldDisplayCompareError(createOfferForm, 'firstField', 'secondField', fullField);
+		const result = FormUtil.shouldDisplayCompareError(createOfferForm, 'firstField', 'secondField');
 
 		expect(result).toBeFalsy();
 		expect(createOfferForm.controls.fullField.errors).toBeNull();
@@ -682,40 +678,6 @@ describe('FormUtil', () => {
 	it('should return false if neither field has a value, both are valid, and clickedOutsideField is false', () => {
 		const result = FormUtil.shouldShowRequiredErrorForEitherFields(form, 'firstField', 'secondField', false);
 		expect(result).toBeFalsy();
-	});
-
-	it('should return early if value is falsy', () => {
-		form = new FormGroup({
-			firstField: new FormControl(''),
-			secondField: new FormControl(''),
-			fullField: new FormControl(''),
-		});
-		const value = null;
-
-		const spy = jest.spyOn(form, 'get');
-
-		FormUtil.onRestrictionTypeChange(form, 'firstField', 'secondField', 'fullField', value);
-
-		expect(spy).toHaveBeenCalledWith('fullField');
-		expect(spy).not.toHaveBeenCalledWith('firstField');
-		expect(spy).not.toHaveBeenCalledWith('secondField');
-	});
-
-	it('should return early if idControl value is an empty string', () => {
-		form = new FormGroup({
-			firstField: new FormControl(''),
-			secondField: new FormControl(''),
-			fullField: new FormControl(''),
-		});
-		form.get('fullField')?.setValue('');
-		const value = 'anyValue';
-		const spy = jest.spyOn(form, 'get');
-
-		FormUtil.onRestrictionTypeChange(form, 'firstField', 'secondField', 'fullField', value);
-
-		expect(spy).toHaveBeenCalledWith('fullField');
-		expect(spy).not.toHaveBeenCalledWith('firstField');
-		expect(spy).not.toHaveBeenCalledWith('secondField');
 	});
 
 	it('should do nothing if first and second field values are correct and ordered', () => {
@@ -1219,6 +1181,76 @@ describe('FormUtil', () => {
 			const form = new FormGroup({});
 			expect(FormUtil.hasControlErrorsAndTouched('missing', form)).toBe(false);
 		});
+
+		describe('FormUtil additional methods', () => {
+			it('should format date to locale string', () => {
+				const date = '2024-07-25T12:00:00Z';
+				const result = FormUtil.normalizeDateToLocale(date);
+				expect(result).toMatch(/^\d{2}\/\d{2}\/\d{4}$/);
+				expect(result).toBe('25/07/2024');
+			});
+
+			it('should display date in MM/DD/YYYY format', () => {
+				const date = '2024-07-25T12:00:00Z';
+				const result = FormUtil.displayDate(date);
+				expect(result).toBe('07/25/2024');
+			});
+
+			it('should return client date time string', () => {
+				jest.useFakeTimers().setSystemTime(new Date('2024-02-10T12:34:56'));
+				const result = FormUtil.getClientDateTime();
+				expect(result).toBe('02/10/2024, 12:34:56');
+				jest.useRealTimers();
+			});
+
+			it('should return false for isControlInvalid if control is untouched', () => {
+				const form = new FormGroup({
+					controlName: new FormControl('', [Validators.required]),
+				});
+				expect(FormUtil.isControlInvalid('controlName', form)).toBe(false);
+			});
+
+			it('should return true for isControlInvalid if control is touched and invalid', () => {
+				const control = new FormControl('', [Validators.required]);
+				control.markAsTouched();
+				const form = new FormGroup({ controlName: control });
+				expect(FormUtil.isControlInvalid('controlName', form)).toBe(true);
+			});
+
+			it('should return false for isControlInvalid if control is touched and valid', () => {
+				const control = new FormControl('value', [Validators.required]);
+				control.markAsTouched();
+				const form = new FormGroup({ controlName: control });
+				expect(FormUtil.isControlInvalid('controlName', form)).toBe(false);
+			});
+
+			it('should return min error for hasControlMinMaxErrors', () => {
+				const form = new FormGroup({
+					numberField: new FormControl(5, [Validators.min(10)]),
+				});
+				form.get('numberField')?.markAsTouched();
+				form.get('numberField')?.updateValueAndValidity();
+				expect(FormUtil.hasControlMinMaxErrors('numberField', form)).toEqual({ min: 10, actual: 5 });
+			});
+
+			it('should return max error for hasControlMinMaxErrors', () => {
+				const form = new FormGroup({
+					numberField: new FormControl(15, [Validators.max(10)]),
+				});
+				form.get('numberField')?.markAsTouched();
+				form.get('numberField')?.updateValueAndValidity();
+				expect(FormUtil.hasControlMinMaxErrors('numberField', form)).toEqual({ max: 10, actual: 15 });
+			});
+
+			it('should return false for hasControlMinMaxErrors if no min/max error', () => {
+				const form = new FormGroup({
+					numberField: new FormControl(7, [Validators.min(5), Validators.max(10)]),
+				});
+				form.get('numberField')?.markAsTouched();
+				form.get('numberField')?.updateValueAndValidity();
+				expect(FormUtil.hasControlMinMaxErrors('numberField', form)).toBeFalsy();
+			});
+		});
 	});
 	describe('validationNoSpaceFunctionError', () => {
 		it.each([
@@ -1231,6 +1263,184 @@ describe('FormUtil', () => {
 		])('should return $expected for $desc', ({ value, expected }) => {
 			const control = { value } as any;
 			expect(FormUtil.validationNoSpaceFunctionError(control)).toEqual(expected);
+		});
+	});
+
+	describe('shouldDisplayCompareTimeError', () => {
+		let timeForm: FormGroup;
+
+		beforeEach(() => {
+			timeForm = new FormGroup({
+				startTime: new FormControl(''),
+				endTime: new FormControl(''),
+			});
+		});
+
+		it('should return true and set error when firstField time is later than secondField time', () => {
+			timeForm.get('startTime')?.setValue('2023-01-01T14:30:00');
+			timeForm.get('endTime')?.setValue('2023-01-01T12:00:00');
+
+			const result = FormUtil.shouldDisplayCompareTimeError(timeForm, 'startTime', 'endTime');
+
+			expect(result).toBe(true);
+			expect(timeForm.get('startTime')?.hasError('required')).toBe(true);
+		});
+
+		it('should return true and set error when firstField time is equal to secondField time', () => {
+			timeForm.get('startTime')?.setValue('2023-01-01T12:00:00');
+			timeForm.get('endTime')?.setValue('2023-01-01T12:00:00');
+
+			const result = FormUtil.shouldDisplayCompareTimeError(timeForm, 'startTime', 'endTime');
+
+			expect(result).toBe(true);
+			expect(timeForm.get('startTime')?.hasError('required')).toBe(true);
+		});
+
+		it('should return false when firstField time is earlier than secondField time', () => {
+			timeForm.get('startTime')?.setValue('2023-01-01T09:00:00');
+			timeForm.get('endTime')?.setValue('2023-01-01T17:00:00');
+
+			const result = FormUtil.shouldDisplayCompareTimeError(timeForm, 'startTime', 'endTime');
+
+			expect(result).toBe(false);
+			expect(timeForm.get('startTime')?.hasError('required')).toBe(false);
+		});
+
+		it('should return false when one or both fields are empty', () => {
+			timeForm.get('startTime')?.setValue('2023-01-01T09:00:00');
+			timeForm.get('endTime')?.setValue('');
+
+			const result1 = FormUtil.shouldDisplayCompareTimeError(timeForm, 'startTime', 'endTime');
+			expect(result1).toBe(false);
+
+			timeForm.get('startTime')?.setValue('');
+			timeForm.get('endTime')?.setValue('2023-01-01T17:00:00');
+
+			const result2 = FormUtil.shouldDisplayCompareTimeError(timeForm, 'startTime', 'endTime');
+			expect(result2).toBe(false);
+		});
+
+		it('should correctly normalize dates to compare only times', () => {
+			// Compare 10:00 vs 11:00 (valid), ignoring the Date year/month/day
+			timeForm.get('startTime')?.setValue('2020-01-01T10:00:00');
+			timeForm.get('endTime')?.setValue('2025-01-01T11:00:00');
+
+			const resultValid = FormUtil.shouldDisplayCompareTimeError(timeForm, 'startTime', 'endTime');
+			expect(resultValid).toBe(false);
+
+			// Compare 11:00 vs 10:00 (invalid)
+			timeForm.get('startTime')?.setValue('2020-01-01T11:00:00');
+			timeForm.get('endTime')?.setValue('2025-01-01T10:00:00');
+
+			const resultInvalid = FormUtil.shouldDisplayCompareTimeError(timeForm, 'startTime', 'endTime');
+			expect(resultInvalid).toBe(true);
+		});
+
+		describe('shouldDisplayRequiredTimeError', () => {
+			let timeForm: FormGroup;
+
+			beforeEach(() => {
+				timeForm = new FormGroup({
+					startTime: new FormControl(''),
+					endTime: new FormControl(''),
+				});
+			});
+
+			it('should return false if both fields are empty', () => {
+				const result = FormUtil.shouldDisplayRequiredTimeError(timeForm, 'startTime', 'endTime');
+				expect(result).toBe(false);
+				expect(timeForm.get('startTime')?.errors).toBeNull();
+				expect(timeForm.get('endTime')?.errors).toBeNull();
+			});
+
+			it('should return false if both fields have values', () => {
+				timeForm.get('startTime')?.setValue('10:00');
+				timeForm.get('endTime')?.setValue('12:00');
+
+				const result = FormUtil.shouldDisplayRequiredTimeError(timeForm, 'startTime', 'endTime');
+				expect(result).toBe(false);
+				expect(timeForm.get('startTime')?.errors).toBeNull();
+				expect(timeForm.get('endTime')?.errors).toBeNull();
+			});
+
+			it('should return true and set error on second field if first field has value but second is empty', () => {
+				timeForm.get('startTime')?.setValue('10:00');
+
+				const result = FormUtil.shouldDisplayRequiredTimeError(timeForm, 'startTime', 'endTime');
+
+				expect(result).toBe(true);
+				expect(timeForm.get('endTime')?.hasError('required')).toBe(true);
+				expect(timeForm.get('startTime')?.errors).toBeNull();
+			});
+
+			it('should return true and set error on first field if second field has value but first is empty', () => {
+				timeForm.get('endTime')?.setValue('12:00');
+
+				const result = FormUtil.shouldDisplayRequiredTimeError(timeForm, 'startTime', 'endTime');
+
+				expect(result).toBe(true);
+				expect(timeForm.get('startTime')?.hasError('required')).toBe(true);
+				expect(timeForm.get('endTime')?.errors).toBeNull();
+			});
+		});
+	});
+
+	describe('onRestrictionChangeWithBothOrNoneFields', () => {
+		let testForm: FormGroup;
+		let clearRestrictionSpy: jest.SpyInstance;
+		let clearValidatorsSpy: jest.SpyInstance;
+
+		beforeEach(() => {
+			testForm = new FormGroup({
+				min: new FormControl(''),
+				max: new FormControl(''),
+			});
+			clearRestrictionSpy = jest.spyOn(FormUtil, 'clearRestrictionValidatorsAndErrors').mockImplementation();
+			clearValidatorsSpy = jest.spyOn(FormUtil, 'clearValidatorsRangedFields').mockImplementation();
+		});
+
+		afterEach(() => {
+			jest.restoreAllMocks();
+		});
+
+		it('should do nothing if first value is greater than second value', () => {
+			testForm.get('min')?.setValue(10);
+			testForm.get('max')?.setValue(5);
+
+			FormUtil.onRestrictionChangeWithBothOrNoneFields(testForm, 'min', 'max');
+
+			expect(clearRestrictionSpy).not.toHaveBeenCalled();
+			expect(clearValidatorsSpy).not.toHaveBeenCalled();
+		});
+
+		it('should clear validators if both fields have values and first is less than second', () => {
+			testForm.get('min')?.setValue(5);
+			testForm.get('max')?.setValue(10);
+
+			FormUtil.onRestrictionChangeWithBothOrNoneFields(testForm, 'min', 'max');
+
+			expect(clearRestrictionSpy).toHaveBeenCalledWith(testForm, 'min');
+			expect(clearValidatorsSpy).toHaveBeenCalledWith(testForm, 'min', 'max');
+		});
+
+		it('should clear validators if both fields have values and first is equal to second', () => {
+			testForm.get('min')?.setValue(5);
+			testForm.get('max')?.setValue(5);
+
+			FormUtil.onRestrictionChangeWithBothOrNoneFields(testForm, 'min', 'max');
+
+			expect(clearRestrictionSpy).toHaveBeenCalledWith(testForm, 'min');
+			expect(clearValidatorsSpy).toHaveBeenCalledWith(testForm, 'min', 'max');
+		});
+
+		it('should clear validators if both fields are empty', () => {
+			testForm.get('min')?.setValue('');
+			testForm.get('max')?.setValue(null);
+
+			FormUtil.onRestrictionChangeWithBothOrNoneFields(testForm, 'min', 'max');
+
+			expect(clearRestrictionSpy).toHaveBeenCalledWith(testForm, 'min');
+			expect(clearValidatorsSpy).toHaveBeenCalledWith(testForm, 'min', 'max');
 		});
 	});
 });

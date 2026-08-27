@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AuthService, UserInfo, WeekDays, WorkingHoursDto, WorkingHoursService } from '@frontend/common';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 
 import { WorkingHoursDialogComponent } from '../working-hours-dialog/working-hours-dialog.component';
 
@@ -9,6 +9,7 @@ import { WorkingHoursDialogComponent } from '../working-hours-dialog/working-hou
 	templateUrl: './working-hours.component.html',
 	styleUrls: ['./working-hours.component.scss'],
 	standalone: false,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkingHoursComponent implements OnInit {
 	public workingHoursData: WorkingHoursDto[] = [];
@@ -21,6 +22,7 @@ export class WorkingHoursComponent implements OnInit {
 		private dialogService: DialogService,
 		private authService: AuthService,
 		private workingHoursService: WorkingHoursService,
+		private cdr: ChangeDetectorRef,
 	) {}
 
 	public ngOnInit(): void {
@@ -41,6 +43,7 @@ export class WorkingHoursComponent implements OnInit {
 					return;
 				}
 				this.workingHoursData = data;
+				this.cdr.markForCheck();
 			});
 	}
 
@@ -74,6 +77,7 @@ export class WorkingHoursComponent implements OnInit {
 					),
 				);
 			});
+			this.cdr.markForCheck();
 		});
 	}
 }

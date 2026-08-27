@@ -3,12 +3,14 @@
 .overlay {
 	@include mixins.flex(row, center, center);
 	@include mixins.size(100vw, 100vh);
-	@include mixins.pos(fixed, $t: 0, $l: 0, $z: 99999);
+	@include mixins.pos(fixed, $t: 0, $l: 0, $z: 9999999);
 	background-color: var(--blackscale-300);
 	background-repeat: no-repeat;
 	background-position: center;
 	-webkit-overflow-scrolling: touch;
 	opacity: 40%;
+	pointer-events: all;
+	cursor: not-allowed;
 }
 
 .loader {

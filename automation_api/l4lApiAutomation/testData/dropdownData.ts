@@ -2,9 +2,9 @@ export const expectedCategories = [
 	{ label: 'category.types.culture', subcategories: ['subcategory.types.museums', 'subcategory.types.theatre'] },
 	{ label: 'category.types.music', subcategories: ['subcategory.types.singing'] },
 	{ label: 'category.types.foodAndDrinks', subcategories: [] },
-	{ label: 'category.types.courses', subcategories: [] },
+	{ label: 'category.types.other', subcategories: [] },
 	{ label: 'category.types.sport', subcategories: [] },
-	{ label: 'category.types.dance', subcategories: [] }
+	{ label: 'category.types.shop', subcategories: [] }
 ];
 
 export const expectedLegalForms = [

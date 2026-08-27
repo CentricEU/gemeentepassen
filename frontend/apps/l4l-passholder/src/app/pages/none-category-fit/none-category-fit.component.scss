@@ -1,0 +1,16 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
+
+:host {
+    .none-category-fit-title {
+        font-size: 24px;
+    }
+
+    .none-category-fit-form {
+        width: 100%;
+        max-width: 688px;
+    }
+
+    .text-align-center {
+        text-align: center;
+    }   
+}

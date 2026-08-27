@@ -45,8 +45,9 @@ export class SupplierInformationPanelComponent {
 	public shouldDisableFinishButton(): boolean {
 		const contactFormInvalid = this.supplierProfileInfomationComponent?.contactInformationForm?.invalid;
 		const generalFormInvalid = this.supplierProfileInfomationComponent?.generalInformationForm?.invalid;
-		const areFormValuesChanged = this.supplierProfileInfomationComponent?.areFormValuesChanged;
+		const isSaving = this.supplierProfileInfomationComponent?.isSaving;
+		// const areFormValuesChanged = this.supplierProfileInfomationComponent?.areFormValuesChanged;
 
-		return contactFormInvalid || generalFormInvalid || !areFormValuesChanged;
+		return contactFormInvalid || generalFormInvalid || isSaving; // || !areFormValuesChanged;
 	}
 }

@@ -8,7 +8,7 @@
 </div>
 
 <div class="circle-days-container" role="group" [attr.aria-label]="'general.weekdaysGroup' | translate">
-	<ng-container *ngFor="let day of days">
+	@for (day of days; track day) {
 		<label class="day-label">
 			<input
 				windmill-tooltip
@@ -25,16 +25,16 @@
 				{{ 'general.weekdays.' + day | translate | slice: 0 : 1 }}
 			</span>
 		</label>
-	</ng-container>
+	}
 </div>
 
-<ng-container *ngIf="workingHoursForm">
+@if (workingHoursForm) {
 	<form centric-complex-form [formGroup]="workingHoursForm">
-		<ng-container *ngFor="let day of days">
-			<ng-container *ngIf="workingHoursForm.get(day.toLowerCase())?.get('isEnabled')?.value">
+		@for (day of days; track day) {
+			@if (workingHoursForm.get(day.toLowerCase())?.get('isEnabled')?.value) {
 				<div class="day-schedule-section">
 					<frontend-time-business-hours [day]="day"> </frontend-time-business-hours>
-					<ng-container *ngIf="day === firstSelectedDay">
+					@if (day === firstSelectedDay) {
 						<centric-button
 							[type]="'ghost-theme'"
 							[size]="'small'"
@@ -43,9 +43,9 @@
 							(click)="copyToAll(getDayFormGroup(day))">
 							{{ 'workingHours.copyToAll' | translate }}
 						</centric-button>
-					</ng-container>
+					}
 				</div>
-			</ng-container>
-		</ng-container>
+			}
+		}
 	</form>
-</ng-container>
+}

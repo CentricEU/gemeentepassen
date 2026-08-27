@@ -4,18 +4,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CentricAlertModule } from '@windmill/ng-windmill/alert';
 import { CentricBreadcrumbsModule } from '@windmill/ng-windmill/breadcrumbs';
 import { CentricButtonModule } from '@windmill/ng-windmill/button';
+import { WindmillCardModule } from '@windmill/ng-windmill/card';
 import { WindmillCheckboxModule } from '@windmill/ng-windmill/checkbox';
 import { CentricChipsModule } from '@windmill/ng-windmill/chips';
 import { CentricComplexFormModule } from '@windmill/ng-windmill/complex-form';
 import { CentricDataGridModule } from '@windmill/ng-windmill/data-grid';
 import { WindmillDatePickerModule } from '@windmill/ng-windmill/date-picker';
-import { CentricCardModule } from '@windmill/ng-windmill/deprecated-card';
-import { CentricPanelModule } from '@windmill/ng-windmill/deprecated-panel';
-import { CentricDialogModule } from '@windmill/ng-windmill/dialog';
+import { CentricDialogModule } from '@windmill/ng-windmill/deprecated-dialog';
 import { WindmillDropdownSearchModule } from '@windmill/ng-windmill/dropdown-search';
+import { CentricFooterModule } from '@windmill/ng-windmill/footer';
 import { CentricForgotPasswordModule } from '@windmill/ng-windmill/forgot-password';
 import { CentricHeaderModule } from '@windmill/ng-windmill/header';
-import { CentricIcon2Module } from '@windmill/ng-windmill/icon';
+import { WindmillIconModule } from '@windmill/ng-windmill/icon';
 import { WindmillInputModule } from '@windmill/ng-windmill/input';
 import { CentricLinkModule } from '@windmill/ng-windmill/link';
 import { CentricLoginModule } from '@windmill/ng-windmill/login';
@@ -28,6 +28,7 @@ import { CentricSetNewPasswordModule } from '@windmill/ng-windmill/set-new-passw
 import { CentricSlideToggle2Module } from '@windmill/ng-windmill/slide-toggle';
 import { WindmillTabsModule } from '@windmill/ng-windmill/tabs';
 import { CentricTextarea2Module } from '@windmill/ng-windmill/textarea';
+import { CentricTimelineModule } from '@windmill/ng-windmill/timeline';
 import { WindmillTooltipModule } from '@windmill/ng-windmill/tooltip';
 import { CentricUploadAreaModule } from '@windmill/ng-windmill/upload-area';
 
@@ -44,12 +45,11 @@ import { CentricUploadAreaModule } from '@windmill/ng-windmill/upload-area';
 		CentricUploadAreaModule,
 		CentricComplexFormModule,
 		WindmillDropdownSearchModule,
-		CentricCardModule,
 		CentricButtonModule,
 		CentricDialogModule,
 		WindmillTooltipModule,
-		CentricIcon2Module,
-		CentricPanelModule,
+		WindmillIconModule,
+		WindmillCardModule,
 		WindmillPaginatorModule,
 		WindmillCheckboxModule,
 		WindmillInputModule,
@@ -60,11 +60,13 @@ import { CentricUploadAreaModule } from '@windmill/ng-windmill/upload-area';
 		CentricChipsModule,
 		CentricBreadcrumbsModule,
 		CentricHeaderModule,
+		CentricFooterModule,
 		CentricNotificationBadgeModule,
 		CentricSlideToggle2Module,
 		CentricRadioModule,
 		WindmillTabsModule,
 		WindmillSelectModule,
+		CentricTimelineModule,
 	],
 })
 export class WindmillModule {

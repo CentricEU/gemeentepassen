@@ -51,9 +51,10 @@ export const MAP_STYLE = [
 
 export const MARKER_IMAGES = [
 	require('../../assets/markers/grant.png'),
-	require('../../assets/markers/percentage.png'),
+	require('../../assets/markers/store.png'),
 	require('../../assets/markers/bogo.png'),
-	require('../../assets/markers/cash.png'),
-	require('../../assets/markers/freeEntry.png'),
+	require('../../assets/markers/membership.png'),
+	require('../../assets/markers/entry.png'),
+	require('../../assets/markers/product.png'),
 	require('../../assets/markers/other.png')
 ];

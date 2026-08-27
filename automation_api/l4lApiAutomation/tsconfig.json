@@ -1,6 +1,9 @@
 {
     "compilerOptions": {
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "strictNullChecks": false,
+
+    "esModuleInterop": true
     },
     "include": ["resources/**/*.ts", "tests/**/*.ts"],
     "exclude": [

@@ -1,0 +1,23 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
+@use '../../shared/styles/apply-for-pass-common.scss';
+
+:host {
+	.l4l-form-item-group {
+		::ng-deep {
+			.centric-form-item-group {
+				row-gap: 16px;
+				column-gap: 32px;
+			}
+		}
+
+		.contact-information {
+			padding-top: 32px;
+		}
+	}
+
+	::ng-deep {
+		.centric-complex-form > *:not(:last-child) {
+			margin-bottom: 0px;
+		}
+	}
+}

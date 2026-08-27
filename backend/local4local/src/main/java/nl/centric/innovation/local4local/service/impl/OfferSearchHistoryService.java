@@ -3,7 +3,6 @@ package nl.centric.innovation.local4local.service.impl;
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.entity.OfferSearchHistory;
 import nl.centric.innovation.local4local.entity.User;
-import nl.centric.innovation.local4local.exceptions.DtoValidateException;
 import nl.centric.innovation.local4local.repository.OfferSearchHistoryRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,7 @@ public class OfferSearchHistoryService {
 
     public void saveSearchHistory(String searchKeyword) {
 
-        Optional<OfferSearchHistory> offerSearchHistory = offerSearchHistoryRepository.findBySearchKeywordAndUserId(searchKeyword, getUser().getId());
+        Optional<OfferSearchHistory> offerSearchHistory = offerSearchHistoryRepository.findFirstBySearchKeywordAndUserId(searchKeyword, getUser().getId());
         if (offerSearchHistory.isPresent()) {
             offerSearchHistory.get().setCreatedDate(LocalDateTime.now());
             offerSearchHistoryRepository.save(offerSearchHistory.get());

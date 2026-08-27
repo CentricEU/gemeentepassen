@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { FormUtil, ModalData, UserService, WarningDialogData } from '@frontend/common';
+import { AuthService, FormUtil, ModalData, UserService, WarningDialogData } from '@frontend/common';
 import { CreateUserDto } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 
 @Component({
 	selector: 'frontend-create-user-popup-popup',
+	styleUrls: ['create-user-popup.component.scss'],
 	templateUrl: './create-user-popup.component.html',
 	standalone: false,
 })
@@ -21,12 +22,15 @@ export class CreateUserPopupComponent implements OnInit {
 	public emailValidator = FormUtil.validateEmail(false);
 	public getEmailErrorMessage = FormUtil.getEmailErrorMessage;
 
-	constructor(
-		private readonly dialogRef: MatDialogRef<CreateUserPopupComponent>,
-		private readonly formBuilder: FormBuilder,
-		private readonly dialogService: DialogService,
-		private userService: UserService,
-	) {}
+	private readonly authService = inject(AuthService);
+	private readonly dialogService = inject(DialogService);
+	private readonly userService = inject(UserService);
+	private readonly formBuilder = inject(FormBuilder);
+	private readonly dialogRef = inject(MatDialogRef<CreateUserPopupComponent>);
+
+	public get isSuperAdmin(): boolean {
+		return this.authService.isSuperAdmin;
+	}
 
 	public ngOnInit(): void {
 		this.initForm();
@@ -83,8 +87,8 @@ export class CreateUserPopupComponent implements OnInit {
 	}
 
 	private formValuesToCreateUserDto(): CreateUserDto {
-		const { firstName, lastName, email } = this.createUserForm.controls;
-		return new CreateUserDto(firstName?.value, lastName?.value, email?.value);
+		const { firstName, lastName, email, isSuperAdmin } = this.createUserForm.controls;
+		return new CreateUserDto(firstName?.value, lastName?.value, email?.value, isSuperAdmin?.value);
 	}
 
 	private initForm(): void {
@@ -92,6 +96,7 @@ export class CreateUserPopupComponent implements OnInit {
 			firstName: ['', [Validators.required, this.validationNoSpaceFunctionError]],
 			lastName: ['', [Validators.required, this.validationNoSpaceFunctionError]],
 			email: ['', [Validators.required, this.emailValidator]],
+			isSuperAdmin: [false],
 		});
 	}
 }

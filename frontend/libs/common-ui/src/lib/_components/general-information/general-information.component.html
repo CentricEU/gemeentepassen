@@ -1,7 +1,7 @@
 <form
 	centric-complex-form
 	class="grid-form"
-	[class.editable]="!isReadonly"
+	[class.editable]="!isReadonly || isAdminEditing"
 	[formGroup]="generalInformationForm"
 	(change)="updateLocalStorage()"
 	(keydown.enter)="handleEnterKey($event)">
@@ -10,9 +10,25 @@
 		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
 			<windmill-input
 				ariaAttributes
+				frontendHtmlContentValidator
 				formControlName="companyName"
-				[ariaLabelTranslation]="'register.companyNamePlaceholder'"
-				[readonly]="true">
+				[placeholder]="isAdminEditing ? ('generalInformation.companyNamePlaceholder' | translate) : ''"
+				[hasClearIcon]="isAdminEditing"
+				[ariaLabelClearIcon]="isAdminEditing ? 'generalInformation.companyNamePlaceholder' : ''"
+				[ariaLabelTranslation]="isAdminEditing ? 'generalInformation.companyNamePlaceholder' : ''"
+				[validationFunction]="
+					isAdminEditing
+						? validationFunctionError.bind(this, 'companyName', generalInformationForm)
+						: undefined
+				"
+				[readonly]="isReadonly || !isAdminEditing">
+				@if (hasFormControlRequiredErrors('companyName', generalInformationForm)) {
+					<ng-container errors>
+						<span class="centric-error-message">
+							{{ getErrorMessageGeneralFormInputs('companyName') }}
+						</span>
+					</ng-container>
+				}
 			</windmill-input>
 		</centric-form-control>
 	</centric-form-item>
@@ -22,12 +38,25 @@
 			<windmill-input
 				ariaAttributes
 				formControlName="kvkNumber"
-				[ariaLabelTranslation]="'register.kvkNumberPlaceholder'"
-				[readonly]="true">
+				frontendNumericalInput
+				[maxLength]="8"
+				[placeholder]="isAdminEditing ? ('register.kvkNumberPlaceholder' | translate) : ''"
+				[ariaLabelTranslation]="isAdminEditing ? 'register.kvkNumberPlaceholder' : ''"
+				[validationFunction]="
+					isAdminEditing ? validationFunctionErrorForKVK.bind(this, generalInformationForm) : undefined
+				"
+				[readonly]="isReadonly || !isAdminEditing">
+				@if (validationFunctionErrorForKVK(generalInformationForm)) {
+					<ng-container errors>
+						<span class="centric-error-message">
+							{{ getKVKErrorMessage() }}
+						</span>
+					</ng-container>
+				}
 			</windmill-input>
 		</centric-form-control>
 	</centric-form-item>
-	<ng-container *ngIf="isCreateSupplierProfile()">
+	@if (isCreateSupplierProfile()) {
 		<centric-form-item class="full-width">
 			<div class="button-style">
 				<input
@@ -41,24 +70,25 @@
 				<centric-button type="outlined-theme" class="upload-button" (click)="fileUpload.click()">
 					{{ logoUploadText() }}
 				</centric-button>
-				<ng-container *ngIf="fileName">
-					<centric-icon2
+				@if (fileName) {
+					<windmill-icon
 						windmill-tooltip
 						class="generic-color-icon pointer"
 						[size]="'24'"
 						[svgIcon]="'trash_b'"
 						[tooltipText]="'generalInformation.removeLogo' | translate"
 						[tooltipColor]="'tooltipSurfaceColor'"
-						(click)="removeLogo()"></centric-icon2>
-				</ng-container>
-				<span class="upload-text generic-color-text"
+						(click)="removeLogo()"></windmill-icon>
+				}
+				<span
+					class="upload-text generic-color-text"
 					[innerHTML]="fileName ? fileName : ('generalInformation.uploadMessage' | translate)"></span>
 			</div>
-			<ng-container *ngIf="isSizeExceeded">
+			@if (isSizeExceeded) {
 				<span class="upload-text error-message"> {{ 'generalInformation.sizeExcedeedLogo' | translate }}</span>
-			</ng-container>
+			}
 		</centric-form-item>
-	</ng-container>
+	}
 	<centric-form-item>
 		<centric-form-label>{{ 'generalInformation.ownerName' | translate }}</centric-form-label>
 		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
@@ -69,20 +99,24 @@
 				[placeholder]="'generalInformation.ownerNamePlaceholder' | translate"
 				[maxLength]="256"
 				[hasClearIcon]="true"
-				[readonly]="isReadonly"
+				[readonly]="isReadonly || !isAdminEditing"
 				[ariaLabelClearIcon]="'generalInformation.ownerNamePlaceholder'"
 				[ariaLabelTranslation]="'generalInformation.ownerNamePlaceholder'"
 				[validationFunction]="validationFunctionError.bind(this, 'ownerName', generalInformationForm)">
-				<ng-container errors *ngIf="hasFormControlRequiredErrors('ownerName', generalInformationForm)">
-					<span class="centric-error-message">
-						{{ getErrorMessageGeneralFormInputs('ownerName') }}
-					</span>
-				</ng-container>
-				<ng-container errors *ngIf="generalInformationForm.get('ownerName')?.hasError('isHTML')">
-					<span class="centric-error-message">
-						{{ 'errors.htmlContent' | translate }}
-					</span>
-				</ng-container>
+				@if (hasFormControlRequiredErrors('ownerName', generalInformationForm)) {
+					<ng-container errors>
+						<span class="centric-error-message">
+							{{ getErrorMessageGeneralFormInputs('ownerName') }}
+						</span>
+					</ng-container>
+				}
+				@if (generalInformationForm.get('ownerName')?.hasError('isHTML')) {
+					<ng-container errors>
+						<span class="centric-error-message">
+							{{ 'errors.htmlContent' | translate }}
+						</span>
+					</ng-container>
+				}
 			</windmill-input>
 		</centric-form-control>
 	</centric-form-item>
@@ -93,8 +127,26 @@
 			<windmill-input
 				ariaAttributes
 				formControlName="adminEmail"
-				[readonly]="true"
+				frontendHtmlContentValidator
+				[placeholder]="isAdminEditing ? ('register.emailAddressPlaceholder' | translate) : ''"
+				[hasClearIcon]="isAdminEditing"
+				[ariaLabelClearIcon]="isAdminEditing ? 'register.emailAddressPlaceholder' : ''"
+				[ariaLabelTranslation]="isAdminEditing ? 'register.emailAddressPlaceholder' : ''"
+				[validationFunction]="
+					isAdminEditing
+						? validationFunctionError.bind(this, 'adminEmail', generalInformationForm)
+						: undefined
+				"
+				[ariaLabelTranslation]="'register.emailAddressPlaceholder'"
+				[readonly]="isReadonly || !isAdminEditing"
 				[ariaLabelTranslation]="'register.emailAddressPlaceholder'">
+				@if (hasFormControlRequiredErrors('adminEmail', generalInformationForm)) {
+					<ng-container errors>
+						<span class="centric-error-message">
+							{{ getErrorMessageGeneralFormInputs('adminEmail') }}
+						</span>
+					</ng-container>
+				}
 			</windmill-input>
 		</centric-form-control>
 	</centric-form-item>
@@ -102,7 +154,7 @@
 	<centric-form-item>
 		<centric-form-label>{{ 'generalInformation.legalForm' | translate }}</centric-form-label>
 		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
-			<ng-container *ngIf="updatedLegalFormsSource">
+			@if (updatedLegalFormsSource) {
 				<windmill-dropdown-search
 					ariaAttributes
 					formControlName="legalForm"
@@ -126,18 +178,22 @@
 							dropdownLabelTypes.legalFormLabel
 						)
 					">
-					<ng-container errors *ngIf="hasFormControlRequiredErrors('legalForm', generalInformationForm)">
-						<span class="centric-error-message">{{ getErrorMessageGeneralFormInputs('legalForm') }} </span>
-					</ng-container>
+					@if (hasFormControlRequiredErrors('legalForm', generalInformationForm)) {
+						<ng-container errors>
+							<span class="centric-error-message"
+								>{{ getErrorMessageGeneralFormInputs('legalForm') }}
+							</span>
+						</ng-container>
+					}
 				</windmill-dropdown-search>
-			</ng-container>
+			}
 		</centric-form-control>
 	</centric-form-item>
 
 	<centric-form-item>
 		<centric-form-label>{{ 'generalInformation.group' | translate }}</centric-form-label>
 		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
-			<ng-container *ngIf="updatedGroupsSource">
+			@if (updatedGroupsSource) {
 				<windmill-dropdown-search
 					ariaAttributes
 					formControlName="group"
@@ -156,18 +212,20 @@
 					(searchValueChange)="
 						onSearchValueChanged(dropdownSourceGroups, $event, 'label', dropdownLabelTypes.groupLabel)
 					">
-					<ng-container errors *ngIf="hasFormControlRequiredErrors('group', generalInformationForm)">
-						<span class="centric-error-message">{{ getErrorMessageGeneralFormInputs('group') }} </span>
-					</ng-container>
+					@if (hasFormControlRequiredErrors('group', generalInformationForm)) {
+						<ng-container errors>
+							<span class="centric-error-message">{{ getErrorMessageGeneralFormInputs('group') }} </span>
+						</ng-container>
+					}
 				</windmill-dropdown-search>
-			</ng-container>
+			}
 		</centric-form-control>
 	</centric-form-item>
 
 	<centric-form-item>
 		<centric-form-label>{{ 'generalInformation.category' | translate }}</centric-form-label>
 		<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
-			<ng-container *ngIf="updatedCategoriesSource">
+			@if (updatedCategoriesSource) {
 				<windmill-dropdown-search
 					ariaAttributes
 					formControlName="category"
@@ -191,18 +249,22 @@
 							dropdownLabelTypes.categoryLabel
 						)
 					">
-					<ng-container errors *ngIf="hasFormControlRequiredErrors('category', generalInformationForm)">
-						<span class="centric-error-message">{{ getErrorMessageGeneralFormInputs('category') }} </span>
-					</ng-container>
+					@if (hasFormControlRequiredErrors('category', generalInformationForm)) {
+						<ng-container errors>
+							<span class="centric-error-message"
+								>{{ getErrorMessageGeneralFormInputs('category') }}
+							</span>
+						</ng-container>
+					}
 				</windmill-dropdown-search>
-			</ng-container>
+			}
 		</centric-form-control>
 	</centric-form-item>
 
 	<centric-form-item>
 		<centric-form-label>{{ 'generalInformation.subcategory' | translate }}</centric-form-label>
 		<centric-form-control>
-			<ng-container *ngIf="updatedSubcategoriesSource">
+			@if (updatedSubcategoriesSource) {
 				<windmill-dropdown-search
 					ariaAttributes
 					[class.disabled]="isReadonly"
@@ -227,46 +289,68 @@
 						)
 					">
 				</windmill-dropdown-search>
-			</ng-container>
+			}
 		</centric-form-control>
 	</centric-form-item>
 
 	<frontend-bank-input [formGroup]="generalInformationForm" [isReadonly]="isReadonly" [isSetupProfileDialog]="true">
 	</frontend-bank-input>
 
+	@if (isCreateSupplierProfile()) {
+		<div class="cashier-emails">
+			<p class="info-message">{{ 'inviteSuppliers.cashierInfoMessage' | translate }}</p>
+		</div>
+	}
+
 	<centric-form-item class="cashier-emails">
 		<centric-form-label>{{ 'generalInformation.cashierEmails' | translate }}</centric-form-label>
-		@if (isCreateSupplierProfile()) {
-			<centric-form-control frontendRequiredInput>
+		@if (isAdminEditing || isCreateSupplierProfile()) {
+			<centric-form-control>
 				<windmill-input
 					ariaAttributes
 					formControlName="cashierEmails"
 					[ariaLabelClearIcon]="'general.label.clear' | translate"
 					[attr.ariaLabel]="'generalInformation.cashierEmails' | translate"
 					[ariaLabelTranslation]="'generalInformation.cashierEmails'"
-					(keydown)="handleKeydown($event)">
+					(keydown)="handleKeydown($event)"
+					(innerBlur)="handleBlur($event)">
 					<ng-container hints>
 						<p>{{ 'inviteSuppliers.hintMessage' | translate }}</p>
 					</ng-container>
 				</windmill-input>
 			</centric-form-control>
 		}
-		<centric-chips-list class="email-chip-list">
-			@for (email of cashierEmailsList; track email) {
-				<centric-chip
-					class="email-chip"
-					[message]="email"
-					[hasTitle]="true"
-					[readonly]="!isCreateSupplierProfile()"
-					[ariaLabelDeleteButton]="'general.label.clear' | translate"
-					(deleteChip)="removeEmailFromList(email)">
-				</centric-chip>
-			}
-		</centric-chips-list>
+		@if (cashierEmailsList.size > 0) {
+			<centric-chips-list class="email-chip-list">
+				@for (email of cashierEmailsList; track email) {
+					<centric-chip
+						class="email-chip"
+						[message]="email"
+						[hasTitle]="true"
+						[readonly]="!isCreateSupplierProfile()"
+						[ariaLabelDeleteButton]="'general.label.clear' | translate"
+						(deleteChip)="removeEmailFromList(email)">
+					</centric-chip>
+				}
+			</centric-chips-list>
+		}
+		@if ((!cashierEmailsList || cashierEmailsList.size === 0) && isReadonly) {
+			<span class="no-cashiers"> - </span>
+		}
 		@if (emailError) {
 			<span class="email-error-message">
 				{{ emailError | translate }}
 			</span>
+		}
+		@if (hasDuplicateEmailError) {
+			<span class="email-error-message">
+				{{ 'generalInformation.duplicateEmailError' | translate }}
+			</span>
+		}
+		@if (!isAdminEditing && !isCreateSupplierProfile() && !isReadonly) {
+			<centric-button type="outlined-theme" class="cashiers-button" (click)="openAddCashiersModal()">{{
+				'generalInformation.addCashiers' | translate
+			}}</centric-button>
 		}
 	</centric-form-item>
 </form>

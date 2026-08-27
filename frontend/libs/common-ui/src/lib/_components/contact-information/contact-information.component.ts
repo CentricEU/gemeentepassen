@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
 	ContactInfoFormFields,
@@ -12,6 +12,7 @@ import {
 	UserService,
 } from '@frontend/common';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'frontend-contact-information',
@@ -19,7 +20,7 @@ import { TranslateService } from '@ngx-translate/core';
 	styleUrls: ['./contact-information.component.scss'],
 	standalone: false,
 })
-export class ContactInformationComponent implements OnInit {
+export class ContactInformationComponent implements OnInit, OnDestroy {
 	@Input() isReadonly = false;
 	@Input() isEditProfileComponent = false;
 
@@ -30,15 +31,16 @@ export class ContactInformationComponent implements OnInit {
 
 	public emailValidator = FormUtil.validateEmail(true);
 	public zipCodeValidator = FormUtil.validatedZip;
-	public telephoneValidator = FormUtil.validateTelephone;
 	public hasFormControlRequiredErrors = FormUtil.hasFormControlRequiredErrors;
 	public validationFunctionError = FormUtil.validationFunctionError;
 	public validationFunctionErrorNonRequiredFields = FormUtil.formControlValidatorNonRequiredFields;
 	public validationFieldRequired = FormUtil.hasControlRequiredErrorAndTouched;
+	public validationNoSpaceFunctionError = FormUtil.validationNoSpaceFunctionError;
 	public hasPatternError = FormUtil.hasPatternError;
 
 	private localStorageData: ContactInformation = new ContactInformation();
 	private userInformationData: UserDto;
+	private supplierSubscription: Subscription;
 
 	constructor(
 		private formBuilder: FormBuilder,
@@ -49,6 +51,10 @@ export class ContactInformationComponent implements OnInit {
 
 	public ngOnInit(): void {
 		this.loadInitialData();
+	}
+
+	public ngOnDestroy(): void {
+		this.supplierSubscription?.unsubscribe();
 	}
 
 	public getErrorMessageContactFormInputs(value: string): string | null {
@@ -87,14 +93,23 @@ export class ContactInformationComponent implements OnInit {
 
 	private initForm(enumValue: FormInitializationType, data?: SupplierProfile): void {
 		this.contactInformationForm = this.formBuilder.group({
-			companyBranchAddress: [this.getFieldValue('companyBranchAddress', enumValue, data), [Validators.required]],
-			branchProvince: [this.getFieldValue('branchProvince', enumValue, data), [Validators.required]],
+			companyBranchAddress: [
+				this.getFieldValue('companyBranchAddress', enumValue, data),
+				[Validators.required, this.validationNoSpaceFunctionError],
+			],
+			branchProvince: [this.getFieldValue('branchProvince', enumValue, data), []],
 			branchZip: [this.getFieldValue('branchZip', enumValue, data), [Validators.required, this.zipCodeValidator]],
-			branchLocation: [this.getFieldValue('branchLocation', enumValue, data), [Validators.required]],
-			branchTelephone: [this.getFieldValue('branchTelephone', enumValue, data), [this.telephoneValidator]],
+			branchLocation: [
+				this.getFieldValue('branchLocation', enumValue, data),
+				[Validators.required, this.validationNoSpaceFunctionError],
+			],
+			branchTelephone: [this.getFieldValue('branchTelephone', enumValue, data), [Validators.pattern(RegexUtil.telephoneRegexPattern)]],
 			email: [this.getFieldValue('email', enumValue, data), [this.emailValidator]],
 			website: [this.getFieldValue('website', enumValue, data), [Validators.pattern(RegexUtil.urlRegexPattern)]],
-			accountManager: [this.getFieldValue('accountManager', enumValue, data), [Validators.required]],
+			accountManager: [
+				this.getFieldValue('accountManager', enumValue, data),
+				[Validators.required, this.validationNoSpaceFunctionError],
+			],
 		});
 	}
 
@@ -136,13 +151,15 @@ export class ContactInformationComponent implements OnInit {
 	}
 
 	private getSupplierProfileInformation(): void {
-		this.supplierProfileService.supplierProfileInformationObservable.subscribe((data) => {
-			if (!data) {
-				return;
-			}
+		this.supplierSubscription = this.supplierProfileService.supplierProfileInformationObservable.subscribe(
+			(data) => {
+				if (!data) {
+					return;
+				}
 
-			this.setupContactForm(data);
-		});
+				this.setupContactForm(data);
+			},
+		);
 
 		if (this.supplierProfileService.supplierProfileInformation) {
 			this.setupContactForm(this.supplierProfileService.supplierProfileInformation);

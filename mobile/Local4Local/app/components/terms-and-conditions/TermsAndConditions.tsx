@@ -14,6 +14,25 @@ type TermsAndConditionsProps = {
 const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ setTermsAndConditionView }) => {
 	const { t } = useTranslation('common');
 
+	const emailLink = (
+		<Text
+			style={{ color: colors.THEME_500 }}
+			onPress={() => {
+				const email = 'info@gemeentepassen.eu';
+				const subject = '';
+				const body = '';
+				const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+					body
+				)}`;
+				Linking.openURL(mailtoUrl);
+			}}>
+			info@gemeentepassen.eu
+		</Text>
+	);
+
+	const description = t('privacy.complaint.description');
+	const parts = description.split('{email_link}');
+
 	return (
 		<SafeAreaView style={{ flex: 1 }} edges={['left', 'right', 'top']}>
 			<ScrollView style={styles.formContainer} contentContainerStyle={{ paddingBottom: 24 }}>
@@ -75,24 +94,15 @@ const TermsAndConditions: React.FC<TermsAndConditionsProps> = ({ setTermsAndCond
 					<Text style={styles.sectionTitle}>{t('privacy.contact.title')}</Text>
 					<Text style={{ marginBottom: 8 }}>{t('privacy.contact.description')}</Text>
 					<Text style={{ marginBottom: 12 }}>
-						{t('privacy.contact.cta')}{' '}
-						<Text
-							style={{ color: colors.THEME_500 }}
-							onPress={() => {
-								const email = 'info@gemeentepassen.eu';
-								const subject = '';
-								const body = '';
-								const mailtoUrl = `mailto:${email}?subject=${encodeURIComponent(
-									subject
-								)}&body=${encodeURIComponent(body)}`;
-								Linking.openURL(mailtoUrl);
-							}}>
-							info@gemeentepassen.eu
-						</Text>
+						{t('privacy.contact.cta')} {emailLink}
 					</Text>
 
 					<Text style={styles.sectionTitle}>{t('privacy.complaint.title')}</Text>
-					<Text style={{ marginBottom: 12 }}>{t('privacy.complaint.description')}</Text>
+					<Text style={{ marginBottom: 12 }}>
+						{parts[0]}
+						{emailLink}
+						{parts[1]}
+					</Text>
 
 					<Text style={styles.sectionTitle}>{t('privacy.info_sheet.title')}</Text>
 					<Text style={{ marginBottom: 8 }}>{t('privacy.info_sheet.subtitle')}</Text>

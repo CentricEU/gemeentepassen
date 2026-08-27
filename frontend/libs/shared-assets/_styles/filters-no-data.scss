@@ -1,0 +1,8 @@
+// when the no-data component is used inside the a table with filters, the default image is covered by the filters row, so a smaller image is needed
+::ng-deep {
+    frontend-no-data.no-data {
+        img {
+            max-height: 35vh;
+        }
+    }
+}

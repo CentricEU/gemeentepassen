@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService, WorkingHoursDto, WorkingHoursService } from '@frontend/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of } from 'rxjs';
 
 import { WindmillModule } from '../../windmil.module';

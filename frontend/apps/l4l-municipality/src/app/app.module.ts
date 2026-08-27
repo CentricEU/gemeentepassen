@@ -1,19 +1,28 @@
 import { DatePipe } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { MatDatepickerIntl } from '@angular/material/datepicker';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { APP_CONFIG } from '@frontend/app-config';
-import { CommonL4LModule, DateAdapterModule, JwtInterceptor } from '@frontend/common';
-import { CommonUiModule, HttpLoaderFactory, WindmillModule } from '@frontend/common-ui';
+import { CommonL4LModule, CustomDatepickerIntlService, DateAdapterModule, JwtInterceptor } from '@frontend/common';
+import {
+	AppLoaderComponent,
+	BreadcrumbsComponent,
+	CommonUiModule,
+	HttpLoaderFactory,
+	SidenavComponent,
+	WindmillModule,
+} from '@frontend/common-ui';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { WindmillComboButtonModule } from '@windmill/ng-windmill/combo-button';
 import { WindmillDatePickerModule } from '@windmill/ng-windmill/date-picker';
 import { CentricRadioModule } from '@windmill/ng-windmill/radio';
 import { CentricTextarea2Module } from '@windmill/ng-windmill/textarea';
+
 import { environment } from '../environment/environment';
 import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
@@ -27,6 +36,7 @@ import { InvitationsComponent } from './components/invitations/invitations.compo
 import { InviteSuppliersComponent } from './components/invite-suppliers/invite-suppliers.component';
 import { OfferApprovalPopupComponent } from './components/offer-approval-popup/offer-approval-popup.component';
 import { SupplierDetailsComponent } from './components/supplier-details/supplier-details.component';
+import { SupplierEditPopupComponent } from './components/supplier-edit-popup/supplier-edit-popup';
 import { SupplierReqComponent } from './components/supplier-req/supplier-req.component';
 import { SupplierReviewPopupComponent } from './components/supplier-review-popup/supplier-review-popup.component';
 import { SuppliersListComponent } from './components/suppliers/suppliers.component';
@@ -35,6 +45,7 @@ import { MunicipalityModule } from './municipality/municipality.module';
 import { BenefitsComponent } from './pages/benefits/benefits.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { OffersForMuniciaplityComponent } from './pages/offers-for-municipality/offers-for-municipality.component';
+import { PassholderDetailsComponent } from './pages/passholder-details/passholder-details.component';
 import { PassholdersComponent } from './pages/passholders/passholders.component';
 import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
 import { MunicipalityTransactionsComponent } from './pages/transactions/transactions.component';
@@ -48,6 +59,7 @@ import { UserManagementComponent } from './pages/user-management/user-management
 		SupplierReqComponent,
 		ActiveSuppliersComponent,
 		SupplierReviewPopupComponent,
+		SupplierEditPopupComponent,
 		OfferApprovalPopupComponent,
 		PassholdersComponent,
 		ImportPassholdersComponent,
@@ -65,9 +77,13 @@ import { UserManagementComponent } from './pages/user-management/user-management
 		MunicipalityTransactionsComponent,
 	],
 	imports: [
+		AppLoaderComponent,
+		SidenavComponent,
+		BreadcrumbsComponent,
 		AppRoutingModule,
 		CommonUiModule.forRoot(environment),
 		CommonL4LModule,
+		PassholderDetailsComponent,
 		WindmillModule,
 		MunicipalityModule,
 		MatTabsModule,
@@ -98,6 +114,7 @@ import { UserManagementComponent } from './pages/user-management/user-management
 			useClass: JwtInterceptor,
 			multi: true,
 		},
+		{ provide: MatDatepickerIntl, useClass: CustomDatepickerIntlService },
 	],
 	bootstrap: [AppComponent],
 })

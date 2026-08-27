@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
@@ -10,10 +10,11 @@ import {
 	Page,
 	PaginatedData,
 	StatusUtil,
+	TableActionButton,
 	TableColumn,
 	TableFilterColumn,
 } from '@frontend/common';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 
 import { TableColumnsManagerComponent } from '../table-columns-manager/table-columns-manager.component';
 
@@ -59,7 +60,14 @@ export class TableComponent<T extends GenericTableData> implements OnInit {
 	public paginatedData: PaginatedData<T>;
 	public currentDisplayedPage: Array<T>;
 
-	private displayedFilterColumns = [FilterColumnKey.STATUS, FilterColumnKey.OFFER_TYPE, FilterColumnKey.BENEFITS];
+	private displayedFilterColumns = [
+		FilterColumnKey.PASSHOLDERS_BSN,
+		FilterColumnKey.PASSHOLDERS_NUMBER,
+		FilterColumnKey.STATUS,
+		FilterColumnKey.OFFER_TYPE,
+		FilterColumnKey.BENEFITS,
+		FilterColumnKey.TRANSACTIONS_SUPPLIER,
+	];
 
 	private initialDisplayedFilterColumns = this.displayedFilterColumns;
 	private initialFilterColumns: TableFilterColumn[] = [];
@@ -77,7 +85,10 @@ export class TableComponent<T extends GenericTableData> implements OnInit {
 		return this.currentDisplayedPage?.length > 0;
 	}
 
-	constructor(protected readonly dialogService: DialogService) {}
+	constructor(
+		protected readonly dialogService: DialogService,
+		private elementRef: ElementRef,
+	) {}
 
 	public ngOnInit(): void {
 		this.initFilters();
@@ -107,8 +118,8 @@ export class TableComponent<T extends GenericTableData> implements OnInit {
 		return this.initialDisplayedFilterColumns.includes(col as FilterColumnKey);
 	}
 
-	public isTooltipDisabled(text: string): boolean {
-		return !!text;
+	public isTooltipDisabled(actionButton: TableActionButton): boolean {
+		return !!actionButton.text || !actionButton.tooltipTranslationLabel;
 	}
 
 	public updateDisplayedColumns(columnsArray: TableColumn[]): void {
@@ -206,12 +217,17 @@ export class TableComponent<T extends GenericTableData> implements OnInit {
 	public onPageChange(event: PageEvent): void {
 		this.paginatedData.currentIndex = event.pageIndex;
 
+		if (!this.paginatedData.pages[this.paginatedData.currentIndex]) {
+			this.paginatedData.pages[this.paginatedData.currentIndex] = new Page<T>([]);
+		}
+
 		if (this.paginatedData.pages[this.paginatedData.currentIndex].values.length === 0) {
 			this.loadData();
 			return;
 		}
 
 		this.currentDisplayedPage = this.paginatedData.pages[this.paginatedData.currentIndex].values;
+		this.scrollToTop();
 	}
 
 	public isDataExisting(): boolean {
@@ -239,9 +255,20 @@ export class TableComponent<T extends GenericTableData> implements OnInit {
 		this.paginatedData = new PaginatedData<T>(pages, pageSize, 0);
 	}
 
+	public resetPageContent(): void {
+		this.paginatedData.pages.forEach((page) => {
+			page.values = [];
+		});
+		this.currentDisplayedPage = [];
+	}
+
 	public afterDataLoaded(dataWithActions: T[]): void {
+		if (!this.paginatedData || !this.paginatedData.pages || this.paginatedData.pages.length === 0) {
+			return;
+		}
 		this.paginatedData.pages[this.paginatedData.currentIndex].values = dataWithActions;
 		this.currentDisplayedPage = this.paginatedData.pages[this.paginatedData.currentIndex].values;
+		this.scrollToTop();
 	}
 
 	public getSelectedElements(): T[] {
@@ -262,6 +289,14 @@ export class TableComponent<T extends GenericTableData> implements OnInit {
 		}
 
 		return this.filterColumns.some((column) => this.filterFormGroup.get(column.filterName)?.value);
+	}
+
+	public scrollToTop() {
+		const panelElement = this.elementRef.nativeElement.querySelector('.card-content');
+		panelElement.scrollTo({
+			top: 0,
+			behavior: 'smooth',
+		});
 	}
 
 	private openDialog(): void {
@@ -332,6 +367,7 @@ export class TableComponent<T extends GenericTableData> implements OnInit {
 
 	private removeFilter(property: string): void {
 		this.filterColumns = this.filterColumns?.filter((column) => column.filterName !== property);
+		this.filterFormGroup.get(property)?.reset();
 	}
 
 	private removeDisplayedFilter(property: string): void {

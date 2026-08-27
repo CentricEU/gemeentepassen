@@ -9,7 +9,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SupplierProfileService, SupplierRejectionService } from '@frontend/common';
 import { WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of, Subject } from 'rxjs';
 
 import { RejectSupplierDto } from '../../_models/reject-supplier-dto.model';
@@ -197,6 +197,14 @@ describe('SupplierReviewPopupComponent', () => {
 			component.reasonDropdownSource = reasonDropdownSource;
 			component.onSearchValueChanged(null);
 			expect(component.reasonUpdatedSource).toEqual(reasonDropdownSource);
+		});
+
+		it('should close the dialog with "adminEdit" when adminEditSupplier is called', () => {
+			// Act
+			component.adminEditSupplier();
+
+			// Assert
+			expect(dialogRef.close).toHaveBeenCalledWith({ actionType: 'adminEdit', supplierId: 'testSupplierId' });
 		});
 	});
 });

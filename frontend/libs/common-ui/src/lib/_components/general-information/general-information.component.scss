@@ -13,6 +13,14 @@
 		centric-chip .centric-chip-container.has-max-width {
 			max-width: fit-content;
 		}
+
+		.cashiers-button {
+			margin-bottom: 16px;
+			width: fit-content;
+			button {
+				width: auto;
+			}
+		}
 	}
 
 	width: 100%;
@@ -20,6 +28,10 @@
 	.upload-button {
 		@include mixins.size(auto, 100%);
 	}
+}
+
+.email-chip-list {
+	margin-bottom: 12px;
 }
 
 .cashier-emails {
@@ -35,4 +47,8 @@
 .upload-text {
 	height: 20px;
 	font-size: 14px;
+}
+
+.no-cashiers {
+	margin-left: 4px;
 }

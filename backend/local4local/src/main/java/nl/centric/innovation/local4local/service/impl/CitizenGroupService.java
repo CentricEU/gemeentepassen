@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -123,8 +124,8 @@ public class CitizenGroupService {
         emailService.sendNoCategoryEmail(baseMunicipalityUrl, tenant.getEmail(), StringUtils.getLanguageForLocale("nl-NL"), message);
     }
 
-    private void validateMaxIncome(CitizenGroupDto citizenGroup, Double tenantWage) throws DtoValidateException {
-        Double calculatedMaxIncome = (citizenGroup.thresholdAmount().doubleValue() / 100) * tenantWage;
+    private void validateMaxIncome(CitizenGroupDto citizenGroup, BigDecimal tenantWage) throws DtoValidateException {
+        Double calculatedMaxIncome = citizenGroup.thresholdAmount().doubleValue() / 100 * tenantWage.doubleValue();
 
         if (!String.format("%.2f", calculatedMaxIncome)
                 .equals(String.format("%.2f", citizenGroup.maxIncome()))) {

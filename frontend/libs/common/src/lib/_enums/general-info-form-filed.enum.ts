@@ -2,7 +2,7 @@ export enum GeneralInfoFormFields {
 	companyName = 'companyName',
 	email = 'email',
 	ownerName = 'ownerName',
-	catgeory = 'category',
+	category = 'category',
 	group = 'group',
 	subcategory = 'subcategory',
 	commerceNumber = 'commerceNumber',
@@ -11,4 +11,6 @@ export enum GeneralInfoFormFields {
 	legalform = 'legalForm',
 	iban = 'iban',
 	bic = 'bic',
+	kvkNumber = 'kvkNumber',
+	adminEmail = 'adminEmail',
 }

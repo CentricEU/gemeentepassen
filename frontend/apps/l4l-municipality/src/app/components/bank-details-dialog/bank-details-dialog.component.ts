@@ -12,7 +12,7 @@ import {
 	WarningDialogData,
 } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { ValidatorService } from 'angular-iban';
 
 @Component({

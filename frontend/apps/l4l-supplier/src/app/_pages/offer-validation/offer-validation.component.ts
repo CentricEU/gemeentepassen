@@ -8,6 +8,7 @@ import { CodeValidationDto } from '../../models/code-validation.model';
 import { ValidationCodeStatus } from '../../models/validation-code-status.model';
 import { DiscountCodeService } from '../../services/discount-code/discount-code.service';
 import { TransactionService } from '../../services/transactions/transaction.service';
+import { OfferTypeEnum, OfferTypeTranslations } from '../../enums/offer-type.enum';
 
 @Component({
 	selector: 'frontend-offer-validation',
@@ -131,8 +132,7 @@ export class OfferValidationComponent implements OnInit {
 
 	private handleValidationSuccess(validatedCode: CodeValidationDto): void {
 		if (validatedCode.offerName && validatedCode.offerType) {
-			const discountType =
-				validatedCode.offerType === 1 ? 'discount.percentageDiscount' : 'discount.bogoDiscount';
+			const discountType = OfferTypeTranslations[validatedCode.offerType as OfferTypeEnum];
 			this.openApplyDiscountModal(validatedCode, discountType);
 			return;
 		}

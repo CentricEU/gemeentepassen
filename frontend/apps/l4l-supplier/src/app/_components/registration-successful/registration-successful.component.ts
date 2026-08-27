@@ -3,7 +3,7 @@ import { MatDialogConfig } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { commonRoutingConstants, Environment, MobileBrowserUtil, ModalData } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { map } from 'rxjs/operators';
 
 @Component({
@@ -91,6 +91,7 @@ export class RegistrationSuccessfulComponent implements OnInit {
 			MobileBrowserUtil.openMobileApp(this.environment, 'Login');
 			return;
 		}
+		
 		this.navigateToLogin();
 	}
 

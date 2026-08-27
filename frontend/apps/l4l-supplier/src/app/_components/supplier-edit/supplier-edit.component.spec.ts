@@ -54,7 +54,6 @@ describe('SupplierEditComponent', () => {
 
 		fixture = TestBed.createComponent(SupplierEditComponent);
 		component = fixture.componentInstance;
-		fixture.detectChanges();
 	});
 
 	it('should create', () => {
@@ -112,11 +111,11 @@ describe('SupplierEditComponent', () => {
 		});
 
 		it('should return "-" for comments if comments is undefined', () => {
-			(component as any).supplierRejectionInformation = {
-				reason: 'Another reason',
-				comments: undefined,
-			};
-			const details = component.rejectionDetailsList;
+				(component as any).supplierRejectionInformation = {
+					reason: 'Another reason',
+					comments: undefined,
+				};
+				const details = component.rejectionDetailsList;
 			expect(details).toEqual([
 				{
 					label: 'rejectSupplier.reasonPlaceholder',
@@ -130,8 +129,9 @@ describe('SupplierEditComponent', () => {
 		});
 
 		it('should return undefined values if supplierRejectionInformation is not set', () => {
-			(component as any).supplierRejectionInformation = undefined;
-			const details = component.rejectionDetailsList;
+				(component as any).supplierRejectionInformation = undefined;
+	
+				const details = component.rejectionDetailsList;
 			expect(details).toEqual([
 				{
 					label: 'rejectSupplier.reasonPlaceholder',

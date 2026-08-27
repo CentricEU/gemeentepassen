@@ -7,4 +7,6 @@ export enum ActionButtons {
 	circlePlay = 'circle-play_b',
 	envelopeSend = 'envelope_send_bb',
 	minusCircle = 'minus_b',
+	reapply = 'refresh-cw_r',
+	adminEdit = 'edit_shield_b',
 }

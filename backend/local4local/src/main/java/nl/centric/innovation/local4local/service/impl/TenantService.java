@@ -47,7 +47,12 @@ public class TenantService {
     }
 
     public List<TenantViewDto> getAllTenants() {
-        List<Tenant> tenants = (List<Tenant>) tenantRepository.findAll();
+
+        List<Tenant> tenants = ((List<Tenant>) tenantRepository.findAll())
+                .stream()
+                .filter(t -> !t.getId().equals(UUID.fromString("b3358dd8-a811-11f0-a0ae-0aa55e78251f")))
+                .toList();
+
         return tenants.stream()
                 .map(tenant -> TenantViewDto.entityToTenantViewDto(tenant, false))
                 .toList();

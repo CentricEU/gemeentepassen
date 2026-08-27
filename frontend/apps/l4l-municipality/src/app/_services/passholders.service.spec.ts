@@ -118,4 +118,22 @@ describe('PassholdersService', () => {
 
 		expect(httpClientSpy.delete).toHaveBeenCalledWith(`${environmentMock.apiPath}/passholders/${id}`);
 	});
+
+	describe('getPassholderDetails', () => {
+		it('should fetch passholder details by ID', () => {
+			const passholderId = '12345';
+			const mockResponse: PassholderViewDto = {
+				id: passholderId,
+				name: 'John Doe',
+			} as PassholderViewDto;
+
+			httpClientSpy.get.mockReturnValue(of(mockResponse));
+
+			service.getPassholderDetails(passholderId).subscribe((response) => {
+				expect(response).toEqual(mockResponse);
+			});
+
+			expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/passholders/${passholderId}`);
+		});
+	});
 });

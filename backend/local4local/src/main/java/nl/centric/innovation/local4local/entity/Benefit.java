@@ -1,5 +1,11 @@
 package nl.centric.innovation.local4local.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,16 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import nl.centric.innovation.local4local.dto.BenefitRequestDto;
 import nl.centric.innovation.local4local.enums.BenefitStatusEnum;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.Entity;
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.ManyToMany;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.Table;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -48,9 +46,8 @@ public class Benefit extends BaseEntity {
     @Column(name="amount", nullable = false)
     private Double amount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "status")
-    @Type(type = "pgsql_enum")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "status", columnDefinition = "benefit_status")
     private BenefitStatusEnum status;
 
     @ManyToMany()

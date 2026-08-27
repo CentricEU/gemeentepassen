@@ -11,7 +11,7 @@ import {
 } from '@frontend/common';
 import { TableBaseComponent, TableComponent } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { ToastrService } from '@windmill/ng-windmill/toastr';
 
 import { InvitationDto } from '../../_models/invitation-dto.model';

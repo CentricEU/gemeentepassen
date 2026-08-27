@@ -1,12 +1,13 @@
 package nl.centric.innovation.local4local.dto;
 
 import lombok.Builder;
-import lombok.NonNull;
 
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Builder
 public record RejectOfferDto(
-        @NonNull String reason,
-        @NonNull UUID offerId
+        @NotNull(message = "Reason is required") String reason,
+        @NotNull(message = "Offer id is required") UUID offerId,
+        @NotNull(message = "Version is required") Long version
 ) { }

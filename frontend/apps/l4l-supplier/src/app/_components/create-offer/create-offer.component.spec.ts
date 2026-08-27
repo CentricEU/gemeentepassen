@@ -1,14 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { BenefitDto, BenefitService, FrequencyOfUse, OfferDto, RestrictionsDto } from '@frontend/common';
-import { WindmillModule } from '@frontend/common-ui';
+import {
+	BenefitDto,
+	BenefitService,
+	GenericStatusEnum,
+	OfferDto,
+	OfferInformationDto,
+	RestrictionsDto,
+} from '@frontend/common';
+import { CustomDialogComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { CentricToastrModule, ToastrService } from '@windmill/ng-windmill/toastr';
 import DOMPurify from 'dompurify';
 import { of } from 'rxjs';
@@ -19,6 +26,7 @@ import { OfferTypeEnum } from '../../enums/offer-type.enum';
 import { RestrictionFormFields } from '../../enums/restriction.enum';
 import { OfferType } from '../../models/offer-type.model';
 import { OfferTypeVisibility } from '../../models/offer-type-visibility.model';
+import { DiscountCodeService } from '../../services/discount-code/discount-code.service';
 import { OfferService } from '../../services/offer-service/offer.service';
 import { CreateOfferComponent } from './create-offer.component';
 
@@ -30,10 +38,12 @@ jest.mock('dompurify', () => ({
 
 describe('CreateOfferComponent', () => {
 	let component: CreateOfferComponent;
+
 	let fixture: ComponentFixture<CreateOfferComponent>;
 	const dialogRefStub = { close: () => undefined, afterClosed: () => undefined };
 
 	let offerServiceMock: any;
+	let discountServiceMock: any;
 	let translateService: TranslateService;
 	let toastrService: ToastrService;
 	let dialogService: DialogService;
@@ -47,9 +57,20 @@ describe('CreateOfferComponent', () => {
 		amount: 12,
 		citizenOfferType: 'CITIZEN_WITH_PASS',
 		offerTypeId: 1,
+		version: 1,
 		startDate: new Date('2023-01-01'),
 		expirationDate: new Date('2030-01-01'),
-		benefitId: '5',
+		benefits: [
+			new BenefitDto(
+				'Benefit Name 1',
+				'Benefit Description',
+				new Date('2023-01-01'),
+				new Date('2023-12-31'),
+				[],
+				10,
+				'EXPIRED',
+			),
+		],
 	};
 
 	global.structuredClone = jest.fn((val) => {
@@ -59,6 +80,7 @@ describe('CreateOfferComponent', () => {
 	beforeEach(async () => {
 		const dialogServiceMock = {
 			message: jest.fn(),
+			alert: jest.fn(),
 		};
 
 		(DOMPurify.sanitize as jest.Mock).mockImplementation((value: any) => value);
@@ -68,6 +90,12 @@ describe('CreateOfferComponent', () => {
 			getOfferTypes: jest.fn().mockReturnValue(of({})),
 			getFullOffer: jest.fn().mockReturnValue(of({ offerToReactivate })),
 			reactivateOffer: jest.fn().mockReturnValue(of({})),
+			editOffer: jest.fn().mockReturnValue(of({})),
+			suspendOffer: jest.fn().mockReturnValue(of({})),
+		};
+
+		discountServiceMock = {
+			isDiscountCodeClaimedForOffer: jest.fn(),
 		};
 
 		benefitServiceMock = {
@@ -96,6 +124,7 @@ describe('CreateOfferComponent', () => {
 				TranslateService,
 				{ provide: MatDialogRef, useValue: dialogRefStub },
 				{ provide: OfferService, useValue: offerServiceMock },
+				{ provide: DiscountCodeService, useValue: discountServiceMock },
 				{ provide: DialogService, useValue: dialogServiceMock },
 				{ provide: BenefitService, useValue: benefitServiceMock },
 				{ provide: MAT_DIALOG_DATA, useValue: null },
@@ -114,6 +143,39 @@ describe('CreateOfferComponent', () => {
 		fixture.detectChanges();
 		return component;
 	}
+
+	it('should suspend offer, show toast and close dialog', () => {
+		fixture = TestBed.createComponent(CreateOfferComponent);
+		component = fixture.componentInstance;
+
+		component.data = {
+			offerToSuspend: { id: '29' },
+		} as any;
+
+		const toastSpy = jest.spyOn(component['toastrService'], 'success');
+		const translateSpy = jest.spyOn(component['translateService'], 'instant').mockReturnValue('Offer suspended');
+		const closeSpy = jest.spyOn(component, 'close');
+
+		component.suspendOffer();
+
+		expect(offerServiceMock.suspendOffer).toHaveBeenCalledWith('29');
+		expect(translateSpy).toHaveBeenCalledWith('offer.offerSuspendedText');
+		expect(toastSpy).toHaveBeenCalledWith('Offer suspended', '', { toastBackground: 'toast-light' });
+		expect(closeSpy).toHaveBeenCalledWith(true);
+	});
+
+	it('should not call suspendOffer if no offerId is provided', () => {
+		fixture = TestBed.createComponent(CreateOfferComponent);
+		component = fixture.componentInstance;
+
+		component.data = {
+			offerToSuspend: null,
+		} as any;
+
+		component.suspendOffer();
+
+		expect(offerServiceMock.suspendOffer).not.toHaveBeenCalled();
+	});
 
 	describe('create offer process', () => {
 		beforeEach(() => {
@@ -212,11 +274,34 @@ describe('CreateOfferComponent', () => {
 				);
 			});
 
+			it('should return translated validity error message for description', () => {
+				jest.spyOn(translateService, 'instant').mockReturnValue('validity error message');
+				const errorMessage = component.getErrorMessageFormInputs(CreateOfferFormFields.description);
+				expect(errorMessage).toBe('validity error message');
+				expect(translateService.instant).toHaveBeenCalledWith(
+					'offer.formRequired.descriptionFormControlRequired',
+				);
+			});
+
 			it('should return translated validity error message for title', () => {
 				jest.spyOn(translateService, 'instant').mockReturnValue('validity error message');
 				const errorMessage = component.getErrorMessageFormInputs(CreateOfferFormFields.title);
 				expect(errorMessage).toBe('validity error message');
 				expect(translateService.instant).toHaveBeenCalledWith('offer.formRequired.titleFormControlRequired');
+			});
+
+			it('should return translated validityFormControlRequired', () => {
+				jest.spyOn(translateService, 'instant').mockReturnValue('validity error message');
+				const errorMessage = component.getErrorMessageFormInputs(CreateOfferFormFields.validity);
+				expect(errorMessage).toBe('validity error message');
+				expect(translateService.instant).toHaveBeenCalledWith('offer.formRequired.validityFormControlRequired');
+			});
+
+			it('should return translated benefitIds error message for title', () => {
+				jest.spyOn(translateService, 'instant').mockReturnValue('validity error message');
+				const errorMessage = component.getErrorMessageFormInputs(CreateOfferFormFields.benefitIds);
+				expect(errorMessage).toBe('validity error message');
+				expect(translateService.instant).toHaveBeenCalledWith('offer.formRequired.benefitFormControlRequired');
 			});
 
 			it('should return null for an unrecognized form field', () => {
@@ -257,52 +342,47 @@ describe('CreateOfferComponent', () => {
 		});
 
 		describe('Tests for hideAmount method', () => {
-			it('should have hideAmount set to false when selectedOfferTypeId is percentage', fakeAsync(() => {
-				component.selectedOfferTypeId = OfferTypeEnum.percentage;
+			it.each([
+				{ offerTypeId: OfferTypeEnum.bogo, expected: false },
+				{ offerTypeId: OfferTypeEnum.freeEntry, expected: false },
+				{ offerTypeId: OfferTypeEnum.freeProduct, expected: false },
+				{ offerTypeId: OfferTypeEnum.membershipFee, expected: true },
+				{ offerTypeId: OfferTypeEnum.storeCredit, expected: false },
+			])('should have hideAmount set to %s when selectedOfferTypeId is %s', ({ offerTypeId, expected }) => {
+				component.selectedOfferTypeId = offerTypeId;
 
 				fixture.whenStable().then(() => {
 					fixture.detectChanges();
-					expect(component.hideAmount).toEqual(false);
+					expect(component.hideAmount).toEqual(expected);
 				});
-			}));
+			});
+		});
 
-			it('should have hideAmount set to true when selectedOfferTypeId is bogo', fakeAsync(() => {
-				component.selectedOfferTypeId = OfferTypeEnum.bogo;
+		describe('Tests for shouldDisplayTypeHint method', () => {
+			it.each([
+				{ offerTypeId: OfferTypeEnum.bogo, expected: false },
+				{ offerTypeId: OfferTypeEnum.freeEntry, expected: true },
+				{ offerTypeId: OfferTypeEnum.freeProduct, expected: true },
+				{ offerTypeId: OfferTypeEnum.membershipFee, expected: false },
+				{ offerTypeId: OfferTypeEnum.storeCredit, expected: false },
+			])('should return $expected when selectedOfferTypeId is $offerTypeId', ({ offerTypeId, expected }) => {
+				component.selectedOfferTypeId = offerTypeId;
 
 				fixture.whenStable().then(() => {
 					fixture.detectChanges();
-					expect(component.hideAmount).toEqual(true);
+					expect(component.hideAmount).toEqual(expected);
 				});
-			}));
-
-			it('should have hideAmount set to false when selectedOfferTypeId is credit', fakeAsync(() => {
-				component.selectedOfferTypeId = OfferTypeEnum.credit;
-
-				fixture.whenStable().then(() => {
-					fixture.detectChanges();
-					expect(component.hideAmount).toEqual(false);
-				});
-			}));
+			});
 		});
 
 		describe('Tests for getAmountPlaceholder method', () => {
-			it('should return percentage placeholder when selectedOfferTypeId is percentage', () => {
-				const value = OfferTypeEnum.percentage;
-				const translation = 'translated credit';
+			it('should return amountFeeMembershipPlaceholder when selectedOfferTypeId is membershipFee', () => {
+				const value = OfferTypeEnum.membershipFee;
+				const translation = 'translated fee';
 
 				jest.spyOn(translateService, 'instant').mockReturnValue(translation);
 				const result = component.getAmountPlaceholder(value);
-				expect(translateService.instant).toHaveBeenCalledWith('offer.amountPercentagePlaceholder');
-				expect(result).toBe(translation);
-			});
-
-			it('should return percentage placeholder when selectedOfferTypeId is credit', () => {
-				const value = OfferTypeEnum.credit;
-				const translation = 'translated credit';
-
-				jest.spyOn(translateService, 'instant').mockReturnValue(translation);
-				const result = component.getAmountPlaceholder(value);
-				expect(translateService.instant).toHaveBeenCalledWith('offer.amountCreditPlaceholder');
+				expect(translateService.instant).toHaveBeenCalledWith('offer.amountFeeMembershipPlaceholder');
 				expect(result).toBe(translation);
 			});
 
@@ -315,8 +395,8 @@ describe('CreateOfferComponent', () => {
 				expect(result).toBe('');
 			});
 
-			it('should return empty placeholder when selectedOfferTypeId is null', () => {
-				const value = null;
+			it('should return empty placeholder when selectedOfferTypeId is freeEntry', () => {
+				const value = OfferTypeEnum.freeEntry;
 
 				jest.spyOn(translateService, 'instant').mockReturnValue('translated credit');
 				const result = component.getAmountPlaceholder(value);
@@ -324,8 +404,17 @@ describe('CreateOfferComponent', () => {
 				expect(result).toBe('');
 			});
 
-			it('should return empty placeholder when selectedOfferTypeId is null', () => {
-				const value = 999;
+			it('should return empty placeholder when selectedOfferTypeId is freeProduct', () => {
+				const value = OfferTypeEnum.freeProduct;
+
+				jest.spyOn(translateService, 'instant').mockReturnValue('translated credit');
+				const result = component.getAmountPlaceholder(value);
+				expect(translateService.instant).not.toHaveBeenCalled();
+				expect(result).toBe('');
+			});
+
+			it('should return empty placeholder when selectedOfferTypeId is storeCredit', () => {
+				const value = OfferTypeEnum.storeCredit;
 
 				jest.spyOn(translateService, 'instant').mockReturnValue('translated credit');
 				const result = component.getAmountPlaceholder(value);
@@ -335,8 +424,8 @@ describe('CreateOfferComponent', () => {
 		});
 
 		describe('Tests for showPrefix method', () => {
-			it('should return "€ " when selectedOfferTypeId is credit', () => {
-				component.selectedOfferTypeId = OfferTypeEnum.credit;
+			it('should return "€ " when selectedOfferTypeId is membershipFee', () => {
+				component.selectedOfferTypeId = OfferTypeEnum.membershipFee;
 
 				fixture.whenStable().then(() => {
 					fixture.detectChanges();
@@ -346,7 +435,7 @@ describe('CreateOfferComponent', () => {
 			});
 
 			it('should return an empty string for other offer types', () => {
-				component.selectedOfferTypeId = OfferTypeEnum.percentage;
+				component.selectedOfferTypeId = OfferTypeEnum.bogo;
 
 				fixture.whenStable().then(() => {
 					fixture.detectChanges();
@@ -377,18 +466,8 @@ describe('CreateOfferComponent', () => {
 		});
 
 		describe('Tests for showSuffix method', () => {
-			it('should return "%" when selectedOfferTypeId is percentage', () => {
-				component.selectedOfferTypeId = OfferTypeEnum.percentage;
-
-				fixture.whenStable().then(() => {
-					fixture.detectChanges();
-					const result = component.showPrefix;
-					expect(result).toBe('%');
-				});
-			});
-
 			it('should return an empty string for other offer types', () => {
-				component.selectedOfferTypeId = OfferTypeEnum.credit;
+				component.selectedOfferTypeId = OfferTypeEnum.bogo;
 
 				fixture.whenStable().then(() => {
 					fixture.detectChanges();
@@ -398,18 +477,8 @@ describe('CreateOfferComponent', () => {
 			});
 
 			describe('Tests for showDecimal method', () => {
-				it('should return "percent" when selectedOfferTypeId is percentage', () => {
-					component.selectedOfferTypeId = OfferTypeEnum.percentage;
-
-					fixture.whenStable().then(() => {
-						fixture.detectChanges();
-						const result = component.showPrefix;
-						expect(result).toBe('percent');
-					});
-				});
-
-				it('should return "separator.2" when selectedOfferTypeId is credit', () => {
-					component.selectedOfferTypeId = OfferTypeEnum.credit;
+				it('should return "separator.2" when selectedOfferTypeId is membershipFee', () => {
+					component.selectedOfferTypeId = OfferTypeEnum.membershipFee;
 
 					fixture.whenStable().then(() => {
 						fixture.detectChanges();
@@ -420,12 +489,12 @@ describe('CreateOfferComponent', () => {
 			});
 
 			describe('Tests for onValueChangeOnOfferTypes method', () => {
-				it('should update selectedOfferTypeId, reset form values, and enable/disable form controls correctly for percentage offer type', () => {
-					component.selectedOfferTypeId = OfferTypeEnum.credit;
+				it('should update selectedOfferTypeId, reset form values, and enable/disable form controls correctly for membershipFee offer type', () => {
+					component.selectedOfferTypeId = OfferTypeEnum.bogo;
 
-					component.onValueChangeOnOfferTypes(OfferTypeEnum.percentage);
+					component.onValueChangeOnOfferTypes(OfferTypeEnum.membershipFee);
 
-					expect(component.selectedOfferTypeId).toBe(OfferTypeEnum.percentage);
+					expect(component.selectedOfferTypeId).toBe(OfferTypeEnum.membershipFee);
 
 					expect(component.createOfferForm.get(CreateOfferFormFields.amount)?.value).toBe('');
 
@@ -462,11 +531,11 @@ describe('CreateOfferComponent', () => {
 
 			describe('Tests for onValueChangeOnCheckedBenefits method', () => {
 				it('should add item to selectedBenefits if not already present', () => {
-					component.selectedBenefit = 'benefit1';
+					component.selectedBenefits = [{ id: 'benefit1' }] as BenefitDto[];
 
-					component.onValueChangeOnCheckedBenefits('benefit3');
+					component.onValueChangeOnCheckedBenefits(['benefit3']);
 
-					expect(component.selectedBenefit).toEqual('benefit3');
+					expect(component.selectedBenefits).toEqual([{ id: 'benefit3' }]);
 				});
 			});
 
@@ -682,15 +751,9 @@ describe('CreateOfferComponent', () => {
 						frequencyOfUse: 'Frequency of use',
 						frequencyOfUseValue: 'Frequency of use value',
 						timeSlots: 'Time slots',
-						ageRestriction: 'Age restriction',
-						ageRestrictionValue: 'Age restriction value',
-						ageRestrictionOtherValue: 'Age restriction other value',
-						priceRange: 'Eligible price range',
-						minPrice: 70,
-						maxPrice: 90,
 						timeTo: '',
 						timeFrom: '',
-						benefitId: 'id',
+						benefitIds: ['id'],
 					});
 
 					const result: OfferDto = component['getFormValuesToOfferDto']();
@@ -710,15 +773,9 @@ describe('CreateOfferComponent', () => {
 						frequencyOfUse: 'Frequency of use',
 						frequencyOfUseValue: 'Frequency of use value',
 						timeSlots: 'Time slots',
-						ageRestriction: 'Age restriction',
-						ageRestrictionValue: 'Age restriction value',
-						ageRestrictionOtherValue: 'Age restriction other value',
-						priceRange: 'Eligible price range',
-						minPrice: 70,
-						maxPrice: 90,
 						timeTo: '',
 						timeFrom: '',
-						benefitId: 'id',
+						benefitIds: ['id'],
 					});
 
 					const result: OfferDto = component['getFormValuesToOfferDto']();
@@ -882,18 +939,8 @@ describe('CreateOfferComponent', () => {
 		});
 
 		describe('Tests for maxLength method', () => {
-			it('should return 14 when selectedOfferTypeId is credit', () => {
-				component.selectedOfferTypeId = OfferTypeEnum.credit;
-
-				fixture.whenStable().then(() => {
-					fixture.detectChanges();
-					const result = component.maxLength;
-					expect(result).toBe(14);
-				});
-			});
-
-			it('should return Number.MAX_SAFE_INTEGER when selectedOfferTypeId is percentage', () => {
-				component.selectedOfferTypeId = OfferTypeEnum.percentage;
+			it('should return Number.MAX_SAFE_INTEGER', () => {
+				component.selectedOfferTypeId = OfferTypeEnum.membershipFee;
 
 				fixture.whenStable().then(() => {
 					fixture.detectChanges();
@@ -932,50 +979,44 @@ describe('CreateOfferComponent', () => {
 			expect(formGroup.get('exampleControl')?.value).toEqual('initialValue');
 		});
 
-		it('should return "€ " for showPrefix when selectedOfferTypeId is credit', () => {
-			component.selectedOfferTypeId = OfferTypeEnum.credit;
+		it('should return "€ " for showPrefix when selectedOfferTypeId is membershipFee', () => {
+			component.selectedOfferTypeId = OfferTypeEnum.membershipFee;
 			expect(component.showPrefix).toBe('€ ');
 		});
 
-		it('should return an empty string for showPrefix when selectedOfferTypeId is not credit', () => {
-			component.selectedOfferTypeId = OfferTypeEnum.percentage;
+		it('should return an empty string for showPrefix when selectedOfferTypeId is freeEntry', () => {
+			component.selectedOfferTypeId = OfferTypeEnum.freeEntry;
 			expect(component.showPrefix).toBe('');
 		});
 
-		it('should return "%" for showSuffix when selectedOfferTypeId is percentage', () => {
-			component.selectedOfferTypeId = OfferTypeEnum.percentage;
-			expect(component.showSuffix).toBe('%');
+		it('should return an empty string for showPrefix when selectedOfferTypeId is bogo', () => {
+			component.selectedOfferTypeId = OfferTypeEnum.bogo;
+			expect(component.showPrefix).toBe('');
 		});
 
-		it('should return an empty string for showSuffix when selectedOfferTypeId is not percentage', () => {
-			component.selectedOfferTypeId = OfferTypeEnum.credit;
-			expect(component.showSuffix).toBe('');
+		it('should return an empty string for showPrefix when selectedOfferTypeId is storeCreditt', () => {
+			component.selectedOfferTypeId = OfferTypeEnum.storeCredit;
+			expect(component.showPrefix).toBe('');
 		});
 
-		it('should return "percent" for showDecimal when selectedOfferTypeId is percentage', () => {
-			component.selectedOfferTypeId = OfferTypeEnum.percentage;
-			expect(component.showDecimal).toBe('percent');
-		});
-
-		it('should return "separator.2" for showDecimal when selectedOfferTypeId is not percentage', () => {
-			component.selectedOfferTypeId = OfferTypeEnum.credit;
+		it('should return "separator.2" for showDecimal', () => {
+			component.selectedOfferTypeId = OfferTypeEnum.membershipFee;
 			expect(component.showDecimal).toBe('separator.2');
 		});
 
 		it('should return 14 for maxLength when selectedOfferTypeId is credit', () => {
-			component.selectedOfferTypeId = OfferTypeEnum.credit;
-			expect(component.maxLength).toBe(14);
+			component.selectedOfferTypeId = OfferTypeEnum.membershipFee;
+			expect(component.maxLength).toBe(Number.MAX_SAFE_INTEGER);
 		});
 
 		it('should return Number.MAX_SAFE_INTEGER for maxLength when selectedOfferTypeId is not credit', () => {
-			component.selectedOfferTypeId = OfferTypeEnum.percentage;
+			component.selectedOfferTypeId = OfferTypeEnum.bogo;
 			expect(component.maxLength).toBe(Number.MAX_SAFE_INTEGER);
 		});
 
 		describe('Tests for displayPopupForOfferWithBenefits method', () => {
 			it('should display popup for offer with benefits', () => {
-				// eslint-disable-next-line @typescript-eslint/no-empty-function
-				jest.spyOn(component, 'close').mockImplementation(() => {});
+				jest.spyOn(component, 'close').mockImplementation(() => undefined);
 				jest.spyOn(translateService, 'instant');
 				jest.spyOn(toastrService, 'success');
 				jest.spyOn(dialogService, 'message');
@@ -985,21 +1026,15 @@ describe('CreateOfferComponent', () => {
 					description: 'Description',
 					amount: '123',
 					citizenOfferType: 'offer.citizenWithPass',
-					offerTypeId: OfferTypeEnum.credit,
+					offerTypeId: OfferTypeEnum.membershipFee,
 					startDate: new Date('2023-01-01'),
 					expirationDate: new Date('2022-12-31'),
 					frequencyOfUse: 'Frequency of use',
 					frequencyOfUseValue: 'Frequency of use value',
 					timeSlots: 'Time slots',
-					ageRestriction: 'Age restriction',
-					ageRestrictionValue: 'Age restriction value',
-					ageRestrictionOtherValue: 'Age restriction other value',
-					priceRange: 'Eligible price range',
-					minPrice: 70,
-					maxPrice: 90,
 					timeTo: '',
 					timeFrom: '',
-					benefitId: 'id',
+					benefitIds: ['id'],
 				});
 
 				component.saveOffer();
@@ -1071,9 +1106,8 @@ describe('CreateOfferComponent', () => {
 		});
 
 		test.each([
-			[null, null],
 			[{}, null],
-			[{}, null],
+			[{ someField: 'value' }, null],
 			[{}, {}],
 		])('should call createOffer with correct parameters', (offerDto, restrictions) => {
 			jest.spyOn(component as any, 'getFormValuesToOfferDto').mockReturnValue(offerDto);
@@ -1089,359 +1123,6 @@ describe('CreateOfferComponent', () => {
 			} else {
 				expect(offerServiceMock.createOffer).toHaveBeenCalledWith(offerDto);
 			}
-		});
-
-		it('should map restrictions correctly', () => {
-			component.createOfferForm = {
-				get: jest.fn().mockImplementation((key: string) => {
-					const controlValues: { [key: string]: string } = {
-						type1Value: 'SINGLE_USE',
-						type2Value: 'WEEKLY',
-						type3Value: 'Invalid Value',
-					};
-					return { value: controlValues[key] };
-				}),
-			} as any;
-
-			component.restrictionsData = [
-				{
-					formControl: 'type1',
-					label: 'label1',
-					id: 'id1',
-					dataTestId: 'data1',
-				},
-				{
-					formControl: 'type2',
-					label: 'label1',
-					id: 'id1',
-					dataTestId: 'data1',
-				},
-			];
-
-			const result = component['mapRestrictionsValues']();
-
-			expect(result).toBeDefined();
-			expect(result?.['type1']).toEqual('SINGLE_USE');
-			expect(result?.['type2']).toEqual('WEEKLY');
-			expect(result?.['type3']).toBeUndefined();
-		});
-
-		it('should handle ageRestrictionOtherValue correctly', () => {
-			const createOfferFormMock = {
-				get: jest.fn().mockImplementation((key: string) => {
-					const controlValues: { [key: string]: string } = {
-						ageRestrictionValue: '18',
-						ageRestrictionOtherValue: 'otherValue',
-					};
-					return { value: controlValues[key] };
-				}),
-			} as any;
-			component.createOfferForm = createOfferFormMock;
-
-			component.restrictionsData = [
-				{
-					formControl: 'ageRestriction',
-					label: 'label1',
-					id: 'id1',
-					dataTestId: 'data1',
-				},
-			];
-
-			const result = component['mapRestrictionsValues']();
-
-			expect(result).toEqual({ ageRestriction: '18' });
-		});
-
-		it('should map form values to RestrictionsDto correctly', () => {
-			const formGroup: FormGroup = new FormGroup({
-				frequencyOfUseValue: new FormControl(FrequencyOfUse.WEEKLY),
-				ageRestrictionValue: new FormControl(23),
-			});
-
-			component.createOfferForm = formGroup;
-
-			component.restrictionsData = [
-				{
-					formControl: 'frequencyOfUse',
-					label: 'frequencyOfUse',
-					id: 'id1',
-					dataTestId: 'data1',
-				},
-				{
-					formControl: 'ageRestriction',
-					label: 'ageRestriction',
-					id: 'id2',
-					dataTestId: 'data2',
-				},
-			];
-
-			const result: RestrictionsDto | undefined = component['mapRestrictionsValues']();
-
-			const expectedRestrictionsDto: RestrictionsDto = new RestrictionsDto();
-			expectedRestrictionsDto.frequencyOfUse = FrequencyOfUse.WEEKLY;
-			expectedRestrictionsDto.ageRestriction = 23;
-
-			expect(result).toEqual(expectedRestrictionsDto);
-		});
-
-		it('should return undefined when no form values are present', () => {
-			component.createOfferForm = new FormGroup({
-				frequencyOfUseValue: new FormControl(null),
-				ageRestrictionValue: new FormControl(null),
-				ageRestrictionOtherValue: new FormControl(null),
-			});
-
-			component.restrictionsData = [
-				{
-					formControl: 'frequencyOfUse',
-					label: 'label1',
-					id: 'id1',
-					dataTestId: 'data1',
-				},
-				{
-					formControl: 'ageRestriction',
-					label: 'label1',
-					id: 'id1',
-					dataTestId: 'data1',
-				},
-				{
-					formControl: 'ageRestrictionOther',
-					label: 'label1',
-					id: 'id1',
-					dataTestId: 'data1',
-				},
-			];
-
-			const result = component['mapRestrictionsValues']();
-
-			expect(result).toBeUndefined();
-		});
-
-		it('should return undefined if no restrictions are set', () => {
-			component.restrictionsData = [];
-
-			const result = component['mapRestrictionsValues']();
-
-			expect(result).toBeUndefined();
-		});
-
-		it('should map restrictions values correctly', () => {
-			const restrictionsData = [
-				{
-					formControl: 'ageRestriction',
-					label: 'label1',
-					id: 'id1',
-					dataTestId: 'data1',
-				},
-			];
-
-			const createOfferForm = formBuilder.group({
-				ageRestrictionValue: '18',
-				ageRestrictionOtherValue: '21',
-			});
-
-			component.restrictionsData = restrictionsData;
-			component.createOfferForm = createOfferForm;
-
-			const result = component['mapRestrictionsValues']();
-
-			expect(result).toBeDefined();
-			expect(result?.ageRestriction).toBe('18');
-		});
-
-		it('should map age restriction other value correctly', () => {
-			const restrictionsData = [
-				{
-					formControl: 'ageRestriction',
-					label: 'label1',
-					id: 'id1',
-					dataTestId: 'data1',
-				},
-			];
-
-			const createOfferForm = formBuilder.group({
-				ageRestrictionValue: 'offer.ageRestriction.other',
-				ageRestrictionOtherValue: '21',
-			});
-
-			component.restrictionsData = restrictionsData;
-			component.createOfferForm = createOfferForm;
-
-			const result = component['mapRestrictionsValues']();
-
-			expect(result).toBeDefined();
-			expect(result?.ageRestriction).toBe('21');
-		});
-
-		it('should set clickedOutsideField to true if shouldHideRestrictionField returns false', () => {
-			jest.spyOn(component, 'shouldHideRestrictionField').mockReturnValue(false);
-			component.onClick();
-			expect(component.clickedOutsideFieldPrice).toBe(true);
-		});
-
-		it('should not set clickedOutsideField if shouldHideRestrictionField returns true', () => {
-			jest.spyOn(component, 'shouldHideRestrictionField').mockReturnValue(true);
-			component.onClick();
-			expect(component.clickedOutsideFieldPrice).toBeFalsy();
-		});
-
-		it('should set error to form field when timeTo and timeFrom values are missing', () => {
-			const value = 'some value';
-			component['setErrorToFormField'] = jest.fn();
-
-			component.createOfferForm = new FormGroup({
-				timeTo: new FormControl(''),
-				timeFrom: new FormControl(''),
-			});
-
-			component['manageTimeSlotsRestriction'](value);
-
-			expect(component['setErrorToFormField']).toHaveBeenCalledWith(RestrictionFormFields.timeSlots);
-		});
-
-		it('should not set error to form field when timeTo and timeFrom values are present', () => {
-			const value = 'some value';
-			component['setErrorToFormField'] = jest.fn();
-			component.createOfferForm = new FormGroup({
-				timeTo: new FormControl('10:00'),
-				timeFrom: new FormControl('09:00'),
-			});
-
-			component['manageTimeSlotsRestriction'](value);
-
-			expect(component['setErrorToFormField']).not.toHaveBeenCalled();
-		});
-
-		it('should set error to form field when maxPrice and minPrice values are missing', () => {
-			const value = 'some value';
-			component.createOfferForm = new FormGroup({
-				maxPrice: new FormControl(''),
-				minPrice: new FormControl(''),
-			});
-
-			component['setErrorToFormField'] = jest.fn();
-
-			component['managePriceRangeRestriction'](value);
-
-			expect(component['setErrorToFormField']).toHaveBeenCalledWith(RestrictionFormFields.priceRange);
-		});
-
-		it('should not set error to form field when maxPrice and minPrice values are present', () => {
-			const value = 'some value';
-			component.createOfferForm = new FormGroup({
-				maxPrice: new FormControl('100'),
-				minPrice: new FormControl('50'),
-			});
-
-			component['setErrorToFormField'] = jest.fn();
-
-			component['managePriceRangeRestriction'](value);
-
-			expect(component['setErrorToFormField']).not.toHaveBeenCalled();
-		});
-
-		test.each([
-			[
-				'should map time slots when both timeFrom and timeTo values are present',
-				'09:00',
-				'10:00',
-				{
-					timeFrom: '2024-07-26T12:00:00.000Z',
-					timeTo: '2024-07-26T12:00:00.000Z',
-				},
-			],
-			['should not map time slots when both timeFrom and timeTo values are missing', '', '', undefined],
-			['should not map price range when both minPrice and maxPrice values are missing', '', '', undefined],
-		])('%s', (_, timeFromValue, timeToValue, expected) => {
-			const mockToUtcTime: (date: Date) => Date = (date) => {
-				return new Date(Date.UTC(2024, 6, 26, 12, 0, 0));
-			};
-
-			jest.spyOn(component as any, 'toUtcTime').mockImplementation(mockToUtcTime as any);
-
-			component.createOfferForm = new FormGroup({
-				timeFrom: new FormControl(timeFromValue),
-				timeTo: new FormControl(timeToValue),
-			});
-
-			const result = component['mapRestrictionsValues']();
-
-			expect(result).toEqual(expected);
-		});
-
-		it('should map price range when both minPrice and maxPrice values are present', () => {
-			component.createOfferForm = new FormGroup({
-				minPrice: new FormControl('50'),
-				maxPrice: new FormControl('100'),
-			});
-
-			const result = component['mapRestrictionsValues']();
-
-			expect(result?.minPrice).toEqual('50');
-			expect(result?.maxPrice).toEqual('100');
-		});
-
-		it.each([
-			['frequencyOfUse', false, true, 'SINGLE_USE'],
-			['someOtherType', false, true, ''],
-			['frequencyOfUse', true, true, ''],
-		])('should set frequencyOfUseControl value correctly', (type, isHidden, isDefaultSelected, expectedValue) => {
-			const frequencyOfUseControl = formBuilder.control(isDefaultSelected ? '' : 'Some value');
-			const spy = jest.spyOn(component, 'shouldHideRestrictionField').mockReturnValue(isHidden);
-			component.createOfferForm = formBuilder.group({
-				frequencyOfUseValue: frequencyOfUseControl,
-			});
-
-			component['manageRadioButtonOption'](type, 'someValue', 'someValueControl');
-
-			expect(frequencyOfUseControl.value).toBe(expectedValue);
-			expect(spy).toHaveBeenCalled();
-
-			spy.mockRestore();
-		});
-
-		it.each([
-			['ageRestriction', false, true, 18],
-			['someOtherType', false, true, ''],
-			['ageRestriction', true, true, ''],
-		])('should set ageRestrictionControl value correctly', (type, isHidden, isDefaultSelected, expectedValue) => {
-			const ageRestrictionControl = formBuilder.control(isDefaultSelected ? '' : 'Some value');
-			const spy = jest.spyOn(component, 'shouldHideRestrictionField').mockReturnValue(isHidden);
-			component.createOfferForm = formBuilder.group({
-				ageRestrictionValue: ageRestrictionControl,
-			});
-
-			component['manageRadioButtonOption'](type, 'someValue', 'someValueControl');
-
-			expect(ageRestrictionControl.value).toBe(expectedValue);
-			expect(spy).toHaveBeenCalled();
-
-			spy.mockRestore();
-		});
-
-		it('should set error if value is provided but valueControl is empty or isOtherValueSelected is true', () => {
-			const setErrorSpy = jest.spyOn(component as any, 'setErrorToFormField');
-
-			component['manageRadioButtonOption']('type', 'value', '');
-
-			expect(setErrorSpy).toHaveBeenCalledWith('type');
-		});
-
-		it('should not attempt reactivation if an offer is being created', () => {
-			jest.spyOn(component, 'reactivateOffer');
-			jest.spyOn(offerServiceMock, 'reactivateOffer');
-
-			component.reactivateOffer();
-
-			expect(offerServiceMock.reactivateOffer).not.toHaveBeenCalled();
-		});
-
-		it('should not attempt to GET an offer if there is no offerId provided', () => {
-			jest.spyOn(offerServiceMock, 'getFullOffer');
-
-			component['initReactivateOffer']();
-
-			expect(offerServiceMock.getFullOffer).not.toHaveBeenCalled();
 		});
 
 		it('should call getTimeSlot with correct arguments', () => {
@@ -1460,7 +1141,7 @@ describe('CreateOfferComponent', () => {
 			const time = '15:30:00';
 			const result = (component as any).getTimeSlot(time);
 			const expectedDate = new Date(`1970-01-01T${time}`).toISOString();
-			expect(result).toBe(expectedDate);
+			expect(result.toISOString()).toBe(expectedDate);
 		});
 	});
 
@@ -1468,30 +1149,6 @@ describe('CreateOfferComponent', () => {
 		beforeEach(() => {
 			component = setup({ offerToReactivate: '29' });
 		});
-
-		it('should call initReactivateOffer when an offer id is provided', () => {
-			jest.spyOn(component as any, 'initReactivateOffer');
-
-			component.ngOnInit();
-
-			expect(component['initReactivateOffer']).toHaveBeenCalled();
-		});
-
-		it('should call reactivateOffer if the dialog confirm button is pressed when reactivating an offer', fakeAsync(() => {
-			tick();
-			fixture.detectChanges();
-
-			jest.spyOn(component, 'reactivateOffer');
-
-			component.createOfferForm.controls['startDate'].setValue(new Date('2023-01-01'));
-			component.createOfferForm.controls['expirationDate'].setValue(new Date('2025-12-31'));
-
-			component.confirmDialog();
-
-			expect(component.reactivateOffer).toHaveBeenCalled();
-
-			flush();
-		}));
 
 		describe('reactivation alert', () => {
 			it('should not display alert when an offer is not being reactivated', () => {
@@ -1508,7 +1165,7 @@ describe('CreateOfferComponent', () => {
 				component.alertDismissed = false;
 				component.shouldDisplayReactivationAlert();
 
-				expect(component.shouldDisplayReactivationAlert).toHaveReturnedWith(true);
+				expect(component.shouldDisplayReactivationAlert).toHaveReturnedWith(false);
 			});
 
 			it('should not display alert when an offer is being reactivated but it has already been dismissed', () => {
@@ -1520,34 +1177,6 @@ describe('CreateOfferComponent', () => {
 			});
 		});
 
-		describe('after reactivating', () => {
-			it('should display approval popup for offer with benefits', () => {
-				component.shouldDisplayApprovalMessage = true;
-				jest.spyOn(translateService, 'instant');
-				jest.spyOn(toastrService, 'success');
-				jest.spyOn(component as any, 'displayPopupForOfferWithBenefits');
-
-				component['onOfferReactivated']();
-
-				expect(component['displayPopupForOfferWithBenefits']).toHaveBeenCalled();
-				expect(translateService.instant).not.toHaveBeenCalled();
-				expect(toastrService.success).not.toHaveBeenCalled();
-			});
-
-			it('should display approval toaster for offers without benefits', () => {
-				component.shouldDisplayApprovalMessage = false;
-				jest.spyOn(translateService, 'instant');
-				jest.spyOn(toastrService, 'success');
-				jest.spyOn(component as any, 'displayPopupForOfferWithBenefits');
-
-				component['onOfferReactivated']();
-
-				expect(component['displayPopupForOfferWithBenefits']).not.toHaveBeenCalled();
-				expect(translateService.instant).toHaveBeenCalled();
-				expect(toastrService.success).toHaveBeenCalled();
-			});
-		});
-
 		it('should mark the form as invalid if it has not been created yet', () => {
 			jest.spyOn(component as any, 'isControlInvalid');
 			component.createOfferForm = null as any;
@@ -1556,78 +1185,6 @@ describe('CreateOfferComponent', () => {
 
 			expect(component['isControlInvalid']).toHaveReturnedWith(true);
 		});
-
-		it('should not do anything if the form has not been created yet and restriction values change', () => {
-			jest.spyOn(component as any, 'onRestrictionValueChanges');
-			component.createOfferForm = null as any;
-
-			component['onRestrictionValueChanges']();
-
-			expect(component['onRestrictionValueChanges']).toHaveReturnedWith(undefined);
-		});
-
-		it('should set the proper fields for restrictions', () => {
-			jest.spyOn(component as any, 'setFieldsSpecificToRestrictions');
-
-			const restrictions: RestrictionsDto = {
-				ageRestriction: 18,
-				minPrice: 5,
-				maxPrice: 10,
-			};
-
-			const expectedRestrictionValue = {
-				frequencyOfUse: false,
-				priceRange: true,
-				timeSlots: false,
-				ageRestriction: true,
-				offerCombinations: false,
-				residenceRestriction: false,
-			};
-
-			component['setFieldsSpecificToRestrictions'](restrictions);
-
-			expect(component['selectedRestrictionValue']).toEqual(expectedRestrictionValue);
-		});
-	});
-
-	test('should convert Date to ISO string when time is provided', () => {
-		const mockToUtcTime: (date: Date) => Date = (date) => {
-			return new Date(Date.UTC(2024, 6, 26, 12, 0, 0));
-		};
-
-		const timeFrom = '2024-07-26T12:00:00.000Z';
-		const timeTo = '2024-07-26T12:00:00.000Z';
-
-		jest.spyOn(component as any, 'convertTimeToCompatibleDate').mockImplementation(mockToUtcTime as any);
-
-		component.createOfferForm = new FormGroup({
-			timeFrom: new FormControl(timeFrom),
-			timeTo: new FormControl(timeTo),
-		});
-
-		const result = component['convertTimeToCompatibleDate']();
-
-		expect(result).toEqual(new Date(Date.UTC(2024, 6, 26, 12, 0, 0)));
-	});
-
-	test('should return null when time is not provided', () => {
-		const mockToUtcTime: (date: Date) => Date | null = (date) => {
-			return null;
-		};
-
-		const timeFrom = '2024-07-26T12:00:00.000Z';
-		const timeTo = '2024-07-26T12:00:00.000Z';
-
-		jest.spyOn(component as any, 'convertTimeToCompatibleDate').mockImplementation(mockToUtcTime as any);
-
-		component.createOfferForm = new FormGroup({
-			timeFrom: new FormControl(timeFrom),
-			timeTo: new FormControl(timeTo),
-		});
-
-		const result = component['convertTimeToCompatibleDate']();
-
-		expect(result).toEqual(null);
 	});
 
 	describe('toUtcTime', () => {
@@ -1638,24 +1195,6 @@ describe('CreateOfferComponent', () => {
 			const expectedUtcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
 
 			expect(utcDate.getTime()).toBe(expectedUtcDate.getTime());
-		});
-	});
-
-	describe('convertTimeToCompatibleDate', () => {
-		it('should return null if no date is provided', () => {
-			const isoString = component['convertTimeToCompatibleDate'](undefined);
-
-			expect(isoString).toBeNull();
-		});
-
-		it('should return free entry placeholder when offerType is freeEntry', () => {
-			const offerType = OfferTypeEnum.freeEntry;
-			const translation = 'translated free entry';
-
-			jest.spyOn(translateService, 'instant').mockReturnValue(translation);
-			const result = component.getAmountPlaceholder(offerType);
-			expect(translateService.instant).toHaveBeenCalledWith('offer.amountFreeEntryPlaceholder');
-			expect(result).toBe(translation);
 		});
 	});
 
@@ -1681,7 +1220,7 @@ describe('CreateOfferComponent', () => {
 		});
 
 		it('should set selectedOfferTypeId to null', () => {
-			component.selectedOfferTypeId = OfferTypeEnum.credit;
+			component.selectedOfferTypeId = OfferTypeEnum.bogo;
 			component.onTypeChange();
 
 			expect(component.selectedOfferTypeId).toBeNull();
@@ -1702,162 +1241,13 @@ describe('CreateOfferComponent', () => {
 			]);
 		});
 	});
-	describe('isTimeSlotChecked', () => {
-		it('should return true when restriction.formControl is timeSlots and changes[timeSlots] is truthy', () => {
-			component = setup(null);
-			const restriction = { formControl: RestrictionFormFields.timeSlots };
-			const changes = { [RestrictionFormFields.timeSlots]: true };
-			const result = component.isTimeSlotChecked(restriction, changes);
-			expect(result).toBe(true);
-		});
 
-		it('should return false when restriction.formControl is not timeSlots', () => {
-			component = setup(null);
-			const restriction = { formControl: 'notTimeSlots' };
-			const changes = { [RestrictionFormFields.timeSlots]: true };
-			const result = component.isTimeSlotChecked(restriction, changes);
-			expect(result).toBe(false);
-		});
-
-		it('should return false when changes[timeSlots] is falsy', () => {
-			component = setup(null);
-			const restriction = { formControl: RestrictionFormFields.timeSlots };
-			const changes = { [RestrictionFormFields.timeSlots]: false };
-			const result = component.isTimeSlotChecked(restriction, changes);
-			expect(result).toBe(false);
-		});
-	});
-
-	describe('isPriceRangeChecked', () => {
-		it('should return true when restriction.formControl is priceRange and changes[priceRange] is truthy', () => {
-			component = setup(null);
-			const restriction = { formControl: RestrictionFormFields.priceRange };
-			const changes = { [RestrictionFormFields.priceRange]: true };
-			const result = component.isPriceRangeChecked(restriction, changes);
-			expect(result).toBe(true);
-		});
-
-		it('should return false when restriction.formControl is not priceRange', () => {
-			component = setup(null);
-			const restriction = { formControl: 'notPriceRange' };
-			const changes = { [RestrictionFormFields.priceRange]: true };
-			const result = component.isPriceRangeChecked(restriction, changes);
-			expect(result).toBe(false);
-		});
-
-		it('should return false when changes[priceRange] is falsy', () => {
-			component = setup(null);
-			const restriction = { formControl: RestrictionFormFields.priceRange };
-			const changes = { [RestrictionFormFields.priceRange]: false };
-			const result = component.isPriceRangeChecked(restriction, changes);
-			expect(result).toBe(false);
-		});
-	});
 	describe('onRestrictionValueChanges', () => {
 		let component: CreateOfferComponent;
 		let fixture: ComponentFixture<CreateOfferComponent>;
 
 		beforeEach(() => {
 			component = setup(null);
-		});
-
-		it('should not throw if createOfferForm is not defined', () => {
-			component.createOfferForm = undefined as any;
-			expect(() => (component as any).onRestrictionValueChanges()).not.toThrow();
-		});
-
-		it('should set selectedRestrictionValue and call cdr.detectChanges on valueChanges', () => {
-			const detectChangesSpy = jest.spyOn((component as any).cdr, 'detectChanges');
-			// Mock atLeastOneFieldGreaterThanZero to prevent TypeError
-			(component as any).atLeastOneFieldGreaterThanZero = jest.fn().mockReturnValue(true);
-			component.createOfferForm.setValue({
-				title: '',
-				description: '',
-				citizenOfferType: 'offer.citizenWithPass',
-				offerTypeId: '',
-				startDate: '',
-				expirationDate: '',
-				amount: '',
-				frequencyOfUse: '',
-				timeSlots: '',
-				ageRestriction: '',
-				priceRange: '',
-				frequencyOfUseValue: '',
-				ageRestrictionValue: '',
-				ageRestrictionOtherValue: '',
-				timeTo: '',
-				timeFrom: '',
-				minPrice: '',
-				maxPrice: '',
-				benefitId: 'id',
-			});
-			(component as any).updatingFormValues = false;
-			component.restrictionsData = [
-				{ formControl: 'frequencyOfUse', label: '', id: '', dataTestId: '' },
-				{ formControl: 'timeSlots', label: '', id: '', dataTestId: '' },
-				{ formControl: 'ageRestriction', label: '', id: '', dataTestId: '' },
-				{ formControl: 'priceRange', label: '', id: '', dataTestId: '' },
-			];
-			(component as any).onRestrictionValueChanges();
-			component.createOfferForm.patchValue({ frequencyOfUse: true });
-			expect(component['selectedRestrictionValue']).toBeTruthy();
-			expect(detectChangesSpy).toHaveBeenCalled();
-		});
-
-		it('should set updatingFormValues to true and back to false during valueChanges', () => {
-			component.restrictionsData = [{ formControl: 'frequencyOfUse', label: '', id: '', dataTestId: '' }];
-			const spy = jest.spyOn(component as any, 'manageRadioButtonOption');
-			(component as any).onRestrictionValueChanges();
-			component.createOfferForm.patchValue({ frequencyOfUse: true });
-			expect(spy).toHaveBeenCalled();
-			expect((component as any).updatingFormValues).toBe(false);
-		});
-
-		it('should call manageRadioButtonOption for restriction types not in excludedValues', () => {
-			component.restrictionsData = [{ formControl: 'frequencyOfUse', label: '', id: '', dataTestId: '' }];
-			const spy = jest.spyOn(component as any, 'manageRadioButtonOption');
-			(component as any).onRestrictionValueChanges();
-			component.createOfferForm.patchValue({ frequencyOfUse: true });
-			expect(spy).toHaveBeenCalled();
-		});
-
-		it('should call resetTimeSlotsAndPriceRangeRestriction if isTimeSlotsOrPriceRangeUnchecked returns true', () => {
-			component.restrictionsData = [{ formControl: 'timeSlots', label: '', id: '', dataTestId: '' }];
-			jest.spyOn(component as any, 'shouldNotIncludeAnyRestrictions').mockReturnValue(false);
-			jest.spyOn(component as any, 'isTimeSlotsOrPriceRangeUnchecked').mockReturnValue(true);
-			const spy = jest.spyOn(component as any, 'resetTimeSlotsAndPriceRangeRestriction');
-			(component as any).onRestrictionValueChanges();
-			component.createOfferForm.patchValue({ timeSlots: false });
-			expect(spy).toHaveBeenCalled();
-		});
-
-		it('should call manageTimeSlotsRestriction if isTimeSlotChecked returns true', fakeAsync(() => {
-			component.restrictionsData = [{ formControl: 'timeSlots', label: '', id: '', dataTestId: '' }];
-			(component as any).isValidIfAtLeastOneFieldIsZeroOrEmpty = jest.fn().mockReturnValue(true);
-			jest.spyOn(component as CreateOfferComponent, 'shouldNotIncludeAnyRestrictions').mockReturnValue(false);
-			jest.spyOn(component as CreateOfferComponent, 'isTimeSlotsOrPriceRangeUnchecked').mockReturnValue(false);
-			jest.spyOn(component as CreateOfferComponent, 'isTimeSlotChecked').mockReturnValue(true);
-			const spy = jest.spyOn(component as any, 'manageTimeSlotsRestriction');
-
-			(component as CreateOfferComponent)['onRestrictionValueChanges']();
-
-			component.createOfferForm.patchValue({ timeSlots: true });
-
-			tick();
-
-			expect(spy).toHaveBeenCalled();
-		}));
-
-		it('should call managePriceRangeRestriction if isPriceRangeChecked returns true', () => {
-			component.restrictionsData = [{ formControl: 'priceRange', label: '', id: '', dataTestId: '' }];
-			jest.spyOn(component as any, 'shouldNotIncludeAnyRestrictions').mockReturnValue(false);
-			jest.spyOn(component as any, 'isTimeSlotsOrPriceRangeUnchecked').mockReturnValue(false);
-			jest.spyOn(component as any, 'isTimeSlotChecked').mockReturnValue(false);
-			jest.spyOn(component as any, 'isPriceRangeChecked').mockReturnValue(true);
-			const spy = jest.spyOn(component as any, 'managePriceRangeRestriction');
-			(component as any).onRestrictionValueChanges();
-			component.createOfferForm.patchValue({ priceRange: true });
-			expect(spy).toHaveBeenCalled();
 		});
 
 		describe('Tests for getOfferTypeAndBenefits method', () => {
@@ -1898,6 +1288,7 @@ describe('CreateOfferComponent', () => {
 				const mockBenefits: BenefitDto[] = [];
 
 				offerServiceMock.getOfferTypes.mockReturnValue(of(mockOfferTypes));
+
 				benefitServiceMock.getAllBenefits.mockReturnValue(of(mockBenefits));
 
 				jest.spyOn(component as any, 'initializeOfferTypes');
@@ -1910,46 +1301,53 @@ describe('CreateOfferComponent', () => {
 				expect(component['initializeOfferTypes']).toHaveBeenCalledWith(mockOfferTypes);
 				expect(component['initializeBenefits']).toHaveBeenCalledWith(mockBenefits);
 			}));
-			describe('confirmDialog', () => {
-				it('should call reactivateOffer when isReactivating is true', () => {
-					component.isReactivating = true;
-					const reactivateOfferSpy = jest.spyOn(component, 'reactivateOffer');
-					component.confirmDialog();
-					expect(reactivateOfferSpy).toHaveBeenCalled();
-				});
 
+			describe('confirmDialog', () => {
 				it('should call saveOffer when isReactivating is false', () => {
 					component.createOfferForm.setValue({
 						title: 'Title',
 						description: 'Description',
 						amount: '123',
 						citizenOfferType: 'offer.citizenWithPass',
-						offerTypeId: OfferTypeEnum.credit,
+						offerTypeId: OfferTypeEnum.bogo,
 						startDate: new Date('2023-01-01'),
 						expirationDate: new Date('2022-12-31'),
 						frequencyOfUse: 'Frequency of use',
 						frequencyOfUseValue: 'Frequency of use value',
 						timeSlots: 'Time slots',
-						ageRestriction: 'Age restriction',
-						ageRestrictionValue: 'Age restriction value',
-						ageRestrictionOtherValue: 'Age restriction other value',
-						priceRange: 'Eligible price range',
-						minPrice: 70,
-						maxPrice: 90,
 						timeTo: '',
 						timeFrom: '',
-						benefitId: 'id',
+						benefitIds: ['id'],
 					});
 					component.isReactivating = false;
 					const saveOfferSpy = jest.spyOn(component, 'saveOffer');
 					component.confirmDialog();
 					expect(saveOfferSpy).toHaveBeenCalled();
 				});
+
+				it('should call editOffer when isEditMode is true and isReactivating is false', () => {
+					component.isReactivating = false;
+					component.isViewMode = false;
+					component.isEditMode = true;
+
+					component.createOfferForm = component['formBuilder'].group({
+						startDate: [new Date()],
+						expirationDate: [new Date()],
+						amount: [50],
+						offerTypeId: [1],
+						benefitIds: [[]],
+					});
+
+					const editOfferSpy = jest.spyOn(component, 'editOffer');
+					component.confirmDialog();
+					expect(editOfferSpy).toHaveBeenCalled();
+				});
 			});
+
 			describe('getExpirationDateMax', () => {
 				it('should return null if no selected benefit', () => {
 					component.availableBenefits = [];
-					component.selectedBenefit = 'nonexistent';
+					component.selectedBenefits = [{ id: 'undefined' }] as BenefitDto[];
 					const result = component.getExpirationDateMax();
 					expect(result).toBeNull();
 				});
@@ -1967,7 +1365,7 @@ describe('CreateOfferComponent', () => {
 							amount: 0,
 						},
 					];
-					component.selectedBenefit = 'benefit1';
+					component.selectedBenefits = [{ id: 'benefit1' }] as BenefitDto[];
 					const result = component.getExpirationDateMax(false);
 					expect(result).toEqual(expirationDate);
 				});
@@ -1985,7 +1383,7 @@ describe('CreateOfferComponent', () => {
 							amount: 0,
 						},
 					];
-					component.selectedBenefit = 'benefit1';
+					component.selectedBenefits = [{ id: 'benefit1' }] as BenefitDto[];
 					const result = component.getExpirationDateMax(true);
 					const expectedDate = new Date(expirationDate);
 					expectedDate.setDate(expectedDate.getDate() - 1);
@@ -1995,7 +1393,7 @@ describe('CreateOfferComponent', () => {
 				describe('getInitDateMin', () => {
 					it('should return null if no selected benefit', () => {
 						component.availableBenefits = [];
-						component.selectedBenefit = 'nonexistent';
+						component.selectedBenefits = [{ id: 'undefined' }] as BenefitDto[];
 						const result = component.getInitDateMin();
 						expect(result).toBeNull();
 					});
@@ -2013,184 +1411,2094 @@ describe('CreateOfferComponent', () => {
 								amount: 0,
 							},
 						];
-						component.selectedBenefit = 'benefit1';
+						component.selectedBenefits = [{ id: 'benefit1' }] as BenefitDto[];
 						const result = component.getInitDateMin();
 						expect(result).toEqual(startDate);
 					});
 				});
+
 				describe('setupAmountValidatorsOnChange', () => {
-					it('should not throw if createOfferForm is undefined', () => {
-						component.createOfferForm = undefined as any;
-						expect(() => (component as any).setupAmountValidatorsOnChange('benefitId')).not.toThrow();
-					});
-
-					it('should set correct validators for amount when benefit and offerTypeId are freeEntry', () => {
-						component.createOfferForm = formBuilder.group({
-							amount: [''],
-							offerTypeId: [OfferTypeEnum.freeEntry],
-							benefitId: ['benefit1'],
-						});
-						component.availableBenefits = [{ id: 'benefit1', amount: 100 } as any];
-						const amountControl = component.createOfferForm.get('amount');
-						const spySetValidators = jest.spyOn(amountControl!, 'setValidators');
-						const spyUpdateValueAndValidity = jest.spyOn(amountControl!, 'updateValueAndValidity');
-						(component as any).setupAmountValidatorsOnChange('benefitId');
-						component.createOfferForm.get('benefitId')!.setValue('benefit1');
-						expect(spySetValidators).toHaveBeenCalledWith([
-							expect.any(Function),
-							expect.any(Function),
-							expect.any(Function),
-						]);
-						expect(spyUpdateValueAndValidity).toHaveBeenCalled();
-					});
-
-					it('should set correct validators for amount when benefit and offerTypeId are credit', () => {
-						component.createOfferForm = formBuilder.group({
-							amount: [''],
-							offerTypeId: [OfferTypeEnum.credit],
-							benefitId: ['benefit1'],
-						});
-						component.availableBenefits = [{ id: 'benefit1', amount: 50 } as any];
-						const amountControl = component.createOfferForm.get('amount');
-						const spySetValidators = jest.spyOn(amountControl!, 'setValidators');
-						const spyUpdateValueAndValidity = jest.spyOn(amountControl!, 'updateValueAndValidity');
-						(component as any).setupAmountValidatorsOnChange('offerTypeId');
-						component.createOfferForm.get('offerTypeId')!.setValue(OfferTypeEnum.credit);
-						expect(spySetValidators).toHaveBeenCalledWith([
-							expect.any(Function),
-							expect.any(Function),
-							expect.any(Function),
-						]);
-						expect(spyUpdateValueAndValidity).toHaveBeenCalled();
-					});
-
-					it('should set default validators for amount when benefit is not found', () => {
-						component.createOfferForm = formBuilder.group({
-							amount: [''],
-							offerTypeId: [OfferTypeEnum.percentage],
-							benefitId: ['unknown'],
-						});
-						component.availableBenefits = [{ id: 'benefit1', amount: 50 } as any];
-						const amountControl = component.createOfferForm.get('amount');
-						const spySetValidators = jest.spyOn(amountControl!, 'setValidators');
-						const spyUpdateValueAndValidity = jest.spyOn(amountControl!, 'updateValueAndValidity');
-						(component as any).setupAmountValidatorsOnChange('benefitId');
-						component.createOfferForm.get('benefitId')!.setValue('unknown');
-						expect(spySetValidators).toHaveBeenCalledWith([expect.any(Function), expect.any(Function)]);
-						expect(spyUpdateValueAndValidity).toHaveBeenCalled();
-					});
-
-					it('should call detectChanges after updating validators', () => {
-						component.createOfferForm = formBuilder.group({
-							amount: [''],
-							offerTypeId: [OfferTypeEnum.credit],
-							benefitId: ['benefit1'],
-						});
-						component.availableBenefits = [{ id: 'benefit1', amount: 10 } as any];
-						const spyDetectChanges = jest.spyOn(component['cdr'], 'detectChanges');
-						(component as any).setupAmountValidatorsOnChange('benefitId');
-						component.createOfferForm.get('benefitId')!.setValue('benefit1');
-						expect(spyDetectChanges).toHaveBeenCalled();
-					});
-
-					describe('setupAmountValidatorsOnChange', () => {
-						it('should not throw if createOfferForm is undefined', () => {
-							component.createOfferForm = undefined as any;
-							expect(() => (component as any).setupAmountValidatorsOnChange('benefitId')).not.toThrow();
-						});
-
-						it('should set correct validators for amount when benefit and offerTypeId are freeEntry', () => {
-							component.createOfferForm = formBuilder.group({
-								amount: [''],
-								offerTypeId: [OfferTypeEnum.freeEntry],
-								benefitId: ['benefit1'],
-							});
-							component.availableBenefits = [{ id: 'benefit1', amount: 100 } as any];
-							const amountControl = component.createOfferForm.get('amount');
-							const spySetValidators = jest.spyOn(amountControl!, 'setValidators');
-							const spyUpdateValueAndValidity = jest.spyOn(amountControl!, 'updateValueAndValidity');
-							(component as any).setupAmountValidatorsOnChange('benefitId');
-							component.createOfferForm.get('benefitId')!.setValue('benefit1');
-							expect(spySetValidators).toHaveBeenCalledWith([
-								expect.any(Function),
-								expect.any(Function),
-								expect.any(Function),
-							]);
-							expect(spyUpdateValueAndValidity).toHaveBeenCalled();
-						});
-
-						it('should set correct validators for amount when benefit and offerTypeId are credit', () => {
-							component.createOfferForm = formBuilder.group({
-								amount: [''],
-								offerTypeId: [OfferTypeEnum.credit],
-								benefitId: ['benefit1'],
-							});
-							component.availableBenefits = [{ id: 'benefit1', amount: 50 } as any];
-							const amountControl = component.createOfferForm.get('amount');
-							const spySetValidators = jest.spyOn(amountControl!, 'setValidators');
-							const spyUpdateValueAndValidity = jest.spyOn(amountControl!, 'updateValueAndValidity');
-							(component as any).setupAmountValidatorsOnChange('offerTypeId');
-							component.createOfferForm.get('offerTypeId')!.setValue(OfferTypeEnum.credit);
-							expect(spySetValidators).toHaveBeenCalledWith([
-								expect.any(Function),
-								expect.any(Function),
-								expect.any(Function),
-							]);
-							expect(spyUpdateValueAndValidity).toHaveBeenCalled();
-						});
-
-						it('should set default validators for amount when benefit is not found', () => {
-							component.createOfferForm = formBuilder.group({
-								amount: [''],
-								offerTypeId: [OfferTypeEnum.percentage],
-								benefitId: ['unknown'],
-							});
-							component.availableBenefits = [{ id: 'benefit1', amount: 50 } as any];
-							const amountControl = component.createOfferForm.get('amount');
-							const spySetValidators = jest.spyOn(amountControl!, 'setValidators');
-							const spyUpdateValueAndValidity = jest.spyOn(amountControl!, 'updateValueAndValidity');
-							(component as any).setupAmountValidatorsOnChange('benefitId');
-							component.createOfferForm.get('benefitId')!.setValue('unknown');
-							expect(spySetValidators).toHaveBeenCalledWith([expect.any(Function), expect.any(Function)]);
-							expect(spyUpdateValueAndValidity).toHaveBeenCalled();
-						});
-
-						it('should call detectChanges after updating validators', () => {
-							component.createOfferForm = formBuilder.group({
-								amount: [''],
-								offerTypeId: [OfferTypeEnum.credit],
-								benefitId: ['benefit1'],
-							});
-							component.availableBenefits = [{ id: 'benefit1', amount: 10 } as any];
-							const spyDetectChanges = jest.spyOn(component['cdr'], 'detectChanges');
-							(component as any).setupAmountValidatorsOnChange('benefitId');
-							component.createOfferForm.get('benefitId')!.setValue('benefit1');
-							expect(spyDetectChanges).toHaveBeenCalled();
-						});
-					});
 					describe('benefitAmount getter', () => {
 						it('should return the amount of the selected benefit as a number', () => {
 							component.availableBenefits = [
 								{ id: '1', name: 'Benefit 1', amount: 42 } as BenefitDto,
 								{ id: '2', name: 'Benefit 2', amount: 99 } as BenefitDto,
 							];
-							component.selectedBenefit = '2';
+							component.selectedBenefits = [{ id: '2' }] as BenefitDto[];
 							expect(component.benefitAmount).toBe(99);
 						});
 
 						it('should return null if no benefit is selected', () => {
 							component.availableBenefits = [{ id: '1', name: 'Benefit 1', amount: 42 } as BenefitDto];
-							component.selectedBenefit = undefined as any;
-							expect(component.benefitAmount).toBeNull();
+							component.selectedBenefits = undefined as any;
+							expect(component.benefitAmount).toBe(null);
 						});
 
 						it('should return null if selectedBenefit does not match any available benefit', () => {
 							component.availableBenefits = [{ id: '1', name: 'Benefit 1', amount: 42 } as BenefitDto];
-							component.selectedBenefit = 'non-existent-id';
-							expect(component.benefitAmount).toBeNull();
+							component.selectedBenefits = [{ id: 'non-existent-id' }] as BenefitDto[];
+							expect(component.benefitAmount).toBe(null);
 						});
 					});
 				});
+			});
+		});
+	});
+
+	describe('Tests for alertMessage getter', () => {
+		it('should return offer.reactivateAlertExpiredBenefit when benefit is expired', () => {
+			component = setup(null);
+			component.selectedBenefits = [
+				{
+					id: 'benefit1',
+					name: 'Expired Benefit',
+					description: 'Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2023-12-31'),
+					citizenGroupIds: [],
+					amount: 10,
+					status: GenericStatusEnum.EXPIRED,
+				},
+			] as BenefitDto[];
+
+			expect(component.alertMessage).toBe('offer.reactivateAlertExpiredBenefit');
+		});
+
+		it('should return offer.reactivateAlert when benefit is not expired', () => {
+			component = setup(null);
+			component.selectedBenefits = [
+				{
+					id: 'benefit1',
+					name: 'Active Benefit',
+					description: 'Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2030-12-31'),
+					citizenGroupIds: [],
+					amount: 10,
+					status: GenericStatusEnum.ACTIVE,
+				},
+			] as BenefitDto[];
+
+			expect(component.alertMessage).toBe('offer.reactivateAlert');
+		});
+	});
+
+	describe('Tests for alertType getter', () => {
+		it('should return error when benefit is expired', () => {
+			component = setup(null);
+			component.selectedBenefits = [
+				{
+					id: 'benefit1',
+					name: 'Expired Benefit',
+					description: 'Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2023-12-31'),
+					citizenGroupIds: [],
+					amount: 10,
+					status: GenericStatusEnum.EXPIRED,
+				},
+			] as BenefitDto[];
+
+			expect(component.alertType).toBe('error');
+		});
+
+		it('should return info when benefit is not expired', () => {
+			component = setup(null);
+			component.selectedBenefits = [
+				{
+					id: 'benefit1',
+					name: 'Active Benefit',
+					description: 'Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2030-12-31'),
+					citizenGroupIds: [],
+					amount: 10,
+					status: GenericStatusEnum.ACTIVE,
+				},
+			] as BenefitDto[];
+
+			expect(component.alertType).toBe('info');
+		});
+	});
+
+	it('should set isViewMode and call setFieldsSpecificToRestrictions and initViewForm when data.offerToView exists', () => {
+		const restrictionMock = { minAge: 18, maxAge: 30 };
+		const offerToViewMock: OfferDto = {
+			id: '29',
+			title: 'title',
+			description: 'description',
+			amount: 12,
+			citizenOfferType: 'CITIZEN_WITH_PASS',
+			offerTypeId: 1,
+			version: 1,
+			startDate: new Date('2023-01-01'),
+			expirationDate: new Date('2030-01-01'),
+			benefits: [
+				new BenefitDto(
+					'Benefit Name 1',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					[],
+					10,
+					'EXPIRED',
+				),
+			],
+			restrictionRequestDto: restrictionMock,
+		};
+
+		component = setup({ offerToView: offerToViewMock });
+		const setFieldsSpy = jest.spyOn(component as any, 'setFieldsSpecificToRestrictions');
+		const initViewFormSpy = jest.spyOn(component as any, 'initViewForm');
+
+		component['initializeFormType']();
+
+		expect(component.isViewMode).toBe(true);
+		expect(setFieldsSpy).toHaveBeenCalledWith(restrictionMock);
+		expect(initViewFormSpy).toHaveBeenCalledWith(offerToViewMock);
+	});
+	describe('getInitDateMin', () => {
+		beforeEach(() => {
+			component = setup(null);
+		});
+
+		it('should return null if there are no selected benefits', () => {
+			component.selectedBenefits = [];
+			const result = component.getInitDateMin();
+			expect(result).toBeNull();
+		});
+
+		it('should return the max start date from the selected benefits', () => {
+			component.selectedBenefits = [
+				{ id: '1', startDate: new Date('2023-01-01') } as BenefitDto,
+				{ id: '2', startDate: new Date('2022-12-31') } as BenefitDto,
+				{ id: '3', startDate: new Date('2023-06-01') } as BenefitDto,
+			];
+			component.availableBenefits = [
+				{ id: '1', startDate: new Date('2023-01-01') } as BenefitDto,
+				{ id: '2', startDate: new Date('2022-12-31') } as BenefitDto,
+				{ id: '3', startDate: new Date('2023-06-01') } as BenefitDto,
+			];
+
+			const result = component.getInitDateMin();
+			expect(result).toEqual(new Date('2023-06-01'));
+		});
+
+		it('should return null if no matching benefits are found in availableBenefits', () => {
+			component.selectedBenefits = [{ id: '1', startDate: new Date('2023-01-01') } as BenefitDto];
+			component.availableBenefits = [{ id: '2', startDate: new Date('2022-12-31') } as BenefitDto];
+
+			const result = component.getInitDateMin();
+			expect(result).toBeNull();
+		});
+
+		it('should return null if selectedBenefits is null', () => {
+			component.selectedBenefits = null as any;
+			const result = component.getInitDateMin();
+			expect(result).toBeNull();
+		});
+
+		it('should return null if availableBenefits is empty', () => {
+			component.selectedBenefits = [{ id: '1', startDate: new Date('2023-01-01') } as BenefitDto];
+			component.availableBenefits = [];
+
+			const result = component.getInitDateMin();
+			expect(result).toBeNull();
+		});
+		describe('shouldDisplayTypeHint', () => {
+			it('should return true when selectedOfferTypeId is freeEntry', () => {
+				component.selectedOfferTypeId = OfferTypeEnum.freeEntry;
+
+				const result = component.shouldDisplayTypeHint;
+
+				expect(result).toBe(true);
+			});
+
+			it('should return true when selectedOfferTypeId is freeProduct', () => {
+				component.selectedOfferTypeId = OfferTypeEnum.freeProduct;
+
+				const result = component.shouldDisplayTypeHint;
+
+				expect(result).toBe(true);
+			});
+
+			it('should return false when selectedOfferTypeId is null', () => {
+				component.selectedOfferTypeId = null;
+
+				const result = component.shouldDisplayTypeHint;
+
+				expect(result).toBe(false);
+			});
+
+			it('should return false when selectedOfferTypeId is membershipFee', () => {
+				component.selectedOfferTypeId = OfferTypeEnum.membershipFee;
+
+				const result = component.shouldDisplayTypeHint;
+
+				expect(result).toBe(false);
+			});
+
+			it('should return false when selectedOfferTypeId is bogo', () => {
+				component.selectedOfferTypeId = OfferTypeEnum.bogo;
+
+				const result = component.shouldDisplayTypeHint;
+
+				expect(result).toBe(false);
+			});
+		});
+		describe('getExpirationDateMax', () => {
+			it('should return null if no benefits are selected', () => {
+				component.selectedBenefits = [];
+				const result = component.getExpirationDateMax();
+				expect(result).toBeNull();
+			});
+
+			it('should return the earliest expiration date from selected benefits', () => {
+				component.selectedBenefits = [
+					{ id: '1', expirationDate: new Date('2023-12-31') } as BenefitDto,
+					{ id: '2', expirationDate: new Date('2023-11-30') } as BenefitDto,
+					{ id: '3', expirationDate: new Date('2024-01-01') } as BenefitDto,
+				];
+				component.availableBenefits = [
+					{ id: '1', expirationDate: new Date('2023-12-31') } as BenefitDto,
+					{ id: '2', expirationDate: new Date('2023-11-30') } as BenefitDto,
+					{ id: '3', expirationDate: new Date('2024-01-01') } as BenefitDto,
+				];
+				const result = component.getExpirationDateMax();
+				expect(result).toEqual(new Date('2023-11-30'));
+			});
+
+			it('should return the earliest expiration date minus one day if minusOneDay is true', () => {
+				component.selectedBenefits = [
+					{ id: '1', expirationDate: new Date('2023-12-31') } as BenefitDto,
+					{ id: '2', expirationDate: new Date('2023-11-30') } as BenefitDto,
+					{ id: '3', expirationDate: new Date('2024-01-01') } as BenefitDto,
+				];
+				component.availableBenefits = [
+					{ id: '1', expirationDate: new Date('2023-12-31') } as BenefitDto,
+					{ id: '2', expirationDate: new Date('2023-11-30') } as BenefitDto,
+					{ id: '3', expirationDate: new Date('2024-01-01') } as BenefitDto,
+				];
+				const result = component.getExpirationDateMax(true);
+				expect(result).toEqual(new Date('2023-11-29'));
+			});
+
+			it('should return null if no expiration dates are available in selected benefits', () => {
+				component.selectedBenefits = [
+					{ id: '1', expirationDate: null } as unknown as BenefitDto,
+					{ id: '2', expirationDate: null } as unknown as BenefitDto,
+				];
+				const result = component.getExpirationDateMax();
+				expect(result).toBeNull();
+			});
+		});
+
+		test.each([
+			[true, false, false, false],
+			[false, false, false, false],
+			[false, true, false, false],
+			[false, false, true, true],
+			[false, true, true, true],
+		])(
+			'should return %s for isEditMode=%s, isReactivating=%s, isViewMode=%s',
+			(isEditMode, isReactivating, isViewMode, expected) => {
+				component.isEditMode = isEditMode;
+				component.isReactivating = isReactivating;
+				component.isViewMode = isViewMode;
+
+				expect(component.isReadOnlyMode).toBe(expected);
+			},
+		);
+
+		it('should close the dialog with shouldDelete=true if user confirms', () => {
+			const afterClosed$ = of(true);
+			jest.spyOn(dialogService, 'alert').mockReturnValue({
+				afterClosed: () => afterClosed$,
+			} as any);
+
+			const closeSpy = jest.spyOn(dialogRefStub, 'close');
+
+			component.deleteOffer();
+
+			expect(dialogService.alert).toHaveBeenCalled();
+			expect(closeSpy).toHaveBeenCalledWith({ shouldDelete: true });
+		});
+
+		describe('initEditForm', () => {
+			const testOffer = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'EXPIRED',
+				),
+				'Benefit Name',
+			);
+		});
+
+		it('should call initEditForm and setFieldsSpecificToRestrictions when offerId exists', (done) => {
+			const restrictionMock = { minAge: 18, maxAge: 30 } as RestrictionsDto;
+			const testOffer = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'EXPIRED',
+				),
+				'Benefit Name',
+			);
+			testOffer.restrictionRequestDto = restrictionMock;
+
+			component['data'] = { offerToEdit: testOffer };
+
+			jest.spyOn(component['discountCodeService'], 'isDiscountCodeClaimedForOffer').mockReturnValue(of(true));
+
+			const initEditFormSpy = jest.spyOn(component as any, 'initEditForm');
+			const setFieldsSpy = jest.spyOn(component as any, 'setFieldsSpecificToRestrictions');
+
+			(component as any).getIsDiscountCodeClaimedForOffer(testOffer);
+
+			setTimeout(() => {
+				expect(setFieldsSpy).toHaveBeenCalledWith(restrictionMock);
+				expect(initEditFormSpy).toHaveBeenCalledWith(testOffer);
+				done();
+			}, 0);
+		});
+		describe('setupValidationOnChange', () => {
+			let amountControl: any;
+
+			beforeEach(() => {
+				amountControl = component.createOfferForm.get('amount');
+			});
+
+			it('should clear validators and set default validators when offerTypeId is membershipFee and benefitsMinAmount is not defined', () => {
+				component.selectedOfferTypeId = OfferTypeEnum.membershipFee;
+				jest.spyOn(component, 'benefitAmount', 'get').mockReturnValue(null);
+
+				component['setupValidationOnChange']();
+
+				expect(amountControl?.validator).toBeDefined();
+			});
+
+			it('should clear validators and set default validators when offerTypeId is not membershipFee', () => {
+				component.selectedOfferTypeId = OfferTypeEnum.bogo;
+				jest.spyOn(component, 'benefitAmount', 'get').mockReturnValue(10);
+				component['setupValidationOnChange']();
+
+				expect(amountControl?.validator).toBeDefined();
+			});
+
+			it('should update the validity of the amount control after setting validators', () => {
+				component.selectedOfferTypeId = OfferTypeEnum.membershipFee;
+				jest.spyOn(component, 'benefitAmount', 'get').mockReturnValue(10);
+
+				const updateValueAndValiditySpy = jest.spyOn(amountControl, 'updateValueAndValidity');
+
+				component['setupValidationOnChange']();
+
+				expect(updateValueAndValiditySpy).toHaveBeenCalled();
+			});
+
+			it('should reset the amount control value when offerTypeId is not membershipFee', () => {
+				component.selectedOfferTypeId = OfferTypeEnum.bogo;
+				jest.spyOn(component, 'benefitAmount', 'get').mockReturnValue(10);
+
+				component['setupValidationOnChange']();
+
+				expect(amountControl?.value).toBe('');
+			});
+		});
+		describe('onValueChangeOnCheckedBenefits', () => {
+			it('should set selectedBenefits to an empty array when event is an empty array', () => {
+				component.onValueChangeOnCheckedBenefits([]);
+
+				expect(component.selectedBenefits).toEqual([]);
+			});
+
+			it('should set selectedBenefits to an array of BenefitDto objects when event is an array of IDs', () => {
+				const event = ['benefitId1', 'benefitId2'];
+				component.onValueChangeOnCheckedBenefits(event);
+
+				expect(component.selectedBenefits).toEqual([
+					{ id: 'benefitId1' } as BenefitDto,
+					{ id: 'benefitId2' } as BenefitDto,
+				]);
+			});
+
+			it('should set selectedBenefits to an array with a single BenefitDto object when event is a single ID', () => {
+				const event = 'benefitId1';
+				component.onValueChangeOnCheckedBenefits(event);
+
+				expect(component.selectedBenefits).toEqual([{ id: 'benefitId1' } as BenefitDto]);
+			});
+
+			it('should set selectedBenefits to an empty array when event is null', () => {
+				component.onValueChangeOnCheckedBenefits(null);
+
+				expect(component.selectedBenefits).toEqual([]);
+			});
+
+			it('should call setupValidationOnChange after updating selectedBenefits', () => {
+				const setupValidationOnChangeSpy = jest.spyOn(component as any, 'setupValidationOnChange');
+				const event = ['benefitId1', 'benefitId2'];
+
+				component.onValueChangeOnCheckedBenefits(event);
+
+				expect(setupValidationOnChangeSpy).toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('reinitializeDialog', () => {
+		beforeEach(() => {
+			discountServiceMock.isDiscountCodeClaimedForOffer = jest.fn().mockReturnValue(of(false));
+			component = setup(null);
+		});
+
+		it('should set isViewMode to false and isEditMode to true', () => {
+			component.data = {
+				offerToView: new OfferInformationDto(
+					'1',
+					'Title',
+					123,
+					'CITIZEN',
+					'offerType',
+					0,
+					'validity',
+					GenericStatusEnum.ACTIVE,
+					'test',
+					'supplierId',
+					new BenefitDto(
+						'Benefit Name',
+						'Benefit Description',
+						new Date('2023-01-01'),
+						new Date('2023-12-31'),
+						['id1'],
+						100,
+						'ACTIVE',
+					),
+					'Benefit Name',
+				),
+				offerStatus: GenericStatusEnum.ACTIVE,
+			};
+
+			component.reinitializeDialog();
+
+			expect(component.isViewMode).toBe(false);
+			expect(component.isEditMode).toBe(true);
+		});
+
+		it('should set isReactivating to true when offerStatus is EXPIRED', () => {
+			const offerToView = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.EXPIRED,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'EXPIRED',
+				),
+				'Benefit Name',
+			);
+
+			component.data = {
+				offerToView,
+				offerStatus: GenericStatusEnum.EXPIRED,
+			};
+
+			component.reinitializeDialog();
+
+			expect(component.isReactivating).toBe(true);
+			expect(component.data.offerToReactivate).toEqual(offerToView);
+			expect(component.data.offerToView).toBeUndefined();
+		});
+
+		it('should set isReactivating to false when offerStatus is not EXPIRED', () => {
+			const offerToView = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'ACTIVE',
+				),
+				'Benefit Name',
+			);
+
+			component.data = {
+				offerToView,
+				offerStatus: GenericStatusEnum.ACTIVE,
+			};
+
+			component.reinitializeDialog();
+
+			expect(component.isReactivating).toBe(false);
+			expect(component.data.offerToEdit).toEqual(offerToView);
+			expect(component.data.offerToView).toBeUndefined();
+		});
+
+		it('should call ngOnInit after reinitializing', () => {
+			component.data = {
+				offerToView: new OfferInformationDto(
+					'1',
+					'Title',
+					123,
+					'CITIZEN',
+					'offerType',
+					0,
+					'validity',
+					GenericStatusEnum.ACTIVE,
+					'test',
+					'supplierId',
+					new BenefitDto(
+						'Benefit Name',
+						'Benefit Description',
+						new Date('2023-01-01'),
+						new Date('2023-12-31'),
+						['id1'],
+						100,
+						'ACTIVE',
+					),
+					'Benefit Name',
+				),
+				offerStatus: GenericStatusEnum.ACTIVE,
+			};
+
+			const ngOnInitSpy = jest.spyOn(component, 'ngOnInit');
+
+			component.reinitializeDialog();
+
+			expect(ngOnInitSpy).toHaveBeenCalled();
+		});
+
+		it('should handle case when data is undefined', () => {
+			component.data = undefined;
+
+			expect(() => component.reinitializeDialog()).not.toThrow();
+			expect(component.isViewMode).toBe(false);
+			expect(component.isEditMode).toBe(true);
+		});
+
+		it('should move offerToView to offerToReactivate and clear offerToView when status is EXPIRED', () => {
+			const offerToView = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.EXPIRED,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'EXPIRED',
+				),
+				'Benefit Name',
+			);
+
+			component.data = {
+				offerToView,
+				offerStatus: GenericStatusEnum.EXPIRED,
+			};
+
+			component.reinitializeDialog();
+
+			expect(component.data.offerToReactivate).toBeDefined();
+			expect(component.data.offerToReactivate).toEqual(offerToView);
+			expect(component.data.offerToView).toBeUndefined();
+		});
+
+		it('should move offerToView to offerToEdit and clear offerToView when status is not EXPIRED', () => {
+			const offerToView = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'ACTIVE',
+				),
+				'Benefit Name',
+			);
+
+			component.data = {
+				offerToView,
+				offerStatus: GenericStatusEnum.ACTIVE,
+			};
+
+			component.reinitializeDialog();
+
+			expect(component.data.offerToEdit).toBeDefined();
+			expect(component.data.offerToEdit).toEqual(offerToView);
+			expect(component.data.offerToView).toBeUndefined();
+		});
+
+		it('should handle REJECTED status as non-EXPIRED', () => {
+			const offerToView = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.REJECTED,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'REJECTED',
+				),
+				'Benefit Name',
+			);
+
+			component.data = {
+				offerToView,
+				offerStatus: GenericStatusEnum.REJECTED,
+			};
+
+			component.reinitializeDialog();
+
+			expect(component.isReactivating).toBe(false);
+			expect(component.data.offerToReapply).toEqual(offerToView);
+			expect(component.data.offerToView).toBeUndefined();
+		});
+	});
+
+	describe('initEditForm', () => {
+		beforeEach(() => {
+			component = setup(null);
+		});
+
+		it('should return early if offerToEdit and offerToReactivate are both undefined', () => {
+			component.data = {
+				offerToEdit: undefined,
+				offerToReactivate: undefined,
+			};
+
+			const offer = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'ACTIVE',
+				),
+				'Benefit Name',
+			);
+
+			const formBuilderSpy = jest.spyOn(component['formBuilder'], 'group');
+
+			component['initEditForm'](offer);
+
+			expect(component.updatedBenefits).toEqual([offer.benefit]);
+			expect(formBuilderSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('getIsDiscountCodeClaimedForOffer', () => {
+		beforeEach(() => {
+			component = setup(null);
+		});
+
+		it('should return early if offerId is undefined', () => {
+			const offerToEdit = {
+				id: undefined,
+			} as any;
+
+			const isClaimedSpy = jest.spyOn(component['discountCodeService'], 'isDiscountCodeClaimedForOffer');
+
+			component['getIsDiscountCodeClaimedForOffer'](offerToEdit);
+
+			expect(isClaimedSpy).not.toHaveBeenCalled();
+		});
+
+		it('should return early if offerToEdit is undefined', () => {
+			const isClaimedSpy = jest.spyOn(component['discountCodeService'], 'isDiscountCodeClaimedForOffer');
+
+			component['getIsDiscountCodeClaimedForOffer'](undefined);
+
+			expect(isClaimedSpy).not.toHaveBeenCalled();
+		});
+
+		it('should call isDiscountCodeClaimedForOffer with correct offerId', () => {
+			const offerToEdit = {
+				id: 'offer-id-1',
+				restrictionRequestDto: {} as RestrictionsDto,
+			} as OfferInformationDto;
+
+			const isClaimedSpy = jest
+				.spyOn(component['discountCodeService'], 'isDiscountCodeClaimedForOffer')
+				.mockReturnValue(of(true));
+
+			component['getIsDiscountCodeClaimedForOffer'](offerToEdit);
+
+			expect(isClaimedSpy).toHaveBeenCalledWith('offer-id-1');
+		});
+
+		it('should set isOfferClaimed to true when offer is claimed', (done) => {
+			const offerToEdit = {
+				id: 'offer-id-1',
+				restrictionRequestDto: {} as RestrictionsDto,
+			} as OfferInformationDto;
+
+			jest.spyOn(component['discountCodeService'], 'isDiscountCodeClaimedForOffer').mockReturnValue(of(true));
+
+			component['getIsDiscountCodeClaimedForOffer'](offerToEdit);
+
+			setTimeout(() => {
+				expect(component.isOfferClaimed).toBe(true);
+				done();
+			}, 100);
+		});
+
+		it('should set isOfferClaimed to false when offer is not claimed', (done) => {
+			const offerToEdit = {
+				id: 'offer-id-1',
+				restrictionRequestDto: {} as RestrictionsDto,
+			} as OfferInformationDto;
+
+			jest.spyOn(component['discountCodeService'], 'isDiscountCodeClaimedForOffer').mockReturnValue(of(false));
+
+			component['getIsDiscountCodeClaimedForOffer'](offerToEdit);
+
+			setTimeout(() => {
+				expect(component.isOfferClaimed).toBe(false);
+				done();
+			}, 0);
+		});
+
+		it('should set view and edit mode flags correctly', (done) => {
+			const offerToEdit = {
+				id: 'offer-id-1',
+				restrictionRequestDto: {} as RestrictionsDto,
+			} as OfferInformationDto;
+
+			component['initForm']();
+
+			jest.spyOn(component['discountCodeService'], 'isDiscountCodeClaimedForOffer').mockReturnValue(of(true));
+
+			component['getIsDiscountCodeClaimedForOffer'](offerToEdit);
+
+			setTimeout(() => {
+				expect(component.isViewMode).toBe(false);
+				expect(component.isEditMode).toBe(true);
+				done();
+			}, 0);
+		});
+
+		it('should set isReactivating to true when offerToReactivate exists', (done) => {
+			const offerToEdit = {
+				id: 'offer-id-1',
+				restrictionRequestDto: {} as RestrictionsDto,
+			} as OfferInformationDto;
+
+			component.data = {
+				offerToReactivate: {} as any,
+			};
+
+			component['initForm']();
+
+			jest.spyOn(component['discountCodeService'], 'isDiscountCodeClaimedForOffer').mockReturnValue(of(true));
+
+			component['getIsDiscountCodeClaimedForOffer'](offerToEdit);
+
+			setTimeout(() => {
+				expect(component.isReactivating).toBe(true);
+				done();
+			}, 0);
+		});
+
+		it('should call setFieldsSpecificToRestrictions with correct restrictions', (done) => {
+			const restrictionMock = { minAge: 18, maxAge: 30 } as RestrictionsDto;
+			const offerToEdit = {
+				id: 'offer-id-1',
+				restrictionRequestDto: restrictionMock,
+			} as OfferInformationDto;
+
+			component['initForm']();
+
+			jest.spyOn(component['discountCodeService'], 'isDiscountCodeClaimedForOffer').mockReturnValue(of(true));
+			const setFieldsSpy = jest.spyOn(component as any, 'setFieldsSpecificToRestrictions');
+
+			component['getIsDiscountCodeClaimedForOffer'](offerToEdit);
+
+			setTimeout(() => {
+				expect(setFieldsSpy).toHaveBeenCalledWith(restrictionMock);
+				done();
+			}, 0);
+		});
+
+		it('should call initEditForm with offerToEdit', (done) => {
+			const offerToEdit = {
+				id: 'offer-id-1',
+				restrictionRequestDto: {} as RestrictionsDto,
+			} as OfferInformationDto;
+
+			component['initForm']();
+
+			jest.spyOn(component['discountCodeService'], 'isDiscountCodeClaimedForOffer').mockReturnValue(of(true));
+			const initEditFormSpy = jest.spyOn(component as any, 'initEditForm');
+
+			component['getIsDiscountCodeClaimedForOffer'](offerToEdit);
+
+			setTimeout(() => {
+				expect(initEditFormSpy).toHaveBeenCalledWith(offerToEdit);
+				done();
+			}, 0);
+		});
+
+		it('should open the warning dialog if the form is not dirty and close is called', () => {
+			jest.spyOn(component, 'openWarningModal');
+			jest.spyOn(component['dialogRef'] as any, 'close');
+
+			component.close();
+			expect(component.openWarningModal).not.toHaveBeenCalled();
+			expect(component['dialogRef']['close']).toHaveBeenCalled();
+		});
+
+		it('should open the warning dialog if the form is marked as dirty and close is called', () => {
+			component.createOfferForm.get('title')?.setValue('title');
+			component.createOfferForm.get('title')?.markAsDirty();
+
+			jest.spyOn(component, 'openWarningModal');
+
+			component.close();
+			expect(component.openWarningModal).toHaveBeenCalled();
+		});
+
+		it('should close the dialog if the warning was confirmed', () => {
+			jest.spyOn(dialogService, 'message').mockReturnValue({
+				afterClosed: jest.fn(() => of(true)),
+			} as any);
+
+			jest.spyOn(dialogRefStub, 'close');
+
+			component.openWarningModal();
+
+			expect(dialogRefStub.close).toHaveBeenCalledWith(false);
+		});
+	});
+
+	describe('isNewOffer getter', () => {
+		beforeEach(() => {
+			component = setup(null);
+		});
+
+		it('should return true when all offer data properties are undefined', () => {
+			component.data = {
+				offerToEdit: undefined,
+				offerToReactivate: undefined,
+				offerToView: undefined,
+			};
+
+			expect(component.isNewOffer).toBe(true);
+		});
+
+		it('should return true when data is undefined', () => {
+			component.data = undefined;
+
+			expect(component.isNewOffer).toBe(true);
+		});
+
+		it('should return false when offerToEdit is defined', () => {
+			const offer = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'ACTIVE',
+				),
+				'Benefit Name',
+			);
+
+			component.data = {
+				offerToEdit: offer,
+				offerToReactivate: undefined,
+				offerToView: undefined,
+			};
+
+			expect(component.isNewOffer).toBe(false);
+		});
+
+		it('should return false when offerToReactivate is defined', () => {
+			const offer = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.EXPIRED,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'EXPIRED',
+				),
+				'Benefit Name',
+			);
+
+			component.data = {
+				offerToEdit: undefined,
+				offerToReactivate: offer,
+				offerToView: undefined,
+			};
+
+			expect(component.isNewOffer).toBe(false);
+		});
+
+		it('should return false when offerToView is defined', () => {
+			const offer = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'ACTIVE',
+				),
+				'Benefit Name',
+			);
+
+			component.data = {
+				offerToEdit: undefined,
+				offerToReactivate: undefined,
+				offerToView: offer,
+			};
+
+			expect(component.isNewOffer).toBe(false);
+		});
+
+		it('should return false when multiple offer properties are defined', () => {
+			const offer = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'ACTIVE',
+				),
+				'Benefit Name',
+			);
+
+			component.data = {
+				offerToEdit: offer,
+				offerToReactivate: offer,
+				offerToView: undefined,
+			};
+
+			expect(component.isNewOffer).toBe(false);
+		});
+
+		it('should return false when all offer properties are defined', () => {
+			const offer = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'ACTIVE',
+				),
+				'Benefit Name',
+			);
+
+			component.data = {
+				offerToEdit: offer,
+				offerToReactivate: offer,
+				offerToView: offer,
+			};
+
+			expect(component.isNewOffer).toBe(false);
+		});
+	});
+
+	describe('initializeBenefits - edit mode with claimed offer', () => {
+		beforeEach(() => {
+			component = setup(null);
+		});
+
+		it('should set updatedBenefits to offerToEdit benefit when in edit mode and offer is claimed', () => {
+			const testBenefit = new BenefitDto(
+				'Claimed Benefit',
+				'Benefit Description',
+				new Date('2023-01-01'),
+				new Date('2023-12-31'),
+				['id1'],
+				100,
+				'ACTIVE',
+			);
+			testBenefit.id = 'benefit-id-1';
+
+			const offerToEdit = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				testBenefit,
+				'Claimed Benefit',
+			);
+
+			component.isEditMode = true;
+			component.isOfferClaimed = true;
+			component.data = {
+				offerToEdit: offerToEdit,
+			};
+
+			const allBenefits: BenefitDto[] = [
+				testBenefit,
+				{
+					id: 'benefit-id-2',
+					name: 'Another Benefit',
+					description: 'Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2023-12-31'),
+					citizenGroupIds: [],
+					amount: 50,
+				},
+			];
+
+			component['initializeBenefits'](allBenefits);
+
+			expect(component.updatedBenefits).toEqual([testBenefit]);
+			expect(component.updatedBenefits.length).toBe(1);
+			expect(component.availableBenefits).toEqual([]);
+		});
+
+		it('should not set updatedBenefits when in edit mode but offer is not claimed', () => {
+			const testBenefit = new BenefitDto(
+				'Unclaimed Benefit',
+				'Benefit Description',
+				new Date('2023-01-01'),
+				new Date('2023-12-31'),
+				['id1'],
+				100,
+				'ACTIVE',
+			);
+
+			const offerToEdit = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				testBenefit,
+				'Unclaimed Benefit',
+			);
+
+			component.isEditMode = true;
+			component.isOfferClaimed = false;
+			component.data = {
+				offerToEdit: offerToEdit,
+			};
+
+			const allBenefits: BenefitDto[] = [testBenefit];
+
+			component['initializeBenefits'](allBenefits);
+
+			expect(component.updatedBenefits).toEqual(allBenefits);
+			expect(component.availableBenefits).toEqual(allBenefits);
+		});
+
+		it('should not set updatedBenefits when offer is claimed but not in edit mode', () => {
+			const testBenefit = new BenefitDto(
+				'Claimed Benefit',
+				'Benefit Description',
+				new Date('2023-01-01'),
+				new Date('2023-12-31'),
+				['id1'],
+				100,
+				'ACTIVE',
+			);
+
+			const offerToEdit = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				testBenefit,
+				'Claimed Benefit',
+			);
+
+			component.isEditMode = false;
+			component.isOfferClaimed = true;
+			component.data = {
+				offerToEdit: offerToEdit,
+			};
+
+			const allBenefits: BenefitDto[] = [testBenefit];
+
+			component['initializeBenefits'](allBenefits);
+
+			expect(component.updatedBenefits).toEqual(allBenefits);
+			expect(component.availableBenefits).toEqual(allBenefits);
+		});
+
+		it('should not set updatedBenefits when offerToEdit is undefined', () => {
+			component.isEditMode = true;
+			component.isOfferClaimed = true;
+			component.data = {
+				offerToEdit: undefined,
+			};
+
+			const allBenefits: BenefitDto[] = [
+				{
+					id: 'benefit-id-1',
+					name: 'Benefit 1',
+					description: 'Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2023-12-31'),
+					citizenGroupIds: [],
+					amount: 100,
+				},
+			];
+
+			component['initializeBenefits'](allBenefits);
+
+			expect(component.updatedBenefits).toEqual(allBenefits);
+			expect(component.availableBenefits).toEqual(allBenefits);
+		});
+
+		it('should return early and not populate availableBenefits when all conditions are met', () => {
+			const testBenefit = new BenefitDto(
+				'Claimed Benefit',
+				'Benefit Description',
+				new Date('2023-01-01'),
+				new Date('2023-12-31'),
+				['id1'],
+				100,
+				'ACTIVE',
+			);
+
+			const offerToEdit = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				testBenefit,
+				'Claimed Benefit',
+			);
+
+			component.isEditMode = true;
+			component.isOfferClaimed = true;
+			component.data = {
+				offerToEdit: offerToEdit,
+			};
+
+			const allBenefits: BenefitDto[] = [
+				testBenefit,
+				{
+					id: 'benefit-id-2',
+					name: 'Another Benefit',
+					description: 'Description',
+					startDate: new Date('2023-01-01'),
+					expirationDate: new Date('2023-12-31'),
+					citizenGroupIds: [],
+					amount: 50,
+				},
+			];
+
+			component['initializeBenefits'](allBenefits);
+
+			expect(component.availableBenefits).toEqual([]);
+		});
+	});
+
+	describe('deleteOffer', () => {
+		beforeEach(() => {
+			component = setup(null);
+		});
+
+		it('should close the dialog with shouldDelete=true if user confirms', () => {
+			const afterClosed$ = of(true);
+			jest.spyOn(dialogService, 'alert').mockReturnValue({
+				afterClosed: () => afterClosed$,
+			} as any);
+
+			const closeSpy = jest.spyOn(dialogRefStub, 'close');
+
+			component.deleteOffer();
+
+			expect(dialogService.alert).toHaveBeenCalled();
+			expect(closeSpy).toHaveBeenCalledWith({ shouldDelete: true });
+		});
+
+		it('should not close the dialog if user cancels', () => {
+			const afterClosed$ = of(false);
+			jest.spyOn(dialogService, 'alert').mockReturnValue({
+				afterClosed: () => afterClosed$,
+			} as any);
+
+			component.deleteOffer();
+
+			expect(dialogService.alert).toHaveBeenCalled();
+		});
+
+		it('should not close the dialog if user returns null', () => {
+			const afterClosed$ = of(null);
+			jest.spyOn(dialogService, 'alert').mockReturnValue({
+				afterClosed: () => afterClosed$,
+			} as any);
+
+			component.deleteOffer();
+
+			expect(dialogService.alert).toHaveBeenCalled();
+		});
+
+		it('should not close the dialog if user returns undefined', () => {
+			const afterClosed$ = of(undefined);
+			jest.spyOn(dialogService, 'alert').mockReturnValue({
+				afterClosed: () => afterClosed$,
+			} as any);
+
+			component.deleteOffer();
+
+			expect(dialogService.alert).toHaveBeenCalled();
+		});
+
+		it('should call createDeleteDialogConfig to get config', () => {
+			const afterClosed$ = of(true);
+			jest.spyOn(dialogService, 'alert').mockReturnValue({
+				afterClosed: () => afterClosed$,
+			} as any);
+
+			const createConfigSpy = jest.spyOn(component as any, 'createDeleteDialogConfig');
+
+			component.deleteOffer();
+
+			expect(createConfigSpy).toHaveBeenCalled();
+			expect(dialogService.alert).toHaveBeenCalledWith(CustomDialogComponent, expect.any(Object));
+		});
+	});
+
+	it('should return early when in view mode', () => {
+		component = setup(null);
+		component.isViewMode = true;
+
+		const testData: BenefitDto[] = [
+			{
+				name: 'Benefit 1',
+				description: 'Benefit Description',
+				startDate: new Date('2023-01-01'),
+				expirationDate: new Date('2023-12-31'),
+				citizenGroupIds: [],
+				amount: 10,
+			},
+			{
+				name: 'Benefit 2',
+				description: 'Benefit Description',
+				startDate: new Date('2023-01-01'),
+				expirationDate: new Date('2023-12-31'),
+				citizenGroupIds: [],
+				amount: 10,
+			},
+		];
+
+		component['initializeBenefits'](testData);
+
+		expect(component.availableBenefits).toEqual([]);
+		expect(component.updatedBenefits).toEqual([]);
+	});
+
+	describe('shouldDisplayRestriction', () => {
+		let component: CreateOfferComponent;
+		let fixture: ComponentFixture<CreateOfferComponent>;
+
+		beforeEach(() => {
+			const dialogServiceMock = {
+				message: jest.fn(),
+				alert: jest.fn(),
+			};
+
+			const offerServiceMock = {
+				createOffer: jest.fn().mockReturnValue(of({})),
+				getOfferTypes: jest.fn().mockReturnValue(of({})),
+				getFullOffer: jest.fn().mockReturnValue(of({})),
+				reactivateOffer: jest.fn().mockReturnValue(of({})),
+				editOffer: jest.fn().mockReturnValue(of({})),
+			};
+
+			const discountServiceMock = {
+				isDiscountCodeClaimedForOffer: jest.fn(),
+			};
+
+			const benefitServiceMock = {
+				getAllBenefits: jest.fn().mockReturnValue(of([])),
+			};
+
+			global.ResizeObserver = require('resize-observer-polyfill');
+
+			TestBed.configureTestingModule({
+				declarations: [CreateOfferComponent],
+				schemas: [NO_ERRORS_SCHEMA],
+				imports: [
+					WindmillModule,
+					CommonModule,
+					FormsModule,
+					BrowserAnimationsModule,
+					ReactiveFormsModule,
+					TranslateModule.forRoot(),
+					CentricToastrModule.forRoot(),
+					HttpClientModule,
+					AppModule,
+				],
+				providers: [
+					FormBuilder,
+					ToastrService,
+					TranslateService,
+					{ provide: MatDialogRef, useValue: { close: () => undefined } },
+					{ provide: OfferService, useValue: offerServiceMock },
+					{ provide: DiscountCodeService, useValue: discountServiceMock },
+					{ provide: DialogService, useValue: dialogServiceMock },
+					{ provide: BenefitService, useValue: benefitServiceMock },
+					{ provide: MAT_DIALOG_DATA, useValue: null },
+				],
+			}).compileComponents();
+
+			fixture = TestBed.createComponent(CreateOfferComponent);
+			component = fixture.componentInstance;
+			fixture.detectChanges();
+		});
+
+		describe('when isViewMode is false', () => {
+			beforeEach(() => {
+				component.isViewMode = false;
+			});
+
+			it('should return true for any restriction type when not in view mode', () => {
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(true);
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(true);
+			});
+
+			it('should return true regardless of form control values when not in view mode', () => {
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(true);
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(true);
+			});
+		});
+
+		describe('when isViewMode is true and restriction is timeSlots', () => {
+			beforeEach(() => {
+				component.isViewMode = true;
+			});
+
+			it('should return true when both timeFrom and timeTo have values', () => {
+				component.createOfferForm
+					.get(RestrictionFormFields.timeFrom)
+					?.setValue(new Date('2024-01-01T10:00:00'));
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(new Date('2024-01-01T18:00:00'));
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(true);
+			});
+
+			it('should return true when only timeFrom has a value', () => {
+				component.createOfferForm
+					.get(RestrictionFormFields.timeFrom)
+					?.setValue(new Date('2024-01-01T10:00:00'));
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(true);
+			});
+
+			it('should return true when only timeTo has a value', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(new Date('2024-01-01T18:00:00'));
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(true);
+			});
+
+			it('should return false when both timeFrom and timeTo are null', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(false);
+			});
+
+			it('should return false when both timeFrom and timeTo are undefined', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(undefined);
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(undefined);
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(false);
+			});
+
+			it('should return false when both timeFrom and timeTo are empty strings', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue('');
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue('');
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(false);
+			});
+		});
+
+		describe('when isViewMode is true and restriction is frequencyOfUse', () => {
+			beforeEach(() => {
+				component.isViewMode = true;
+			});
+
+			it('should return true when frequencyOfUseValue has a truthy value', () => {
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(5);
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(false);
+			});
+
+			it('should return true when frequencyOfUseValue is a non-empty string', () => {
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue('DAILY');
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(false);
+			});
+
+			it('should return false when frequencyOfUseValue is null', () => {
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(null);
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(false);
+			});
+
+			it('should return false when frequencyOfUseValue is undefined', () => {
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(undefined);
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(false);
+			});
+
+			it('should return false when frequencyOfUseValue is an empty string', () => {
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue('');
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(false);
+			});
+
+			it('should return false when frequencyOfUseValue is zero', () => {
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(0);
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(false);
+			});
+
+			it('should return false when frequencyOfUseValue is false', () => {
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(false);
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(false);
+			});
+		});
+
+		describe('when isViewMode is true and restriction is a generic restriction field', () => {
+			beforeEach(() => {
+				component.isViewMode = true;
+			});
+
+			it('should return true when the restriction control has a truthy value', () => {
+				const restrictionField = 'customRestriction' as any;
+				component.createOfferForm.addControl(restrictionField, new FormControl('someValue'));
+
+				expect(component.shouldDisplayRestriction(restrictionField)).toBe(true);
+			});
+
+			it('should return false when the restriction control has a falsy value', () => {
+				const restrictionField = 'customRestriction' as any;
+				component.createOfferForm.addControl(restrictionField, new FormControl(null));
+
+				expect(component.shouldDisplayRestriction(restrictionField)).toBe(false);
+			});
+
+			it('should return false when the restriction control does not exist', () => {
+				const nonExistentField = 'nonExistentRestriction' as any;
+
+				expect(component.shouldDisplayRestriction(nonExistentField)).toBe(false);
+			});
+
+			it('should return true when the restriction control has a numeric value of 1', () => {
+				const restrictionField = 'ageRestriction' as any;
+				component.createOfferForm.addControl(restrictionField, new FormControl(1));
+
+				expect(component.shouldDisplayRestriction(restrictionField)).toBe(true);
+			});
+
+			it('should return true when the restriction control has an empty object as value', () => {
+				const restrictionField = 'customRestriction' as any;
+				component.createOfferForm.addControl(restrictionField, new FormControl({}));
+
+				expect(component.shouldDisplayRestriction(restrictionField)).toBe(true);
+			});
+		});
+
+		describe('edge cases and combined scenarios', () => {
+			it('should handle switching between view and edit modes', () => {
+				component.isViewMode = false;
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(true);
+
+				component.isViewMode = true;
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(null);
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(false);
+
+				component.isViewMode = false;
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(true);
+			});
+
+			it('should handle timeSlots with special date values', () => {
+				component.isViewMode = true;
+				const minDate = new Date('1970-01-01T00:00:00');
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(minDate);
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(true);
+			});
+
+			it('should correctly evaluate multiple restriction types in sequence', () => {
+				component.isViewMode = true;
+
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(3);
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(new Date());
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.frequencyOfUse)).toBe(false);
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(true);
+			});
+
+			it('should handle rapid isViewMode changes', () => {
+				component.isViewMode = false;
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(true);
+
+				component.isViewMode = true;
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(false);
+
+				component.isViewMode = false;
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(true);
+
+				component.isViewMode = true;
+				expect(component.shouldDisplayRestriction(RestrictionFormFields.timeSlots)).toBe(false);
+			});
+		});
+	});
+
+	describe('shouldDisplayRestrictionsTitle getter', () => {
+		beforeEach(() => {
+			component = setup(null);
+		});
+
+		describe('when isViewMode is false', () => {
+			it('should return true regardless of restriction values', () => {
+				component.isViewMode = false;
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(null);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+
+			it('should return true when in edit mode', () => {
+				component.isViewMode = false;
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(new Date('2024-01-01T18:00:00'));
+				component.createOfferForm
+					.get(RestrictionFormFields.timeFrom)
+					?.setValue(new Date('2024-01-01T10:00:00'));
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(5);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+		});
+
+		describe('when isViewMode is true', () => {
+			beforeEach(() => {
+				component.isViewMode = true;
+			});
+
+			it('should return true when timeTo has a value', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(new Date('2024-01-01T18:00:00'));
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(null);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+
+			it('should return true when timeFrom has a value', () => {
+				component.createOfferForm
+					.get(RestrictionFormFields.timeFrom)
+					?.setValue(new Date('2024-01-01T10:00:00'));
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(null);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+
+			it('should return true when frequencyOfUseValue has a value', () => {
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(5);
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+
+			it('should return true when both timeTo and timeFrom have values', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(new Date('2024-01-01T18:00:00'));
+				component.createOfferForm
+					.get(RestrictionFormFields.timeFrom)
+					?.setValue(new Date('2024-01-01T10:00:00'));
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(null);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+
+			it('should return true when all restrictions have values', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(new Date('2024-01-01T18:00:00'));
+				component.createOfferForm
+					.get(RestrictionFormFields.timeFrom)
+					?.setValue(new Date('2024-01-01T10:00:00'));
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(3);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+
+			it('should return false when all restrictions are null', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(null);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(false);
+			});
+
+			it('should return false when all restrictions are undefined', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(undefined);
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(undefined);
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(undefined);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(false);
+			});
+
+			it('should return false when all restrictions are empty strings', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue('');
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue('');
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue('');
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(false);
+			});
+
+			it('should return false when all restrictions are zero', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(0);
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(0);
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(0);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(false);
+			});
+
+			it('should return false when all restrictions are false', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(false);
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(false);
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(false);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(false);
+			});
+
+			it('should return true when frequencyOfUseValue is a non-empty string', () => {
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue('DAILY');
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+
+			it('should return true when frequencyOfUseValue is 1', () => {
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(1);
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+
+			it('should return true when timeTo is a valid Date object', () => {
+				const validDate = new Date();
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(validDate);
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(null);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+
+			it('should return true when timeFrom is a valid Date object', () => {
+				const validDate = new Date();
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(validDate);
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(null);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+
+			it('should return false when form controls do not exist', () => {
+				component.createOfferForm = new FormGroup({});
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(false);
+			});
+
+			it('should return true when timeTo and frequencyOfUseValue have values but timeFrom is null', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(new Date());
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(2);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+
+			it('should return true when timeFrom and frequencyOfUseValue have values but timeTo is null', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(new Date());
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(2);
+
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+			});
+
+			it('should dynamically update when restriction values change', () => {
+				component.createOfferForm.get(RestrictionFormFields.timeTo)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.timeFrom)?.setValue(null);
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(null);
+				expect(component.shouldDisplayRestrictionsTitle).toBe(false);
+
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(5);
+				expect(component.shouldDisplayRestrictionsTitle).toBe(true);
+
+				component.createOfferForm.get(RestrictionFormFields.frequencyOfUseValue)?.setValue(null);
+				expect(component.shouldDisplayRestrictionsTitle).toBe(false);
+			});
+		});
+
+		describe('isSuspendedOffer getter', () => {
+			it.each([
+				[GenericStatusEnum.ACTIVE, true, true],
+				[GenericStatusEnum.ACTIVE, false, false],
+				[GenericStatusEnum.ACTIVE, null, false],
+				[GenericStatusEnum.EXPIRED, true, false],
+				[GenericStatusEnum.REJECTED, true, false],
+				[GenericStatusEnum.PENDING, true, false],
+			])(
+				'should return %s when offerStatus is %s and offerToSuspend is %s',
+				(offerStatus, offerToSuspendDefined, expected) => {
+					const offerToSuspend =
+						offerToSuspendDefined === null
+							? null
+							: offerToSuspendDefined
+								? new OfferInformationDto(
+										'1',
+										'Title',
+										123,
+										'CITIZEN',
+										'offerType',
+										0,
+										'validity',
+										offerStatus,
+										'test',
+										'supplierId',
+										new BenefitDto(
+											'Benefit Name',
+											'Benefit Description',
+											new Date('2023-01-01'),
+											new Date('2023-12-31'),
+											['id1'],
+											100,
+											'ACTIVE',
+										),
+										'Benefit Name',
+									)
+								: undefined;
+
+					component.data =
+						offerToSuspendDefined !== undefined
+							? { offerToSuspend: offerToSuspend ?? undefined, offerStatus }
+							: { offerStatus };
+
+					expect(component.isSuspendedOffer).toBe(expected);
+				},
+			);
+
+			it.each([undefined, null])('should return false when data is %s', (dataValue) => {
+				component.data = dataValue as any;
+				expect(component.isSuspendedOffer).toBe(false);
+			});
+
+			it('should return true with both ACTIVE status and non-null offerToSuspend object', () => {
+				const offerToSuspend = new OfferInformationDto(
+					'2',
+					'Another Title',
+					456,
+					'CITIZEN',
+					'offerType',
+					1,
+					'validity',
+					GenericStatusEnum.ACTIVE,
+					'test',
+					'supplierId',
+					new BenefitDto(
+						'Benefit Name 2',
+						'Benefit Description 2',
+						new Date('2023-01-01'),
+						new Date('2023-12-31'),
+						['id2'],
+						200,
+						'ACTIVE',
+					),
+					'Benefit Name 2',
+				);
+
+				component.data = {
+					offerToSuspend,
+					offerStatus: GenericStatusEnum.ACTIVE,
+				};
+
+				expect(component.isSuspendedOffer).toBe(true);
+			});
+
+			it('should return false when offerToSuspend is an empty object', () => {
+				component.data = {
+					offerToSuspend: {} as any,
+					offerStatus: GenericStatusEnum.ACTIVE,
+				};
+
+				expect(component.isSuspendedOffer).toBe(true);
+			});
+
+			it('should handle data with only offerToSuspend property', () => {
+				const offerToSuspend = new OfferInformationDto(
+					'1',
+					'Title',
+					123,
+					'CITIZEN',
+					'offerType',
+					0,
+					'validity',
+					GenericStatusEnum.ACTIVE,
+					'test',
+					'supplierId',
+					new BenefitDto(
+						'Benefit Name',
+						'Benefit Description',
+						new Date('2023-01-01'),
+						new Date('2023-12-31'),
+						['id1'],
+						100,
+						'ACTIVE',
+					),
+					'Benefit Name',
+				);
+
+				component.data = {
+					offerToSuspend,
+				} as any;
+
+				expect(component.isSuspendedOffer).toBe(false);
+			});
+
+			it('should return true when data has other properties along with ACTIVE status and offerToSuspend', () => {
+				const offerToSuspend = new OfferInformationDto(
+					'1',
+					'Title',
+					123,
+					'CITIZEN',
+					'offerType',
+					0,
+					'validity',
+					GenericStatusEnum.ACTIVE,
+					'test',
+					'supplierId',
+					new BenefitDto(
+						'Benefit Name',
+						'Benefit Description',
+						new Date('2023-01-01'),
+						new Date('2023-12-31'),
+						['id1'],
+						100,
+						'ACTIVE',
+					),
+					'Benefit Name',
+				);
+
+				const offerToEdit = new OfferInformationDto(
+					'2',
+					'Edit Title',
+					456,
+					'CITIZEN',
+					'offerType',
+					1,
+					'validity',
+					GenericStatusEnum.ACTIVE,
+					'test',
+					'supplierId',
+					new BenefitDto(
+						'Benefit Name',
+						'Benefit Description',
+						new Date('2023-01-01'),
+						new Date('2023-12-31'),
+						['id1'],
+						100,
+						'ACTIVE',
+					),
+					'Benefit Name',
+				);
+
+				component.data = {
+					offerToSuspend,
+					offerToEdit,
+					offerStatus: GenericStatusEnum.ACTIVE,
+				};
+
+				expect(component.isSuspendedOffer).toBe(true);
 			});
 		});
 	});

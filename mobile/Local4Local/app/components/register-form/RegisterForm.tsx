@@ -1,4 +1,4 @@
-import { Keyboard, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, View, ScrollView } from 'react-native';
 import { HelperText, Text, TextInput, Checkbox } from 'react-native-paper';
 import { colors } from '../../common-style/Palette';
 import GenericButton from '../generic-button/GenericButton';
@@ -51,7 +51,8 @@ function RegisterForm({ navigation, route }: RegisterFormProps) {
 		control,
 		handleSubmit,
 		formState: { errors },
-		watch
+		watch,
+		trigger
 	} = useForm({
 		mode: 'onChange',
 		defaultValues: {
@@ -67,6 +68,11 @@ function RegisterForm({ navigation, route }: RegisterFormProps) {
 	const descriptionParts = t('registerPage.registrationDialog.description', {
 		email: watch('email')
 	}).split('**');
+
+	const password = watch(AuthFormControlsEnum.password);
+	useEffect(() => {
+		trigger(AuthFormControlsEnum.confirmPassword);
+	}, [password, trigger]);
 
 	const [hidePass, setHidePass] = useState(true);
 	const [hideConfirmPass, setHideConfirmPass] = useState(true);
@@ -488,10 +494,10 @@ function RegisterForm({ navigation, route }: RegisterFormProps) {
 				{termsAndConditionView
 					? termsAndConditionsDialog()
 					: !isGeneralStepCompleted
-					? generalStep()
-					: !showDialog
-					? passwordStep()
-					: genericDialog()}
+						? generalStep()
+						: !showDialog
+							? passwordStep()
+							: genericDialog()}
 			</>
 		</TouchableWithoutFeedback>
 	);

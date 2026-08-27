@@ -1,5 +1,11 @@
+<frontend-app-loader></frontend-app-loader>
+
 <div class="routing-container">
-	<div class="inside-routing-container">
+	@if (shouldDisplayNavigation) {
+		<frontend-sidenav [navigationItems]="navigationRoutes"></frontend-sidenav>
+	}
+	<div class="inside-routing-container" [class.active]="!isRouteWithoutNav()">
+		<frontend-breadcrumbs [class.should-add-padding]="shouldDisplayBreadcrumbs"></frontend-breadcrumbs>
 		<router-outlet></router-outlet>
 	</div>
 </div>

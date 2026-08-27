@@ -10,11 +10,12 @@ import {
 	Page,
 	PaginatedData,
 	StatusUtil,
+	TableActionButton,
 	TableColumn,
 	TableFilterColumn,
 } from '@frontend/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of, Subject } from 'rxjs';
 
 import { TableDataMock } from '../../_mocks/table-data.mock';
@@ -237,14 +238,31 @@ describe('TableComponent', () => {
 		expect(component.statusUtil).toEqual(StatusUtil);
 	});
 
-	it('should return true if tooltip is empty', () => {
-		const result = component.isTooltipDisabled('');
-		expect(result).toBe(false);
-	});
+	describe('isTooltipDisabled', () => {
+		const testCases = [
+			{
+				description: 'should return false if actionButton has no text but has a tooltipTranslationLabel',
+				actionButton: { text: '', tooltipTranslationLabel: 'tooltipLabel' } as TableActionButton,
+				expected: false,
+			},
+			{
+				description: 'should return true if actionButton has text',
+				actionButton: { text: 'Button Text' } as TableActionButton,
+				expected: true,
+			},
+			{
+				description: 'should return true if actionButton has neither text nor tooltipTranslationLabel',
+				actionButton: { text: '', tooltipTranslationLabel: '' } as TableActionButton,
+				expected: true,
+			},
+		];
 
-	it('should return false if tooltip is not empty', () => {
-		const result = component.isTooltipDisabled('Some tooltip content');
-		expect(result).toBe(true);
+		testCases.forEach(({ description, actionButton, expected }) => {
+			it(description, () => {
+				const result = component.isTooltipDisabled(actionButton);
+				expect(result).toBe(expected);
+			});
+		});
 	});
 
 	it('should filter columns based on search term', () => {
@@ -571,6 +589,11 @@ describe('TableComponent', () => {
 			const event: PageEvent = { pageIndex: 1, pageSize: 10, previousPageIndex: 0, length: 0 };
 			const mockValues = ['test', 'array'];
 			component.paginatedData.pages[1] = new Page(mockValues);
+			const mockPanelElement = {
+				scrollTo: jest.fn(),
+			};
+			jest.spyOn(component['elementRef'].nativeElement, 'querySelector').mockReturnValue(mockPanelElement);
+
 			jest.spyOn(component, 'loadData');
 
 			component.onPageChange(event);
@@ -578,6 +601,24 @@ describe('TableComponent', () => {
 			expect(component.loadData).not.toHaveBeenCalled();
 			expect(component.paginatedData.currentIndex).toEqual(event.pageIndex);
 			expect(component.currentDisplayedPage).toEqual(mockValues);
+		});
+
+		it('should create a new Page when the page does not exist', () => {
+			const event: PageEvent = {
+				pageIndex: 2,
+				pageSize: 10,
+				length: 100,
+			};
+			jest.spyOn(component, 'loadData');
+
+			component.paginatedData.pages[2] = undefined as unknown as Page<string>;
+
+			component.onPageChange(event);
+
+			expect(component.paginatedData.pages[2]).toBeDefined();
+			expect(component.paginatedData.pages[2].values).toEqual([]);
+
+			expect(component.loadData).toHaveBeenCalled();
 		});
 	});
 
@@ -625,6 +666,10 @@ describe('TableComponent', () => {
 		it('should update paginated data and currentDisplayedPage after data is loaded', () => {
 			const mockData = ['value1', 'value2'];
 			component.paginatedData.currentIndex = 1;
+			const mockPanelElement = {
+				scrollTo: jest.fn(),
+			};
+			jest.spyOn(component['elementRef'].nativeElement, 'querySelector').mockReturnValue(mockPanelElement);
 
 			component.afterDataLoaded(mockData);
 
@@ -750,5 +795,39 @@ describe('TableComponent', () => {
 
 		expect(component.onPageChange).toHaveBeenCalledWith(pageEvent);
 		expect(component.onPageSelected).toHaveBeenCalledWith(10);
+	});
+
+	it('scrollToTop should scroll the panel content to the top with smooth behavior', () => {
+		const mockPanelElement = {
+			scrollTo: jest.fn(),
+		};
+		jest.spyOn(component['elementRef'].nativeElement, 'querySelector').mockReturnValue(mockPanelElement);
+
+		component.scrollToTop();
+
+		expect(component['elementRef'].nativeElement.querySelector).toHaveBeenCalledWith('.card-content');
+		expect(mockPanelElement.scrollTo).toHaveBeenCalledWith({
+			top: 0,
+			behavior: 'smooth',
+		});
+	});
+
+	describe('resetPageContent', () => {
+		it('should empty values array on each Page instance', () => {
+			const page1 = new Page([1, 2]);
+			const page2 = new Page(['x']);
+
+			component.paginatedData = {
+				pages: [page1, page2],
+			} as PaginatedData<any>;
+
+			component.currentDisplayedPage = [10];
+
+			component.resetPageContent();
+
+			expect(page1.values).toEqual([]);
+			expect(page2.values).toEqual([]);
+			expect(component.currentDisplayedPage).toEqual([]);
+		});
 	});
 });
