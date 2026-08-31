@@ -12,7 +12,10 @@ import java.util.UUID;
 @Repository
 public interface RecoverPasswordRepository extends CrudRepository<RecoverPassword, UUID> {
 
-    static final String COUNT_ALL_BY_USER_ID_LAST_DAY = "SELECT COUNT(rp) from RecoverPassword rp WHERE rp.userId =:userId AND extract(epoch from current_timestamp - rp.tokenExpirationDate) <= 24 * 60 * 60 ";
+    static final String COUNT_ALL_BY_USER_ID_LAST_DAY =
+            "SELECT COUNT(rp) FROM RecoverPassword rp " +
+                    "WHERE rp.userId = :userId " +
+                    "AND rp.tokenExpirationDate >= CURRENT_TIMESTAMP - 1 DAY";
 
     Optional<RecoverPassword> findByTokenAndIsActiveTrue(String token);
 

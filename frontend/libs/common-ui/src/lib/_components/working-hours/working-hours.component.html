@@ -6,14 +6,15 @@
 </div>
 <section class="setup-schedule">
 	<div class="container">
-		<div class="days-data-panel" *ngFor="let dayData of workingHoursData">
-			<p class="day">{{ dayName(dayData) | translate }}</p>
-			<ng-container *ngIf="dayData.isChecked; else notChecked">
-				<p>{{ workingDailyHours(dayData) }}</p>
-			</ng-container>
-			<ng-template #notChecked>
-				<p>{{ 'general.closed' | translate }}</p>
-			</ng-template>
-		</div>
+		@for (dayData of workingHoursData; track dayData) {
+			<div class="days-data-panel">
+				<p class="day">{{ dayName(dayData) | translate }}</p>
+				@if (dayData.isChecked) {
+					<p>{{ workingDailyHours(dayData) }}</p>
+				} @else {
+					<p>{{ 'general.closed' | translate }}</p>
+				}
+			</div>
+		}
 	</div>
 </section>

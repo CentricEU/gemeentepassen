@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -14,7 +15,7 @@ import {
 } from '@frontend/common';
 import { TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of } from 'rxjs';
 
 import { AppModule } from '../../app.module';
@@ -26,6 +27,7 @@ describe('ProfilePageComponent', () => {
 	let fixture: ComponentFixture<ProfilePageComponent>;
 	let citizenGroupsServiceSpy: any;
 	let dialogService: DialogService;
+	let elementRef: ElementRef;
 
 	beforeEach(async () => {
 		citizenGroupsServiceSpy = {
@@ -51,6 +53,7 @@ describe('ProfilePageComponent', () => {
 				TranslateService,
 				{ provide: CitizenGroupsService, useValue: citizenGroupsServiceSpy },
 				{ provide: DialogService, useValue: dialogServiceMock },
+				{ provide: ElementRef, useValue: { nativeElement: document.createElement('div') } },
 			],
 		}).compileComponents();
 
@@ -59,6 +62,8 @@ describe('ProfilePageComponent', () => {
 		citizenGroupsServiceSpy.getCitizenGroupsPaginated.mockReturnValue(of([]));
 		citizenGroupsServiceSpy.countCitizenGroups.mockReturnValue(of(0));
 		dialogService = TestBed.inject(DialogService);
+		elementRef = TestBed.inject(ElementRef);
+
 		component.citizenGroupsTable = {
 			initializeData: jest.fn(),
 			paginatedData: new PaginatedData<CitizenGroupViewDto>([], 10, 0),
@@ -238,7 +243,7 @@ describe('ProfilePageComponent', () => {
 
 	it('should call service on getCitizenGroupsPaginated', () => {
 		component['dataCount'] = 2;
-		component.citizenGroupsTable = new TableComponent<CitizenGroupViewDto>(dialogService);
+		component.citizenGroupsTable = new TableComponent<CitizenGroupViewDto>(dialogService, elementRef);
 
 		const mockCitizenGroupViewDtos: CitizenGroupViewDto[] = [
 			{

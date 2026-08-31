@@ -1,5 +1,6 @@
 package nl.centric.innovation.local4local.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.dto.InvitationDto;
 import nl.centric.innovation.local4local.dto.InviteSupplierDto;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -34,7 +34,7 @@ public class InviteSupplierController {
     private String errorEntityNotFound;
 
     @PostMapping("/send")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     public ResponseEntity<Void> inviteSupplier(@RequestBody @Valid InviteSupplierDto inviteSupplierDto,
                                                @CookieValue(value = "language_municipality", defaultValue = "nl-NL") String language) throws DtoValidateException {
 
@@ -43,14 +43,14 @@ public class InviteSupplierController {
     }
 
     @GetMapping()
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     public ResponseEntity<List<InvitationDto>> getInvitations(@RequestParam(defaultValue = "0") Integer page,
                                                               @RequestParam(defaultValue = "25") Integer size) {
         return ResponseEntity.ok(inviteSupplierService.getAllLatestSentToEmailByTenantId(page, size));
     }
 
     @GetMapping("/count")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     public ResponseEntity<Integer> countInvitationsByTenantId() {
         return ResponseEntity.ok(inviteSupplierService.countByTenantId());
     }

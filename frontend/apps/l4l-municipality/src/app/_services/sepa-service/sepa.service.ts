@@ -12,12 +12,17 @@ export class SepaService {
 		private httpClient: HttpClient,
 	) {}
 
-	public generateSepaFile(month: string): Observable<Blob> {
+	public generateSepaFile(startDate: string, endDate: string, supplierId?: string): Observable<Blob> {
+		let params = new HttpParams();
 		const headers = new HttpHeaders({
 			Accept: 'application/xml',
 		});
 
-		const params = new HttpParams().set('month', month);
+		params = params.set('startDate', startDate);
+		params = params.set('endDate', endDate);
+		if (supplierId) {
+			params = params.set('supplierId', supplierId);
+		}
 
 		return this.httpClient.post(`${this.environment.apiPath}/sepa`, null, {
 			headers,

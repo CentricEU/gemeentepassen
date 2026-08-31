@@ -2,15 +2,23 @@ import { DatePipe } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerIntl } from '@angular/material/datepicker';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { CommonL4LModule, DateAdapterModule, JwtInterceptor } from '@frontend/common';
-import { CommonUiModule, HttpLoaderFactory, WindmillModule } from '@frontend/common-ui';
+import { CommonL4LModule, CustomDatepickerIntlService, DateAdapterModule, JwtInterceptor } from '@frontend/common';
+import {
+	AppLoaderComponent,
+	BreadcrumbsComponent,
+	CommonUiModule,
+	HttpLoaderFactory,
+	SidenavComponent,
+	WindmillModule,
+} from '@frontend/common-ui';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { WindmillCardModule } from '@windmill/ng-windmill/card';
 import { WindmillComboButtonModule } from '@windmill/ng-windmill/combo-button';
 import { WindmillDatePickerModule } from '@windmill/ng-windmill/date-picker';
-import { CentricPanelModule } from '@windmill/ng-windmill/deprecated-panel';
 import { CentricInputTimepicker2Module } from '@windmill/ng-windmill/input-timepicker';
 import { CentricRadioModule } from '@windmill/ng-windmill/radio';
 import { CentricStepperModule } from '@windmill/ng-windmill/stepper';
@@ -33,6 +41,7 @@ import { TransactionsPanelComponent } from './_pages/dashboard/transactions-pane
 import { UsedOffersPanelComponent } from './_pages/dashboard/used-offers-panel/used-offers-panel.component';
 import { OfferValidationComponent } from './_pages/offer-validation/offer-validation.component';
 import { OffersComponent } from './_pages/offers/offers.component';
+import { ProfileComponent } from './_pages/profile/profile.component';
 import { TransactionsComponent } from './_pages/transactions/transactions.component';
 import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
@@ -56,8 +65,12 @@ import { SupplierModule } from './supplier/supplier.module';
 		OfferValidationComponent,
 		TransactionsComponent,
 		DiscountModalComponent,
+		ProfileComponent,
 	],
 	imports: [
+		AppLoaderComponent,
+		SidenavComponent,
+		BreadcrumbsComponent,
 		CommonUiModule.forRoot(environment),
 		CommonL4LModule,
 		WindmillModule,
@@ -75,7 +88,7 @@ import { SupplierModule } from './supplier/supplier.module';
 		MatButtonModule,
 		HeaderComponent,
 		RouterModule.forRoot(appRoutes, { initialNavigation: 'enabledBlocking' }),
-		CentricPanelModule,
+		WindmillCardModule,
 		TranslateModule.forRoot({
 			loader: {
 				provide: TranslateLoader,
@@ -92,6 +105,7 @@ import { SupplierModule } from './supplier/supplier.module';
 			useClass: JwtInterceptor,
 			multi: true,
 		},
+		{ provide: MatDatepickerIntl, useClass: CustomDatepickerIntlService },
 	],
 	bootstrap: [AppComponent],
 })

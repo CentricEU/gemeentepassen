@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -20,7 +21,9 @@ import static org.mockito.Mockito.spy;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import jakarta.servlet.http.HttpServletResponse;
 import nl.centric.innovation.local4local.dto.CitizenViewDto;
 import nl.centric.innovation.local4local.dto.CreateUserDto;
 import nl.centric.innovation.local4local.dto.RegisterCitizenUserDto;
@@ -28,19 +31,25 @@ import nl.centric.innovation.local4local.dto.SetupPasswordValidateDTO;
 import nl.centric.innovation.local4local.dto.UserTableDto;
 import nl.centric.innovation.local4local.dto.UserViewDto;
 import nl.centric.innovation.local4local.entity.ConfirmationToken;
+import nl.centric.innovation.local4local.entity.DiscountCode;
 import nl.centric.innovation.local4local.entity.Passholder;
 import nl.centric.innovation.local4local.entity.Tenant;
 import nl.centric.innovation.local4local.enums.AccountDeletionReason;
 import nl.centric.innovation.local4local.exceptions.CaptchaException;
 import nl.centric.innovation.local4local.exceptions.DtoValidateAlreadyExistsException;
+import nl.centric.innovation.local4local.exceptions.UnauthorizedActionException;
 import nl.centric.innovation.local4local.repository.ConfirmationTokenRepository;
 import nl.centric.innovation.local4local.repository.DeletedUserRepository;
+import nl.centric.innovation.local4local.service.impl.CitizenBenefitService;
+import nl.centric.innovation.local4local.service.impl.DiscountCodeService;
 import nl.centric.innovation.local4local.service.impl.LoginAttemptServiceImpl;
+import nl.centric.innovation.local4local.service.impl.OfferTransactionService;
 import nl.centric.innovation.local4local.service.impl.PassholderService;
 import nl.centric.innovation.local4local.service.impl.PrincipalService;
 import nl.centric.innovation.local4local.service.impl.UserService;
 import nl.centric.innovation.local4local.service.interfaces.ConfirmationTokenService;
 import nl.centric.innovation.local4local.service.interfaces.EmailService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,7 +83,6 @@ import nl.centric.innovation.local4local.repository.UserRepository;
 import nl.centric.innovation.local4local.service.impl.CaptchaServiceImpl;
 import nl.centric.innovation.local4local.service.impl.RecoverPasswordServiceImpl;
 
-import javax.servlet.http.HttpServletResponse;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTests {
@@ -99,6 +107,9 @@ class UserServiceImplTests {
     private CaptchaServiceImpl captchaService;
 
     @Mock
+    private OfferTransactionService offerTransactionService;
+
+    @Mock
     private LoginAttemptServiceImpl loginAttemptService;
 
     @Mock
@@ -114,6 +125,9 @@ class UserServiceImplTests {
     private EmailService emailService;
 
     @Mock
+    private DiscountCodeService discountCodeService;
+
+    @Mock
     private HttpServletResponse response;
 
     @Mock
@@ -121,6 +135,9 @@ class UserServiceImplTests {
 
     @Mock
     private PassholderService passholderService;
+
+    @Mock
+    private CitizenBenefitService citizenBenefitService;
 
     @Value("${local4local.server.name}")
     private String baseURL;
@@ -369,23 +386,26 @@ class UserServiceImplTests {
     }
 
     @Test
-    void GivenValidRole_WhenFindAllAdminsByTenantId_ThenUserListReturned() {
+    void GivenValidRoles_WhenFindAllAdminsByTenantId_ThenUserListReturned() {
         UUID tenantId = UUID.randomUUID();
 
         //Given
-        Role mockedRole = Role.builder().name(Role.ROLE_MUNICIPALITY_ADMIN).build();
-        when(roleRepository.findByName(Role.ROLE_MUNICIPALITY_ADMIN)).thenReturn(Optional.of(mockedRole));
+        List<Role> roles = List.of(
+                Role.builder().name(Role.ROLE_MUNICIPALITY_ADMIN).build(),
+                Role.builder().name(Role.ROLE_SUPER_ADMIN).build()
+        );
+        when(roleRepository.findByNameIn(List.of(Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN))).thenReturn(roles);
 
         List<User> adminList = Collections.singletonList(new User());
 
         // When
-        when(userRepository.findAllByTenantIdAndRole(tenantId, mockedRole)).thenReturn(adminList);
+        when(userRepository.findAllByTenantIdAndRoleIn(tenantId, roles)).thenReturn(adminList);
         List<User> result = userService.findAllAdminsByTenantId(tenantId);
 
         // Than
         assertEquals(result, adminList);
-        verify(roleRepository, times(1)).findByName(Role.ROLE_MUNICIPALITY_ADMIN);
-        verify(userRepository, times(1)).findAllByTenantIdAndRole(tenantId, mockedRole);
+        verify(roleRepository, times(1)).findByNameIn(List.of(Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN));
+        verify(userRepository, times(1)).findAllByTenantIdAndRoleIn(tenantId, roles);
     }
 
     @Test
@@ -532,8 +552,12 @@ class UserServiceImplTests {
                 .build();
 
         User user = new User();
+        user.setId(UUID.randomUUID());
+        user.setUsername("123123213");
         Passholder passholder = Passholder.builder()
                 .passNumber(passNumber)
+                .user(user)
+                .bsn("123123213")
                 .tenant(Tenant.builder().build())
                 .build();
 
@@ -725,9 +749,9 @@ class UserServiceImplTests {
     }
 
     @Test
-    public void GivenValidRequest_WhenCreateUser_ThenExpectSuccess() throws DtoValidateException {
+    public void GivenAdminCreatingAdmin_WhenCreateUser_ThenExpectSuccess() throws DtoValidateException {
         //Given
-        CreateUserDto createUserDto = new CreateUserDto("FN", "LN", "email@domain.com");
+        CreateUserDto createUserDto = new CreateUserDto("FN", "LN", "email@domain.com", false);
         UUID tenantId = UUID.randomUUID();
         String language = "en";
 
@@ -746,9 +770,47 @@ class UserServiceImplTests {
     }
 
     @Test
+    public void GivenAdminCreatingSuperAdmin_WhenCreateUser_ExpectUnauthorizedActionException() {
+        // Given
+        CreateUserDto createUserDto = new CreateUserDto("FN", "LN", "email@domain.com", true);
+
+        Role municipalityRole = Role.builder().id(0).name(Role.ROLE_MUNICIPALITY_ADMIN).build();
+        User currentUser = new User();
+        currentUser.setRole(municipalityRole);
+
+        // When
+        when(principleService.getUser()).thenReturn(currentUser);
+
+        // Then
+        assertThrows(UnauthorizedActionException.class, () -> userService.createUser(createUserDto, "en"));
+    }
+
+    @Test
+    public void GivenSuperAdminCreatingSuperAdmin_WhenCreateUser_ExpectSuccess() throws DtoValidateException {
+        // Given
+        CreateUserDto createUserDto = new CreateUserDto("FN", "LN", "email@domain.com", true);
+        UUID tenantId = UUID.randomUUID();
+        String language = "en";
+        Role superAdminRole = Role.builder().id(0).name(Role.ROLE_SUPER_ADMIN).build();
+        User currentUser = new User();
+        currentUser.setRole(superAdminRole);
+        when(principleService.getUser()).thenReturn(currentUser);
+        when(principleService.getTenantId()).thenReturn(tenantId);
+        when(roleRepository.findByName(Role.ROLE_SUPER_ADMIN)).thenReturn(Optional.of(superAdminRole));
+        when(userRepository.save(any(User.class))).thenReturn(User.createUserToEntity(createUserDto, tenantId, ""));
+
+        // When
+        userService.createUser(createUserDto, language);
+
+        // Then
+        verify(userRepository, times(1)).save(any());
+        verify(emailService).sendEmailAfterUserCreated(anyString(), eq("en"), eq(createUserDto.email()));
+    }
+
+    @Test
     public void GivenInvalidEmail_WhenCreateUser_ExpectDtoValidateException() {
         // Given
-        CreateUserDto createUserDto = new CreateUserDto("FN", "LN", "invalidEmail");
+        CreateUserDto createUserDto = new CreateUserDto("FN", "LN", "invalidEmail", false);
         UUID tenantId = UUID.randomUUID();
         String language = "en";
 
@@ -764,7 +826,7 @@ class UserServiceImplTests {
     @Test
     public void GivenEmailOfExistingUser_WhenCreateUser_ExpectDtoValidateException() {
         // Given
-        CreateUserDto createUserDto = new CreateUserDto("FN", "LN", "email@domain.com");
+        CreateUserDto createUserDto = new CreateUserDto("FN", "LN", "email@domain.com", false);
         UUID tenantId = UUID.randomUUID();
         String language = "en";
 
@@ -818,14 +880,13 @@ class UserServiceImplTests {
 
         Passholder passholder = Passholder.builder()
                 .passNumber(passNumber)
-                .user(User.builder().build())
                 .build();
 
         // When
         when(passholderService.getPassholderByPassNumber(passNumber)).thenReturn(passholder);
 
         // Then
-        assertThrows(DtoValidateAlreadyExistsException.class, () -> userService.saveCitizen(registerUserDto, "en"));
+        assertThrows(DtoValidateNotFoundException.class, () -> userService.saveCitizen(registerUserDto, "en"));
     }
 
     @Test
@@ -836,21 +897,26 @@ class UserServiceImplTests {
         UUID tenantId = UUID.randomUUID();
         UUID currentUserId = UUID.randomUUID();
 
-        Role role = Role.builder().name(Role.ROLE_MUNICIPALITY_ADMIN).build();
+        List<Role> roles = List.of(
+                Role.builder().name(Role.ROLE_MUNICIPALITY_ADMIN).build(),
+                Role.builder().name(Role.ROLE_SUPER_ADMIN).build()
+        );
         User currentUser = User.builder().build();
         currentUser.setCreatedDate(LocalDateTime.now());
         currentUser.setId(currentUserId);
         currentUser.setUsername("test1@mail.com");
+        currentUser.setRole(roles.get(1));
         User otherUser = User.builder().build();
         otherUser.setCreatedDate(LocalDateTime.now());
         otherUser.setId(UUID.randomUUID());
         otherUser.setUsername("test2@mail.com");
+        otherUser.setRole(roles.getFirst());
 
         Page<User> userPage = new PageImpl<>(List.of(currentUser, otherUser));
 
-        when(roleRepository.findByName(Role.ROLE_MUNICIPALITY_ADMIN)).thenReturn(Optional.of(role));
+        when(roleRepository.findByNameIn(List.of(Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN))).thenReturn(roles);
         when(principleService.getTenantId()).thenReturn(tenantId);
-        when(userRepository.findAllByTenantIdAndRole(eq(tenantId), eq(role), any(Pageable.class))).thenReturn(userPage);
+        when(userRepository.findAllByTenantIdAndRoleIn(eq(tenantId), eq(roles), any(Pageable.class))).thenReturn(userPage);
         when(principleService.getUser()).thenReturn(currentUser);
 
         List<UserTableDto> result = userService.getAllAdminsByTenantIdPaginated(page, size);
@@ -863,11 +929,14 @@ class UserServiceImplTests {
     void GivenValidTenantId_WhenCountAllAdminsByTenantId_ThenReturnCountMinusOne() throws DtoValidateNotFoundException {
         // Given
         UUID tenantId = UUID.randomUUID();
-        Role role = Role.builder().name(Role.ROLE_MUNICIPALITY_ADMIN).build();
+        List<Role> roles = List.of(
+                Role.builder().name(Role.ROLE_MUNICIPALITY_ADMIN).build(),
+                Role.builder().name(Role.ROLE_SUPER_ADMIN).build()
+        );
 
-        when(roleRepository.findByName(Role.ROLE_MUNICIPALITY_ADMIN)).thenReturn(Optional.of(role));
+        when(roleRepository.findByNameIn(List.of(Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN))).thenReturn(roles);
         when(principleService.getTenantId()).thenReturn(tenantId);
-        when(userRepository.countAllByTenantIdAndRole(tenantId, role)).thenReturn(5);
+        when(userRepository.countAllByTenantIdAndRoleIn(tenantId, roles)).thenReturn(5);
 
         Integer result = userService.countAllAdminsByTenantId();
 
@@ -990,10 +1059,260 @@ class UserServiceImplTests {
         assertThrows(DtoValidateNotFoundException.class, () -> userService.validateToken(new SetupPasswordValidateDTO(username, token)));
     }
 
+    @Test
+    void GivenExistingPassholder_WhenDeletePassholder_ThenPassholderIsDeleted() throws DtoValidateException {
+        // Given
+        UUID passholderId = UUID.randomUUID();
+        UUID tenantId = UUID.randomUUID();
+        Passholder mockPassholder = new Passholder();
+        mockPassholder.setId(passholderId);
+        mockPassholder.setBsn("123456789");
+
+        User user = new User();
+        user.setId(UUID.randomUUID());
+        mockPassholder.setUser(user);
+
+        User currentUser = new User();
+        currentUser.setTenantId(tenantId);
+
+        when(principleService.getUser()).thenReturn(currentUser);
+        when(passholderService.findByIdAndTenantId(passholderId, tenantId)).thenReturn(mockPassholder);
+        when(offerTransactionService.getTransactionByUserId(user.getId())).thenReturn(Collections.emptyList());
+
+        // When
+        userService.deletePassholder(passholderId);
+
+        // Then
+        verify(passholderService, times(1)).deleteById(passholderId);
+    }
+
+    @Test
+    void GivenNonExistingPassholder_WhenDeletePassholder_ThenExceptionThrown() throws DtoValidateNotFoundException {
+        // Given
+        UUID passholderId = UUID.randomUUID();
+
+        // Then
+        assertThrows(NullPointerException.class, () -> userService.deletePassholder(passholderId));
+    }
+
+    @Test
+    void GivenUserId_WhenDeleteDiscountCodesForUserId_ThenDiscountCodesAreDeactivatedAndSaved() {
+        // Given
+        UUID userId = UUID.randomUUID();
+        DiscountCode code1 = new DiscountCode();
+        code1.setIsActive(true);
+        DiscountCode code2 = new DiscountCode();
+        code2.setIsActive(true);
+        List<DiscountCode> codes = List.of(code1, code2);
+
+        when(discountCodeService.getAllByUserId(userId)).thenReturn(codes);
+
+        // When
+        userService.deleteDiscountCodesForUserId(userId);
+
+        // Then
+        Assertions.assertFalse(code1.getIsActive());
+        Assertions.assertFalse(code2.getIsActive());
+        verify(discountCodeService, times(1)).saveAll(codes);
+    }
+
+    @Test
+    void GivenExistingPassholder_WhenDeletePassholder_ThenPassholderIsDeletedAndRelatedEntitiesUpdated() throws DtoValidateException {
+        // Given
+        UUID passholderId = UUID.randomUUID();
+        UUID tenantId = UUID.randomUUID();
+
+        Passholder passholder = new Passholder();
+        passholder.setId(passholderId);
+        passholder.setBsn("123456789");
+
+        User user = new User();
+        user.setId(UUID.randomUUID());
+        user.setTenantId(tenantId);
+        user.setUsername("123456789");
+        passholder.setUser(user);
+
+        User currentUser = new User();
+        currentUser.setTenantId(tenantId);
+
+        when(principleService.getUser()).thenReturn(currentUser);
+        when(passholderService.findByIdAndTenantId(passholderId, tenantId)).thenReturn(passholder);
+        when(offerTransactionService.getTransactionByUserId(user.getId())).thenReturn(Collections.emptyList());
+        when(discountCodeService.getAllByUserId(user.getId())).thenReturn(Collections.emptyList());
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        userService.deletePassholder(passholderId);
+
+        // Then
+        verify(passholderService, times(1)).deleteById(passholderId);
+        verify(citizenBenefitService, times(1)).deleteCitizenBenefitsByUserIdd(user.getId());
+        verify(discountCodeService, times(1)).saveAll(anyList());
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void GivenNonDigitalPassholder_WhenUpdateUsernameWhenDeletingPassholder_ThenUsernameIsUpdatedAndSaved() {
+        // Given
+        Passholder passholder = new Passholder();
+        User user = new User();
+        user.setUsername("bsn123");
+        passholder.setUser(user);
+        passholder.setBsn("bsn123");
+
+        // When
+        userService.updateUsernameWhenDeletingPassholder(passholder);
+
+        // Then
+        verify(userRepository).save(user);
+        Assertions.assertTrue(user.getUsername().startsWith("deleted_"));
+    }
+
+    @Test
+    void GivenDigitalPassholder_WhenUpdateUsernameWhenDeletingPassholder_ThenUsernameIsNotUpdated() {
+        // Given
+        Passholder passholder = new Passholder();
+        User user = new User();
+        user.setUsername("otherUsername");
+        passholder.setUser(user);
+        passholder.setBsn("bsn123");
+
+        // When
+        userService.updateUsernameWhenDeletingPassholder(passholder);
+
+        // Then
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+
+    @SneakyThrows
+    public void GivenValidCitizenDtos_WhenSaveCitizens_ThenAllUsersSaved() {
+        List<RegisterCitizenUserDto> dtos = List.of(
+                RegisterCitizenUserDto.builder().email("user1@domain.com").passNumber("123").build(),
+                RegisterCitizenUserDto.builder().email("user2@domain.com").passNumber("456").build()
+        );
+
+        Tenant tenant1 = new Tenant();
+        tenant1.setId(UUID.randomUUID());
+
+        Passholder passholder1 = Passholder.builder()
+                .tenant(tenant1).build();
+
+        Tenant tenant2 = new Tenant();
+        tenant2.setId(UUID.randomUUID());
+
+        Passholder passholder2 = Passholder.builder()
+                .tenant(tenant2).build();
+
+        Role role = Role.builder().name(Role.ROLE_CITIZEN).build();
+
+        when(roleRepository.findByName(Role.ROLE_CITIZEN)).thenReturn(Optional.of(role));
+        when(passholderService.getPassholderByPassNumber("123")).thenReturn(passholder1);
+        when(passholderService.getPassholderByPassNumber("456")).thenReturn(passholder2);
+
+        userService.saveCitizens(dtos, "en");
+
+        verify(userRepository, times(1)).saveAll(argThat(users ->
+                (int) StreamSupport.stream(users.spliterator(), false).count() == 2));
+    }
+
+    @SneakyThrows
+    public void GivenDuplicatePassNumber_WhenSaveCitizens_ThenThrowDtoValidateAlreadyExistsException() {
+        List<RegisterCitizenUserDto> dtos = List.of(
+                RegisterCitizenUserDto.builder().email("user1@domain.com").passNumber("123").build()
+        );
+
+        Passholder passholder = Passholder.builder().user(new User()).build();
+
+        when(passholderService.getPassholderByPassNumber("123")).thenReturn(passholder);
+
+        assertThrows(DtoValidateAlreadyExistsException.class, () -> userService.saveCitizens(dtos, "en"));
+    }
+
+    @SneakyThrows
+    public void GivenInvalidEmail_WhenSaveCitizens_ThenThrowDtoValidateException() {
+        List<RegisterCitizenUserDto> dtos = List.of(
+                RegisterCitizenUserDto.builder().email("invalidEmail").passNumber("123").build()
+        );
+
+        assertThrows(DtoValidateException.class, () -> userService.saveCitizens(dtos, "en"));
+    }
+
+    @SneakyThrows
+    public void GivenEmptyDtoList_WhenSaveCitizens_ThenNoUsersSaved() {
+        List<RegisterCitizenUserDto> dtos = Collections.emptyList();
+
+        userService.saveCitizens(dtos, "en");
+
+        verify(userRepository, never()).saveAll(anyList());
+    }
+
+
     private static Stream<Arguments> provideValidAndInvalidTokens() {
         return Stream.of(
                 Arguments.of("user1@domain.com", "validToken", true),
                 Arguments.of("user2@domain.com", "invalidToken", false)
         );
+    }
+
+    @Test
+    void GivenNullEmails_WhenDeleteCashierUsers_ThenNoInteractionWithRepository() {
+        // Given
+        Supplier supplier = Supplier.builder().build();
+        supplier.setId(UUID.randomUUID());
+
+        // When
+        userService.deleteCashierUsers(supplier, null);
+
+        // Then
+        verify(userRepository, never()).saveAll(any());
+    }
+
+    @Test
+    void GivenEmptyEmails_WhenDeleteCashierUsers_ThenNoInteractionWithRepository() {
+        // Given
+        Supplier supplier = Supplier.builder().build();
+        supplier.setId(UUID.randomUUID());
+
+        // When
+        userService.deleteCashierUsers(supplier, Set.of());
+
+        // Then
+        verify(userRepository, never()).saveAll(any());
+    }
+
+    @Test
+    void GivenMatchingCashierEmails_WhenDeleteCashierUsers_ThenCashiersAreDeactivatedAndSaved() {
+        // Given
+        UUID supplierId = UUID.randomUUID();
+        Supplier supplier = Supplier.builder().build();
+        supplier.setId(supplierId);
+
+        Role cashierRole = Role.builder().name(Role.ROLE_CASHIER).build();
+
+        User cashier1 = User.builder().username("cashier1@domain.com").build();
+        cashier1.setActive(true);
+        User cashier2 = User.builder().username("cashier2@domain.com").build();
+        cashier2.setActive(true);
+        User cashier3 = User.builder().username("cashier3@domain.com").build();
+        cashier3.setActive(true);
+
+        when(roleRepository.findByName(Role.ROLE_CASHIER)).thenReturn(Optional.of(cashierRole));
+        when(userRepository.findAllBySupplierIdAndRole(supplierId, cashierRole))
+                .thenReturn(List.of(cashier1, cashier2, cashier3));
+
+        Set<String> emailsToDelete = Set.of("cashier1@domain.com", "cashier2@domain.com");
+
+        // When
+        userService.deleteCashierUsers(supplier, emailsToDelete);
+
+        // Then
+        verify(userRepository, times(1)).saveAll(argThat(saved -> {
+            List<User> savedList = new ArrayList<>();
+            saved.forEach(savedList::add);
+            return savedList.size() == 2 &&
+                    savedList.stream().allMatch(u -> !u.isActive()) &&
+                    savedList.stream().allMatch(u -> u.getUsername().startsWith("deleted_"));
+        }));
     }
 }

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 
 @Component({
 	selector: 'frontend-terms-and-conditions-dialog',

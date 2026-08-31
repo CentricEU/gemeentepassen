@@ -1,7 +1,9 @@
 package nl.centric.innovation.local4local.controller;
 
-
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.dto.AccountDeletionReasonsDto;
 import nl.centric.innovation.local4local.dto.ChangePasswordDTO;
@@ -39,9 +41,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -173,7 +172,7 @@ public class UserController {
             summary = "Create a new user",
             description = "Create a new user with the given information"
     )
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     public ResponseEntity<Void> createUser(@RequestBody @Valid CreateUserDto createUserDto,
                                            @CookieValue(value = "language_municipality", defaultValue = "nl-NL") String language)
             throws DtoValidateException {
@@ -183,7 +182,7 @@ public class UserController {
     }
 
     @GetMapping("/admins/paginated")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     @Operation(
             summary = "Retrieve paginated admin list without the logged in admin",
             description = "Allows a Municipality Admin to retrieve a paginated list of admins associated with the tenant of the logged in admin."
@@ -196,7 +195,7 @@ public class UserController {
     }
 
     @GetMapping("/admins/count")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     @Operation(
             summary = "Retrieve the number of admins without the logged in admin",
             description = "Allows a Municipality Admin to retrieve the total number of admins without him."

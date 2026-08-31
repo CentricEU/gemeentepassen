@@ -1,21 +1,19 @@
 package nl.centric.innovation.local4local.unit;
 
 import lombok.SneakyThrows;
+import nl.centric.innovation.local4local.dto.FilterPassholdersRequestDto;
 import nl.centric.innovation.local4local.dto.PassholderViewDto;
 import nl.centric.innovation.local4local.entity.Benefit;
 import nl.centric.innovation.local4local.entity.CitizenGroup;
 import nl.centric.innovation.local4local.entity.Passholder;
 import nl.centric.innovation.local4local.entity.Tenant;
 import nl.centric.innovation.local4local.entity.User;
-import nl.centric.innovation.local4local.exceptions.DtoValidateException;
 import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
-import nl.centric.innovation.local4local.repository.CitizenGroupRepository;
 import nl.centric.innovation.local4local.repository.PassholderRepository;
 import nl.centric.innovation.local4local.repository.TenantRepository;
 import nl.centric.innovation.local4local.service.impl.CitizenBenefitService;
 import nl.centric.innovation.local4local.service.impl.PassholderService;
 import nl.centric.innovation.local4local.service.impl.PrincipalService;
-import nl.centric.innovation.local4local.util.LocalDateParser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,25 +24,20 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import static nl.centric.innovation.local4local.service.impl.PassholderService.ORDER_CRITERIA;
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,94 +45,18 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PassholderServiceImplTests {
 
+    private static final UUID TENANT_ID = UUID.randomUUID();
+    private static final UUID PASSHOLDER_ID = UUID.randomUUID();
     @InjectMocks
     private PassholderService passholderService;
-
     @Mock
     private TenantRepository tenantRepository;
-
     @Mock
     private PassholderRepository passholderRepository;
-
     @Mock
     private PrincipalService principalService;
-
     @Mock
     private CitizenBenefitService citizenBenefitService;
-
-    @Mock
-    private LocalDateParser dateParser;
-
-    @Mock
-    private CitizenGroupRepository citizenGroupRepository;
-
-    private static final UUID TENANT_ID = UUID.randomUUID();
-
-    private static final UUID CITIZEN_GROUP_ID = UUID.randomUUID();
-
-    @Test
-    void GivenInvalidData_WhenSaveFromCSVFile_ThenExpectDtoValidateException() {
-        // Given
-        Tenant tenant1 = new Tenant();
-        tenant1.setId(TENANT_ID);
-        String csvContent = """
-                name,address,bsn,passNumber,expiringDate,residenceCity
-                Dan,str Veche,45454545,1412545,1021/023/2024,Iasi
-                """;
-
-        MultipartFile file = new MockMultipartFile("data.csv", "filename.csv", "text/plain", csvContent.getBytes());
-        when(principalService.getTenantId()).thenReturn(TENANT_ID);
-        when(tenantRepository.findById(TENANT_ID)).thenReturn(Optional.of(tenant1));
-
-        // Then
-        assertThrows(DtoValidateException.class, () -> passholderService.saveFromCSVFile(file, CITIZEN_GROUP_ID));
-
-    }
-
-    @Test
-    @SneakyThrows
-    void GivenValidData_WhenSaveFromCSVFile_ThenExpectSuccess() {
-        // Given
-        Tenant tenant1 = new Tenant();
-        CitizenGroup mockGroup = new CitizenGroup();
-        mockGroup.setTenantId(TENANT_ID);
-        tenant1.setId(TENANT_ID);
-        String csvContent = """
-                name,address,bsn,passNumber,expiringDate,residenceCity
-                Dan,str Veche,45454545,1412545,02/02/2024,Iasi
-                """;
-
-        MultipartFile file = new MockMultipartFile("data.csv", "filename.csv", "text/plain", csvContent.getBytes());
-        when(principalService.getTenantId()).thenReturn(TENANT_ID);
-        List<Passholder> mockPassholders = Arrays.asList(new Passholder());
-        when(passholderRepository.saveAll(anyList())).thenReturn(mockPassholders);
-        when(tenantRepository.findById(TENANT_ID)).thenReturn(Optional.of(tenant1));
-        when(dateParser.parseDateString(any(String.class))).thenReturn(Optional.of(LocalDate.of(2024, 02, 02)));
-        when(citizenGroupRepository.findById(CITIZEN_GROUP_ID)).thenReturn(Optional.of(mockGroup));
-        // When
-        List<Passholder> result = passholderService.saveFromCSVFile(file, CITIZEN_GROUP_ID);
-
-        // Then
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        verify(passholderRepository, times(1)).saveAll(anyList());
-    }
-
-    @Test
-    void GivenInvalidTenant_WhenSaveFromCSVFile_ThenExpectThrow() {
-        UUID invalidTenantUUID = UUID.randomUUID();
-
-        when(tenantRepository.findById(invalidTenantUUID)).thenReturn(Optional.empty());
-        when(principalService.getTenantId()).thenReturn(invalidTenantUUID);
-
-        MockMultipartFile file = new MockMultipartFile("file", "test.csv", "text/csv",
-                "Column1,Column2\nValue1,Value2\n".getBytes());
-
-        assertThrows(DtoValidateNotFoundException.class, () -> passholderService.saveFromCSVFile(file, CITIZEN_GROUP_ID));
-
-        verify(tenantRepository, times(1)).findById(invalidTenantUUID);
-        verify(passholderRepository, never()).saveAll(any());
-    }
 
     @Test
     @SneakyThrows
@@ -208,7 +125,7 @@ class PassholderServiceImplTests {
 
         // When
         when(principalService.getTenantId()).thenReturn(TENANT_ID);
-        when(passholderRepository.findById(passholderId)).thenReturn(Optional.of(Passholder.passholderViewDtoToEntity(inputDto, tenant1)));
+        when(passholderRepository.findByIdAndTenantId(passholderId, TENANT_ID)).thenReturn(Optional.of(Passholder.passholderViewDtoToEntity(inputDto, tenant1)));
         when(tenantRepository.findById(TENANT_ID)).thenReturn(Optional.of(tenant1));
         when(passholderRepository.save(any(Passholder.class))).thenAnswer(invocation -> {
             Passholder savedPassholder = invocation.getArgument(0);
@@ -222,34 +139,6 @@ class PassholderServiceImplTests {
 
         assertEquals(inputDto.id(), resultDto.id());
 
-    }
-
-    @Test
-    void GivenExistingPassholder_WhenDeletePassholder_ThenPassholderIsDeleted() throws DtoValidateNotFoundException {
-        // Given
-        UUID passholderId = UUID.randomUUID();
-        Passholder mockPassholder = new Passholder();
-        mockPassholder.setId(passholderId);
-
-        when(passholderRepository.findById(passholderId)).thenReturn(Optional.of(mockPassholder));
-
-        // When
-        passholderService.deletePassholder(passholderId);
-
-        // Then
-        verify(passholderRepository, times(1)).deleteById(passholderId);
-    }
-
-    @Test
-    void GivenNonExistingPassholder_WhenDeletePassholder_ThenExceptionThrown() {
-        // Given
-        UUID passholderId = UUID.randomUUID();
-
-        // When
-        when(passholderRepository.findById(passholderId)).thenReturn(Optional.empty());
-
-        // Then
-        assertThrows(DtoValidateNotFoundException.class, () -> passholderService.deletePassholder(passholderId));
     }
 
     @Test
@@ -304,24 +193,88 @@ class PassholderServiceImplTests {
     }
 
     @Test
-    void GivenMissingRequiredField_WhenSaveFromCSVFile_ThenExpectDtoValidateException() {
+    void givenExistingPassholder_whenGetPassholderDetails_thenReturnViewDto() throws DtoValidateNotFoundException {
         // Given
-        Tenant tenant = new Tenant();
-        tenant.setId(TENANT_ID);
+        Passholder passholder = Passholder.builder().address("randomAddress").bsn("randomBSN")
+                .name("randomName").passNumber("randomPassNo").residenceCity("residenceCity")
+                .expiringDate(LocalDate.now()).tenant(new Tenant()).build();
+        passholder.setId(PASSHOLDER_ID);
 
-        String csvContent = """
-                name,address,bsn,passNumber,expiringDate,residenceCity
-                Dan,str Veche,,1412545,02/02/2024,Iasi
-                """;
-
-        MultipartFile file = new MockMultipartFile("data.csv", "filename.csv", "text/plain", csvContent.getBytes());
+        when(principalService.getTenantId()).thenReturn(TENANT_ID);
+        when(passholderRepository.findByIdAndTenantId(PASSHOLDER_ID, TENANT_ID))
+                .thenReturn(Optional.of(passholder));
 
         // When
-        when(principalService.getTenantId()).thenReturn(TENANT_ID);
-        when(tenantRepository.findById(TENANT_ID)).thenReturn(Optional.of(tenant));
+        PassholderViewDto result =
+                passholderService.getPassholderDetails(PASSHOLDER_ID);
 
-        // Then & Verify
-        assertThrows(DtoValidateException.class, () -> passholderService.saveFromCSVFile(file, CITIZEN_GROUP_ID));
+        // Then
+        assertNotNull(result);
+        // Optional: verify mapping fields if deterministic
+        verify(passholderRepository)
+                .findByIdAndTenantId(PASSHOLDER_ID, TENANT_ID);
     }
 
+    @Test
+    void givenPassholderNotFound_whenGetPassholderDetails_thenThrowNotFoundException() {
+        // Given
+        when(principalService.getTenantId()).thenReturn(TENANT_ID);
+        when(passholderRepository.findByIdAndTenantId(PASSHOLDER_ID, TENANT_ID))
+                .thenReturn(Optional.empty());
+
+        // When + Then
+        assertThrows(
+                DtoValidateNotFoundException.class,
+                () -> passholderService.getPassholderDetails(PASSHOLDER_ID)
+        );
+
+        verify(passholderRepository)
+                .findByIdAndTenantId(PASSHOLDER_ID, TENANT_ID);
+    }
+
+    @Test
+    void GivenFilterParams_WhenGetFilteredPassholders_ThenDtosReturned() {
+        // Given
+        FilterPassholdersRequestDto filterParams = new FilterPassholdersRequestDto("123456789", "AbC987");
+        Pageable pageable = PageRequest.of(0, 10, Sort.by(ORDER_CRITERIA));
+        Passholder mockPassholder = Passholder.builder().address("address").bsn("123456789")
+                .name("randomName").passNumber("AbC987").residenceCity("residenceCity")
+                .expiringDate(LocalDate.now()).tenant(new Tenant()).build();
+        mockPassholder.setId(UUID.randomUUID());
+        mockPassholder.setCitizenGroup(CitizenGroup.builder().groupName("groupName").build());
+
+        Page<Passholder> passholderPage = new PageImpl<>(List.of(mockPassholder));
+        String expectedBsn = "%123456789%";
+        String expectedPassNumber = "%abc987%";
+
+        when(principalService.getTenantId()).thenReturn(TENANT_ID);
+        when(passholderRepository.findAllByFilterCriteria(eq(TENANT_ID), eq(expectedBsn), eq(expectedPassNumber), eq(pageable)))
+                .thenReturn(passholderPage);
+
+        // When
+        List<PassholderViewDto> result = passholderService.getFilteredPassholders(filterParams, 0, 10);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(passholderRepository, times(1)).findAllByFilterCriteria(eq(TENANT_ID), eq(expectedBsn), eq(expectedPassNumber), eq(pageable));
+    }
+
+    @Test
+    void GivenFilterParams_WhenCountFilteredPassholders_ThenCountReturned() {
+        // Given
+        FilterPassholdersRequestDto filterParams = new FilterPassholdersRequestDto("123456789", "AbC987");
+        String expectedBsn = "%123456789%";
+        String expectedPassNumber = "%abc987%";
+
+        when(principalService.getTenantId()).thenReturn(TENANT_ID);
+        when(passholderRepository.countAllByFilterCriteria(eq(TENANT_ID), eq(expectedBsn), eq(expectedPassNumber))).thenReturn(5);
+
+        // When
+        Integer result = passholderService.countFilteredPassholders(filterParams);
+
+        // Then
+        assertEquals(5, result);
+        verify(passholderRepository, times(1)).countAllByFilterCriteria(eq(TENANT_ID), eq(expectedBsn), eq(expectedPassNumber));
+    }
 }

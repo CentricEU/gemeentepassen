@@ -10,6 +10,7 @@ import { FormUtil, FrequencyOfUse } from '@frontend/common';
 })
 export class FrequencyOfUseComponent {
 	@Input() createOfferForm: FormGroup;
+	@Input() shouldBeDisplayed = true;
 	@Input() isReadonly: boolean;
 
 	public clearRestrictionValidatorsAndErrors = FormUtil.clearRestrictionValidatorsAndErrors;
@@ -22,14 +23,6 @@ export class FrequencyOfUseComponent {
 			'offer.frequencyOfUse.monthly',
 			'offer.frequencyOfUse.yearly',
 		];
-	}
-
-	public shouldCheckFirst(type: string): boolean {
-		if (this.isReadonly) {
-			return false;
-		}
-
-		return type === 'offer.frequencyOfUse.singleUse';
 	}
 
 	public mapToFrequencyOfUseEnum(value: string): FrequencyOfUse {
@@ -49,10 +42,17 @@ export class FrequencyOfUseComponent {
 		}
 	}
 
-	public onRestrictionTypeChange(field: string, value: string | unknown): void {
-		const idControl = this.createOfferForm.get(field);
+	public onRestrictionTypeChange(field: string, value: FrequencyOfUse): void {
+		const control = this.createOfferForm.get('frequencyOfUseValue');
 
-		if (!value || idControl?.value === '') {
+		if (!control) {
+			return;
+		}
+
+		if (control.value === value) {
+			control.setValue(null);
+			control.markAsDirty();
+			control.markAsTouched();
 			return;
 		}
 

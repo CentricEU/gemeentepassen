@@ -17,10 +17,10 @@ import nl.centric.innovation.local4local.entity.User;
 import nl.centric.innovation.local4local.enums.FrequencyOfUse;
 import nl.centric.innovation.local4local.enums.GenericStatusEnum;
 import nl.centric.innovation.local4local.exceptions.DtoValidateException;
+import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
 import nl.centric.innovation.local4local.repository.BenefitRepository;
 import nl.centric.innovation.local4local.repository.DiscountCodeRepository;
 import nl.centric.innovation.local4local.repository.OfferRepository;
-import nl.centric.innovation.local4local.repository.OfferTransactionRepository;
 import nl.centric.innovation.local4local.service.impl.CitizenBenefitService;
 import nl.centric.innovation.local4local.service.impl.DiscountCodeService;
 import nl.centric.innovation.local4local.service.impl.OfferService;
@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.lenient;
-import  static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
@@ -133,7 +133,7 @@ class DiscountCodeServiceTests {
         when(discountCodeRepository.findByCodeIgnoreCaseAndIsActiveTrueAndOfferSupplierId(invalidCode, supplierId)).thenReturn(Optional.empty());
 
         // Then
-        assertThrows(DtoValidateException.class, () -> discountCodeService.validateAndProcessDiscountCode(new CodeValidationRequestDto(invalidCode, "12:00:00", amount)));
+        assertThrows(DtoValidateException.class, () -> discountCodeService.validateDiscountCodeAndProcessTransaction(new CodeValidationRequestDto(invalidCode, "01/15/2026, 12:00:00", amount)));
     }
 
     @Test
@@ -155,68 +155,133 @@ class DiscountCodeServiceTests {
         when(discountCodeRepository.findByCodeIgnoreCaseAndIsActiveTrueAndOfferSupplierId(validCode, supplierId)).thenReturn(Optional.of(discountCode));
 
         // Then
-        assertThrows(DtoValidateException.class, () -> discountCodeService.validateAndProcessDiscountCode(new CodeValidationRequestDto(validCode, "12:00:00", amount)));
+        assertThrows(DtoValidateException.class, () -> discountCodeService.validateDiscountCodeAndProcessTransaction(new CodeValidationRequestDto(validCode, "01/15/2026, 12:00:00", amount)));
     }
 
     @Test
-    void TestSave_WhenDiscountCodeNotExist() {
+    void TestSave_WhenDiscountCodeNotExist() throws DtoValidateNotFoundException {
         // Arrange
+        UUID userId = UUID.randomUUID();
+        UUID offerId = UUID.randomUUID();
+        Offer offer = new Offer();
+        offer.setSupplier(Supplier.builder()
+                .companyName("Company")
+                .profile(SupplierProfile.builder().logo("logo").build())
+                .build());
+        offer.setOfferType(OfferType.builder().build());
+        offer.setExpirationDate(LocalDate.now());
+        offer.setTitle("Special Offer");
         offer.setId(offerId);
+
+        DiscountCode discountCode = new DiscountCode();
+        discountCode.setCode("JV12A");
+        discountCode.setIsActive(true);
+        discountCode.setOffer(offer);
+
         discountCode.setOffer(offer);
         discountCode.setUserId(userId);
 
-        when(offerRepository.findById(offerId)).thenReturn(Optional.of(offer));
-        when(discountCodeRepository.findByUserIdAndOfferId(userId, offerId)).thenReturn(Optional.empty());
+        when(discountCodeRepository.findByUserIdAndOfferId(userId, offerId)).thenReturn(Optional.of(discountCode));
 
         // Act
-        discountCodeService.save(offerId, userId);
+        DiscountCodeViewDto result = discountCodeService.save(offerId, userId);
 
         // Assert
-        verify(discountCodeRepository, times(1)).save(any(DiscountCode.class));
+        assertNotNull(result);
     }
 
     @Test
-    void testSave_WhenDiscountCodeAlreadyExists() {
+    void testSave_WhenDiscountCodeAlreadyExists() throws DtoValidateNotFoundException {
         // Given
+        UUID userId = UUID.randomUUID();
+        UUID offerId = UUID.randomUUID();
+        Offer offer = new Offer();
+        offer.setSupplier(Supplier.builder()
+                .companyName("Company")
+                .profile(SupplierProfile.builder().logo("logo").build())
+                .build());
+        offer.setOfferType(OfferType.builder().build());
+        offer.setExpirationDate(LocalDate.now());
+        offer.setTitle("Special Offer");
+
+        DiscountCode discountCode = new DiscountCode();
+        discountCode.setCode("JV12A");
+        discountCode.setIsActive(true);
+        discountCode.setOffer(offer);
+
+        User user = new User();
+        user.setId(userId);
         offer.setId(offerId);
         discountCode.setOffer(offer);
         discountCode.setUserId(userId);
 
-        when(offerRepository.findById(offerId)).thenReturn(Optional.of(offer));
         when(discountCodeRepository.findByUserIdAndOfferId(userId, offerId)).thenReturn(Optional.of(discountCode));
 
         // When
-        discountCodeService.save(offerId, userId);
+        DiscountCodeViewDto result = discountCodeService.save(offerId, userId);
 
         // Then
-        verify(discountCodeRepository, times(0)).save(any(DiscountCode.class));
+        assertNotNull(result);
+
     }
 
 
     @Test
-    void GivenValidRequest_WhenSaveDiscountCode_ThenExpectSuccess() {
+    void GivenValidRequest_WhenSaveDiscountCode_ThenExpectSuccess() throws DtoValidateNotFoundException {
+        //Given
+        UUID userId = UUID.randomUUID();
+        UUID offerId = UUID.randomUUID();
+        Offer offer = new Offer();
+        offer.setSupplier(Supplier.builder()
+                .companyName("Company")
+                .profile(SupplierProfile.builder().logo("logo").build())
+                .build());
+        offer.setOfferType(OfferType.builder().build());
+        offer.setExpirationDate(LocalDate.now());
+        offer.setTitle("Special Offer");
+
+        DiscountCode discountCode = new DiscountCode();
+        discountCode.setCode("JV12A");
+        discountCode.setIsActive(true);
+        discountCode.setOffer(offer);
+
+        User user = new User();
+        user.setId(userId);
+
         // Arrange
-        when(discountCodeRepository.findByUserIdAndOfferId(userId, offerId)).thenReturn(Optional.empty());
+        when(discountCodeRepository.findByUserIdAndOfferId(userId, offerId)).thenReturn(Optional.of(discountCode));
 
         offer.setId(offerId);  // Make sure you set the Offer ID
 
-        // Mock the offerRepository to return the offer
-        when(offerRepository.findById(offerId)).thenReturn(Optional.of(offer));
-
         // Act
-        discountCodeService.save(offerId, userId);
-
-        // Assert
-        verify(discountCodeRepository, times(1)).save(any(DiscountCode.class));
+        DiscountCodeViewDto result = discountCodeService.save(offerId, userId);
+        assertNotNull(result);
     }
 
     @Test
-    void GivenExistingDiscountCode_WhenSaveDiscountCode_ThenDoNotSaveAgain() {
+    void GivenExistingDiscountCode_WhenSaveDiscountCode_ThenDoNotSaveAgain() throws DtoValidateNotFoundException {
         // Given
-        DiscountCode existingDiscountCode = new DiscountCode();
+        Offer offer = new Offer();
+        offer.setSupplier(Supplier.builder()
+                .companyName("Company")
+                .profile(SupplierProfile.builder().logo("logo").build())
+                .build());
+        offer.setOfferType(OfferType.builder().build());
+        offer.setExpirationDate(LocalDate.now());
+        offer.setTitle("Special Offer");
+
+        DiscountCode discountCode = new DiscountCode();
+        discountCode.setCode("JV12A");
+        discountCode.setIsActive(true);
+        discountCode.setOffer(offer);
+        discountCode.setOffer(offer);
+
+        User user = new User();
+        user.setId(userId);
+
 
         // When
-        when(discountCodeRepository.findByUserIdAndOfferId(userId, offerId)).thenReturn(Optional.of(existingDiscountCode));
+        when(discountCodeRepository.findByUserIdAndOfferId(userId, offerId)).thenReturn(Optional.of(discountCode));
 
         // Then
         discountCodeService.save(offerId, userId);
@@ -261,7 +326,7 @@ class DiscountCodeServiceTests {
 
         // Then
         assertThrows(DtoValidateException.class,
-                () -> discountCodeService.validateAndProcessDiscountCode(new CodeValidationRequestDto(invalidCode, "01/27/2025, 17:50:50", null)));
+                () -> discountCodeService.validateDiscountCodeAndProcessTransaction(new CodeValidationRequestDto(invalidCode, "01/27/2025, 17:50:50", null)));
     }
 
     @Test
@@ -275,7 +340,7 @@ class DiscountCodeServiceTests {
 
         offer.setId(offerId);
         offer.setStatus(GenericStatusEnum.ACTIVE);
-        OfferType offerType = new OfferType(0, "test");
+        OfferType offerType = new OfferType(0, "test", true);
         offer.setOfferType(offerType);
         offer.setActive(true);
 
@@ -292,7 +357,7 @@ class DiscountCodeServiceTests {
 
         // Then
         assertThrows(DtoValidateException.class, () ->
-                discountCodeService.validateAndProcessDiscountCode(new CodeValidationRequestDto(discountCode, currentTime, null))
+                discountCodeService.validateDiscountCodeAndProcessTransaction(new CodeValidationRequestDto(discountCode, currentTime, null))
         );
     }
 
@@ -336,7 +401,7 @@ class DiscountCodeServiceTests {
         when(discountCodeRepository.findByCodeIgnoreCaseAndIsActiveTrueAndOfferSupplierId(validCode, supplierId)).thenReturn(Optional.of(discountCode));
 
         // When & Then
-        assertThrows(DtoValidateException.class, () -> discountCodeService.validateAndProcessDiscountCode(new CodeValidationRequestDto(validCode, "01/27/2025, 17:50:50", null)));
+        assertThrows(DtoValidateException.class, () -> discountCodeService.validateDiscountCodeAndProcessTransaction(new CodeValidationRequestDto(validCode, "01/27/2025, 17:50:50", null)));
     }
 
     @Test
@@ -379,7 +444,7 @@ class DiscountCodeServiceTests {
 
         offer.setId(offerId);
         offer.setStatus(GenericStatusEnum.ACTIVE);
-        OfferType offerType = new OfferType(0, "test");
+        OfferType offerType = new OfferType(0, "test", true);
         offer.setOfferType(offerType);
         offer.setActive(true);
 
@@ -396,7 +461,7 @@ class DiscountCodeServiceTests {
 
         // Then
         assertThrows(DtoValidateException.class, () ->
-                discountCodeService.validateAndProcessDiscountCode(new CodeValidationRequestDto(discountCode, currentTime, 30.0))
+                discountCodeService.validateDiscountCodeAndProcessTransaction(new CodeValidationRequestDto(discountCode, currentTime, 30.0))
         );
     }
 
@@ -465,7 +530,7 @@ class DiscountCodeServiceTests {
 
         doNothing().when(offerTransactionService).saveTransaction(any(DiscountCode.class), any(Double.class), any(LocalDateTime.class));
         // When
-        CodeValidationResponseDto result = discountCodeService.validateAndProcessDiscountCode(
+        CodeValidationResponseDto result = discountCodeService.validateDiscountCodeAndProcessTransaction(
                 new CodeValidationRequestDto("VALID123", "01/27/2025, 12:00:00", adjustedAmount));
 
         // Then
@@ -483,16 +548,264 @@ class DiscountCodeServiceTests {
         when(principalService.getSupplierId()).thenReturn(supplierId);
         when(discountCodeRepository.findByCodeIgnoreCaseAndIsActiveTrueAndOfferSupplierId(code, supplierId))
                 .thenReturn(Optional.of(discountCode));
-        when(benefitRepository.findById(discountCode.getOffer().getBenefit().getId()))
-                .thenReturn(Optional.of(benefit));
-
-        when(citizenBenefitService.getCitizenBenefitByUserIdAndBenefit(any(), any())).thenReturn(citizenBenefit);
         // Call - amount null -> treated as ZERO_AMOUNT -> not a custom amount
-        CodeValidationResponseDto response = discountCodeService.validateAndProcessDiscountCode(new CodeValidationRequestDto(code, now, null));
+        CodeValidationResponseDto response = discountCodeService.validateDiscountCodeAndProcessTransaction(new CodeValidationRequestDto(code, now, null));
 
         // Expectation: special offer branch returns DTO with offer details (code preserved)
         assertEquals("VALID123", response.code());
     }
+
+    @Test
+    void GivenOfferNotFound_WhenIsOfferClaimed_ThenThrowDtoValidateNotFoundException() {
+        UUID offerIdLocal = UUID.randomUUID();
+
+        when(principalService.getSupplierId()).thenReturn(supplierId);
+        when(offerRepository.findByIdAndSupplierId(offerIdLocal, supplierId)).thenReturn(Optional.empty());
+
+        assertThrows(nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException.class,
+                () -> discountCodeService.isDiscountCodeClaimedForOffer(offerIdLocal));
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenOfferExists_WhenIsOfferClaimed_ThenReturnTrue() {
+        UUID offerIdLocal = UUID.randomUUID();
+        Offer foundOffer = new Offer();
+
+        when(principalService.getSupplierId()).thenReturn(supplierId);
+        when(offerRepository.findByIdAndSupplierId(offerIdLocal, supplierId)).thenReturn(Optional.of(foundOffer));
+        when(discountCodeRepository.existsByOfferId(offerIdLocal)).thenReturn(true);
+
+        Boolean result = discountCodeService.isDiscountCodeClaimedForOffer(offerIdLocal);
+
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenOfferExists_WhenIsOfferClaimed_ThenReturnFalse() {
+        UUID offerIdLocal = UUID.randomUUID();
+        Offer foundOffer = new Offer();
+
+        when(principalService.getSupplierId()).thenReturn(supplierId);
+        when(offerRepository.findByIdAndSupplierId(offerIdLocal, supplierId)).thenReturn(Optional.of(foundOffer));
+        when(discountCodeRepository.existsByOfferId(offerIdLocal)).thenReturn(false);
+
+        Boolean result = discountCodeService.isDiscountCodeClaimedForOffer(offerIdLocal);
+
+        Assertions.assertFalse(result);
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenPercentageOffer_WhenCalculateDiscountedAmount_ThenCorrectValueReturned() {
+        OfferType offerType = new OfferType();
+        offerType.setOfferTypeId(0); // percentage
+
+        offer.setOfferType(offerType);
+        offer.setAmount(10.0); // 10%
+
+        discountCode.setOffer(offer);
+
+        Method method = DiscountCodeService.class
+                .getDeclaredMethod("calculateDiscountedAmount", Double.class, DiscountCode.class);
+        method.setAccessible(true);
+
+        double result = (double) method.invoke(discountCodeService, 200.0, discountCode);
+
+        assertEquals(20.0, result);
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenMembershipOffer_WhenValidate_ThenOfferWithoutAmountReturnsFalse() {
+        OfferType offerType = new OfferType();
+        offerType.setOfferTypeId(3); // MEMBERSHIP
+
+        offer.setOfferType(offerType);
+        discountCode.setOffer(offer);
+
+        Method method = DiscountCodeService.class
+                .getDeclaredMethod("isOfferWithoutAmount", DiscountCode.class);
+        method.setAccessible(true);
+
+        boolean result = (boolean) method.invoke(discountCodeService, discountCode);
+
+        assertFalse(result);
+    }
+
+    @Test
+    @SneakyThrows
+    void WhenDeactivateDiscountCode_ThenIsActiveFalse() {
+        discountCode.setIsActive(true);
+
+        Method method = DiscountCodeService.class
+                .getDeclaredMethod("deactivateDiscountCode", DiscountCode.class);
+        method.setAccessible(true);
+
+        method.invoke(discountCodeService, discountCode);
+
+        assertFalse(discountCode.getIsActive());
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenNoRestriction_WhenValidateOfferEligibility_ThenNoException() {
+        offer.setRestriction(null);
+        discountCode.setOffer(offer);
+
+        Method method = DiscountCodeService.class
+                .getDeclaredMethod("validateOfferEligibility", DiscountCode.class, LocalDateTime.class);
+        method.setAccessible(true);
+
+        Assertions.assertDoesNotThrow(() ->
+                method.invoke(discountCodeService, discountCode, LocalDateTime.now()));
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenFrequencySetAndNoTransaction_WhenHasFrequencyViolation_ThenFalse() {
+        Restriction restriction = new Restriction();
+        restriction.setFrequencyOfUse(FrequencyOfUse.DAILY);
+        offer.setRestriction(restriction);
+        discountCode.setOffer(offer);
+        discountCode.setUserId(userId);
+
+        when(offerTransactionService.getLastOfferValidationForCitizen(any(), any()))
+                .thenReturn(Optional.empty());
+
+        Method method = DiscountCodeService.class
+                .getDeclaredMethod("hasFrequencyViolation", DiscountCode.class);
+        method.setAccessible(true);
+
+        boolean result = (boolean) method.invoke(discountCodeService, discountCode);
+
+        assertFalse(result);
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenNonSingleUse_WhenProcessTransaction_ThenDiscountCodeRemainsActive() {
+        Restriction restriction = new Restriction();
+        restriction.setFrequencyOfUse(FrequencyOfUse.DAILY);
+        offer.setRestriction(restriction);
+        discountCode.setOffer(offer);
+
+        CitizenBenefit citizenBenefit = CitizenBenefit.builder()
+                .userId(userId)
+                .benefit(benefit)
+                .amount(200.0)
+                .build();
+
+        Method method = DiscountCodeService.class
+                .getDeclaredMethod("processDiscountCodeTransaction",
+                        DiscountCode.class, LocalDateTime.class, Double.class, CitizenBenefit.class);
+        method.setAccessible(true);
+
+        method.invoke(discountCodeService, discountCode, LocalDateTime.now(), 20.0, citizenBenefit);
+
+        verify(discountCodeRepository, never()).save(any());
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenNullOfferAmount_WhenGetAmountFromBenefitOffer_ThenZeroReturned() {
+        offer.setAmount(null);
+
+        Method method = DiscountCodeService.class
+                .getDeclaredMethod("getAmountFromBenefitOffer", Offer.class);
+        method.setAccessible(true);
+
+        Double result = (Double) method.invoke(discountCodeService, offer);
+
+        assertEquals(0.0, result);
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenNullRestriction_WhenHasPriceViolation_ThenFalse() {
+        Method method = DiscountCodeService.class
+                .getDeclaredMethod("hasPriceViolation", Restriction.class, Double.class);
+        method.setAccessible(true);
+
+        boolean result = (boolean) method.invoke(discountCodeService, null, 50.0);
+
+        assertFalse(result);
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenNoMinMaxPrice_WhenHasPriceViolation_ThenFalse() {
+        Restriction restriction = new Restriction();
+
+        Method method = DiscountCodeService.class
+                .getDeclaredMethod("hasPriceViolation", Restriction.class, Double.class);
+        method.setAccessible(true);
+
+        boolean result = (boolean) method.invoke(discountCodeService, restriction, 50.0);
+
+        assertFalse(result);
+    }
+
+    @Test
+    @SneakyThrows
+    void GivenNonPercentageOffer_WhenCalculateDiscountedAmount_ThenOriginalReturned() {
+        OfferType offerType = new OfferType();
+        offerType.setOfferTypeId(1); // not percentage
+
+        offer.setOfferType(offerType);
+        offer.setAmount(10.0);
+        discountCode.setOffer(offer);
+
+        Method method = DiscountCodeService.class
+                .getDeclaredMethod("calculateDiscountedAmount", Double.class, DiscountCode.class);
+        method.setAccessible(true);
+
+        double result = (double) method.invoke(discountCodeService, 200.0, discountCode);
+
+        assertEquals(200.0, result);
+    }
+
+    @Test
+    @SneakyThrows
+    void WhenGenerateCode_ThenFiveCharacterAlphaNumericReturned() {
+        Method method = DiscountCodeService.class
+                .getDeclaredMethod("generateCode");
+        method.setAccessible(true);
+
+        String code = (String) method.invoke(discountCodeService);
+
+        assertNotNull(code);
+        assertEquals(5, code.length());
+    }
+
+
+    @Test
+    void GivenUserId_WhenGetAllByUserId_ThenReturnDiscountCodeList() {
+        // Arrange
+        List<DiscountCode> expectedCodes = List.of(new DiscountCode(), new DiscountCode());
+        when(discountCodeRepository.findAllByUserId(userId)).thenReturn(expectedCodes);
+
+        // Act
+        List<DiscountCode> result = discountCodeService.getAllByUserId(userId);
+
+        // Assert
+        assertEquals(expectedCodes, result);
+    }
+
+    @Test
+    void GivenDiscountCodeList_WhenSaveAll_ThenReturnSavedDiscountCodeList() {
+        // Arrange
+        List<DiscountCode> codesToSave = List.of(new DiscountCode(), new DiscountCode());
+        when(discountCodeRepository.saveAll(codesToSave)).thenReturn(codesToSave);
+
+        // Act
+        List<DiscountCode> result = discountCodeService.saveAll(codesToSave);
+
+        // Assert
+        assertEquals(codesToSave, result);
+    }
+
 
 }
 

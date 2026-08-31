@@ -36,21 +36,23 @@ describe('TimeSlotsComponent', () => {
 		expect(component).toBeTruthy();
 	});
 
-	it('should return the translated error message for time slot form control required', () => {
-		const mockTranslatedMessage = 'offer.timeSlotFormControlRequired';
-		jest.spyOn(translateService, 'instant').mockReturnValue(mockTranslatedMessage);
+	describe('shouldDisplayTimeError', () => {
+		it('should return true when shouldDisplayCompareError returns true', () => {
+			component.shouldDisplayCompareError = jest.fn().mockReturnValue(true);
+			component.shouldDisplayRequiredError = jest.fn().mockReturnValue(false);
+			expect(component.shouldDisplayTimeError()).toBe(true);
+		});
 
-		const errorMessage = component.getErrorMessageForTimeSlots(false);
+		it('should return true when shouldDisplayRequiredError returns true', () => {
+			component.shouldDisplayCompareError = jest.fn().mockReturnValue(false);
+			component.shouldDisplayRequiredError = jest.fn().mockReturnValue(true);
+			expect(component.shouldDisplayTimeError()).toBe(true);
+		});
 
-		expect(errorMessage).toEqual(mockTranslatedMessage);
-	});
-
-	it('should return the translated error message for time slot form control required', () => {
-		const mockTranslatedMessage = 'general.timePicker.timeSlotCompareError';
-		jest.spyOn(translateService, 'instant').mockReturnValue(mockTranslatedMessage);
-
-		const errorMessage = component.getErrorMessageForTimeSlots(true);
-
-		expect(errorMessage).toEqual(mockTranslatedMessage);
+		it('should return false when both return false', () => {
+			component.shouldDisplayCompareError = jest.fn().mockReturnValue(false);
+			component.shouldDisplayRequiredError = jest.fn().mockReturnValue(false);
+			expect(component.shouldDisplayTimeError()).toBe(false);
+		});
 	});
 });

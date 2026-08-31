@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@angular/core';
 import { Environment, PassholderViewDto } from '@frontend/common';
 import { Observable } from 'rxjs';
 
+import { FilterPassholdersRequestDto } from '../_models/filter-passholders-request-dto.model';
 import { Passholder } from '../_models/passholder.model';
 
 @Injectable({
@@ -30,6 +31,10 @@ export class PassholdersService {
 		});
 	}
 
+	public getPassholderDetails(passholderId: string): Observable<PassholderViewDto> {
+		return this.httpClient.get<PassholderViewDto>(`${this.environment.apiPath}/passholders/${passholderId}`);
+	}
+
 	public countPassholders(): Observable<number> {
 		return this.httpClient.get<number>(`${this.environment.apiPath}/passholders/count`);
 	}
@@ -40,5 +45,31 @@ export class PassholdersService {
 
 	public deletePassholder(passholderId: string): Observable<void> {
 		return this.httpClient.delete<void>(`${this.environment.apiPath}/passholders/${passholderId}`);
+	}
+
+	public countFilteredPassholders(filterPassholdersRequestDto: FilterPassholdersRequestDto): Observable<number> {
+		const httpParams = new HttpParams()
+			.set('bsn', filterPassholdersRequestDto.bsnFilter || '')
+			.set('passNumber', filterPassholdersRequestDto.passholderNumberFilter || '');
+
+		return this.httpClient.get<number>(`${this.environment.apiPath}/passholders/filter/count`, {
+			params: httpParams,
+		});
+	}
+
+	public getFilteredPassholders(
+		filterPassholdersRequestDto: FilterPassholdersRequestDto,
+		page: number,
+		size: number,
+	): Observable<PassholderViewDto[] | []> {
+		const httpParams = new HttpParams()
+			.set('bsn', filterPassholdersRequestDto?.bsnFilter || '')
+			.set('passNumber', filterPassholdersRequestDto?.passholderNumberFilter || '')
+			.set('pageIndex', page.toString())
+			.set('pageSize', size.toString());
+
+		return this.httpClient.get<PassholderViewDto[]>(`${this.environment.apiPath}/passholders/filter`, {
+			params: httpParams,
+		});
 	}
 }

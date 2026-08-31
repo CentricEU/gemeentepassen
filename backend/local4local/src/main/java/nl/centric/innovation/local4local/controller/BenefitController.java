@@ -1,6 +1,7 @@
 package nl.centric.innovation.local4local.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.dto.BenefitRequestDto;
 import nl.centric.innovation.local4local.dto.BenefitResponseDto;
@@ -15,9 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class BenefitController {
     private final BenefitService benefitService;
 
     @PostMapping
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     @Operation(
             summary = "Create a new benefit",
             description = "Create a new benefit for a citizen group"
@@ -37,7 +38,7 @@ public class BenefitController {
     }
 
     @GetMapping("/paginated")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     @Operation(
             summary = "Get a list of benefits paginated and sorted by creation date",
             description = "Get a list of benefits for the tenant, paginated and sorted by creation date. Defaults to page 0 and size 25."
@@ -50,7 +51,7 @@ public class BenefitController {
     }
 
     @GetMapping("/count")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     @Operation(
             summary = "Count benefits by tenant id",
             description = "Allows a Municipality Admin to count all benefits associated with their tenant"
@@ -69,12 +70,22 @@ public class BenefitController {
         return ResponseEntity.ok(benefitService.getAllBenefitsDtoForCitizenGroup());
     }
 
+    @GetMapping("passholder/{passholderId}")
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
+    @Operation(
+            summary = "Get a list of benefits for a passholder",
+            description = "Get a list of benefits available for a Passholder"
+    )
+    public ResponseEntity<List<EligibleBenefitDto>> getAllBenefitsForPassholder(@PathVariable("passholderId") UUID passholderId) throws DtoValidateException {
+        return ResponseEntity.ok(benefitService.getAllBenefitsDtoForPassholderId(passholderId));
+    }
+
     @GetMapping("/all")
     @Operation(
             summary = "Get all benefits for the current tenant (not expired)",
             description = "Returns a list of all benefits associated with the current tenant, accessible by Municipality Admin and Supplier roles and not expired."
     )
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPPLIER})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN, Role.ROLE_SUPPLIER})
     public ResponseEntity<List<BenefitTableDto>> getAllByTenantId() {
         return ResponseEntity.ok(benefitService.getAllBenefitsForTenant());
     }

@@ -40,7 +40,7 @@ class OfferSearchHistoryServiceTests {
         String searchKeyword = "newKeyword";
         User user = new User();
         user.setId(UUID.randomUUID());
-        when(offerSearchHistoryRepository.findBySearchKeywordAndUserId(searchKeyword, user.getId())).thenReturn(Optional.empty());
+        when(offerSearchHistoryRepository.findFirstBySearchKeywordAndUserId(searchKeyword, user.getId())).thenReturn(Optional.empty());
         when(principalService.getUser()).thenReturn(user);
 
         // When
@@ -60,7 +60,7 @@ class OfferSearchHistoryServiceTests {
         user.setId(UUID.randomUUID());
 
         when(principalService.getUser()).thenReturn(user);
-        when(offerSearchHistoryRepository.findBySearchKeywordAndUserId(searchKeyword, user.getId())).thenReturn(Optional.of(existingHistory));
+        when(offerSearchHistoryRepository.findFirstBySearchKeywordAndUserId(searchKeyword, user.getId())).thenReturn(Optional.of(existingHistory));
 
         // When
         offerSearchHistoryService.saveSearchHistory(searchKeyword);

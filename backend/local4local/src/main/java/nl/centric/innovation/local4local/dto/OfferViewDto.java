@@ -1,17 +1,13 @@
 package nl.centric.innovation.local4local.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.NonNull;
-import nl.centric.innovation.local4local.entity.Benefit;
 import nl.centric.innovation.local4local.entity.Offer;
 import nl.centric.innovation.local4local.entity.OfferType;
 import nl.centric.innovation.local4local.enums.GenericStatusEnum;
 
 import java.time.LocalDate;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Builder
 public record OfferViewDto(@NonNull UUID id,
@@ -34,5 +30,22 @@ public record OfferViewDto(@NonNull UUID id,
                 offer.getOfferType(), offer.getStartDate(), offer.getExpirationDate(), offer.getCoordinatesString(),
                 offer.getStatus(), offer.getSupplier().getCompanyName(), distance,
                 BenefitLightDto.entityToBenefitTableDto(offer.getBenefit()));
+    }
+
+    public static OfferViewDto entityToOfferViewDto(Offer offer) {
+        return OfferViewDto.builder()
+                .id(offer.getId())
+                .title(offer.getTitle())
+                .citizenOfferType(offer.getCitizenOfferType())
+                .offerType(offer.getOfferType())
+                .description(offer.getDescription())
+                .amount(offer.getAmount())
+                .startDate(offer.getStartDate())
+                .expirationDate(offer.getExpirationDate())
+                .coordinatesString(offer.getCoordinatesString())
+                .status(offer.getStatus())
+                .benefit(BenefitLightDto.entityToBenefitTableDto(offer.getBenefit()))
+                .companyName(offer.getSupplier().getCompanyName())
+                .build();
     }
 }

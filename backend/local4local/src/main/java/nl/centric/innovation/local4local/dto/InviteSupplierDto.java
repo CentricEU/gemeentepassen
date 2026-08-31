@@ -1,8 +1,8 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Builder

@@ -1,0 +1,64 @@
+@use '../../../../../../libs/shared-assets/_styles/form';
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+
+.section-title {
+    @include mixins.size(100%);
+    padding: 0;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--surface-100);
+}
+
+.passholder-profile-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    column-gap: 20px;
+    row-gap: 20px;
+}
+
+.group-information {
+    @include mixins.flex(row, flex-start, center);
+    gap: 8px;
+
+    section {
+        @include mixins.flex(column, flex-start, flex-start);
+        gap: 16px;
+    }
+
+    .left-section {
+        p {
+            padding: 4px 0px;
+        }
+    }
+
+    .values-label {
+        padding: 4px 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--greyscale-500);
+        background-color: var(--greyscale-50);
+        border: 1px solid var(--greyscale-100);
+        border-radius: 4px;
+
+        &.registered {
+            color: var(--status-success-500);
+            background-color: var(--status-success-50);
+            border-color: var(--status-success-100);
+        }
+    }
+}
+
+:host {
+    ol {
+        padding-left: 1.5rem;
+    }
+
+    li {
+        font-weight: bold;
+        margin-top: 16px;
+
+        .benefit-title {
+            font-weight: bold;
+        }
+    }
+}

@@ -8,8 +8,8 @@ export class OfferController extends BaseApi {
 		return this.put('offers/reactivate', data);
 	}
 
-	async approveOffer(offerId: string): Promise<APIResponse> {
-		return this.put(`offers/approve/${offerId}`);
+	async approveOffer(data: offerModels.OfferApprove): Promise<APIResponse> {
+		return this.put(`offers/approve`, data);
 	}
 
 	async getOffers(page: number = 0, size: number = 25): Promise<APIResponse> {
@@ -64,11 +64,11 @@ export class OfferController extends BaseApi {
 		return this.get(`offers/full/${id}`);
 	}
 
-	async getOffersFilter(status: string, offerTypeId: number, id: string): Promise<APIResponse>  {
+	async getOffersFilter(status: string, offerTypeId: number, id: string): Promise<APIResponse> {
 		return this.get(`offers/filter?status=${status}&offerTypeId=${offerTypeId}&id=${id}`);
 	}
 
-	async getOffersFilterCount(status: string, offerTypeId: number, id: string): Promise<APIResponse>  {
+	async getOffersFilterCount(status: string, offerTypeId: number, id: string): Promise<APIResponse> {
 		return this.get(`offers/filter/count?status=${status}&offerTypeId=${offerTypeId}&id=${id}`);
 	}
 
@@ -85,13 +85,24 @@ export class OfferController extends BaseApi {
 		return this.get('offers/count');
 	}
 
-	async deleteOffers(data : object): Promise<APIResponse> {
+	async deleteOffers(data: object): Promise<APIResponse> {
 		return this.delete('offers/delete', data);
 	}
 
-	async getOffersMapViewport(data: offerModels.OffersMapViewport): Promise<APIResponse> {
+	async downloadCode(data: offerModels.OfferDownloadRequest): Promise<APIResponse> {
+		return this.post('offers/download', data);
+	}
 
-		const record : Record<string, any> = {
+	async suspendOffer(offerId: string): Promise<APIResponse> {
+		return this.patch(`offers/suspend/${offerId}`, {});
+	}
+
+	async editOffer(offerId: string, data: offerModels.OfferRequest): Promise<APIResponse> {
+		return this.patch(`offers/edit/${offerId}`, data);
+	}
+
+	async getOffersMapViewport(data: offerModels.OffersMapViewport): Promise<APIResponse> {
+		const record: Record<string, any> = {
 			minLatitude: data.minLat,
 			maxLatitude: data.maxLat,
 			minLongitude: data.minLong,
@@ -104,8 +115,7 @@ export class OfferController extends BaseApi {
 	}
 
 	async getOffersList(data: offerModels.OffersListViewport): Promise<APIResponse> {
-
-		const record : Record<string, any> = {
+		const record: Record<string, any> = {
 			page: data.page,
 			latitude: data.latitude,
 			longitude: data.longitude,

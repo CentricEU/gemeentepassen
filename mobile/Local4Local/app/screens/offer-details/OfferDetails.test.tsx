@@ -179,9 +179,9 @@ describe('OfferDetails', () => {
 
 	describe('offer amount for every type of offer', () => {
 		const params = [
-			[OfferTypeEnum.percentage, '50%'],
+			[OfferTypeEnum.storeCredit, '50%'],
 			[OfferTypeEnum.bogo, 'offerDetailsPage.bogo'],
-			[OfferTypeEnum.credit, '€50']
+			[OfferTypeEnum.membershipFee, '€50']
 		];
 
 		it.each(params)('offers of type %s should display the amount correctly', async (type, amount) => {

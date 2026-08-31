@@ -1,6 +1,8 @@
 import { FormGroup } from '@angular/forms';
 
 import { MonthYearEntry } from '../_models/month-year-entry.model';
+import { TransactionDateDropdown } from '../_models/transaction-date-dropdown.model';
+import { FormUtil } from './form.util';
 
 export class CommonUtil {
 	public static hasValidValue(value: string | unknown): boolean {
@@ -46,5 +48,52 @@ export class CommonUtil {
 
 		const date = new Date(y, m);
 		return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-01`;
+	}
+
+	public static getDateIntervals(): TransactionDateDropdown[] {
+		const now = new Date();
+		const currentYear = now.getFullYear();
+		const currentMonth = now.getMonth();
+
+		const startOfMonth = (y: number, m: number) =>
+			FormUtil.normalizeDate(new Date(Date.UTC(y, m, 1)).toISOString());
+		// the last millisecond of the month
+		const endOfMonth = (y: number, m: number) =>
+			FormUtil.normalizeDate(new Date(Date.UTC(y, m + 1, 0)).toISOString());
+		const startOfYear = (y: number) => FormUtil.normalizeDate(new Date(Date.UTC(y, 0, 1)).toISOString());
+		return [
+			this.currentMonth(),
+			new TransactionDateDropdown(
+				'transactions.dateInterval.lastMonth',
+				startOfMonth(currentYear, currentMonth - 1),
+				endOfMonth(currentYear, currentMonth - 1),
+			),
+			new TransactionDateDropdown(
+				'transactions.dateInterval.lastThreeMonths',
+				startOfMonth(currentYear, currentMonth - 2),
+				endOfMonth(currentYear, currentMonth),
+			),
+			new TransactionDateDropdown(
+				'transactions.dateInterval.lastSixMonths',
+				startOfMonth(currentYear, currentMonth - 5),
+				endOfMonth(currentYear, currentMonth),
+			),
+			new TransactionDateDropdown(
+				'transactions.dateInterval.thisYear',
+				startOfYear(currentYear),
+				endOfMonth(currentYear, currentMonth),
+			),
+			new TransactionDateDropdown('transactions.dateInterval.customRange'),
+		];
+	}
+
+	public static currentMonth(): TransactionDateDropdown {
+		const now = new Date();
+
+		return new TransactionDateDropdown(
+			'transactions.dateInterval.thisMonth',
+			FormUtil.normalizeDate(new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1)).toISOString()),
+			FormUtil.normalizeDate(new Date(Date.UTC(now.getFullYear(), now.getMonth() + 1, 0)).toISOString()),
+		);
 	}
 }

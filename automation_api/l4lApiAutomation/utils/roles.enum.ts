@@ -1,5 +1,6 @@
 export enum Roles {
 	MUNICIPALITY,
 	SUPPLIER,
+	SUPPLIER_REJECTED,
 	CITIZEN
 }

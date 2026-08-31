@@ -1,6 +1,10 @@
 package nl.centric.innovation.local4local.entity;
 
-import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,15 +12,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nl.centric.innovation.local4local.enums.FrequencyOfUse;
 import nl.centric.innovation.local4local.util.DateUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
 import java.sql.Time;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -28,7 +24,6 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TypeDef(name = "pgsql_enum", typeClass = PostgreSQLEnumType.class)
 public class Restriction extends BaseEntity {
 
     @Column(columnDefinition = "age_restriction")
@@ -36,7 +31,6 @@ public class Restriction extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "frequency_of_use")
-    @Type(type = "pgsql_enum")
     private FrequencyOfUse frequencyOfUse;
 
     @Column(name = "min_price")
@@ -51,20 +45,6 @@ public class Restriction extends BaseEntity {
 
     @Column(name = "time_to")
     private Time timeTo;
-
-    public boolean isRestrictionWithoutValidConditions() {
-        boolean requiredToCheckRestrictions = ObjectUtils.allNull(
-                this.getFrequencyOfUse(),
-                this.getTimeFrom(),
-                this.getTimeTo(),
-                this.getMinPrice(),
-                this.getMaxPrice()
-        );
-
-        boolean hasAgeRestrictions = !Objects.isNull(this.getAgeRestriction());
-
-        return requiredToCheckRestrictions && hasAgeRestrictions;
-    }
 
     public boolean isTimeOutsideRange(Time currentTime) {
         Time timeFrom = this.getTimeFrom();
@@ -90,11 +70,12 @@ public class Restriction extends BaseEntity {
             case MONTHLY -> !DateUtils.isDateBeforeMonth(lastTransactionDate);
             case WEEKLY -> !DateUtils.isDateBeforeWeek(lastTransactionDate);
             case YEARLY -> !DateUtils.isDateBeforeYear(lastTransactionDate);
-            case SINGLE_USE -> false;
+            case SINGLE_USE -> true;
             default -> false;
         };
     }
 
+    //Todo: this method is kept for possible future implementations
     public boolean isPriceViolated(Double price) {
         if (Objects.isNull(this.minPrice) && Objects.isNull(this.maxPrice)) {
             return false;

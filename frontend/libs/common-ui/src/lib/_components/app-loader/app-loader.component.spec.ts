@@ -21,7 +21,7 @@ describe('AppLoaderComponent', () => {
 		};
 
 		await TestBed.configureTestingModule({
-			declarations: [AppLoaderComponent],
+			imports: [AppLoaderComponent],
 			providers: [
 				{ provide: AppLoaderService, useValue: appLoaderServiceMock },
 				{ provide: ChangeDetectorRef, useValue: cdrMock },

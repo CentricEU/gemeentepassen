@@ -14,7 +14,8 @@ import {
 	TenantService,
 } from '@frontend/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { of, Subscription } from 'rxjs';
+import { WindmillIconRegistry } from '@windmill/ng-windmill/icon';
+import { of, Subject, Subscription } from 'rxjs';
 
 import { CommonUiModule } from '../../common-ui.module';
 import { WindmillModule } from '../../windmil.module';
@@ -26,6 +27,7 @@ describe('GenericAppComponent', () => {
 	let breadCrumbsService: BreadcrumbService;
 	let authService: AuthMock;
 	let authServiceSpy: any;
+	let loginSubject: Subject<void>;
 
 	const environmentMock = {
 		production: false,
@@ -48,13 +50,17 @@ describe('GenericAppComponent', () => {
 	};
 
 	beforeEach(async () => {
+		loginSubject = new Subject();
+
 		authServiceSpy = {
 			extractSupplierInformation: jest.fn(),
 			emitEvent: jest.fn(),
+			loginEventEmitter: loginSubject,
 		};
 
 		await TestBed.configureTestingModule({
 			imports: [
+				GenericAppComponent,
 				RouterTestingModule,
 				HttpClientModule,
 				BrowserAnimationsModule,
@@ -62,7 +68,6 @@ describe('GenericAppComponent', () => {
 				WindmillModule,
 				TranslateModule.forRoot(),
 			],
-			declarations: [GenericAppComponent],
 			providers: [
 				TranslateService,
 				MultilanguageService,
@@ -78,7 +83,7 @@ describe('GenericAppComponent', () => {
 		component = fixture.componentInstance;
 		breadCrumbsService = TestBed.inject(BreadcrumbService);
 		fixture.detectChanges();
-		authService = TestBed.get(AuthService) as AuthMock;
+		authService = TestBed.inject(AuthService) as unknown as AuthMock;
 	});
 
 	it('should create', () => {
@@ -216,7 +221,7 @@ describe('GenericAppComponent', () => {
 	});
 
 	it('should not call tenantService.getTenant when applicationType is citizen', () => {
-		component['applicationType'] = AppType.citizen;
+		component['applicationType'] = AppType.passholder;
 		tenantServiceMock.getTenant.mockClear();
 		tenantServiceMock.tenant = null as unknown as Tenant;
 
@@ -224,5 +229,29 @@ describe('GenericAppComponent', () => {
 
 		expect(tenantServiceMock.getTenant).not.toHaveBeenCalled();
 		expect(tenantServiceMock.tenant).toBeNull();
+	});
+
+	it('should call getTenant and set navigationRoutes on login event', () => {
+		const getTenantSpy = jest.spyOn(component as any, 'getTenant');
+		const getMenuSpy = jest.spyOn(component, 'getMenuItemsForNavigation');
+
+		component.ngOnInit();
+		loginSubject.next();
+
+		expect(getTenantSpy).toHaveBeenCalled();
+		expect(getMenuSpy).toHaveBeenCalled();
+		expect(component.navigationRoutes).toBeDefined();
+	});
+
+	it('should register edit_shield_b svg icon on construction', () => {
+		// Arrange
+		const iconRegistry = TestBed.inject(WindmillIconRegistry);
+		const addSvgIconSpy = jest.spyOn(iconRegistry, 'addSvgIcon');
+
+		// Act — recreate component to capture constructor call
+		TestBed.createComponent(GenericAppComponent);
+
+		// Assert
+		expect(addSvgIconSpy).toHaveBeenCalledWith('edit_shield_b', expect.anything());
 	});
 });

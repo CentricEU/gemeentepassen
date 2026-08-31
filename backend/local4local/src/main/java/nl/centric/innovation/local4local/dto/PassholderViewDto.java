@@ -30,7 +30,7 @@ public record PassholderViewDto(
                 .name(passholder.getName())
                 .passNumber(passholder.getPassNumber())
                 .id(passholder.getId())
-                .isRegistered(!Objects.isNull(passholder.getUser()))
+                .isRegistered(passholder.getUser() != null && passholder.getUser().getIsEnabled())
                 .citizenGroupName(passholder.getCitizenGroup() != null ?
                         passholder.getCitizenGroup().getGroupName() : "")
                 .build();

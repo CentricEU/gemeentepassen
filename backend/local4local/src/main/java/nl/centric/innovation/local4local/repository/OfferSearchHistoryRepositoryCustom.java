@@ -1,5 +1,3 @@
-
-
 package nl.centric.innovation.local4local.repository;
 
 import nl.centric.innovation.local4local.entity.OfferSearchHistory;

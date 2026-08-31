@@ -14,9 +14,9 @@ export class SidenavService {
 		const currentPath = this.router.url.slice(1);
 		const isSupplierApp = appType === AppType.supplier;
 		const isSupplierComponent = this.checkForSupplierComponent(currentPath);
-		const isMunicipalityComponent = this.checkForCommonComponents(currentPath);
+		const isMunicipalityOrCitizenComponent = this.checkForCommonComponents(currentPath);
 
-		return isSupplierApp ? isSupplierComponent : isMunicipalityComponent;
+		return isSupplierApp ? isSupplierComponent : isMunicipalityOrCitizenComponent;
 	}
 
 	private checkForCommonComponents(currentPath: string): boolean {

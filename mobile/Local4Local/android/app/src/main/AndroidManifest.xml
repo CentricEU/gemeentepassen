@@ -51,7 +51,7 @@
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="localforlocal-acceptance" />
+        <data android:scheme="localforlocal" />
       </intent-filter>
 
       <!-- New Android App Links intent-filter for DigiD -->
@@ -61,7 +61,7 @@
         <category android:name="android.intent.category.BROWSABLE" />
         <data
           android:scheme="https"
-          android:host="citizen.testing.gemeentepassen.eu"
+          android:host="passholder.testing.gemeentepassen.eu"
           android:pathPrefix="/open-in-app" />
       </intent-filter>
 
@@ -72,7 +72,7 @@
         <category android:name="android.intent.category.BROWSABLE" />
         <data
           android:scheme="https"
-          android:host="citizen.testing.gemeentepassen.eu"
+          android:host="passholder.testing.gemeentepassen.eu"
           android:pathPrefix="/recover/reset-password" />
       </intent-filter>
 

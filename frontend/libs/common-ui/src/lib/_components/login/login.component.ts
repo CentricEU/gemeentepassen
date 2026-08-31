@@ -1,8 +1,17 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AppType, AuthService, CaptchaService, CaptchaStatus, CommonL4LModule, FormUtil, Role } from '@frontend/common';
+import {
+	AppType,
+	AuthService,
+	CaptchaService,
+	CaptchaStatus,
+	CommonL4LModule,
+	FormUtil,
+	GeneralInformation,
+	Role,
+} from '@frontend/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { CentricButtonModule } from '@windmill/ng-windmill/button';
 import { WindmillCheckboxModule } from '@windmill/ng-windmill/checkbox';
@@ -18,19 +27,18 @@ import { LogoTitleComponent } from '../logo-title/logo-title.component';
 	styleUrls: ['./login.component.scss'],
 	standalone: true,
 	imports: [
-		CommonModule,
-		CommonL4LModule,
-		FormsModule,
-		ReactiveFormsModule,
-		TranslateModule,
-		CentricButtonModule,
-		WindmillCheckboxModule,
-		CentricLinkModule,
-		RecaptchaModule,
-		RecaptchaFormsModule,
-		WindmillModule,
-		LogoTitleComponent,
-	],
+    CommonL4LModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslateModule,
+    CentricButtonModule,
+    WindmillCheckboxModule,
+    CentricLinkModule,
+    RecaptchaModule,
+    RecaptchaFormsModule,
+    WindmillModule,
+    LogoTitleComponent
+],
 })
 export class LoginComponent implements OnInit {
 	public form: FormGroup;
@@ -81,12 +89,36 @@ export class LoginComponent implements OnInit {
 				this.form.controls['password'].value,
 				this.form.controls['recaptcha'].value,
 				this.form.controls['rememberMe'].value,
-				this.appLoginPage === AppType.municipality ? Role.MUNICIPALITY_ADMIN : Role.SUPPLIER,
+				this.getRoleByAppType(),
 			)
 			.subscribe(() => {
+				this.checkInformationOnLocalStorage();
 				const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 				this.router.navigate([returnUrl]);
 			});
+	}
+
+	private checkInformationOnLocalStorage(): void {
+		const generalInformationData = this.getGeneralFormInformation();
+
+		if (generalInformationData?.adminEmail !== this.form.controls['email'].value) {
+			this.clearLocalStorageData();
+		}
+	}
+
+	private getGeneralFormInformation(): GeneralInformation | null {
+		const data = localStorage.getItem('generalFormInformation');
+		return data ? JSON.parse(data) : null;
+	}
+
+	private clearLocalStorageData(): void {
+		const keysToRemove = [
+			'contactFormInformation',
+			'generalFormInformation',
+			'workingHours',
+			'generalInformationCashiers',
+		];
+		keysToRemove.forEach((key) => localStorage.removeItem(key));
 	}
 
 	private initForm(): void {
@@ -128,5 +160,21 @@ export class LoginComponent implements OnInit {
 		if (recaptcha && !recaptcha.hasValidator(Validators.required)) {
 			recaptcha.addValidators(Validators.required);
 		}
+	}
+
+	private getRoleByAppType(): Role {
+		let role: Role;
+		switch (this.appLoginPage) {
+			case AppType.municipality:
+				role = Role.MUNICIPALITY_ADMIN;
+				break;
+			case AppType.supplier:
+				role = Role.SUPPLIER;
+				break;
+			default:
+				role = Role.CITIZEN;
+				break;
+		}
+		return role;
 	}
 }

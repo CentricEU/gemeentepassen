@@ -20,4 +20,8 @@ export class DiscountCodeService {
 			codeValidation,
 		);
 	}
+
+	public isDiscountCodeClaimedForOffer(offerId: string): Observable<boolean> {
+		return this.httpClient.get<boolean>(`${this.environment.apiPath}/discount-codes/claimed/${offerId}`);
+	}
 }

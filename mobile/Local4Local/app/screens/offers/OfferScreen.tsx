@@ -1,4 +1,4 @@
-import { SafeAreaView, View } from 'react-native';
+import { Platform, SafeAreaView, StatusBar, View } from 'react-native';
 import Map from '../../components/map/Map';
 import { headerOptions } from '../../components/header/GlobalHeader';
 import SearchBar from '../../components/search-bar/SearchBar';
@@ -164,7 +164,12 @@ export function Offers({ navigation }: { navigation: any }) {
 	};
 
 	return (
-		<SafeAreaView style={{ flex: 1 }}>
+		<SafeAreaView style={{
+			flex: 1, paddingTop:
+				Platform.OS === 'android' && isSearchFocused
+					? StatusBar.currentHeight
+					: 0
+		}} >
 			<View style={styles.container}>
 				<SearchBar
 					key={searchBarKey}
@@ -204,17 +209,17 @@ export function Offers({ navigation }: { navigation: any }) {
 				{isMapMode
 					? displayMapView()
 					: location && (
-							<OffersList
-								testID="offers-list"
-								currentLocation={location}
-								selectedType={selectedType}
-								setSelectedType={setSelectedType}
-								navigation={navigation}
-								searchKeyword={finalSearchKeyword}
-								onResetToInitialState={handleResetToInitialState}
-								setNoOffersInList={setNoOffersInList}
-							/>
-					  )}
+						<OffersList
+							testID="offers-list"
+							currentLocation={location}
+							selectedType={selectedType}
+							setSelectedType={setSelectedType}
+							navigation={navigation}
+							searchKeyword={finalSearchKeyword}
+							onResetToInitialState={handleResetToInitialState}
+							setNoOffersInList={setNoOffersInList}
+						/>
+					)}
 
 				{(!hasSearched || (!noSearchResults && !noOffersInList)) && (
 					<ViewModeButton
@@ -229,7 +234,7 @@ export function Offers({ navigation }: { navigation: any }) {
 	);
 }
 
-export function OffersStack({}: { navigation: any }) {
+export function OffersStack({ }: { navigation: any }) {
 	const { t } = useTranslation('common');
 
 	return (

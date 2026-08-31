@@ -8,12 +8,12 @@
 			@include mixins.size(100%);
 		}
 
-		centric-panel {
+		windmill-card {
 			@include mixins.size(100%, 100%);
 		}
 
 		// .qr-code-panel {
-		// 	.panel-content {
+		// 	.card-content {
 		// 		@include mixins.flex(column, center, center);
 		// 		padding: 32px;
 		// 	}
@@ -59,7 +59,7 @@
 	grid-row: 1 / 2;
 
 	::ng-deep {
-		.panel-content {
+		.card-content {
 			display: flex;
 			padding: 32px;
 			gap: 16px;
@@ -87,7 +87,7 @@
 		background: var(--greyscale-50);
 	}
 
-	centric-icon2 {
+	windmill-icon {
 		color: var(--greyscale-400);
 	}
 }

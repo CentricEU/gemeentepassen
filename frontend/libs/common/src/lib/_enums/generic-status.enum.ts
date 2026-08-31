@@ -4,4 +4,5 @@ export enum GenericStatusEnum {
 	PENDING = 'PENDING',
 	EXPIRED = 'EXPIRED',
 	REJECTED = 'REJECTED',
+	CREATED = 'CREATED',
 }

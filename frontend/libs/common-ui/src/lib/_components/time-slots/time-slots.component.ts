@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormUtil } from '@frontend/common';
-import { TranslateService } from '@ngx-translate/core';
 
 @Component({
 	selector: 'frontend-time-slots',
@@ -11,19 +10,16 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class TimeSlotsComponent {
 	@Input() clickedOutsideFieldTime: boolean;
+	@Input() shouldBeDisplayed = true;
 	@Input() generalForm: FormGroup;
 
-	public validationFunctionErrorMinFieldCompleted = FormUtil.validationFunctionErrorMinFieldCompleted;
-	public shouldShowRequiredErrorForEitherFields = FormUtil.shouldShowRequiredErrorForEitherFields;
-	public shouldDisplayCompareError = FormUtil.shouldDisplayCompareError;
-	public onRestrictionTypeChange = FormUtil.onRestrictionTypeChange;
-
-	constructor(private translateService: TranslateService) {}
-
-	public getErrorMessageForTimeSlots(isCompare: boolean): string {
-		if (isCompare) {
-			return this.translateService.instant('general.timePicker.timeSlotCompareError');
-		}
-		return this.translateService.instant('offer.timeSlotFormControlRequired');
-	}
+	public shouldDisplayCompareError = FormUtil.shouldDisplayCompareTimeError;
+	public shouldDisplayRequiredError = FormUtil.shouldDisplayRequiredTimeError;
+	public onRestrictionTypeChange = FormUtil.onRestrictionChangeWithBothOrNoneFields;
+	public shouldDisplayTimeError = (): boolean => {
+		return (
+			this.shouldDisplayCompareError(this.generalForm, 'timeFrom', 'timeTo') ||
+			this.shouldDisplayRequiredError(this.generalForm, 'timeFrom', 'timeTo')
+		);
+	};
 }

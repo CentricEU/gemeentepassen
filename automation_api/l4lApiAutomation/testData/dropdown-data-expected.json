@@ -1,0 +1,47 @@
+{
+  "statuses": [
+    {
+      "key": "ACTIVE",
+      "value": "status.active"
+    },
+    {
+      "key": "EXPIRED",
+      "value": "status.expired"
+    },
+    {
+      "key": "PENDING",
+      "value": "status.pending"
+    },
+    {
+      "key": "REJECTED",
+      "value": "status.rejected"
+    }
+  ],
+  "offerTypes": [
+    {
+      "offerTypeId": 2,
+      "offerTypeLabel": "offer.types.bogo",
+      "enabled": true
+    },
+    {
+      "offerTypeId": 4,
+      "offerTypeLabel": "offer.types.freeEntry",
+      "enabled": true
+    },
+    {
+      "offerTypeId": 3,
+      "offerTypeLabel": "offer.types.membershipFee",
+      "enabled": true
+    },
+    {
+      "offerTypeId": 5,
+      "offerTypeLabel": "offer.types.freeProduct",
+      "enabled": true
+    },
+    {
+      "offerTypeId": 1,
+      "offerTypeLabel": "offer.types.storeCredit",
+      "enabled": true
+    }
+  ]
+}

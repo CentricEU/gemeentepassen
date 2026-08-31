@@ -1,4 +1,5 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ElementRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -6,14 +7,13 @@ import {
 	BreadcrumbService,
 	ColumnDataType,
 	commonRoutingConstants,
-	Page,
 	PaginatedData,
 	TableColumn,
 	TransactionTableDto,
 } from '@frontend/common';
 import { TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of } from 'rxjs';
 
 import { AppModule } from '../../app.module';
@@ -26,6 +26,7 @@ describe('TransactionsComponent', () => {
 	let breadcrumbService: BreadcrumbService;
 	let breadcrumbServiceSpy: any;
 	let activatedRouteMock: any;
+	let elementRef: ElementRef;
 
 	beforeEach(async () => {
 		const dialogServiceMock = {
@@ -60,6 +61,8 @@ describe('TransactionsComponent', () => {
 				{ provide: DialogService, useValue: dialogServiceMock },
 				{ provide: BreadcrumbService, useValue: breadcrumbServiceSpy },
 				{ provide: ActivatedRoute, useValue: activatedRouteMock },
+				{ provide: ElementRef, useValue: { nativeElement: document.createElement('div') } },
+
 				{ provide: TableComponent },
 			],
 		}).compileComponents();
@@ -69,7 +72,9 @@ describe('TransactionsComponent', () => {
 		dialogService = TestBed.inject(DialogService);
 		breadcrumbService = TestBed.inject(BreadcrumbService);
 		activatedRouteMock = TestBed.inject(ActivatedRoute);
-		component.transactionsTable = new TableComponent<TransactionTableDto>(dialogService);
+		elementRef = TestBed.inject(ElementRef);
+
+		component.transactionsTable = new TableComponent<TransactionTableDto>(dialogService, elementRef);
 		fixture.detectChanges();
 	});
 
@@ -92,18 +97,10 @@ describe('TransactionsComponent', () => {
 
 	it('should manage columns on calling manageColumns', () => {
 		component['dataCount'] = 2;
-		component.transactionsTable = new TableComponent<TransactionTableDto>(dialogService);
+		component.transactionsTable = new TableComponent<TransactionTableDto>(dialogService, elementRef);
 		const manageColumnsSpy = jest.spyOn(component.transactionsTable, 'manageColumns');
 		component.manageColumns();
 		expect(manageColumnsSpy).toHaveBeenCalled();
-	});
-
-	it('should update areTransactionsSelected based on count', () => {
-		component.setAreTransactionsSelected(1);
-		expect(component.areTransactionsSelected).toBe(true);
-
-		component.setAreTransactionsSelected(0);
-		expect(component.areTransactionsSelected).toBe(false);
 	});
 
 	it('should call countTransactions on ngOnInit', () => {
@@ -112,63 +109,132 @@ describe('TransactionsComponent', () => {
 		expect(countTransactionsSpy).toHaveBeenCalled();
 	});
 
-	it('should not call initColumns if dataCount is not set in initializeTransactionCount', () => {
+	it('should set innerEmptyStateTitle correctly', () => {
+		expect(component.innerEmptyStateTitle).toBe('transactions.noDataCurrentInterval');
+	});
+
+	it('should reflect isTransactionCountZero and isInnerEmptyStateVisible based on transactionsCount', () => {
+		component.transactionsCount = 0;
+		expect(component.isTransactionCountZero).toBe(true);
+		expect(component.isInnerEmptyStateVisible).toBe(true);
+
+		component.transactionsCount = 5;
+		expect(component.isTransactionCountZero).toBe(false);
+		expect(component.isInnerEmptyStateVisible).toBe(false);
+	});
+
+	it('should return true/false from areFiltersApplied depending on table state', () => {
+		component.transactionsTable = { areFiltersApplied: jest.fn().mockReturnValue(true) } as any;
+		expect(component.areFiltersApplied).toBe(true);
+
+		component.transactionsTable = { areFiltersApplied: jest.fn().mockReturnValue(false) } as any;
+		expect(component.areFiltersApplied).toBe(false);
+	});
+
+	it('onSelectDateRange should initialize data when count > 0', () => {
+		component.transactionsTable = { initializeData: jest.fn() } as any;
+		const initializeDataSpy = jest.spyOn(component.transactionsTable, 'initializeData');
+		const detectChangesSpy = jest.spyOn(component['cdr'], 'detectChanges');
+
+		jest.spyOn(component['transactionsService'], 'countDateIntervalTransactions').mockReturnValue(of(3));
+
+		const dateRange = { startDateInterval: new Date(), endDateInterval: new Date() } as any;
+		component.onSelectDateRange(dateRange);
+
+		expect(component.transactionsCount).toBe(3);
+		expect(detectChangesSpy).toHaveBeenCalled();
+		expect(initializeDataSpy).toHaveBeenCalled();
+	});
+	it('onSelectDateRange should call afterDataLoaded([]) when count === 0 and currentDisplayedPage exists', () => {
+		component.transactionsTable = {
+			currentDisplayedPage: [],
+			afterDataLoaded: jest.fn(),
+			initializeData: jest.fn(),
+		} as any;
+		const afterDataLoadedSpy = jest.spyOn(component.transactionsTable, 'afterDataLoaded');
+		const initializeDataSpy = jest.spyOn(component.transactionsTable, 'initializeData');
+		const detectChangesSpy = jest.spyOn(component['cdr'], 'detectChanges');
+
+		jest.spyOn(component['transactionsService'], 'countDateIntervalTransactions').mockReturnValue(of(0));
+
+		const dateRange = { startDateInterval: new Date(), endDateInterval: new Date() } as any;
+		component.onSelectDateRange(dateRange);
+
+		expect(component.transactionsCount).toBe(0);
+		expect(detectChangesSpy).toHaveBeenCalled();
+		expect(afterDataLoadedSpy).toHaveBeenCalledWith([]);
+		expect(initializeDataSpy).not.toHaveBeenCalled();
+	});
+
+	it('loadData should return early when transactionsCount is falsy', () => {
+		component.transactionsCount = 0;
+
+		const getTxSpy = jest.spyOn(component['transactionsService'], 'getDateIntervalTransactions');
+
+		const event = { currentIndex: 0, pageSize: 10 } as PaginatedData<TransactionTableDto>;
+		component.loadData(event);
+
+		expect(getTxSpy).not.toHaveBeenCalled();
+	});
+	it('loadData should initialize table and load data when transactionsCount is truthy', () => {
+		component.transactionsCount = 2;
+		component.transactionsTable = {
+			initializeData: jest.fn(),
+			afterDataLoaded: jest.fn(),
+			currentDisplayedPage: undefined,
+		} as any;
+		const afterDataLoadedSpy = jest.spyOn(component.transactionsTable, 'afterDataLoaded');
+
+		jest.spyOn(component['transactionsService'], 'getDateIntervalTransactions').mockReturnValue(
+			of([{ id: '1' } as unknown as TransactionTableDto]),
+		);
+
+		const event = { currentIndex: 1, pageSize: 5 } as PaginatedData<TransactionTableDto>;
+		component.loadData(event);
+
+		expect(afterDataLoadedSpy).toHaveBeenCalledWith([
+			{ passNumber: '-', id: '1' } as unknown as TransactionTableDto,
+		]);
+	});
+
+	it('initializeTransactionCount should setup columns and call countTransactionsByDateInterval', () => {
 		const initColumnsSpy = jest.spyOn<any, any>(component, 'initColumns');
-		component['dataCount'] = 0;
-		component['fetchTransactionCountData']();
-		expect(initColumnsSpy).not.toHaveBeenCalled();
+		const countIntervalSpy = jest.spyOn<any, any>(component, 'countTransactionsByDateInterval');
+
+		component['initializeTransactionCount']();
+
+		expect(initColumnsSpy).toHaveBeenCalled();
+		expect(countIntervalSpy).toHaveBeenCalled();
 	});
 
-	it('should update paginated data and currentDisplayedPage after data is loaded', () => {
-		component.transactionsTable = new TableComponent<TransactionTableDto>(dialogService);
-		const testData = [
-			new TransactionTableDto('2', '0987654321', 'Jane Smith', 500, '2024-12-02', '09:00'),
-			new TransactionTableDto('3', '1122334455', 'Alice Johnson', 750, '2024-12-03', '16:45'),
-		];
+	it('countTransactions should set dataCount and call initializeTransactionCount', () => {
+		const mockCount = 7;
+		const serviceSpy = jest
+			.spyOn(component['transactionsService'], 'countAllTransactions')
+			.mockReturnValue(of(mockCount));
+		const initSpy = jest.spyOn<any, any>(component, 'initializeTransactionCount');
 
-		const pages: Page<TransactionTableDto>[] = Array.from({ length: 5 }, () => new Page([]));
-		component.transactionsTable.paginatedData = new PaginatedData<TransactionTableDto>(pages, 10, 0);
-		component.transactionsTable.afterDataLoaded(testData);
+		component['countTransactions']();
 
-		expect(component.transactionsTable.currentDisplayedPage.length).toEqual(testData.length);
+		expect(serviceSpy).toHaveBeenCalled();
+		expect(component['dataCount']).toBe(mockCount);
+		expect(initSpy).toHaveBeenCalled();
 	});
 
-	it('should set areOffersSelected to true if any checkboxes are selected', () => {
-		component.setAreTransactionsSelected(5);
-		expect(component.areTransactionsSelected).toBeTruthy();
+	it('countTransactionsByDateInterval should set transactionsCount and initialize table', () => {
+		const detectChangesSpy = jest.spyOn(component['cdr'], 'detectChanges');
+		component.transactionsTable = { initializeData: jest.fn() } as any;
+		const initializeDataSpy = jest.spyOn(component.transactionsTable, 'initializeData');
+
+		jest.spyOn(component['transactionsService'], 'countDateIntervalTransactions').mockReturnValue(of(11));
+
+		component['countTransactionsByDateInterval']();
+
+		expect(component.transactionsCount).toBe(11);
+		expect(detectChangesSpy).toHaveBeenCalled();
+		expect(initializeDataSpy).toHaveBeenCalled();
 	});
-
-	it('should set areOffersSelected to false if no checkboxes are selected', () => {
-		component.setAreTransactionsSelected(0);
-		expect(component.areTransactionsSelected).toBeFalsy();
-	});
-
-	it('should remove breadcrumbs', () => {
-		component.ngOnDestroy();
-		expect(breadcrumbService.removeBreadcrumbs).toHaveBeenCalled();
-	});
-
-	it('should return true when data exists and filter columns are defined', () => {
-		component.transactionsTable = new TableComponent<TransactionTableDto>(dialogService);
-		component['dataCount'] = 3;
-
-		const result = component.dataCount;
-
-		expect(result > 0).toEqual(true);
-	});
-
-	it('should initialize all columns', () => {
-		component['initColumns']();
-		expect(component.allColumns.length).toBe(5);
-	});
-
-	it('should call offersTable.manageColumns', () => {
-		component.transactionsTable = { manageColumns: jest.fn() } as any;
-		component.manageColumns();
-		expect(component.transactionsTable.manageColumns).toHaveBeenCalled();
-	});
-
-	it('should initialize columns correctly', () => {
+	it('initColumns should set up correct table columns', () => {
 		component['initColumns']();
 		const expectedColumns = [
 			new TableColumn('transactions.passholderNumber', 'passNumber', 'passNumber', true, true),
@@ -177,196 +243,106 @@ describe('TransactionsComponent', () => {
 			new TableColumn('general.date', 'createdDate', 'createdDate', true, false),
 			new TableColumn('general.time', 'createdTime', 'createdTime', true, false),
 		];
-
 		expect(component.allColumns).toEqual(expectedColumns);
 	});
 
-	it('should call countTransactions', () => {
-		const countTransactionsSpy = jest.spyOn<any, any>(component, 'countTransactions');
-		component.ngOnInit();
-		expect(countTransactionsSpy).toHaveBeenCalled();
+	it('onSelectDateRange should not call initializeData when transactionsTable is undefined', () => {
+		component.transactionsTable = undefined as any;
+		jest.spyOn(component['transactionsService'], 'countDateIntervalTransactions').mockReturnValue(of(1));
+
+		const dateRange = { startDateInterval: new Date(), endDateInterval: new Date() } as any;
+		component.onSelectDateRange(dateRange);
+
+		expect(component.transactionsCount).toBe(1);
 	});
 
-	it('should call applyFilters', () => {
-		const applyFiltersSpy = jest.spyOn<any, any>(component, 'onApplyFilters');
-		component.onApplyFilters();
-		expect(applyFiltersSpy).toHaveBeenCalled();
-	});
+	it('loadData should not initialize table when currentDisplayedPage already exists', () => {
+		component.transactionsCount = 3;
+		component.transactionsTable = {
+			initializeData: jest.fn(),
+			afterDataLoaded: jest.fn(),
+			currentDisplayedPage: [],
+		} as any;
 
-	it('should call selectMonth', () => {
-		const selectMonthSpy = jest.spyOn<any, any>(component, 'onSelectMonth');
-		component.onSelectMonth({ monthLabel: 'january', monthValue: 1, year: 2024 });
-		expect(selectMonthSpy).toHaveBeenCalled();
-		expect(component.selectedDate.monthLabel).toEqual('january');
-		expect(component.selectedDate.monthValue).toEqual(1);
-		expect(component.selectedDate.year).toEqual(2024);
-	});
-
-	it('should return early if allMonthTransactionsCount is falsy', () => {
-		component.allMonthTransactionsCount = 0;
-
-		const getTransactionsSpy = jest.spyOn(component['transactionsService'], 'getTransactions');
-
-		const event = { currentIndex: 0, pageSize: 10 } as PaginatedData<TransactionTableDto>;
-		component.loadData(event);
-
-		expect(getTransactionsSpy).not.toHaveBeenCalled();
-	});
-
-	it('should return innerEmptyStateTitle', () => {
-		const result = component.innerEmptyStateTitle;
-		expect(result).toEqual('transactions.noDataCurrentMonth');
-	});
-
-	it('should return an array of MonthYearEntry objects', () => {
-		const result = component['getMonthKeys'](2024);
-
-		expect(result.length).toEqual(12);
-		expect(result[0].monthLabel).toEqual('transactions.months.january');
-		expect(result[0].year).toEqual(2024);
-		expect(result[11].monthLabel).toEqual('transactions.months.december');
-		expect(result[11].year).toEqual(2024);
-	});
-
-	it('should return an array of TransactionDateMenu objects', () => {
-		const result = component['generatePastYearsData']([2024, 2025]);
-
-		expect(result.length).toEqual(2);
-		expect(result[0].year).toEqual(2024);
-		expect(result[0].months.length).toEqual(12);
-		expect(result[1].year).toEqual(2025);
-		expect(result[1].months.length).toEqual(12);
-	});
-
-	it('should return an array of TransactionDateMenu objects', () => {
-		const result = component['generateCurrentYearData']();
-
-		expect(result.months.length).toEqual(new Date().getMonth() + 1);
-	});
-
-	it('should return true if allMonthTransactionsCount is falsy', () => {
-		component.allMonthTransactionsCount = 0;
-
-		const result = component.isInnerEmptyStateVisible;
-		expect(result).toBeTruthy();
-	});
-
-	it('should return false if allMonthTransactionsCount is truthy', () => {
-		component.allMonthTransactionsCount = 1;
-
-		const result = component.isInnerEmptyStateVisible;
-		expect(result).toBeFalsy();
-	});
-
-	it('should call getTransactions and afterDataLoaded if allMonthTransactionsCount is truthy', () => {
-		component.allMonthTransactionsCount = 1;
-
-		const getTransactionsSpy = jest
-			.spyOn(component['transactionsService'], 'getTransactions')
-			.mockReturnValue(of([]));
-
-		if (!component.transactionsTable) {
-			component.transactionsTable = { afterDataLoaded: jest.fn() } as any;
-		}
-
-		const afterDataLoadedSpy = jest.spyOn(component.transactionsTable, 'afterDataLoaded');
-
-		const event = { currentIndex: 0, pageSize: 10 } as PaginatedData<TransactionTableDto>;
-		component.loadData(event);
-
-		expect(getTransactionsSpy).toHaveBeenCalledWith(0, 10, undefined, undefined);
-
-		expect(afterDataLoadedSpy).toHaveBeenCalledWith([]);
-	});
-
-	it('should return true if filters are applied', () => {
-		component.transactionsTable = { areFiltersApplied: jest.fn().mockReturnValue(true) } as any;
-		expect(component.areFiltersApplied).toBe(true);
-	});
-
-	it('should return false if filters are not applied', () => {
-		component.transactionsTable = { areFiltersApplied: jest.fn().mockReturnValue(false) } as any;
-		expect(component.areFiltersApplied).toBe(false);
-	});
-
-	it('should call initColumns and fetchTransactionCountData if dataCount is truthy', () => {
-		const initColumnsSpy = jest.spyOn<any, any>(component, 'initColumns');
-		const fetchTransactionCountDataSpy = jest.spyOn<any, any>(component, 'fetchTransactionCountData');
-
-		component['dataCount'] = 1;
-		component['initializeTransactionCount']();
-
-		expect(initColumnsSpy).toHaveBeenCalled();
-		expect(fetchTransactionCountDataSpy).toHaveBeenCalled();
-	});
-
-	it('should not call initColumns and fetchTransactionCountData if dataCount is falsy', () => {
-		const initColumnsSpy = jest.spyOn<any, any>(component, 'initColumns');
-		const fetchTransactionCountDataSpy = jest.spyOn<any, any>(component, 'fetchTransactionCountData');
-
-		component['dataCount'] = 0;
-		component['initializeTransactionCount']();
-
-		expect(initColumnsSpy).not.toHaveBeenCalled();
-		expect(fetchTransactionCountDataSpy).not.toHaveBeenCalled();
-	});
-
-	it('should call initializeTransactionCount with the correct data when countTransactions is called', () => {
-		const mockData = 5;
-		const countAllTransactionsSpy = jest
-			.spyOn(component['transactionsService'], 'countAllTransactions')
-			.mockReturnValue(of(mockData));
-		const initializeTransactionCountSpy = jest.spyOn<any, any>(component, 'initializeTransactionCount');
-
-		component['countTransactions']();
-
-		expect(countAllTransactionsSpy).toHaveBeenCalled();
-		expect(initializeTransactionCountSpy).toHaveBeenCalled();
-		expect(component['dataCount']).toBe(mockData);
-	});
-
-	it('should update state correctly when fetchTransactionCountData is called', () => {
-		const mockYears = [2024];
-		const mockCurrentMonthCount = 10;
-
-		jest.spyOn(component['transactionsService'], 'getDistinctYearsForTransactions').mockReturnValue(of(mockYears));
-		jest.spyOn(component['transactionsService'], 'countCurrentMonthTransactions').mockReturnValue(
-			of(mockCurrentMonthCount),
+		jest.spyOn(component['transactionsService'], 'getDateIntervalTransactions').mockReturnValue(
+			of([{ id: '2' } as unknown as TransactionTableDto]),
 		);
 
+		const event = { currentIndex: 0, pageSize: 10 } as PaginatedData<TransactionTableDto>;
+		component.loadData(event);
+
+		expect(component.transactionsTable.initializeData).not.toHaveBeenCalled();
+		expect(component.transactionsTable.afterDataLoaded).toHaveBeenCalledWith([
+			{ passNumber: '-', id: '2' } as unknown as TransactionTableDto,
+		]);
+	});
+
+	it('areFiltersApplied should be undefined when transactionsTable is null', () => {
+		component.transactionsTable = null as any;
+		expect(component.areFiltersApplied).toBeUndefined();
+	});
+
+	it('areFiltersApplied should be undefined when transactionsTable is undefined', () => {
+		component.transactionsTable = undefined as any;
+		expect(component.areFiltersApplied).toBeUndefined();
+	});
+
+	it('manageColumns should not throw when transactionsTable is null', () => {
+		component.transactionsTable = null as any;
+		expect(() => component.manageColumns()).not.toThrow();
+	});
+
+	it('onSelectDateRange should not throw and should not call initializeData when transactionsTable is null', () => {
+		component.transactionsTable = null as any;
 		const detectChangesSpy = jest.spyOn(component['cdr'], 'detectChanges');
 
-		component['fetchTransactionCountData']();
+		jest.spyOn(component['transactionsService'], 'countDateIntervalTransactions').mockReturnValue(of(4));
 
-		expect(component['transactionsService'].getDistinctYearsForTransactions).toHaveBeenCalled();
-		expect(component['transactionsService'].countCurrentMonthTransactions).toHaveBeenCalled();
-		expect(component.allMonthTransactionsCount).toBe(mockCurrentMonthCount);
+		const dateRange = { startDateInterval: new Date(), endDateInterval: new Date() } as any;
+
+		expect(() => component.onSelectDateRange(dateRange)).not.toThrow();
+
+		expect(component.transactionsCount).toBe(4);
 		expect(detectChangesSpy).toHaveBeenCalled();
 	});
 
-	it('should call afterDataLoaded with an empty array when allMonthTransactionsCount is 0', () => {
-		component.allMonthTransactionsCount = 0;
+	it('onSelectDateRange should not throw and should not call afterDataLoaded when transactionsTable is null and count is 0', () => {
+		component.transactionsTable = null as any;
+		const detectChangesSpy = jest.spyOn(component['cdr'], 'detectChanges');
 
-		if (!component.transactionsTable) {
-			component.transactionsTable = { afterDataLoaded: jest.fn() } as any;
-		}
+		jest.spyOn(component['transactionsService'], 'countDateIntervalTransactions').mockReturnValue(of(0));
 
-		component['processTransactionData'](
-			{
-				currentMonthCount: 0,
-				years: [],
-			},
-			true,
-		);
+		const dateRange = { startDateInterval: new Date(), endDateInterval: new Date() } as any;
 
-		expect(component.transactionsTable.afterDataLoaded).toHaveBeenCalledWith([]);
+		expect(() => component.onSelectDateRange(dateRange)).not.toThrow();
+
+		expect(component.transactionsCount).toBe(0);
+		expect(detectChangesSpy).toHaveBeenCalled();
 	});
 
-	it.each([
-		{ count: 0, expected: true },
-		{ count: 5, expected: false },
-	])('should return $expected when allMonthTransactionsCount is $count', ({ count, expected }) => {
-		component.allMonthTransactionsCount = count;
-		expect(component.isTransactionCountZero).toBe(expected);
+	it('countTransactionsByDateInterval should not throw and should not call initializeData when transactionsTable is null', () => {
+		component.transactionsTable = null as any;
+		const detectChangesSpy = jest.spyOn(component['cdr'], 'detectChanges');
+
+		jest.spyOn(component['transactionsService'], 'countDateIntervalTransactions').mockReturnValue(of(8));
+
+		expect(() => component['countTransactionsByDateInterval']()).not.toThrow();
+
+		expect(component.transactionsCount).toBe(8);
+		expect(detectChangesSpy).toHaveBeenCalled();
+	});
+
+	it('countTransactionsByDateInterval should update transactionsCount and call initializeData when table exists', () => {
+		component.transactionsTable = { initializeData: jest.fn() } as any;
+		const detectChangesSpy = jest.spyOn(component['cdr'], 'detectChanges');
+		const initializeDataSpy = jest.spyOn(component.transactionsTable, 'initializeData');
+
+		jest.spyOn(component['transactionsService'], 'countDateIntervalTransactions').mockReturnValue(of(13));
+
+		component['countTransactionsByDateInterval']();
+
+		expect(component.transactionsCount).toBe(13);
+		expect(detectChangesSpy).toHaveBeenCalled();
+		expect(initializeDataSpy).toHaveBeenCalled();
 	});
 });

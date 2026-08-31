@@ -14,8 +14,8 @@ public enum EmailTemplateEnum {
     SET_PASSWORD("setPassword"),
     CASHIER_SET_PASSWORD("cashierSetPassword"),
     NO_CATEGORY("noCategory"),
-    SUMMARY_EMAIL_AFTER_APPLY_FOR_PASS("applyForPassSummary");
-
+    SUMMARY_EMAIL_AFTER_APPLY_FOR_PASS("applyForPassSummary"),
+    SUPPLIER_CHANGES("supplierChanges");
 
     private final String template;
 

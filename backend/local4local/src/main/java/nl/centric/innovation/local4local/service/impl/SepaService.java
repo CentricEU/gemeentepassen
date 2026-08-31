@@ -16,10 +16,9 @@ import com.prowidesoftware.swift.model.mx.dic.PaymentInstructionInformation3;
 import com.prowidesoftware.swift.model.mx.dic.PaymentMethod3Code;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.centric.innovation.local4local.dto.OfferTransactionInvoiceDto;
-import nl.centric.innovation.local4local.dto.OfferTransactionInvoiceTenantDto;
-import nl.centric.innovation.local4local.entity.Supplier;
+import nl.centric.innovation.local4local.dto.OfferTransactionInvoiceTenantView;
 import nl.centric.innovation.local4local.entity.Tenant;
+import nl.centric.innovation.local4local.exceptions.DtoValidateException;
 import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
 import nl.centric.innovation.local4local.repository.TenantRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +32,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static nl.centric.innovation.local4local.util.DateUtils.getLastDayOfMonth;
 
 @Service
 @Slf4j
@@ -43,6 +41,7 @@ public class SepaService {
     private final PrincipalService principalService;
     private final SupplierService supplierService;
     private final TenantRepository tenantRepository;
+    private final TenantService tenantService;
     private static final String CURRENCY = "EUR";
     private static final Integer DAYS_UNTIL_DUE_DATE = 30;
 
@@ -57,8 +56,14 @@ public class SepaService {
      *
      * @return the SEPA payment XML file content as a string
      */
-    public String generateSepaFile(LocalDate month) throws DtoValidateNotFoundException {
-        List<OfferTransactionInvoiceTenantDto> transactions = getOfferTransactionsByTenant(month);
+    public String generateSepaFile(LocalDate startDate, LocalDate endDate, String supplierId) throws DtoValidateException {
+        List<OfferTransactionInvoiceTenantView> transactions;
+
+        if (supplierId == null || supplierId.isEmpty()) {
+            transactions = getOfferTransactionsByTenant(startDate, endDate);
+        } else {
+            transactions = getOfferTransactionsByTenantAndSupplier(startDate, endDate, supplierId);
+        }
 
         if (transactions.isEmpty()) {
             log.warn("No transactions found for the current month.");
@@ -82,7 +87,7 @@ public class SepaService {
      *
      * @return a fully populated GroupHeader32 instance for message header
      */
-    private GroupHeader32 buildGroupHeader(List<OfferTransactionInvoiceTenantDto> transactions) {
+    private GroupHeader32 buildGroupHeader(List<OfferTransactionInvoiceTenantView> transactions) throws DtoValidateException {
         GroupHeader32 header = new GroupHeader32();
         header.setMsgId(generateMessageIdentification());
         header.setCreDtTm(OffsetDateTime.now());
@@ -107,7 +112,7 @@ public class SepaService {
      *
      * @return a populated PaymentInstructionInformation3 instance ready for processing
      */
-    private PaymentInstructionInformation3 buildPaymentInfo(List<OfferTransactionInvoiceTenantDto> transactions) throws DtoValidateNotFoundException {
+    private PaymentInstructionInformation3 buildPaymentInfo(List<OfferTransactionInvoiceTenantView> transactions) throws DtoValidateException {
         PaymentInstructionInformation3 paymentInfo = new PaymentInstructionInformation3();
         paymentInfo.setPmtInfId(generatePaymentInformationIdentification());
         paymentInfo.setPmtMtd(PaymentMethod3Code.TRF);
@@ -120,7 +125,7 @@ public class SepaService {
         paymentInfo.setDbtrAgt(buildAgent(tenant.getBic()));
 
         // Add each transaction's credit transfer info
-        for (OfferTransactionInvoiceTenantDto tx : transactions) {
+        for (OfferTransactionInvoiceTenantView tx : transactions) {
             paymentInfo.getCdtTrfTxInf().add(buildCreditTransferTransaction(tx));
         }
         return paymentInfo;
@@ -133,7 +138,7 @@ public class SepaService {
      *
      * @return a fully populated CreditTransferTransactionInformation10 instance
      */
-    private CreditTransferTransactionInformation10 buildCreditTransferTransaction(OfferTransactionInvoiceTenantDto transactionDto) throws DtoValidateNotFoundException {
+    private CreditTransferTransactionInformation10 buildCreditTransferTransaction(OfferTransactionInvoiceTenantView transactionDto) throws DtoValidateNotFoundException {
         CreditTransferTransactionInformation10 transaction = new CreditTransferTransactionInformation10();
 
         PaymentIdentification1 pmtId = new PaymentIdentification1();
@@ -143,12 +148,12 @@ public class SepaService {
         AmountType3Choice amt = new AmountType3Choice();
         ActiveOrHistoricCurrencyAndAmount instructedAmount = new ActiveOrHistoricCurrencyAndAmount();
         instructedAmount.setCcy(CURRENCY);
-        instructedAmount.setValue(BigDecimal.valueOf(transactionDto.amount()));
+        instructedAmount.setValue(transactionDto.getOfferTransaction().getAmount());
         amt.setInstdAmt(instructedAmount);
         transaction.setAmt(amt);
 
-        transaction.setCdtr(buildParty(transactionDto.supplierName()));
-        transaction.setCdtrAcct(buildAccount(transactionDto.supplierIban()));
+        transaction.setCdtr(buildParty(transactionDto.getSupplierName()));
+        transaction.setCdtrAcct(buildAccount(transactionDto.getSupplierIban()));
 
         return transaction;
     }
@@ -195,14 +200,19 @@ public class SepaService {
         return agent;
     }
 
-    private List<OfferTransactionInvoiceTenantDto> getOfferTransactionsByTenant(LocalDate firstDayOfMonth) {
-        return offerTransactionService.getTransactionsByMonthYearAndTenantId(
-                firstDayOfMonth, getLastDayOfMonth(firstDayOfMonth));
+    private List<OfferTransactionInvoiceTenantView> getOfferTransactionsByTenant(LocalDate startDate, LocalDate endDate) throws DtoValidateNotFoundException {
+        return offerTransactionService.getTransactionsByIntervalAndTenantId(
+                startDate, endDate);
     }
 
-    private BigDecimal calculateTotalAmount(List<OfferTransactionInvoiceTenantDto> transactions) {
+    private List<OfferTransactionInvoiceTenantView> getOfferTransactionsByTenantAndSupplier(LocalDate startDate, LocalDate endDate, String supplierId) throws DtoValidateNotFoundException {
+        return offerTransactionService.getTransactionsByIntervalAndTenantIdAndSupplierId(
+                startDate, endDate, supplierId);
+    }
+
+    private BigDecimal calculateTotalAmount(List<OfferTransactionInvoiceTenantView> transactions) {
         return transactions.stream()
-                .map(tx -> BigDecimal.valueOf(tx.amount()))
+                .map(tx -> tx.getOfferTransaction().getAmount())
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .setScale(2, RoundingMode.HALF_EVEN);
     }
@@ -224,15 +234,16 @@ public class SepaService {
         return principalService.getUserFullName();
     }
 
-    private String getDebtorName() {
-        return principalService.getTenant().getName();
+    private String getDebtorName() throws DtoValidateException {
+        // Todo: Modify User entity to bring the Tenant entity in the same query to avoid multiple calls to the database.
+        return tenantService.findByTenantId(principalService.getTenantId()).name();
     }
 
     private Tenant geTenant() throws DtoValidateNotFoundException {
         UUID tenantId = principalService.getTenantId();
         Optional<Tenant> tenant = tenantRepository.findById(tenantId);
 
-        if(tenant.isEmpty()) {
+        if (tenant.isEmpty()) {
             throw new DtoValidateNotFoundException(errorEntityNotFound);
         }
 

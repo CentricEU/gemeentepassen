@@ -1,6 +1,11 @@
 package nl.centric.innovation.local4local.entity;
 
-import io.hypersistence.utils.hibernate.type.array.EnumArrayType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,15 +15,10 @@ import nl.centric.innovation.local4local.dto.CitizenGroupDto;
 import nl.centric.innovation.local4local.enums.CitizenAgeGroup;
 import nl.centric.innovation.local4local.enums.EligibilityCriteria;
 import nl.centric.innovation.local4local.enums.RequiredDocuments;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+import org.hibernate.type.SqlTypes;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Set;
 import java.util.UUID;
@@ -29,39 +29,14 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@TypeDefs({
-        @TypeDef(
-                name = "citizen_age_group_array",
-                typeClass = EnumArrayType.class,
-                parameters = {
-                        @org.hibernate.annotations.Parameter(name = "enumClass", value = "nl.centric.innovation.local4local.enums.CitizenAgeGroup"),
-                        @org.hibernate.annotations.Parameter(name = "sql_array_type", value = "l4l_global.age_group")
-                }
-        ),
-        @TypeDef(
-                name = "eligibility_criteria_array",
-                typeClass = EnumArrayType.class,
-                parameters = {
-                        @org.hibernate.annotations.Parameter(name = "enumClass", value = "nl.centric.innovation.local4local.enums.EligibilityCriteria"),
-                        @org.hibernate.annotations.Parameter(name = "sql_array_type", value = "l4l_global.eligibility_criteria")
-                }
-        ),
-        @TypeDef(
-                name = "required_documents_array",
-                typeClass = EnumArrayType.class,
-                parameters = {
-                        @org.hibernate.annotations.Parameter(name = "enumClass", value = "nl.centric.innovation.local4local.enums.RequiredDocuments"),
-                        @org.hibernate.annotations.Parameter(name = "sql_array_type", value = "l4l_global.required_documents")
-                }
-        )
-})
 @Table(schema = "l4l_global", name = "citizen_group")
 public class CitizenGroup extends BaseEntity {
     @Column(name = "group_name", nullable = false, unique = true)
     private String groupName;
 
-    @Type(type = "citizen_age_group_array")
-    @Column(name = "age_group", columnDefinition = "l4l_global.age_group[]")
+    @Column(name = "age_group")
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.ARRAY)
     private CitizenAgeGroup[] ageGroup;
 
     @Column(name = "includes_dependent_children", nullable = false)
@@ -73,12 +48,14 @@ public class CitizenGroup extends BaseEntity {
     @Column(name = "max_income", nullable = false, precision = 10, scale = 2)
     private BigDecimal maxIncome;
 
-    @Type(type = "eligibility_criteria_array")
-    @Column(name = "eligibility_criteria", columnDefinition = "l4l_global.eligibility_criteria[]")
+    @Column(name = "eligibility_criteria")
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.ARRAY)
     private EligibilityCriteria[] eligibilityCriteria;
 
-    @Type(type = "required_documents_array")
-    @Column(name = "required_documents", columnDefinition = "l4l_global.required_documents[]")
+    @Column(name = "required_documents")
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.ARRAY)
     private RequiredDocuments[] requiredDocuments;
 
     @Column(name = "tenant_id")

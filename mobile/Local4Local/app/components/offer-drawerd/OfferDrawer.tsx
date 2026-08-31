@@ -26,7 +26,7 @@ export default function OfferDrawer({ navigation }: any) {
           <View testID="testOverlay" style={styles.overlay}>
             <TouchableWithoutFeedback>
               <OfferCard
-                offer={offerState.offer as OfferMobileListDto}
+                offer={offerState.offer as any}
                 customStyle={styles.drawer}
                 isOnMap={true}
                 navigation={navigation}

@@ -1,6 +1,9 @@
 package nl.centric.innovation.local4local.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.dto.PassDto;
 import nl.centric.innovation.local4local.entity.Role;
@@ -21,9 +24,6 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 

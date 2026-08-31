@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output, ViewChild } from '@angular/core';
 import {
 	ActionButtonIcons,
 	ActionButtons,
@@ -14,11 +14,13 @@ import {
 } from '@frontend/common';
 import { TableBaseComponent, TableComponent } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 
 import { GetSuppliersDto } from '../../_models/get-suppliers-dto.model';
 import { MunicipalitySupplierService } from '../../_services/suppliers.service';
+import { SupplierEditPopupComponent } from '../supplier-edit-popup/supplier-edit-popup';
 import { SupplierReviewPopupComponent } from '../supplier-review-popup/supplier-review-popup.component';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'frontend-supplier-req',
@@ -30,13 +32,18 @@ export class SupplierReqComponent extends TableBaseComponent implements OnInit {
 
 	@Output() countSuppliersEvent: EventEmitter<{ count: number; actionType: SupplierStatus }> = new EventEmitter();
 
-	constructor(
-		private dialogService: DialogService,
-		private supplierService: MunicipalitySupplierService,
-		private authService: AuthService,
-		private translateService: TranslateService,
-		private supplierProfileService: SupplierProfileService,
-	) {
+	private get isSuperAdmin(): boolean {
+		return this.authService.isSuperAdmin;
+	}
+
+	private readonly router = inject(Router);
+	private readonly dialogService = inject(DialogService);
+	private readonly authService = inject(AuthService);
+	private readonly supplierService = inject(MunicipalitySupplierService);
+	private readonly translateService = inject(TranslateService);
+	private readonly supplierProfileService = inject(SupplierProfileService);
+
+	constructor() {
 		super();
 	}
 
@@ -45,7 +52,7 @@ export class SupplierReqComponent extends TableBaseComponent implements OnInit {
 	}
 
 	public createRequestDto(event: PaginatedData<SupplierViewDto>, tenantId: string): GetSuppliersDto {
-		const statuses = [SupplierStatus.PENDING, SupplierStatus.REJECTED];
+		const statuses = [SupplierStatus.PENDING, SupplierStatus.REJECTED, SupplierStatus.CREATED];
 		return new GetSuppliersDto(event.currentIndex, event.pageSize, tenantId, statuses.join(','));
 	}
 
@@ -73,19 +80,47 @@ export class SupplierReqComponent extends TableBaseComponent implements OnInit {
 	}
 
 	public afterDataLoaded(data: Array<SupplierViewDto>): void {
-		const dataWithActions = data.map((element) => ({
-			...element,
-			category: this.translateService.instant(element.category),
-			actionButtons: [
+		const dataWithActions = data.map((element) => {
+			const actionButtons = [
+				new TableActionButton(
+					ActionButtons.visibilityIcon,
+					'actionButtons.viewSupplier',
+					false,
+					'',
+					ActionButtonIcons.uncontained,
+				),
+			];
+
+			actionButtons.push(
 				new TableActionButton(
 					ActionButtons.approvalIcon,
 					'actionButtons.review',
 					element.status !== SupplierStatus.PENDING,
-					'actionButtons.review',
+					undefined,
 					ActionButtonIcons.link,
 				),
-			],
-		}));
+			);
+
+			if (this.isSuperAdmin && element.status !== SupplierStatus.APPROVED) {
+				actionButtons.push(
+					new TableActionButton(
+						ActionButtons.adminEdit,
+						'actionButtons.adminEdit',
+						false,
+						undefined,
+						ActionButtonIcons.link,
+					),
+				);
+			}
+
+			return {
+				...element,
+				category: element.category ? this.translateService.instant(element.category) : '-',
+				province: element.province ?? '-',
+				accountManager: element.accountManager ?? '-',
+				actionButtons,
+			};
+		});
 
 		this.supplierRequestTable.afterDataLoaded(dataWithActions);
 	}
@@ -94,6 +129,15 @@ export class SupplierReqComponent extends TableBaseComponent implements OnInit {
 		if (action.actionButton === ActionButtons.approvalIcon) {
 			this.openSupplierReviewPopup();
 			this.initSupplierProfileData(action.row.id);
+		}
+
+		if (action.actionButton === ActionButtons.adminEdit) {
+			this.openSupplierEditPopup(action.row.id);
+			this.initSupplierProfileData(action.row.id);
+		}
+
+		if (action.actionButton === ActionButtons.visibilityIcon) {
+			this.router.navigateByUrl(`${'supplier-details'}/${action.row.id}`);
 		}
 	}
 
@@ -110,6 +154,40 @@ export class SupplierReqComponent extends TableBaseComponent implements OnInit {
 					secondContent: 'general.success.text',
 					acceptButtonType: 'high-emphasis-success',
 					acceptButtonText: 'register.continue',
+				},
+			})
+			?.afterClosed()
+			.subscribe((response) => {
+				if (!response) {
+					return;
+				}
+
+				if (response.actionType === 'adminEdit') {
+					this.openSupplierEditPopup(response.supplierId);
+					return;
+				}
+
+				if (response.actionType === 'update') {
+					this.updateSuppliersLists(response.status);
+					return;
+				}
+			});
+	}
+
+	private openSupplierEditPopup(supplierId: string): void {
+		this.dialogService
+			.message(SupplierEditPopupComponent, {
+				id: 'accessible-first-dialog',
+				panelClass: 'suppliers-approval',
+				width: '80%',
+				disableClose: true,
+				restoreFocus: true,
+				data: {
+					mainContent: 'general.success.title',
+					secondContent: 'general.success.text',
+					acceptButtonType: 'high-emphasis-success',
+					acceptButtonText: 'register.continue',
+					supplierId: supplierId,
 				},
 			})
 			?.afterClosed()

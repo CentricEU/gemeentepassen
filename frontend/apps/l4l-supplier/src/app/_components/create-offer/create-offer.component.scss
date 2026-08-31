@@ -5,11 +5,16 @@
 	form {
 		width: 100%;
 	}
-}
-.restrictions-section {
-	@include mixins.flex(column, $gap: 16px);
-}
 
-.restriction-items-section {
-	@include mixins.flex(column, $gap: 24px);
+	.restrictions-section {
+		@include mixins.flex(column, $gap: 16px);
+	}
+
+	.restriction-items-section {
+		@include mixins.flex(column, $gap: 24px);
+	}
+
+	.no-restriction {
+		gap: 0;
+	}
 }

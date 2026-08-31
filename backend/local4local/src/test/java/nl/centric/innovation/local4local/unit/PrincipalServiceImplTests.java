@@ -1,5 +1,7 @@
 package nl.centric.innovation.local4local.unit;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import nl.centric.innovation.local4local.entity.Tenant;
 import nl.centric.innovation.local4local.service.impl.SupplierService;
 import org.junit.jupiter.api.Assertions;
@@ -18,8 +20,6 @@ import nl.centric.innovation.local4local.entity.Supplier;
 import nl.centric.innovation.local4local.entity.User;
 import nl.centric.innovation.local4local.service.impl.PrincipalService;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)

@@ -1,23 +1,19 @@
-<centric-panel [showFooter]="true">
-	<ng-container panel-header>
-		<p class="bold left-container">{{ supplierProfileServiceInformation.companyName }}</p>
-	</ng-container>
-	<ng-container panel-content>
-		<frontend-supplier-profile #profileInformation [isReadOnly]="isReadOnly"></frontend-supplier-profile>
-	</ng-container>
+<windmill-card [hasFooter]="true" [hasHeader]="false" [borderRadius]="'bottom'">
+  <ng-container card-content>
+    <frontend-supplier-profile #profileInformation [isReadOnly]="isReadOnly"></frontend-supplier-profile>
+  </ng-container>
 
-	<ng-container panel-footer>
-		<div class="flex-row-center footer-actions">
-			<ng-container *ngIf="isReadOnly; else editableForm">
-				<centric-button type="outlined-theme" (click)="suspendSupplier()">{{
-					'general.button.suspendSupplier' | translate
-				}}</centric-button>
-			</ng-container>
-			<ng-template #editableForm>
-				<centric-button [disabled]="shouldDisableFinishButton()" class="pointer" (click)="saveChanges()">{{
-					actionButtonText | translate
-				}}</centric-button>
-			</ng-template>
-		</div>
-	</ng-container>
-</centric-panel>
+  <ng-container card-footer>
+    <div class="flex-row-center footer-actions">
+      @if (isReadOnly) {
+        <centric-button type="outlined-theme" (click)="suspendSupplier()">{{
+          'general.button.suspendSupplier' | translate
+        }}</centric-button>
+      } @else {
+        <centric-button [disabled]="shouldDisableFinishButton()" class="pointer" (click)="saveChanges()">{{
+          actionButtonText | translate
+        }}</centric-button>
+      }
+    </div>
+  </ng-container>
+</windmill-card>

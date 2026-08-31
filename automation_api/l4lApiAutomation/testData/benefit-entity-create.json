@@ -1,0 +1,8 @@
+{
+  "name": "Automation Benefit",
+  "description": "Test benefit created by automation",
+  "startDate": "2026-01-01",
+  "expirationDate": "2026-12-31",
+  "amount": 100.50,
+  "citizenGroupIds": ["b09f41ae-43b3-46f3-9421-48507a67cedb"]
+}

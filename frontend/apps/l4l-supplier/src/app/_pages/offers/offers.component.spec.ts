@@ -1,3 +1,4 @@
+import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -10,6 +11,7 @@ import {
 	FilterColumnKey,
 	FilterCriteria,
 	GenericStatusEnum,
+	OfferInformationDto,
 	OfferTableDto,
 	Page,
 	PaginatedData,
@@ -19,7 +21,7 @@ import {
 } from '@frontend/common';
 import { CustomDialogComponent, TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of } from 'rxjs';
 
 import { CreateOfferComponent } from '../../_components/create-offer/create-offer.component';
@@ -36,6 +38,7 @@ describe('OffersComponent', () => {
 	let component: OffersComponent;
 	let fixture: ComponentFixture<OffersComponent>;
 	let dialogService: DialogService;
+	let elementRef: ElementRef;
 	let offerService: OfferService;
 	let offerServiceSpy: any;
 	let translateService: TranslateService;
@@ -98,6 +101,7 @@ describe('OffersComponent', () => {
 				new Date('2023-12-31'),
 				[],
 				10,
+				'EXPIRED',
 			),
 			new BenefitDto(
 				'Benefit Name 2',
@@ -106,6 +110,7 @@ describe('OffersComponent', () => {
 				new Date('2023-12-31'),
 				[],
 				20,
+				'ACTIVE',
 			),
 		];
 
@@ -127,6 +132,7 @@ describe('OffersComponent', () => {
 				{ provide: DropdownDataService, useValue: dropdownDataServiceSpy },
 				{ provide: BreadcrumbService, useValue: breadcrumbServiceSpy },
 				{ provide: ActivatedRoute, useValue: activatedRouteMock },
+				{ provide: ElementRef, useValue: { nativeElement: document.createElement('div') } },
 				{
 					provide: TableComponent,
 					useValue: {
@@ -151,6 +157,7 @@ describe('OffersComponent', () => {
 		offerService = TestBed.inject(OfferService);
 		translateService = TestBed.inject(TranslateService);
 		formBuilder = TestBed.inject(FormBuilder);
+		elementRef = TestBed.inject(ElementRef);
 		offerServiceSpy.getOffers.mockReturnValue(of([]));
 		offerServiceSpy.getFilteredOffers.mockReturnValue(of([]));
 		offerServiceSpy.getOfferRejectionReason.mockReturnValue(of(mockOfferRejectionReason));
@@ -163,7 +170,7 @@ describe('OffersComponent', () => {
 			offerTypes: [],
 		};
 		component.availableBenefits = [];
-		component.offersTable = new TableComponent<OfferTableDto>(dialogService);
+		component.offersTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
 
 		fixture.detectChanges();
 	});
@@ -241,7 +248,7 @@ describe('OffersComponent', () => {
 	describe('Tests for table', () => {
 		it('should manage columns on calling manageColumns', () => {
 			component['dataCount'] = 2;
-			component.offersTable = new TableComponent<OfferTableDto>(dialogService);
+			component.offersTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
 			const manageColumnsSpy = jest.spyOn(component.offersTable, 'manageColumns');
 			component.manageColumns();
 			expect(manageColumnsSpy).toHaveBeenCalled();
@@ -278,7 +285,7 @@ describe('OffersComponent', () => {
 				new TableColumn('offer.typeOfOffer', 'offerType', 'offerType', true, false, ColumnDataType.TRANSLATION),
 				new TableColumn(
 					'general.acceptedBenefit',
-					'benefitName',
+					'benefit',
 					'benefitName',
 					true,
 					false,
@@ -292,42 +299,19 @@ describe('OffersComponent', () => {
 		});
 
 		it('should call service on getOffers', () => {
-			component.offersTable = new TableComponent<OfferTableDto>(dialogService);
+			component.offersTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
 			const pages: Page<OfferTableDto>[] = Array.from({ length: 5 }, () => new Page([]));
 			component.offersTable.paginatedData = new PaginatedData<OfferTableDto>(pages, 10, 0);
 			component.loadData(component.offersTable.paginatedData);
-			expect(offerServiceSpy.getOffers).toHaveBeenCalledWith(
+			expect(offerServiceSpy.getFilteredOffers).toHaveBeenCalledWith(
+				undefined,
 				component.paginatedData.currentIndex,
 				component.paginatedData.pageSize,
 			);
 		});
 
-		it('should initialize the table with offers already filtered by status when the service has one assigned', () => {
-			offerService.offerStatusFilter = GenericStatusEnum.ACTIVE;
-			const mockFilterValue: FilterCriteria = {
-				statusFilter: GenericStatusEnum.ACTIVE,
-			};
-
-			component.offersTable = new TableComponent<OfferTableDto>(dialogService);
-			const pages: Page<OfferTableDto>[] = Array.from({ length: 5 }, () => new Page([]));
-			component.offersTable.paginatedData = new PaginatedData<OfferTableDto>(pages, 25, 0);
-			component.offersTable.filterFormGroup = {
-				markAsDirty: jest.fn(),
-				value: mockFilterValue,
-			} as any;
-			const filterDto = component['createFilterOfferRequestDto']({
-				statusFilter: GenericStatusEnum.ACTIVE,
-			} as FilterCriteria);
-
-			component.loadData(component.offersTable.paginatedData);
-
-			expect(offerServiceSpy.countFilteredOffers).toHaveBeenCalledWith(filterDto);
-			expect(offerServiceSpy.getFilteredOffers).toHaveBeenCalledWith(filterDto, 0, 25);
-			expect(component.offersTable.filterFormGroup.markAsDirty).toHaveBeenCalled();
-		});
-
 		it('should update paginated data and currentDisplayedPage after data is loaded', () => {
-			component.offersTable = new TableComponent<OfferTableDto>(dialogService);
+			component.offersTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
 			const testData = [
 				new OfferTableDto(
 					'1',
@@ -335,6 +319,7 @@ describe('OffersComponent', () => {
 					123,
 					'CITIZEN_WITH_PASS',
 					'offerType',
+					0,
 					'validity',
 					GenericStatusEnum.EXPIRED,
 					'test',
@@ -346,6 +331,7 @@ describe('OffersComponent', () => {
 						new Date('2023-12-31'),
 						['id1'],
 						100,
+						'ACTIVE',
 					),
 					'Benefit Name',
 				),
@@ -355,6 +341,7 @@ describe('OffersComponent', () => {
 					123,
 					'CITIZEN_WITH_PASS',
 					'offerType',
+					1,
 					'validity',
 					GenericStatusEnum.PENDING,
 					'test',
@@ -366,10 +353,18 @@ describe('OffersComponent', () => {
 						new Date('2023-12-31'),
 						['id1'],
 						100,
+						'ACTIVE',
 					),
 					'Benefit Name',
 				),
 			];
+			const mockPanelElement = {
+				scrollTo: jest.fn(),
+			};
+			jest.spyOn(component.offersTable['elementRef'].nativeElement, 'querySelector').mockReturnValue(
+				mockPanelElement,
+			);
+
 			const pages: Page<OfferTableDto>[] = Array.from({ length: 5 }, () => new Page([]));
 			component.offersTable.paginatedData = new PaginatedData<OfferTableDto>(pages, 10, 0);
 			component.afterDataLoaded(testData);
@@ -387,6 +382,7 @@ describe('OffersComponent', () => {
 				123,
 				'CITIZEN_WITH_PASS',
 				'offerType',
+				0,
 				'validity',
 				GenericStatusEnum.EXPIRED,
 				'test',
@@ -398,6 +394,7 @@ describe('OffersComponent', () => {
 					new Date('2023-12-31'),
 					['id1'],
 					100,
+					'ACTIVE',
 				),
 				'Benefit Name',
 			),
@@ -407,6 +404,7 @@ describe('OffersComponent', () => {
 				123,
 				'CITIZEN_WITH_PASS',
 				'offerType',
+				0,
 				'validity',
 				GenericStatusEnum.PENDING,
 				'test',
@@ -418,6 +416,7 @@ describe('OffersComponent', () => {
 					new Date('2023-12-31'),
 					['id1'],
 					100,
+					'ACTIVE',
 				),
 				'Benefit Name',
 			),
@@ -425,7 +424,7 @@ describe('OffersComponent', () => {
 		testData[1].selected = true;
 
 		component['dataCount'] = 3;
-		component.offersTable = new TableComponent<OfferTableDto>(dialogService);
+		component.offersTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
 		component.offersTable.currentDisplayedPage = testData;
 
 		jest.spyOn(component as any, 'getSelectedOffersIds');
@@ -433,6 +432,42 @@ describe('OffersComponent', () => {
 		component['getSelectedOffersIds']();
 
 		expect(component['getSelectedOffersIds']).toHaveReturnedWith(['3']);
+	});
+
+	it('should initialize the table with offers already filtered by status when the service has one assigned', async () => {
+		offerService.offerStatusFilter = GenericStatusEnum.ACTIVE;
+		const mockFilterValue: FilterCriteria = {
+			statusFilter: GenericStatusEnum.ACTIVE,
+		};
+
+		component.offersTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
+		const pages: Page<OfferTableDto>[] = Array.from({ length: 5 }, () => new Page([]));
+		component.offersTable.paginatedData = new PaginatedData<OfferTableDto>(pages, 25, 0);
+		component.offersTable.filterFormGroup = {
+			markAsDirty: jest.fn(),
+			value: mockFilterValue,
+		} as Partial<FormGroup> as FormGroup;
+		const filterDto = component['createFilterOfferRequestDto']({
+			statusFilter: GenericStatusEnum.ACTIVE,
+		} as FilterCriteria);
+
+		jest.spyOn(offerServiceSpy, 'countFilteredOffers').mockReturnValue(of(10));
+
+		jest.spyOn(offerServiceSpy, 'getFilteredOffers').mockReturnValue(of([]));
+
+		const mockPanelElement = {
+			scrollTo: jest.fn(),
+		};
+		jest.spyOn(component.offersTable['elementRef'].nativeElement, 'querySelector').mockReturnValue(
+			mockPanelElement,
+		);
+
+		component.loadData(component.offersTable.paginatedData);
+		await Promise.resolve(); // flush microtasks
+
+		expect(offerServiceSpy.countFilteredOffers).toHaveBeenCalledWith(filterDto);
+		expect(offerServiceSpy.getFilteredOffers).toHaveBeenCalledWith(filterDto, 0, 25);
+		expect(component.offersTable.filterFormGroup.markAsDirty).toHaveBeenCalled();
 	});
 
 	describe('areOffersSelected', () => {
@@ -449,12 +484,13 @@ describe('OffersComponent', () => {
 
 	describe('Action Buttons', () => {
 		it('should open the delete offer modal when the Trash button is pressed', () => {
-			const testOffer = new OfferTableDto(
+			const testOffer = new OfferInformationDto(
 				'1',
 				'Title',
 				123,
 				'CITIZEN',
 				'offerType',
+				0,
 				'validity',
 				GenericStatusEnum.ACTIVE,
 				'test',
@@ -466,6 +502,7 @@ describe('OffersComponent', () => {
 					new Date('2023-12-31'),
 					['id1'],
 					100,
+					'EXPIRED',
 				),
 				'Benefit Name',
 			);
@@ -478,12 +515,13 @@ describe('OffersComponent', () => {
 		});
 
 		it('should open the reactivate offer modal when the Reactivate button is pressed', () => {
-			const testOffer = new OfferTableDto(
+			const testOffer = new OfferInformationDto(
 				'1',
 				'Title',
 				123,
 				'CITIZEN',
 				'offerType',
+				1,
 				'validity',
 				GenericStatusEnum.ACTIVE,
 				'test',
@@ -495,24 +533,26 @@ describe('OffersComponent', () => {
 					new Date('2023-12-31'),
 					['id1'],
 					100,
+					'EXPIRED',
 				),
 				'Benefit Name',
 			);
 
-			jest.spyOn(component as any, 'openReactivateOfferModal');
+			jest.spyOn(component as any, 'openActionModal');
 
 			component.onActionButtonClicked({ actionButton: ActionButtons.circlePlay, row: testOffer });
 
-			expect(component['openReactivateOfferModal']).toHaveBeenCalledWith('1');
+			expect(component['openActionModal']).toHaveBeenCalledWith(testOffer, true);
 		});
 
-		it('should not do anything when an unknown button is pressed', () => {
-			const testOffer = new OfferTableDto(
+		it('should open the suspend offer modal when the Suspend button is pressed', () => {
+			const testOffer = new OfferInformationDto(
 				'1',
 				'Title',
 				123,
 				'CITIZEN',
 				'offerType',
+				1,
 				'validity',
 				GenericStatusEnum.ACTIVE,
 				'test',
@@ -524,6 +564,146 @@ describe('OffersComponent', () => {
 					new Date('2023-12-31'),
 					['id1'],
 					100,
+					'EXPIRED',
+				),
+				'Benefit Name',
+			);
+
+			jest.spyOn(component as any, 'openActionModal');
+
+			component.onActionButtonClicked({ actionButton: ActionButtons.circlePause, row: testOffer });
+
+			expect(component['openActionModal']).toHaveBeenCalledWith(
+				testOffer,
+				false,
+				false,
+				false,
+				true,
+				GenericStatusEnum.ACTIVE,
+			);
+		});
+
+		it('should open the reapply to offer modal when the Reapply button is pressed', () => {
+			const testOffer = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				1,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'EXPIRED',
+				),
+				'Benefit Name',
+			);
+
+			jest.spyOn(component as any, 'openActionModal');
+
+			component.onActionButtonClicked({ actionButton: ActionButtons.reapply, row: testOffer });
+
+			expect(component['openActionModal']).toHaveBeenCalledWith(testOffer, false, false, true);
+		});
+
+		it('should open the edit offer modal when the View button is pressed', () => {
+			const testOffer = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				1,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'EXPIRED',
+				),
+				'Benefit Name',
+			);
+			jest.spyOn(component as any, 'openActionModal');
+			component.onActionButtonClicked({ actionButton: ActionButtons.editIcon, row: testOffer });
+			expect(component['openActionModal']).toHaveBeenCalledWith(
+				testOffer,
+				false,
+				true,
+				false,
+				false,
+				GenericStatusEnum.ACTIVE,
+			);
+		});
+
+		it('should open the view offer modal when the View button is pressed', () => {
+			const testOffer = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				1,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'EXPIRED',
+				),
+				'Benefit Name',
+			);
+			jest.spyOn(component as any, 'openActionModal');
+			component.onActionButtonClicked({ actionButton: ActionButtons.visibilityIcon, row: testOffer });
+			expect(component['openActionModal']).toHaveBeenCalledWith(
+				testOffer,
+				false,
+				false,
+				false,
+				false,
+				GenericStatusEnum.ACTIVE,
+			);
+		});
+
+		it('should not do anything when an unknown button is pressed', () => {
+			const testOffer = new OfferInformationDto(
+				'1',
+				'Title',
+				123,
+				'CITIZEN',
+				'offerType',
+				1,
+				'validity',
+				GenericStatusEnum.ACTIVE,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'EXPIRED',
 				),
 				'Benefit Name',
 			);
@@ -675,6 +855,7 @@ describe('OffersComponent', () => {
 					123,
 					'CITIZEN_WITH_PASS',
 					'offerType',
+					0,
 					'validity',
 					GenericStatusEnum.EXPIRED,
 					'test',
@@ -686,13 +867,14 @@ describe('OffersComponent', () => {
 						new Date('2023-12-31'),
 						['id1'],
 						100,
+						'EXPIRED',
 					),
 					'Benefit Name',
 				),
 			];
 
 			component['dataCount'] = 2;
-			component.offersTable = new TableComponent<OfferTableDto>(dialogService);
+			component.offersTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
 			component.offersTable.currentDisplayedPage = testData;
 
 			jest.spyOn(component.offersTable, 'toggleCheckbox');
@@ -708,29 +890,38 @@ describe('OffersComponent', () => {
 		it('should open the dialog with the correct configuration if opened from the Reactivate button', () => {
 			jest.spyOn(dialogService, 'message');
 
-			component['openReactivateOfferModal']('18');
+			const testData = new OfferInformationDto(
+				'2',
+				'Title',
+				123,
+				'CITIZEN_WITH_PASS',
+				'offerType',
+				0,
+				'validity',
+				GenericStatusEnum.EXPIRED,
+				'test',
+				'supplierId',
+				new BenefitDto(
+					'Benefit Name',
+					'Benefit Description',
+					new Date('2023-01-01'),
+					new Date('2023-12-31'),
+					['id1'],
+					100,
+					'EXPIRED',
+				),
+				'Benefit Name',
+			);
+
+			component['openActionModal'](testData, true);
 
 			expect((dialogService as any).message).toHaveBeenCalledWith(CreateOfferComponent, {
 				width: '70%',
 				closeOnNavigation: false,
 				data: {
-					offerToReactivate: '18',
+					offerToReactivate: testData,
 				},
 			});
-		});
-
-		it('should recount offers after dialog is closed', () => {
-			const dialogRefMock = {
-				afterClosed: () => of(true),
-				close: jest.fn(),
-			};
-
-			jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
-			jest.spyOn(component as any, 'countOffers');
-
-			component['openReactivateOfferModal']('19');
-
-			expect(component['countOffers']).toHaveBeenCalled();
 		});
 	});
 
@@ -753,7 +944,7 @@ describe('OffersComponent', () => {
 			};
 
 			const filterDto = new FilterOfferRequestDto(GenericStatusEnum.ACTIVE, 1, 'grant1');
-			component.offersTable = new TableComponent<OfferTableDto>(dialogService);
+			component.offersTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
 			component.offersTable.paginatedData = { currentIndex: 0, pageSize: 10 } as PaginatedData<OfferTableDto>;
 			component.offersTable.currentDisplayedPage = [];
 			jest.spyOn(component as any, 'createFilterOfferRequestDto').mockReturnValue(filterDto);
@@ -774,7 +965,7 @@ describe('OffersComponent', () => {
 
 	describe('shouldDisplayTable', () => {
 		it('should return true when data exists and filter columns are defined', () => {
-			component.offersTable = new TableComponent<OfferTableDto>(dialogService);
+			component.offersTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
 			component['dataCount'] = 3;
 			component.allFilterColumns = [new TableFilterColumn('key', [], '')];
 
@@ -830,7 +1021,7 @@ describe('OffersComponent', () => {
 
 	describe('initializeComponentData', () => {
 		it('should initialize columns and data', () => {
-			component.offersTable = new TableComponent<OfferTableDto>(dialogService);
+			component.offersTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
 			jest.spyOn(component, 'initializeColumns');
 			jest.spyOn(component.offersTable, 'initializeData');
 
@@ -1015,6 +1206,7 @@ describe('OffersComponent', () => {
 				new Date('2023-12-31'),
 				['id1'],
 				100,
+				'EXPIRED',
 			),
 			new BenefitDto(
 				'Benefit Name 2',
@@ -1023,6 +1215,7 @@ describe('OffersComponent', () => {
 				new Date('2023-12-31'),
 				['id2'],
 				100,
+				'EXPIRED',
 			),
 		];
 
@@ -1103,14 +1296,7 @@ describe('OffersComponent', () => {
 			new TableColumn('general.status', 'status', 'status', true, true, ColumnDataType.STATUS),
 			new TableColumn('offer.title', 'title', 'title', true, true),
 			new TableColumn('offer.typeOfOffer', 'offerType', 'offerType', true, false, ColumnDataType.TRANSLATION),
-			new TableColumn(
-				'general.acceptedBenefit',
-				'benefitName',
-				'benefitName',
-				true,
-				false,
-				ColumnDataType.DEFAULT,
-			),
+			new TableColumn('general.acceptedBenefit', 'benefit', 'benefitName', true, false, ColumnDataType.DEFAULT),
 			new TableColumn('genericFields.validity.label', 'validity', 'validity', true, false),
 			new TableColumn('general.actions', 'actions', 'actions', true, true, ColumnDataType.DEFAULT, true),
 		];
@@ -1149,6 +1335,7 @@ describe('OffersComponent', () => {
 				123,
 				'CITIZEN_WITH_PASS',
 				'offerType',
+				2,
 				'validity',
 				GenericStatusEnum.EXPIRED,
 				'test',
@@ -1160,6 +1347,7 @@ describe('OffersComponent', () => {
 					new Date('2023-12-31'),
 					['id1'],
 					100,
+					'ACTIVE',
 				),
 				'Benefit Name',
 			),
@@ -1169,6 +1357,7 @@ describe('OffersComponent', () => {
 				123,
 				'CITIZEN_WITH_PASS',
 				'offerType',
+				3,
 				'validity',
 				GenericStatusEnum.PENDING,
 				'test',
@@ -1180,13 +1369,14 @@ describe('OffersComponent', () => {
 					new Date('2023-12-31'),
 					['id1'],
 					100,
+					'ACTIVE',
 				),
 				'Benefit Name',
 			),
 		];
 		testData[1].selected = true;
 
-		component.offersTable = new TableComponent<OfferTableDto>(dialogService);
+		component.offersTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
 		component['dataCount'] = 3;
 		component.offersTable.currentDisplayedPage = testData;
 		component.offersTable.filterFormGroup = mockFormGroup;
@@ -1299,7 +1489,7 @@ describe('OffersComponent', () => {
 			benefitFilter: '123',
 		};
 
-		component.offersTable = new TableComponent<OfferTableDto>(dialogService);
+		component.offersTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
 		const pages: Page<OfferTableDto>[] = Array.from({ length: 5 }, () => new Page([]));
 		component.offersTable.paginatedData = new PaginatedData<OfferTableDto>(pages, 10, 0);
 		const testData = [
@@ -1309,6 +1499,7 @@ describe('OffersComponent', () => {
 				123,
 				'CITIZEN_WITH_PASS',
 				'offerType',
+				0,
 				'validity',
 				GenericStatusEnum.EXPIRED,
 				'test',
@@ -1320,6 +1511,7 @@ describe('OffersComponent', () => {
 					new Date('2023-12-31'),
 					['id1'],
 					100,
+					'ACTIVE',
 				),
 				'Benefit Name',
 			),
@@ -1329,6 +1521,7 @@ describe('OffersComponent', () => {
 				123,
 				'CITIZEN_WITH_PASS',
 				'offerType',
+				0,
 				'validity',
 				GenericStatusEnum.PENDING,
 				'test',
@@ -1340,6 +1533,7 @@ describe('OffersComponent', () => {
 					new Date('2023-12-31'),
 					['id1'],
 					100,
+					'ACTIVE',
 				),
 				'Benefit Name',
 			),
@@ -1358,7 +1552,27 @@ describe('OffersComponent', () => {
 			const result = component['createActionButtons'](GenericStatusEnum.ACTIVE);
 
 			expect(result).toEqual([
-				new TableActionButton(ActionButtons.minusCircle, '', false, '', ActionButtonIcons.uncontained),
+				new TableActionButton(
+					ActionButtons.visibilityIcon,
+					'actionButtons.viewOffer',
+					false,
+					'',
+					ActionButtonIcons.uncontained,
+				),
+				new TableActionButton(
+					ActionButtons.editIcon,
+					'actionButtons.edit',
+					false,
+					'',
+					ActionButtonIcons.uncontained,
+				),
+				new TableActionButton(
+					ActionButtons.circlePause,
+					'actionButtons.suspend',
+					false,
+					'',
+					ActionButtonIcons.uncontained,
+				),
 			]);
 		});
 
@@ -1367,8 +1581,8 @@ describe('OffersComponent', () => {
 
 			expect(result).toEqual([
 				new TableActionButton(
-					ActionButtons.trashIcon,
-					'actionButtons.delete',
+					ActionButtons.visibilityIcon,
+					'actionButtons.viewOffer',
 					false,
 					'',
 					ActionButtonIcons.uncontained,
@@ -1376,6 +1590,13 @@ describe('OffersComponent', () => {
 				new TableActionButton(
 					ActionButtons.circlePlay,
 					'actionButtons.reactivate',
+					false,
+					'',
+					ActionButtonIcons.uncontained,
+				),
+				new TableActionButton(
+					ActionButtons.trashIcon,
+					'actionButtons.delete',
 					false,
 					'',
 					ActionButtonIcons.uncontained,
@@ -1388,6 +1609,20 @@ describe('OffersComponent', () => {
 
 			expect(result).toEqual([
 				new TableActionButton(
+					ActionButtons.visibilityIcon,
+					'actionButtons.viewOffer',
+					false,
+					'',
+					ActionButtonIcons.uncontained,
+				),
+				new TableActionButton(
+					ActionButtons.editIcon,
+					'actionButtons.edit',
+					false,
+					'',
+					ActionButtonIcons.uncontained,
+				),
+				new TableActionButton(
 					ActionButtons.trashIcon,
 					'actionButtons.delete',
 					false,
@@ -1395,6 +1630,42 @@ describe('OffersComponent', () => {
 					ActionButtonIcons.uncontained,
 				),
 			]);
+		});
+
+		it('should call deleteOffersAndRefresh when dialog returns shouldDelete=true', () => {
+			const offer = { id: 'offer-123' } as OfferInformationDto;
+
+			const deleteSpy = jest.spyOn(component as any, 'deleteOffersAndRefresh').mockImplementation(jest.fn());
+
+			const afterClosedSubject = of({ shouldDelete: true });
+			const dialogSpy = jest.spyOn(dialogService, 'message').mockReturnValue({
+				afterClosed: () => afterClosedSubject,
+			} as any);
+
+			component['openActionModal'](offer, false);
+
+			expect(dialogSpy).toHaveBeenCalledWith(
+				CreateOfferComponent,
+				expect.objectContaining({
+					data: { offerToView: offer },
+				}),
+			);
+			expect(deleteSpy).toHaveBeenCalledWith(offer.id);
+		});
+
+		it('should NOT call deleteOffersAndRefresh when dialog returns shouldDelete=false', () => {
+			const offer = { id: 'offer-123' } as OfferInformationDto;
+
+			const deleteSpy = jest.spyOn(component as any, 'deleteOffersAndRefresh').mockImplementation(jest.fn());
+
+			const afterClosedSubject = of({ shouldDelete: false });
+			jest.spyOn(dialogService, 'message').mockReturnValue({
+				afterClosed: () => afterClosedSubject,
+			} as any);
+
+			component['openActionModal'](offer, false);
+
+			expect(deleteSpy).not.toHaveBeenCalled();
 		});
 	});
 });

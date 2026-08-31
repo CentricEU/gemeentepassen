@@ -1,4 +1,5 @@
-import { AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import {
 	AppType,
 	AuthService,
@@ -9,7 +10,8 @@ import {
 	TenantService,
 	UserInfo,
 } from '@frontend/common';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { WindmillIconRegistry } from '@windmill/ng-windmill/icon';
 import { CustomRoutes } from '@windmill/ng-windmill/sidenav';
 import { Subscription } from 'rxjs';
 
@@ -17,7 +19,8 @@ import { Subscription } from 'rxjs';
 	selector: 'frontend-generic-app',
 	templateUrl: './generic-app.component.html',
 	styleUrls: ['./generic-app.component.scss'],
-	standalone: false,
+	standalone: true,
+	imports: [TranslateModule],
 })
 export class GenericAppComponent implements OnInit, OnDestroy, AfterViewChecked {
 	public applicationType = AppType.supplier;
@@ -25,16 +28,23 @@ export class GenericAppComponent implements OnInit, OnDestroy, AfterViewChecked 
 	public translationsLoaded = false;
 	private translationsSubscription: Subscription;
 	private authSubscription: Subscription;
+	protected translateService = inject(TranslateService);
 
 	constructor(
-		protected translateService: TranslateService,
 		protected authService: AuthService,
 		private tenantService: TenantService,
 		private sidenavService: SidenavService,
 		private breadcrumbService: BreadcrumbService,
 		private multilanguageService: MultilanguageService,
 		private cdr: ChangeDetectorRef,
-	) {}
+		private windmillIconRegistry: WindmillIconRegistry,
+		private domSanitizer: DomSanitizer,
+	) {
+		this.windmillIconRegistry.addSvgIcon(
+			'edit_shield_b',
+			this.domSanitizer.bypassSecurityTrustResourceUrl('assets/icons/edit_shield_b.svg'),
+		);
+	}
 
 	public get shouldDisplayNavigation() {
 		return (
@@ -110,7 +120,7 @@ export class GenericAppComponent implements OnInit, OnDestroy, AfterViewChecked 
 	}
 
 	private getTenant(): void {
-		if (this.applicationType === AppType.citizen) {
+		if (this.applicationType === AppType.passholder) {
 			return;
 		}
 

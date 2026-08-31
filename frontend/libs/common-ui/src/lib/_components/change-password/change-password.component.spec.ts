@@ -13,7 +13,7 @@ import {
 } from '@frontend/common';
 import { AriaAttributesDirective } from '@innovation/accesibility';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { Observable, of, throwError } from 'rxjs';
 import { CustomDialogConfigUtil } from '../../_util/custom-dialog-config';
 import { CommonUiModule } from '../../common-ui.module';

@@ -2,6 +2,7 @@ package nl.centric.innovation.local4local.dto;
 
 import lombok.Builder;
 import nl.centric.innovation.local4local.entity.Supplier;
+import nl.centric.innovation.local4local.enums.StatusUpdateEnum;
 import nl.centric.innovation.local4local.enums.SupplierStatusEnum;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ public record SupplierViewDto(UUID id,
                               String category,
                               String province,
                               String accountManager,
-                              Boolean hasStatusUpdate,
+                              StatusUpdateEnum statusUpdate,
                               String logo
 ) {
     public static SupplierViewDto entityToSupplierViewDto(Supplier supplier) {
@@ -27,7 +28,7 @@ public record SupplierViewDto(UUID id,
                     .companyName(supplier.getCompanyName())
                     .kvk(supplier.getKvk())
                     .status(supplier.getStatus())
-                    .hasStatusUpdate(supplier.isHasStatusUpdate())
+                    .statusUpdate(supplier.getStatusUpdate())
                     .build();
         }
 
@@ -40,7 +41,7 @@ public record SupplierViewDto(UUID id,
                 .companyName(supplier.getCompanyName())
                 .kvk(supplier.getKvk())
                 .status(supplier.getStatus())
-                .hasStatusUpdate(supplier.isHasStatusUpdate())
+                .statusUpdate(supplier.getStatusUpdate())
                 .logo(supplier.getProfile().getLogo())
                 .build();
     }

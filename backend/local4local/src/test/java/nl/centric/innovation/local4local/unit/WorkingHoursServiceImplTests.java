@@ -51,7 +51,7 @@ public class WorkingHoursServiceImplTests {
         // Given
         Supplier supplier = Supplier.builder().build();
         supplier.setId(SUPPLIER_ID);
-        WorkingHoursDto workingHours = workingHoursDtoBuilder();
+        WorkingHoursDto workingHours = workingHoursDtoBuilder(1, false);
 
         List<WorkingHoursDto> inputWorkingHoursDtos = List.of(workingHours);
 
@@ -75,7 +75,7 @@ public class WorkingHoursServiceImplTests {
         // Given
         Supplier supplier = Supplier.builder().build();
         supplier.setId(SUPPLIER_ID);
-        WorkingHoursDto workingHours = workingHoursDtoBuilder();
+        WorkingHoursDto workingHours = workingHoursDtoBuilder(1, false);
         List<WorkingHoursDto> inputWorkingHoursDtos = List.of(workingHours);
 
         // When Then
@@ -133,6 +133,76 @@ public class WorkingHoursServiceImplTests {
         assertEquals(inputWorkingHoursDtos.size(), savedWorkingHoursDtos.size());
     }
 
+    @Test
+    public void GivenDuplicateDays_WhenCreateWorkingHoursAsAdmin_ThenExpectDtoValidateException() {
+        Supplier supplier = Supplier.builder().build();
+        supplier.setId(SUPPLIER_ID);
+
+        List<WorkingHoursDto> inputWorkingHoursDtos = List.of(
+                workingHoursDtoBuilder(1, true),
+                workingHoursDtoBuilder(1, true),
+                workingHoursDtoBuilder(2, true),
+                workingHoursDtoBuilder(3, true),
+                workingHoursDtoBuilder(4, true),
+                workingHoursDtoBuilder(5, true),
+                workingHoursDtoBuilder(6, true));
+
+        assertThrows(DtoValidateException.class, () -> workingHoursService.createWorkingHoursAsAdmin(inputWorkingHoursDtos, supplier));
+    }
+
+    @Test
+    public void GivenValidInput_WhenCreateWorkingHoursAsAdmin_ThenExpectSuccess() throws DtoValidateException {
+        Supplier supplier = Supplier.builder().build();
+        supplier.setId(SUPPLIER_ID);
+
+        List<WorkingHoursDto> inputWorkingHoursDtos = List.of(
+                workingHoursDtoBuilder(1, true),
+                workingHoursDtoBuilder(2, true),
+                workingHoursDtoBuilder(3, true),
+                workingHoursDtoBuilder(4, true),
+                workingHoursDtoBuilder(5, true),
+                workingHoursDtoBuilder(6, true),
+                workingHoursDtoBuilder(7, true));
+
+
+        List<WorkingHours> savedWorkingHoursDtos = workingHoursService.createWorkingHoursAsAdmin(inputWorkingHoursDtos, supplier);
+
+        assertEquals(inputWorkingHoursDtos.size(), savedWorkingHoursDtos.size());
+    }
+
+    @Test
+    public void GivenMissingDays_WhenCreateWorkingHoursAsAdmin_ThenExpectDtoValidateException() {
+        Supplier supplier = Supplier.builder().build();
+        supplier.setId(SUPPLIER_ID);
+
+        List<WorkingHoursDto> inputWorkingHoursDtos = List.of(
+                workingHoursDtoBuilder(1, true),
+                workingHoursDtoBuilder(2, true),
+                workingHoursDtoBuilder(3, true),
+                workingHoursDtoBuilder(4, true),
+                workingHoursDtoBuilder(5, true),
+                workingHoursDtoBuilder(6, true));
+
+        assertThrows(DtoValidateException.class, () -> workingHoursService.createWorkingHoursAsAdmin(inputWorkingHoursDtos, supplier));
+    }
+
+    @Test
+    public void GivenOnlyClosedDays_WhenCreateWorkingHoursAsAdmin_ThenExpectDtoValidateException() throws DtoValidateException {
+        Supplier supplier = Supplier.builder().build();
+        supplier.setId(SUPPLIER_ID);
+
+        List<WorkingHoursDto> inputWorkingHoursDtos = List.of(
+                workingHoursDtoBuilder(1, false),
+                workingHoursDtoBuilder(2, false),
+                workingHoursDtoBuilder(3, false),
+                workingHoursDtoBuilder(4, false),
+                workingHoursDtoBuilder(5, false),
+                workingHoursDtoBuilder(6, false),
+                workingHoursDtoBuilder(7, false));
+
+        assertThrows(DtoValidateException.class, () -> workingHoursService.createWorkingHoursAsAdmin(inputWorkingHoursDtos, supplier));
+    }
+
     private WorkingHours workingHoursBuilder(Supplier supplier, String openTime, String closeTime, boolean isChecked,
                                              int day) {
 
@@ -145,12 +215,14 @@ public class WorkingHoursServiceImplTests {
                 .build();
     }
 
-    private WorkingHoursDto workingHoursDtoBuilder() {
+    private WorkingHoursDto workingHoursDtoBuilder(int day, boolean isChecked) {
 
         return WorkingHoursDto.builder()
                 .id(UUID.randomUUID())
-                .day(1)
-                .isChecked(false)
+                .day(day)
+                .isChecked(isChecked)
+                .openTime(AM_5)
+                .closeTime(AM_10)
                 .build();
     }
 

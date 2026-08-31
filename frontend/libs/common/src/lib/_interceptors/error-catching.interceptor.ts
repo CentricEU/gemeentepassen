@@ -110,7 +110,13 @@ export class ErrorCatchingInterceptor implements HttpInterceptor {
 			}
 
 			this.showToast(customErrorCode.toString());
+
 			this.shownErrorCodes.add(customErrorCode);
+
+			// this will delete the error code from the set after 8 seconds, allowing the toast to be shown again if the same error occurs within that time frame
+			setTimeout(() => {
+				this.shownErrorCodes.delete(customErrorCode);
+			}, 8000);
 		}
 
 		return throwError(() => error);
@@ -124,7 +130,7 @@ export class ErrorCatchingInterceptor implements HttpInterceptor {
 		const status = error.status;
 		switch (status) {
 			case 401: {
-				if (this.authService.isLoggedIn) {
+				if (this.authService.isLoggedIn && !request.url.endsWith('/authenticate/refresh-token')) {
 					return this.handleUnauthorized(request, next);
 				}
 				break;

@@ -1,0 +1,47 @@
+<div class="header">
+	<p class="generic-color-text bold">{{ 'additionalInformation.title' | translate }}</p>
+</div>
+
+<form centric-complex-form class="additional-information-form" [formGroup]="additionalInformationFormGroup">
+	<centric-form-item>
+		<centric-form-label [attrFor]="'id-textarea-message'">{{
+			'additionalInformation.description' | translate
+		}}</centric-form-label>
+		<centric-form-control>
+			<centric-textarea2
+				formControlName="message"
+				ariaAttributes
+				frontendHtmlContentValidator
+				[id]="'id-textarea-message'"
+				[ariaLabelClearIcon]="'general.label.clear' | translate"
+				[validationFunction]="validationFunctionError.bind(this, 'message', additionalInformationFormGroup)"
+				[ariaDescribedby]="
+					additionalInformationFormGroup.get('message')?.errors &&
+					additionalInformationFormGroup.get('message')?.touched
+						? 'id-errors-message'
+						: ''
+				"
+				[placeholder]="'additionalInformation.writeMessage' | translate"
+				(textareaValueChanged)="onTextareaValueChanged($event)"
+				(clearValue)="onClearAdditionalMessage()">
+				<ng-container errors>
+					<div id="id-errors-message">
+						@if (additionalInformationFormGroup.get('message')?.hasError('isHTML')) {
+							<span class="centric-error-message">
+								{{ 'errors.htmlContent' | translate }}
+							</span>
+						}
+						@if (characterLimitMessageService.isOverCharacterLimit) {
+							<span class="centric-error-message">
+								{{
+									characterLimitMessageService.messageKey
+										| translate: { count: characterLimitMessageService.messageCount }
+								}}
+							</span>
+						}
+					</div>
+				</ng-container>
+			</centric-textarea2>
+		</centric-form-control>
+	</centric-form-item>
+</form>

@@ -1,29 +1,27 @@
 package nl.centric.innovation.local4local.entity;
 
 import java.time.LocalDate;
-import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedSubgraph;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedSubgraph;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import nl.centric.innovation.local4local.dto.OfferRequestDto;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import org.locationtech.jts.geom.Geometry;
 
-import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,7 +36,6 @@ import nl.centric.innovation.local4local.enums.GenericStatusEnum;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TypeDef(name = "pgsql_enum", typeClass = PostgreSQLEnumType.class)
 @NamedEntityGraph(
         name = "include-supplier-graph",
         attributeNodes = {
@@ -97,8 +94,8 @@ public class Offer extends BaseEntity {
     private Supplier supplier;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "status")
-    @Type(type = "pgsql_enum")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "status", columnDefinition = "status")
     private GenericStatusEnum status;
 
     @Column(name = "coordinates_string")
@@ -113,6 +110,19 @@ public class Offer extends BaseEntity {
 
     @Column(name = "is_active")
     private boolean isActive;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
+
+    public boolean isActiveOffer() {
+        return status == GenericStatusEnum.ACTIVE && isActive();
+    }
+
+    public void expireNow() {
+        this.status = GenericStatusEnum.EXPIRED;
+        this.expirationDate = LocalDate.now();
+    }
 
     public static Offer offerRequestDtoToEntity(OfferRequestDto offerRequestDto, OfferType offerType, Supplier supplier,
                                                 Benefit benefit) {

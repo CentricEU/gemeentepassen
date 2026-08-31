@@ -1,23 +1,26 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatMenu } from '@angular/material/menu';
 import {
+	AuthService,
 	Breadcrumb,
 	BreadcrumbService,
 	ColumnDataType,
 	commonRoutingConstants,
 	CommonUtil,
+	FilterColumnKey,
+	FilterCriteria,
 	MonthYearEntry,
 	PaginatedData,
+	SupplierForMapViewDto,
 	TableColumn,
 	TableFilterColumn,
-	TransactionData,
-	TransactionDateMenu,
+	TransactionDateDropdown,
 	TransactionTableDto,
+	UserInfo,
 } from '@frontend/common';
 import { TableBaseComponent, TableComponent } from '@frontend/common-ui';
-import { forkJoin, of } from 'rxjs';
 
 import { SepaService } from '../../_services/sepa-service/sepa.service';
+import { MunicipalitySupplierService } from '../../_services/suppliers.service';
 import { TransactionService } from '../../_services/transactions/transaction.service';
 
 @Component({
@@ -31,52 +34,73 @@ export class MunicipalityTransactionsComponent extends TableBaseComponent implem
 
 	public areTransactionsSelected = false;
 
-	public menuData: TransactionDateMenu[] = [];
-	public yearMenus: MatMenu[] = [];
-
-	//To be implemented
+	public dateOptions: TransactionDateDropdown[] = [];
+	public lastSelectedInterval: TransactionDateDropdown = CommonUtil.currentMonth();
 	public allFilterColumns: TableFilterColumn[];
-
+	public tenantSuppliers: SupplierForMapViewDto[] = [];
 	public selectedDate: MonthYearEntry;
-	public allMonthTransactionsCount: number;
+	public transactionsCount: number;
+
+	private transactionsSupplierFilter: string | undefined;
 
 	public get innerEmptyStateTitle(): string {
-		return 'transactions.noDataCurrentMonth';
+		return 'transactions.noDataCurrentInterval';
 	}
 
 	public get isTransactionCountZero(): boolean {
-		return this.allMonthTransactionsCount === 0;
+		return this.transactionsCount === 0;
 	}
 
 	public get isInnerEmptyStateVisible(): boolean {
-		return !this.allMonthTransactionsCount;
+		return !this.transactionsCount;
 	}
 
 	public get areFiltersApplied(): boolean {
-		return this.transactionsTable?.areFiltersApplied();
+		return (
+			this.transactionsTable?.areFiltersApplied() ||
+			this.lastSelectedInterval.translationLabel !== CommonUtil.currentMonth().translationLabel
+		);
 	}
 
 	constructor(
 		private breadcrumbService: BreadcrumbService,
 		private transactionsService: TransactionService,
+		private supplierService: MunicipalitySupplierService,
 		private cdr: ChangeDetectorRef,
 		private readonly sepaService: SepaService,
+		private readonly authService: AuthService,
 	) {
 		super();
 	}
 
 	public ngOnInit(): void {
 		this.initBreadcrumbs();
-		this.countTransactions();
-		this.selectedDate = new MonthYearEntry('transactions.menuLabel');
+		this.getTenantSuppliers();
+		this.initDateOptions();
 	}
 
 	public ngOnDestroy(): void {
 		this.breadcrumbService.removeBreadcrumbs();
 	}
 
-	public onApplyFilters(): void {
-		console.log('Method not implemented');
+	public clearFilters(): void {
+		this.transactionsTable.clearFilters();
+
+		if (this.lastSelectedInterval.translationLabel === CommonUtil.currentMonth().translationLabel) {
+			return;
+		}
+
+		if (this.transactionsSupplierFilter) {
+			this.transactionsSupplierFilter = undefined;
+		}
+
+		this.initDateOptions();
+		this.onSelectDateRange(CommonUtil.currentMonth());
+	}
+
+	public onApplyFilters(filters: FilterCriteria): void {
+		this.transactionsSupplierFilter = filters.supplierNameFilter;
+		this.countTransactions();
 	}
 
 	public manageColumns(): void {
@@ -84,84 +108,77 @@ export class MunicipalityTransactionsComponent extends TableBaseComponent implem
 	}
 
 	public generateSEPA(): void {
-		const month = CommonUtil.getFormattedMonthDate(this.selectedDate);
-
-		this.sepaService.generateSepaFile(month).subscribe({
-			next: (blob: Blob) => {
-				const url = window.URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.href = url;
-				a.download = 'sepa.xml';
-				document.body.appendChild(a);
-				a.click();
-				document.body.removeChild(a);
-				window.URL.revokeObjectURL(url);
-			},
-		});
+		if (
+			!this.lastSelectedInterval ||
+			!this.lastSelectedInterval.startDateInterval ||
+			!this.lastSelectedInterval.endDateInterval
+		) {
+			return;
+		}
+		this.sepaService
+			.generateSepaFile(
+				this.lastSelectedInterval.startDateInterval,
+				this.lastSelectedInterval.endDateInterval,
+				this.transactionsSupplierFilter,
+			)
+			.subscribe({
+				next: (blob: Blob) => {
+					const url = window.URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = 'sepa.xml';
+					document.body.appendChild(a);
+					a.click();
+					document.body.removeChild(a);
+					window.URL.revokeObjectURL(url);
+				},
+			});
 	}
 
-	public onSelectMonth(monthYearEntry: MonthYearEntry): void {
-		this.selectedDate = monthYearEntry;
-		this.fetchTransactionCountData(false);
-	}
+	public onSelectDateRange(dateRange: TransactionDateDropdown): void {
+		this.lastSelectedInterval = dateRange;
+		this.transactionsService
+			.countDateIntervalTransactionsByTenant(
+				this.lastSelectedInterval.startDateInterval,
+				this.lastSelectedInterval.endDateInterval,
+				this.transactionsSupplierFilter,
+			)
+			.subscribe({
+				next: (count) => {
+					this.transactionsCount = count;
+					this.cdr.detectChanges();
 
-	public setAreTransactionsSelected(count: number): void {
-		this.areTransactionsSelected = !!count;
+					if (count === 0 && this.transactionsTable?.currentDisplayedPage) {
+						this.transactionsTable?.afterDataLoaded([]);
+					} else {
+						this.transactionsTable?.initializeData();
+					}
+				},
+			});
 	}
 
 	public loadData(event: PaginatedData<TransactionTableDto>): void {
-		if (!this.allMonthTransactionsCount) {
+		if (!this.transactionsCount) {
 			return;
 		}
 
 		this.transactionsService
-			.getTransactionsByTenant(
+			.getDateIntervalTransactionsByTenant(
 				event.currentIndex,
 				event.pageSize,
-				this.selectedDate?.monthValue,
-				this.selectedDate?.year,
+				this.lastSelectedInterval.startDateInterval,
+				this.lastSelectedInterval.endDateInterval,
+				this.transactionsSupplierFilter,
 			)
 			.subscribe((data) => {
-				this.transactionsTable?.afterDataLoaded(data);
+				this.transactionsTable?.afterDataLoaded(
+					data.map((transaction) => ({
+						...transaction,
+						transactionBenefit: transaction.benefit,
+						passNumber: transaction.passNumber ?? '-',
+					})),
+				);
 			});
-	}
-
-	private generatePastYearsData(years: number[]): TransactionDateMenu[] {
-		return years.map((year) => ({
-			year,
-			months: this.getMonthKeys(year),
-		}));
-	}
-
-	private generateCurrentYearData(): TransactionDateMenu {
-		const date = new Date();
-		const currentYear = date.getFullYear();
-		const currentMonth = date.getMonth();
-
-		const currentYearMonths = this.getMonthKeys(currentYear)
-			.slice(0, currentMonth + 1)
-			.reverse();
-
-		return { months: currentYearMonths };
-	}
-
-	private getMonthKeys(year: number): MonthYearEntry[] {
-		const months = [
-			'transactions.months.january',
-			'transactions.months.february',
-			'transactions.months.march',
-			'transactions.months.april',
-			'transactions.months.may',
-			'transactions.months.june',
-			'transactions.months.july',
-			'transactions.months.august',
-			'transactions.months.september',
-			'transactions.months.october',
-			'transactions.months.november',
-			'transactions.months.december',
-		];
-
-		return months.map((key, index) => new MonthYearEntry(key, index + 1, year));
 	}
 
 	private countTransactions(): void {
@@ -174,47 +191,57 @@ export class MunicipalityTransactionsComponent extends TableBaseComponent implem
 	}
 
 	private initializeTransactionCount(): void {
-		if (!this.dataCount) {
-			return;
-		}
-
 		this.initColumns();
-		this.fetchTransactionCountData();
+		this.countTransactionsByDateInterval();
 	}
 
-	private fetchTransactionCountData(loadYears = true): void {
-		forkJoin({
-			years: loadYears ? this.transactionsService.getDistinctYearsForTransactionsByTenant() : of([]),
-			currentMonthCount: this.transactionsService.countCurrentMonthTransactionsByTenant(this.selectedDate),
-		}).subscribe({
-			next: (transactionData) => {
-				this.processTransactionData(transactionData, loadYears);
-			},
-		});
+	private countTransactionsByDateInterval(): void {
+		this.transactionsService
+			.countDateIntervalTransactionsByTenant(
+				this.lastSelectedInterval.startDateInterval,
+				this.lastSelectedInterval.endDateInterval,
+				this.transactionsSupplierFilter,
+			)
+			.subscribe({
+				next: (count: number) => {
+					this.transactionsCount = count;
+					this.cdr.detectChanges();
+
+					if (count === 0 && this.transactionsTable?.currentDisplayedPage) {
+						this.transactionsTable?.afterDataLoaded([]);
+					} else {
+						this.transactionsTable?.initializeData();
+					}
+				},
+			});
 	}
 
-	private processTransactionData(transactionData: TransactionData, loadYears: boolean): void {
-		if (loadYears) {
-			this.menuData = [this.generateCurrentYearData(), ...this.generatePastYearsData(transactionData.years)];
-		}
-
-		this.allMonthTransactionsCount = transactionData.currentMonthCount;
-
-		if (this.allMonthTransactionsCount === 0) {
-			this.transactionsTable?.afterDataLoaded([]);
+	private getTenantSuppliers(): void {
+		const tenantId = this.authService.extractSupplierInformation(UserInfo.TenantId);
+		if (!tenantId) {
 			return;
 		}
-
-		this.cdr.detectChanges();
-		this.transactionsTable?.initializeData();
+		this.supplierService.getSuppliersForMap(tenantId).subscribe((data) => {
+			this.tenantSuppliers = data;
+			this.initFilterColumnsData();
+			this.countTransactions();
+		});
 	}
 
 	private initColumns(): void {
 		this.allColumns = [
 			new TableColumn('transactions.passholderNumber', 'passNumber', 'passNumber', true, true),
 			new TableColumn('transactions.citizenName', 'citizenName', 'citizenName', true, false),
-			new TableColumn('general.supplier', 'supplierName', 'supplierName', true, false),
-			new TableColumn('offer.types.benefit', 'benefit', 'benefit', true, false),
+			new TableColumn(
+				'general.supplier',
+				'supplierName',
+				'supplierName',
+				true,
+				false,
+				ColumnDataType.DEFAULT,
+				false,
+			),
+			new TableColumn('offer.types.benefit', 'transactionBenefit', 'transactionBenefit', true, false),
 			new TableColumn('general.amount', 'amount', 'amount', true, true, ColumnDataType.CURRENCY),
 			new TableColumn('general.date', 'createdDate', 'createdDate', true, false),
 			new TableColumn('general.time', 'createdTime', 'createdTime', true, false),
@@ -226,5 +253,35 @@ export class MunicipalityTransactionsComponent extends TableBaseComponent implem
 			new Breadcrumb('general.pages.dashboard', ['']),
 			new Breadcrumb('general.pages.transactions', [commonRoutingConstants.transactions]),
 		]);
+	}
+
+	private initDateOptions(): void {
+		this.selectedDate = new MonthYearEntry('transactions.menuLabel');
+		this.dateOptions = CommonUtil.getDateIntervals();
+	}
+
+	private initFilterColumnsData(): void {
+		const supplierData = this.tenantSuppliers.map((supplier) => ({
+			key: supplier.id || '',
+			value: supplier.companyName || '',
+		}));
+
+		const filterColumnsData = [
+			{ key: FilterColumnKey.TRANSACTIONS_PASSHOLDER_NUMBER, data: [] },
+			{ key: FilterColumnKey.TRANSACTIONS_CITIZEN_NAME, data: [] },
+			{
+				key: FilterColumnKey.TRANSACTIONS_SUPPLIER,
+				data: supplierData,
+				translationKey: 'general.supplier',
+			},
+			{ key: FilterColumnKey.TRANSACTIONS_BENEFIT, data: [] },
+			{ key: FilterColumnKey.TRANSACTIONS_AMOUNT, data: [] },
+			{ key: FilterColumnKey.TRANSACTIONS_DATE, data: [] },
+			{ key: FilterColumnKey.TRANSACTIONS_TIME, data: [] },
+		];
+
+		this.allFilterColumns = filterColumnsData.map(({ key, data, translationKey }) => {
+			return new TableFilterColumn(key, data, translationKey || '');
+		});
 	}
 }

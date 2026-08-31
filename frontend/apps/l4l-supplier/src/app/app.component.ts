@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Role } from '@frontend/common';
+import { AppType, Role } from '@frontend/common';
 import { GenericAppComponent } from '@frontend/common-ui';
 
 @Component({
@@ -9,6 +9,7 @@ import { GenericAppComponent } from '@frontend/common-ui';
 	standalone: false,
 })
 export class AppComponent extends GenericAppComponent {
+	public override applicationType = AppType.supplier;
 	public get isCashierRole(): boolean {
 		return this.authService.userRole?.name === Role.CASHIER;
 	}

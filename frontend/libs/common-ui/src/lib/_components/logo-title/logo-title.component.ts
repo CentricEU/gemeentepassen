@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input } from '@angular/core';
 import { LOGO_TYPES } from '@frontend/common';
 import { TranslateModule } from '@ngx-translate/core';
@@ -8,7 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 	templateUrl: './logo-title.component.html',
 	styleUrls: ['./logo-title.component.scss'],
 	standalone: true,
-	imports: [TranslateModule, CommonModule],
+	imports: [TranslateModule],
 })
 export class LogoTitleComponent {
 	@Input() title: string;

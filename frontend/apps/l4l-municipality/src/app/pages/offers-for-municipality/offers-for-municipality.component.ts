@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
 	ActionButtonIcons,
 	ActionButtons,
@@ -14,11 +14,12 @@ import {
 	TableColumn,
 } from '@frontend/common';
 import { ChipRemainingDialogComponent, TableBaseComponent, TableComponent } from '@frontend/common-ui';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { iif } from 'rxjs';
 
 import { OfferApprovalPopupComponent } from '../../components/offer-approval-popup/offer-approval-popup.component';
 import { PendingOffersService } from '../../pending-offers.service';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'frontend-offers-for-municipality',
@@ -30,6 +31,8 @@ export class OffersForMuniciaplityComponent extends TableBaseComponent implement
 	@ViewChild('offersMunicipalityTable') offersMunicipalityTable: TableComponent<OfferTableDto>;
 
 	@Input() public supplierId?: string;
+
+	public isOffersSupplierPath = false;
 
 	public get typeOfModal() {
 		return ChipRemainingDialogComponent;
@@ -43,18 +46,20 @@ export class OffersForMuniciaplityComponent extends TableBaseComponent implement
 		return this.dataCount > 0;
 	}
 
-	constructor(
-		private readonly dialogService: DialogService,
-		private breadcrumbService: BreadcrumbService,
-		private offerService: PendingOffersService,
-		private supplierProfileService: SupplierProfileService,
-	) {
+	private readonly dialogService = inject(DialogService);
+	private readonly router = inject(Router);
+	private readonly offerService = inject(PendingOffersService);
+	private readonly breadcrumbService = inject(BreadcrumbService);
+	private readonly supplierProfileService = inject(SupplierProfileService);
+
+	constructor() {
 		super();
 	}
 
 	public ngOnInit(): void {
 		this.countOffers();
 		this.initBreadcrumbs();
+		this.checkRouterPath();
 	}
 
 	public ngOnDestroy(): void {
@@ -182,5 +187,14 @@ export class OffersForMuniciaplityComponent extends TableBaseComponent implement
 			return;
 		}
 		this.initializeComponentData();
+	}
+
+	private checkRouterPath(): void {
+		const supplierOffersRegex = /supplier-details\/[^/]+\/offers/;
+
+		if (supplierOffersRegex.test(this.router.url)) {
+			this.isOffersSupplierPath = true;
+			return;
+		}
 	}
 }

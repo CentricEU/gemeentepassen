@@ -3,6 +3,7 @@ package nl.centric.innovation.local4local.dto;
 import lombok.Builder;
 import nl.centric.innovation.local4local.entity.Tenant;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.UUID;
@@ -11,7 +12,7 @@ import java.util.UUID;
 public record TenantViewDto(UUID id,
                             String name,
                             String address,
-                            Double wage,
+                            BigDecimal wage,
                             LocalDateTime createdDate,
                             String email,
                             String phone,

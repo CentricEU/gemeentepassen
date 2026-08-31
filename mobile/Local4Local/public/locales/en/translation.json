@@ -28,7 +28,7 @@
 			"requiredField": "This field is required",
 			"invalidEmail": "Invalid email address",
 			"passwordMatch": "Password and Confirm Password do not match",
-			"passwordRule": "Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long,",
+			"passwordRule": "Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long.",
 			"unauthorized": "Your login session has ended. Kindly log in again.",
 			"requestError": "There is an error in processing your request. Please try again later.",
 			"roleNotAllowed": "This email address is not authorized to use this application.",
@@ -51,7 +51,7 @@
 			"monthly": "Monthly",
 			"yearly": "Yearly"
 		},
-		"welcome": "Welcome back to Gemeentepassen",
+		"welcome": "Welcome back to Gemeentepas",
 		"balance": "Balance: ",
 		"status": {
 			"active": "Active",
@@ -67,7 +67,7 @@
 		"discountCode": "Discount Code"
 	},
 	"landingPage": {
-		"title": "Welcome to Gemeentepassen!",
+		"title": "Welcome to Gemeentepas!",
 		"description": "Whether you use your benefits or not, you could benefit from our supplier offers."
 	},
 	"getStartedPage": {
@@ -118,10 +118,11 @@
 		"seeAll": "See all",
 		"chipList": {
 			"all": "All discounts",
-			"credit": "Credit",
+			"storeCredit": "Store credit",
 			"bogo": "BOGO",
-			"freeEntry": "Free entry/Product",
-			"percentage": "Discount"
+			"membershipFee": "Membership fee",
+			"freeEntry": "Admission",
+			"freeProduct": "Product"
 		},
 		"offerGroup": "Offer group ({{number}})",
 		"availableWith": "Available starting {{startDate}}",
@@ -140,7 +141,7 @@
 		"validity": "{{startDate}} to {{endDate}}",
 		"acceptedBenefit": "Accepted benefit",
 		"bogo": "Buy one, get one (BOGO)",
-		"amount": "Discount amount",
+		"amount": "Price",
 		"frecquency": "Frequency of use",
 		"timeSlots": "Time slots",
 		"hourValidity": "From {{startHour}} until {{endHour}}",
@@ -204,9 +205,9 @@
 			"culture": "Culture",
 			"music": "Music",
 			"foodAndDrinks": "Food & Drinks",
-			"courses": "Courses",
 			"sport": "Sport",
-			"dance": "Dance"
+			"other": "Other",
+			"shop": "Shop"
 		}
 	},
 	"dayOfWeek": {
@@ -240,10 +241,11 @@
 	},
 	"offer": {
 		"types": {
-			"freeEntry": "Free entry/Product",
-			"percentage": "Discount",
+			"storeCredit": "Store credit",
 			"bogo": "BOGO",
-			"credit": "Credit"
+			"membershipFee": "Membership fee",
+			"freeEntry": "Admission",
+			"freeProduct": "Product"
 		},
 		"offerType": "Offer type: ",
 		"expirationDate": "Expiration date: ",
@@ -301,7 +303,7 @@
 	"forgotPassword": {
 		"hyperlink": "Forgot password",
 		"title": "Forgot your password?",
-		"description": "Please enter the following information to set a new password.",
+		"description": "Please enter the following information to set a new password:",
 		"send": "Send me link",
 		"captcha": "Captcha: \"I am not a robot\" type",
 		"emailPlaceholder": "Enter your e-mail address",
@@ -310,7 +312,8 @@
 			"description": "We've sent you an email with a link to reset your password.",
 			"title": "Check your inbox",
 			"dialogTitle": "E-mail sent successfully!"
-		}
+		},
+		"notFound": "No account was found with this email address."
 	},
 	"changePassword": {
 		"title": "Set new password",
@@ -321,7 +324,10 @@
 			"title": "Congratulations!",
 			"dialogTitle": "Password changed successfully!",
 			"buttonText": "Continue to Login"
-		}
+		},
+		"newPassword": "New password",
+		"reenterNewPassword": "Re-enter your new password",
+		"newPasswordPlaceholder": "Enter your new password"
 	},
 	"privacy": {
 		"title": "Privacy Statement",
@@ -406,7 +412,7 @@
 		},
 		"complaint": {
 			"title": "The Right to File a Complaint",
-			"description": "We handle your data as transparently and carefully as possible. If you do have a complaint about the processing of your data, please contact our privacy officer first by sending a message to info@Gemeentepassen.eu. We will then do our utmost to resolve your complaint. If you unexpectedly do not agree with the measure taken, please contact the Dutch Authority of Personal Data (Autoriteit Persoonsgegevens)."
+			"description": "We handle your data as transparently and carefully as possible. If you do have a complaint about the processing of your data, please contact our privacy officer first by sending a message to {email_link}. We will then do our utmost to resolve your complaint. If you unexpectedly do not agree with the measure taken, please contact the Dutch Authority of Personal Data (Autoriteit Persoonsgegevens)."
 		},
 		"info_sheet": {
 			"title": "Information Sheet Per Data Processing",

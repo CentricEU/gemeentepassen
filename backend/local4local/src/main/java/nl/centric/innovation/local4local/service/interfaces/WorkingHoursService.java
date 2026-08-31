@@ -17,4 +17,7 @@ public interface WorkingHoursService {
 
     List<WorkingHoursDto> getWorkingHoursForSupplier(UUID supplierId);
 
+    List<WorkingHours> createWorkingHoursAsAdmin(List<WorkingHoursDto> workingHoursDtos, Supplier supplier) throws DtoValidateException;
+
+    void validateWorkWeek(List<WorkingHoursDto> workingHours) throws DtoValidateException;
 }

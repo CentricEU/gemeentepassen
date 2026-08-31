@@ -1,34 +1,34 @@
 <div class="metrics-section">
 	<div class="widgets-section">
-		<frontend-info-widget
-			*ngFor="let widget of widgetsData"
-			[title]="widget.title | translate"
-			[value]="widget.value"
-			[icon]="widget.icon">
-		</frontend-info-widget>
+		@for (widget of widgetsData; track widget.title) {
+			<frontend-info-widget [title]="widget.title | translate" [value]="widget.value" [icon]="widget.icon">
+			</frontend-info-widget>
+		}
 	</div>
-	<centric-card [shadow]="true" class="transactions-section">
-		<centric-card-header>
-			<div centric-card-title>{{ 'dashboard.transactions.title' | translate }}</div>
-			<windmill-combo-button
-				[menuItems]="dashboardServiceInstance.dropdownData"
-				[contentType]="'dropdown'"
-				[dropdownButtonText]="activeTimePeriod | translate"
-				[dropdownType]="'uncontained-greyscale'"
-				(menuItemSelected)="onTimePeriodChange($event)">
-			</windmill-combo-button>
-		</centric-card-header>
-		<div centric-card-content>
+	<windmill-card class="styled-content transactions-section" [hasShadow]="true">
+		<ng-container card-header>
+			<div card-title class="card-title">
+				<span>{{ 'dashboard.transactions.title' | translate }}</span>
+				<windmill-combo-button
+					[menuItems]="dashboardServiceInstance.dropdownData"
+					[contentType]="'dropdown'"
+					[dropdownButtonText]="activeTimePeriod | translate"
+					[dropdownType]="'uncontained-greyscale'"
+					(menuItemSelected)="onTimePeriodChange($event)">
+				</windmill-combo-button>
+			</div>
+		</ng-container>
+		<div card-content>
 			<frontend-transaction-chart #transactionChart> </frontend-transaction-chart>
 		</div>
-	</centric-card>
+	</windmill-card>
 </div>
 
-<centric-card [shadow]="true">
-	<centric-card-header>
-		<div centric-card-title>{{ 'dashboard.map.title' | translate }}</div>
-	</centric-card-header>
-	<div centric-card-content>
+<windmill-card class="styled-content" [hasShadow]="true">
+	<ng-container card-header>
+		<div card-title>{{ 'dashboard.map.title' | translate }}</div>
+	</ng-container>
+	<div card-content>
 		<frontend-suppliers-map [showMap]="isApproved"></frontend-suppliers-map>
 	</div>
-</centric-card>
+</windmill-card>

@@ -1,0 +1,56 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins.scss' as mixins;
+
+:host {
+	.container {
+		@include mixins.size(100%, 100%);
+		@include mixins.flex(column, center, center);
+		padding: 32px 0;
+
+		p {
+			color: var(--greyscale-900);
+			font-size: 24px;
+			padding-bottom: 32px;
+		}
+	}
+
+	.buttons-container {
+		@include mixins.flex(row);
+		padding-top: 32px;
+		gap: 16px;
+
+		> :first-child {
+			margin-right: 16px;
+		}
+	}
+
+	.category-list {
+		@include mixins.flex(row, center, center);
+		flex-wrap: wrap;
+		gap: 32px;
+
+		overflow-y: auto;
+		position: relative;
+		max-height: calc(100vh - 200px);
+	}
+
+	.category-list app-category-card {
+		flex: 0 1 320px;
+	}
+}
+
+@media (max-width: 500px) {
+	:host {
+		.container {
+			padding: 0 16px;
+
+			.buttons-container {
+				flex-direction: column;
+				gap: 16px;
+				width: 100%;
+			}
+			p {
+				padding: 16px 16px 0;
+			}
+		}
+	}
+}

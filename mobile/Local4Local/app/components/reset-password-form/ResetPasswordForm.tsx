@@ -37,7 +37,7 @@ function ResetPasswordForm({ navigation, route }: AuthScreenProps<'ResetPassword
     const [requestError, setRequestError] = useState('');
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
-    const { control, trigger, formState: { errors }, watch } = useForm<ResetPasswordFormData>({
+    const { control, trigger, formState: { errors, touchedFields }, watch, } = useForm<ResetPasswordFormData>({
         mode: 'onChange',
         reValidateMode: 'onChange',
         defaultValues: { password: '', confirmPassword: '' }
@@ -58,15 +58,24 @@ function ResetPasswordForm({ navigation, route }: AuthScreenProps<'ResetPassword
     const passwordFormEntries = [
         {
             name: AuthFormControlsEnum.password,
-            label: t('registerPage.registerForm.password'),
-            placeholder: t('registerPage.registerForm.passwordPlaceholder')
+            label: t('changePassword.newPassword'),
+            placeholder: t('changePassword.newPasswordPlaceholder')
         },
         {
             name: AuthFormControlsEnum.confirmPassword,
-            label: t('registerPage.registerForm.retypePassword'),
-            placeholder: t('registerPage.registerForm.retypePasswordPlaceholder')
+            label: t('changePassword.reenterNewPassword'),
+            placeholder: t('changePassword.reenterNewPassword')
         }
     ];
+
+    const password = watch(AuthFormControlsEnum.password);
+
+    useEffect(() => {
+        if (touchedFields.confirmPassword) {
+            trigger(AuthFormControlsEnum.confirmPassword);
+        }
+    }, [password, touchedFields.confirmPassword, trigger]);
+
 
     const handleCloseError = () => setRequestError('');
 

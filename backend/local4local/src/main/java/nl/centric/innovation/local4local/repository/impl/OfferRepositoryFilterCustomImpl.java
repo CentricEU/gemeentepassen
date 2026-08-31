@@ -1,5 +1,14 @@
 package nl.centric.innovation.local4local.repository.impl;
 
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import nl.centric.innovation.local4local.dto.FilterOfferRequestDto;
 import nl.centric.innovation.local4local.entity.Offer;
 import nl.centric.innovation.local4local.enums.OfferAttributeEnum;
@@ -8,15 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +44,7 @@ public class OfferRepositoryFilterCustomImpl implements OfferRepositoryFilterCus
                 OfferAttributeEnum.SUPPLIER.getAttributeName());
 
         TypedQuery<Offer> typedQuery = entityManager.createQuery(query)
-                .setHint("javax.persistence.loadgraph", entityGraph)
+                .setHint("jakarta.persistence.loadgraph", entityGraph)
                 .setFirstResult((int) pageable.getOffset())
                 .setMaxResults(pageable.getPageSize());
 

@@ -3,19 +3,18 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
 	AuthService,
-	CommonL4LModule,
 	NavigationService,
 	SupplierViewDto,
 	Tenant,
 	TenantService,
 } from '@frontend/common';
-import { CommonUiModule, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ToastrService } from '@windmill/ng-windmill/toastr';
 import { of } from 'rxjs';
 
 import { SupplierService } from '../../services/supplier-service/supplier.service';
 import { HeaderComponent } from './header.component';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('HeaderComponent', () => {
 	let component: HeaderComponent;
@@ -31,6 +30,14 @@ describe('HeaderComponent', () => {
 		envName: 'dev',
 		apiPath: '/api',
 	};
+
+	const toastrServiceMock = {
+       error: jest.fn(),
+       success: jest.fn(),
+       info: jest.fn(),
+       warning: jest.fn(),
+    };
+
 
 	const authServiceMock = {
 		logout: jest.fn(),
@@ -64,26 +71,21 @@ describe('HeaderComponent', () => {
 
 		mockSupplierServiceSpy = {
 			getSupplierById: jest.fn(),
-			resetSupplierHasStatusUpdate: jest.fn(),
+			clearStatusUpdate: jest.fn(),
 			getQRCodeImage: jest.fn(),
 		};
 		await TestBed.configureTestingModule({
-			imports: [
-				HeaderComponent,
-				CommonUiModule,
-				BrowserAnimationsModule,
-				WindmillModule,
-				CommonL4LModule,
-				TranslateModule.forRoot(),
-			],
+			imports: [HeaderComponent, BrowserAnimationsModule, TranslateModule.forRoot()],
 			providers: [
 				{ provide: TenantService, useValue: mockTenantService },
 				{ provide: AuthService, useValue: authServiceMock },
 				{ provide: SupplierService, useValue: mockSupplierServiceSpy },
 				{ provide: NavigationService, useValue: navigationServiceMock },
+				{ provide: ToastrService, useValue: toastrServiceMock },
 				provideHttpClientTesting(),
 				{ provide: 'env', useValue: environmentMock },
 			],
+			schemas: [NO_ERRORS_SCHEMA],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(HeaderComponent);
@@ -92,13 +94,12 @@ describe('HeaderComponent', () => {
 		authService = TestBed.inject(AuthService);
 		supplierService = TestBed.inject(SupplierService);
 		navigationService = TestBed.inject(NavigationService);
-
+		const toastrService = TestBed.inject(ToastrService);
 		const mockSupplier: SupplierViewDto = {
 			companyName: 'Test Company',
 			id: 'suppId',
 		} as SupplierViewDto;
 		jest.spyOn(mockSupplierServiceSpy, 'getSupplierById').mockReturnValue(of(mockSupplier));
-		fixture.detectChanges();
 	});
 
 	it('should create', () => {

@@ -1,28 +1,28 @@
-<ng-container *ngIf="shouldDisplayButton">
-	<centric-button
-		type="icon-low-emphasis"
-		[size]="'small'"
-		[iconId]="'list-bullet_search_rb'"
-		[ariaLabel]="'Search items'">
-	</centric-button>
-</ng-container>
+@if (shouldDisplayButton) {
+  <centric-button
+    type="icon-low-emphasis"
+    [size]="'small'"
+    [iconId]="'list-bullet_search_rb'"
+    [ariaLabel]="'Search items'">
+  </centric-button>
+}
 
 <centric-chips-list
-	[ariaLabel]="'general.chip.title' | translate"
-	[ariaDescription]="'general.chip.description' | translate">
-	<ng-container *ngFor="let chip of arrayOfChips">
-		<centric-chip [message]="chip['name']" [hasTitle]="true" [readonly]="true" [size]="'small'"> </centric-chip>
-	</ng-container>
+  [ariaLabel]="'general.chip.title' | translate"
+  [ariaDescription]="'general.chip.description' | translate">
+  @for (chip of arrayOfChips; track chip) {
+    <centric-chip [message]="chip['name']" [hasTitle]="true" [readonly]="true" [size]="'small'"> </centric-chip>
+  }
 
-	<ng-container *ngIf="remainingChips && remainingChips > 0">
-		<centric-button
-			role="listitem"
-			type="icon-low-emphasis"
-			class="remaining-chips"
-			size="small"
-			[ariaLabel]="'general.chip.moreButton' | translate"
-			[ariaDescription]="'general.chip.moreButton' | translate">
-			+{{ remainingChips }}
-		</centric-button>
-	</ng-container>
+  @if (remainingChips && remainingChips > 0) {
+    <centric-button
+      role="listitem"
+      type="icon-low-emphasis"
+      class="remaining-chips"
+      size="small"
+      [ariaLabel]="'general.chip.moreButton' | translate"
+      [ariaDescription]="'general.chip.moreButton' | translate">
+      +{{ remainingChips }}
+    </centric-button>
+  }
 </centric-chips-list>

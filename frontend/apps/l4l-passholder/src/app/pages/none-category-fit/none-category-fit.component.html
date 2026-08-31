@@ -1,0 +1,65 @@
+<div class="citizen-enrollment-view">
+	<p class="none-category-fit-title bold">{{ 'noneCategoryFit.title' | translate }}</p>
+	<p
+		class="text-align-center"
+		[innerHTML]="'noneCategoryFit.description' | translate: { municipalityName: municipalityName }"></p>
+	<p class="text-align-center">
+		{{
+			'noneCategoryFit.contactMunicipality' | translate: { phoneNumber: phoneNumber, emailAddress: emailAddress }
+		}}
+	</p>
+	<form [formGroup]="noneCategoryFitForm" class="none-category-fit-form">
+		<centric-form-item>
+			<centric-form-control frontendRequiredInput>
+				<centric-textarea2
+					formControlName="message"
+					ariaAttributes
+					frontendHtmlContentValidator
+					[id]="'id-textarea-message'"
+					[ariaLabel]="'Message'"
+					[ariaLabelClearIcon]="'general.label.clear' | translate"
+					[validationFunction]="validationFunctionError.bind(this, 'message', noneCategoryFitForm)"
+					[ariaDescribedby]="
+						noneCategoryFitForm.get('message')?.errors && noneCategoryFitForm.get('message')?.touched
+							? 'id-errors-message'
+							: ''
+					"
+					[placeholder]="'noneCategoryFit.writeMessage' | translate"
+					(textareaValueChanged)="characterLimitMessageService.onTextareaValueChanged($event, maxLength)"
+					(clearValue)="characterLimitMessageService.onClearValue(maxLength)">
+					<ng-container errors>
+						<div id="id-errors-message">
+							@if (hasFormControlRequiredErrors('message', noneCategoryFitForm)) {
+								<span class="centric-error-message">
+									{{ 'noneCategoryFit.messageFormControlRequired' | translate }}
+								</span>
+							}
+							@if (noneCategoryFitForm.get('message')?.hasError('isHTML')) {
+								<span class="centric-error-message">
+									{{ 'errors.htmlContent' | translate }}
+								</span>
+							}
+							@if (characterLimitMessageService.isOverCharacterLimit) {
+								<span class="centric-error-message">
+									{{
+										characterLimitMessageService.messageKey
+											| translate: { count: characterLimitMessageService.messageCount }
+									}}
+								</span>
+							}
+						</div>
+					</ng-container>
+				</centric-textarea2>
+			</centric-form-control>
+		</centric-form-item>
+	</form>
+
+	<div class="buttons-container">
+		<centric-button [type]="'outlined-theme'" [ariaLabel]="'general.button.back' | translate" (click)="goBack()">
+			{{ 'general.button.back' | translate }}</centric-button
+		>
+		<centric-button (click)="sendMessage()" [disabled]="noneCategoryFitForm.invalid">
+			{{ 'general.button.sendMessage' | translate }}
+		</centric-button>
+	</div>
+</div>

@@ -1,13 +1,18 @@
+
 import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService, commonRoutingConstants, NavigationService, TenantService } from '@frontend/common';
-import { CustomRoutes } from '@windmill/ng-windmill/sidenav';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { CentricButtonModule } from '@windmill/ng-windmill/button';
+import { CentricSidenavModule, CustomRoutes } from '@windmill/ng-windmill/sidenav';
 
 @Component({
 	selector: 'frontend-sidenav',
 	templateUrl: './sidenav.component.html',
 	styleUrls: ['./sidenav.component.scss'],
-	standalone: false,
+	standalone: true,
+	imports: [TranslateModule, CentricSidenavModule, CentricButtonModule],
+	providers: [TranslateService],
 })
 export class SidenavComponent {
 	@Input()
@@ -36,6 +41,6 @@ export class SidenavComponent {
 	}
 
 	public navigateToDashboard(): void {
-		this.router.navigate([commonRoutingConstants.dashboard]);
+		this.router.navigate(['/']);
 	}
 }

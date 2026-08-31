@@ -1,0 +1,36 @@
+@use '../../../../../../libs/shared-assets/_styles/mixins' as mixins;
+
+:host {
+    @include mixins.size(100%, 100%);
+    overflow: hidden;
+
+    ::ng-deep {
+
+        .windmill-tab-body {
+            padding: 0px !important;
+            height: 100%;
+        }
+
+        windmill-tab-body, .windmill-tab-body {
+            height: 100%;
+        }
+
+        .full-size-panel {
+            .windmill-tab-group, .windmill-tab {
+                height: 100%;
+            }
+        }
+
+        .windmill-tab {
+            height: fit-content;
+            max-height: calc(100vh - 130px); // 130px = 50(breadcrumbs) + 48( tab header)  + 32(page padding) 
+            overflow-y: scroll;
+        }
+
+        .profile-tab {
+            .windmill-tab {
+                padding: 32px;
+            }
+        }
+    }
+}

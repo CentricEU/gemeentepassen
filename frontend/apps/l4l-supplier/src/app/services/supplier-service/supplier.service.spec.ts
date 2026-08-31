@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { SupplierViewDto } from '@frontend/common';
 import { of } from 'rxjs';
@@ -50,26 +50,7 @@ describe('SupplierService', () => {
 			expect(data).toMatchObject(expectedResult);
 		});
 
-		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/suppliers/id`);
-	});
-
-	it('should reset hasStatusUpdate property after successful call', () => {
-		const updatedSupplierMock = {
-			hasStatusUpdate: true,
-		};
-		httpClientSpy.put.mockReturnValue(of(updatedSupplierMock));
-
-		service.resetSupplierHasStatusUpdate('id', true).subscribe((data) => {
-			expect(data).toMatchObject(updatedSupplierMock);
-		});
-
-		const httpParams = new HttpParams().set('hasStatusUpdate', updatedSupplierMock.hasStatusUpdate.toString());
-
-		expect(httpClientSpy.put).toHaveBeenCalledWith(
-			`${environmentMock.apiPath}/suppliers/change-has-status-update/id`,
-			null,
-			{ params: httpParams },
-		);
+		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/suppliers/detail/id`);
 	});
 
 	it('should return a Blob after getQRCodeImage is called', (done) => {

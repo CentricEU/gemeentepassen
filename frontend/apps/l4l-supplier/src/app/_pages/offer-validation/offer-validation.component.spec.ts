@@ -292,7 +292,7 @@ describe('OfferValidationComponent', () => {
 		expect(updateValidationStatusSpy).not.toHaveBeenCalled();
 	});
 
-	it('should open Apply Discount Modal with percentage discount when offerType is 1', () => {
+	it('should open Apply Discount Modal with storeCredit when offerType is 1', () => {
 		const validatedCode = new CodeValidationDto('VALID', '12:00:00');
 		validatedCode.offerName = 'OfferName';
 		validatedCode.offerType = 1;
@@ -301,19 +301,43 @@ describe('OfferValidationComponent', () => {
 
 		component['handleValidationSuccess'](validatedCode);
 
-		expect(openApplyDiscountModalSpy).toHaveBeenCalledWith(validatedCode, 'discount.percentageDiscount');
+		expect(openApplyDiscountModalSpy).toHaveBeenCalledWith(validatedCode, 'offer.types.storeCredit');
 	});
 
-	it('should open Apply Discount Modal with BOGO discount when offerType is not 1', () => {
+	it('should open Apply Discount Modal with bogo when offerType is 2', () => {
 		const validatedCode = new CodeValidationDto('VALID', '12:00:00');
 		validatedCode.offerName = 'OfferName';
 		validatedCode.offerType = 2;
 
-		const openApplyDiscountModalSpy = jest.spyOn(component, 'openApplyDiscountModal');
+		const openApplyDiscountModalSpy = jest.spyOn(component as any, 'openApplyDiscountModal');
 
 		component['handleValidationSuccess'](validatedCode);
 
-		expect(openApplyDiscountModalSpy).toHaveBeenCalledWith(validatedCode, 'discount.bogoDiscount');
+		expect(openApplyDiscountModalSpy).toHaveBeenCalledWith(validatedCode, 'offer.types.bogo');
+	});
+
+	it('should open Apply Discount Modal with freeEntry when offerType is 4', () => {
+		const validatedCode = new CodeValidationDto('VALID', '12:00:00');
+		validatedCode.offerName = 'OfferName';
+		validatedCode.offerType = 4;
+
+		const openApplyDiscountModalSpy = jest.spyOn(component as any, 'openApplyDiscountModal');
+
+		component['handleValidationSuccess'](validatedCode);
+
+		expect(openApplyDiscountModalSpy).toHaveBeenCalledWith(validatedCode, 'offer.types.freeEntry');
+	});
+
+	it('should open Apply Discount Modal with freeProduct when offerType is 5', () => {
+		const validatedCode = new CodeValidationDto('VALID', '12:00:00');
+		validatedCode.offerName = 'OfferName';
+		validatedCode.offerType = 5;
+
+		const openApplyDiscountModalSpy = jest.spyOn(component as any, 'openApplyDiscountModal');
+
+		component['handleValidationSuccess'](validatedCode);
+
+		expect(openApplyDiscountModalSpy).toHaveBeenCalledWith(validatedCode, 'offer.types.freeProduct');
 	});
 
 	it('should call updateValidationStatus when offerName and offerType are not provided', () => {
@@ -372,7 +396,66 @@ describe('OfferValidationComponent', () => {
 				expect(updateValidationStatusSpy).not.toHaveBeenCalled();
 			});
 	});
+	it('should not call updateValidationStatus when result is null in openApplyDiscountModal', () => {
+		const validatedCode = new CodeValidationDto('VALID', '12:00:00');
+		const discountType = 'percentage';
+		const updateValidationStatusSpy = jest.spyOn(component as any, 'updateValidationStatus');
 
+		dialogMock.open.mockReturnValue({
+			afterClosed: jest.fn().mockReturnValue(of(null)),
+		});
+
+		component.openApplyDiscountModal(validatedCode, discountType);
+
+		expect(updateValidationStatusSpy).not.toHaveBeenCalled();
+	});
+
+	it('should call handleValidationError when result is a SilentErrorCode', () => {
+		const validatedCode = new CodeValidationDto('VALID', '12:00:00');
+		const discountType = 'percentage';
+		const errorCode = SilentErrorCode.offerInactiveError;
+		const handleValidationErrorSpy = jest.spyOn(component as any, 'handleValidationError');
+		const updateValidationStatusSpy = jest.spyOn(component as any, 'updateValidationStatus');
+
+		dialogMock.open.mockReturnValue({
+			afterClosed: jest.fn().mockReturnValue(of(errorCode)),
+		});
+
+		component.openApplyDiscountModal(validatedCode, discountType);
+
+		expect(handleValidationErrorSpy).toHaveBeenCalledWith(errorCode);
+		expect(updateValidationStatusSpy).not.toHaveBeenCalled();
+	});
+
+	it('should call updateValidationStatus when result is a valid CodeValidationDto', () => {
+		const validatedCode = new CodeValidationDto('VALID', '12:00:00');
+		const discountType = 'percentage';
+		const resultCode = new CodeValidationDto('RESULT_CODE', '13:00:00');
+		const updateValidationStatusSpy = jest.spyOn(component as any, 'updateValidationStatus');
+
+		dialogMock.open.mockReturnValue({
+			afterClosed: jest.fn().mockReturnValue(of(resultCode)),
+		});
+
+		component.openApplyDiscountModal(validatedCode, discountType);
+
+		expect(updateValidationStatusSpy).toHaveBeenCalledWith(resultCode);
+	});
+
+	it('should not call handleValidationError when result is not a SilentErrorCode', () => {
+		const validatedCode = new CodeValidationDto('VALID', '12:00:00');
+		const discountType = 'percentage';
+		const result = { code: 'SOME_RESULT' };
+		const handleValidationErrorSpy = jest.spyOn(component as any, 'handleValidationError');
+
+		dialogMock.open.mockReturnValue({
+			afterClosed: jest.fn().mockReturnValue(of(result)),
+		});
+
+		component.openApplyDiscountModal(validatedCode, discountType);
+
+		expect(handleValidationErrorSpy).not.toHaveBeenCalled();
+	});
 	it.each([
 		[SilentErrorCode.codeNotFoundOrInactiveError, 'validationPage.errorMessageNotFound'],
 		[SilentErrorCode.offerInactiveError, 'validationPage.errorMessageOfferInactive'],

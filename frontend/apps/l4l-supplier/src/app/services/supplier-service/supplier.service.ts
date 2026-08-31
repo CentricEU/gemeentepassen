@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Environment, SupplierViewDto } from '@frontend/common';
 import { Observable } from 'rxjs';
@@ -13,15 +13,13 @@ export class SupplierService {
 	) {}
 
 	public getSupplierById(supplierId: string): Observable<SupplierViewDto> {
-		return this.httpClient.get<SupplierViewDto>(`${this.environment.apiPath}/suppliers/${supplierId}`);
+		return this.httpClient.get<SupplierViewDto>(`${this.environment.apiPath}/suppliers/detail/${supplierId}`);
 	}
 
-	public resetSupplierHasStatusUpdate(supplierId: string, value: boolean): Observable<void> {
-		const httpParams = new HttpParams().set('hasStatusUpdate', value.toString());
+	public clearStatusUpdate(supplierId: string): Observable<void> {
 		return this.httpClient.put<void>(
-			`${this.environment.apiPath}/suppliers/change-has-status-update/${supplierId}`,
+			`${this.environment.apiPath}/suppliers/clear-status-update/${supplierId}`,
 			null,
-			{ params: httpParams },
 		);
 	}
 

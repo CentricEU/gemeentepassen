@@ -1,6 +1,5 @@
-import {StyleSheet} from "react-native";
-import {colors} from "../../common-style/Palette";
-
+import { StyleSheet } from 'react-native';
+import { colors } from '../../common-style/Palette';
 
 const styles = StyleSheet.create({
 	titleContainer: {
@@ -14,7 +13,8 @@ const styles = StyleSheet.create({
 		color: colors.BLACK
 	},
 	descriptionTitle: {
-		color: colors.BLACK
+		color: colors.BLACK,
+		fontWeight: '400'
 	}
 });
 

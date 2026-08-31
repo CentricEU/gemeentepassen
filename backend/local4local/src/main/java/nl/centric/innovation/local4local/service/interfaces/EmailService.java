@@ -1,6 +1,8 @@
 package nl.centric.innovation.local4local.service.interfaces;
 
 
+import java.util.List;
+
 public interface EmailService {
     void sendProfileCreatedEmail(String url, String[] toAddress, String language, String receiverName, String supplierName, String repName);
 
@@ -25,4 +27,6 @@ public interface EmailService {
     void sendNoCategoryEmail(String url, String toAddress, String language, String message);
 
     void sendEmailAfterCashierCreated(String url, String language, String toAddress);
+
+    void sendProfileApprovedWithChangesEmail(String url, String[] toAddress, String language, String receiverName, String municipalityName, List<String> changedFields, boolean isProfileNew);
 }

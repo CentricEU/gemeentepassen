@@ -1,4 +1,5 @@
 @use '../../../../../../libs/shared-assets/_styles/full-size-pannel';
+@use '../../../../../../libs/shared-assets/_styles/filters-no-data.scss';
 @use '@windmill/windmill/src/lib/assets/utils/mixins' as mixins;
 
 :host {
@@ -6,5 +7,9 @@
 		table {
 			@include mixins.grid-cols(220px, auto, auto, auto, auto, auto, auto, auto, 120px);
 		}
+	}
+
+	.clear-filters-button {
+		min-width: 104px;
 	}
 }

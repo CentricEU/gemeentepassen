@@ -18,7 +18,7 @@ describe('BreadcrumbsComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [BreadcrumbsComponent],
+			imports: [BreadcrumbsComponent],
 			providers: [{ provide: Router, useValue: routerMock }],
 		}).compileComponents();
 

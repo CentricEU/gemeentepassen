@@ -1,9 +1,10 @@
 import { HttpClientModule } from '@angular/common/http';
+import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActionButtons, AuthService, ColumnDataType, Page, PaginatedData, TableColumn } from '@frontend/common';
 import { TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { ToastrService } from '@windmill/ng-windmill/toastr';
 import { of } from 'rxjs';
 
@@ -17,6 +18,7 @@ describe('InvitationsComponent', () => {
 	let component: InvitationsComponent;
 	let fixture: ComponentFixture<InvitationsComponent>;
 	let dialogService: DialogService;
+	let elementRef: ElementRef;
 
 	let supplierServiceSpy: any;
 	let authServiceSpy: any;
@@ -64,6 +66,7 @@ describe('InvitationsComponent', () => {
 				{ provide: MunicipalitySupplierService, useValue: supplierServiceSpy },
 				{ provide: AuthService, useValue: authServiceSpy },
 				{ provide: 'env', useValue: environmentMock },
+				{ provide: ElementRef, useValue: { nativeElement: document.createElement('div') } },
 				{ provide: DialogService, useValue: dialogServiceMock },
 				ToastrService,
 				TranslateService,
@@ -74,6 +77,7 @@ describe('InvitationsComponent', () => {
 		component = fixture.componentInstance;
 		supplierServiceSpy.getInvitations.mockReturnValue(of([]));
 		dialogService = TestBed.inject(DialogService);
+		elementRef = TestBed.inject(ElementRef);
 
 		component.invitationTable = {
 			initializeData: jest.fn(),
@@ -124,6 +128,13 @@ describe('InvitationsComponent', () => {
 			new InvitationDto('test1@domain.com', new Date(), 'test1'),
 			new InvitationDto('test2@domain.com', new Date(), 'test2'),
 		];
+
+		const mockPanelElement = {
+			scrollTo: jest.fn(),
+		};
+		jest.spyOn(component.invitationTable['elementRef'].nativeElement, 'querySelector').mockReturnValue(
+			mockPanelElement,
+		);
 
 		component.invitationTable.paginatedData = new PaginatedData<InvitationDto>(Array(5).fill(new Page([])), 5, 0);
 		component.afterDataLoaded(mockInvitations);

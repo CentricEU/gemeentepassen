@@ -1,8 +1,9 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Environment, OfferTableDto } from '@frontend/common';
+import { Environment, OfferTableDto, OfferUseDto } from '@frontend/common';
 import { Observable } from 'rxjs';
 
+import { ApproveOfferDto } from './_models/approve-offer-dto.model';
 import { RejectOfferDto } from './_models/reject-offer-dto.model';
 
 @Injectable({
@@ -14,12 +15,27 @@ export class PendingOffersService {
 		private httpClient: HttpClient,
 	) {}
 
+	public downloadOffer(offerUseDto: OfferUseDto): Observable<Blob> {
+		const headers = new HttpHeaders({
+			Accept: 'application/pdf',
+		});
+
+		return this.httpClient.post(`${this.environment.apiPath}/offers/download`, offerUseDto, {
+			headers,
+			responseType: 'blob',
+		});
+	}
+
 	public countPendingOffers(): Observable<number> {
 		return this.httpClient.get<number>(`${this.environment.apiPath}/offers/tenant/count`);
 	}
 
 	public countPendingOffersBySupplier(supplierId: string): Observable<number> {
 		return this.httpClient.get<number>(`${this.environment.apiPath}/offers/supplier/${supplierId}/count`);
+	}
+
+	public getOffersForPassholder(passholderId: string): Observable<OfferTableDto[]> {
+		return this.httpClient.get<OfferTableDto[]>(`${this.environment.apiPath}/offers/passholder/${passholderId}`);
 	}
 
 	public getPendingOffers(page: number, size: number): Observable<OfferTableDto[]> {
@@ -38,8 +54,8 @@ export class PendingOffersService {
 		});
 	}
 
-	public approveOffer(offerId: string): Observable<void> {
-		return this.httpClient.put<void>(`${this.environment.apiPath}/offers/approve/${offerId}`, null);
+	public approveOffer(approveOfferDto: ApproveOfferDto): Observable<void> {
+		return this.httpClient.put<void>(`${this.environment.apiPath}/offers/approve`, approveOfferDto);
 	}
 
 	public rejectOffer(rejectOfferDto: RejectOfferDto): Observable<void> {

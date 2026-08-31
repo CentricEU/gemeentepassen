@@ -1,0 +1,26 @@
+@if (passholder) {
+	<windmill-tab-group
+		[theme]="'underlined'"
+		[class.full-size-panel]="isFullSize()"
+		(selectedTabChange)="tabChanged($event)">
+		<windmill-tab class="profile-tab">
+			<ng-template windmill-tab-label>
+				<span>{{ 'passholders.overview' | translate }}</span>
+			</ng-template>
+			<ng-container card-content>
+				<frontend-passholder-profile [passholder]="passholder"></frontend-passholder-profile>
+			</ng-container>
+		</windmill-tab>
+
+		<windmill-tab [disabled]="isPassholderExpired">
+			<ng-template windmill-tab-label>
+				<span>{{ 'passholders.availableOffers' | translate }}</span>
+			</ng-template>
+			<ng-container card-content>
+				<frontend-passholder-offers
+					[passholderId]="passholderId"
+					[offers]="offers"></frontend-passholder-offers>
+			</ng-container>
+		</windmill-tab>
+	</windmill-tab-group>
+}

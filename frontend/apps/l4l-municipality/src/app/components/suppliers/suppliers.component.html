@@ -4,77 +4,103 @@
 	[selectedIndex]="0"
 	[class.full-size-panel]="isFullSize()"
 	(selectedTabChange)="tabChanged($event)">
-	<ng-container tab-group-buttons *ngIf="shouldDisplayManageColumns()">
-		<centric-button
-			ariaAttributes
-			windmill-tooltip
-			class="item"
-			type="icon-ghost-greyscale"
-			iconId="slider-vert_b"
-			size="small"
-			tooltipColor="dark-grey"
-			tooltipPosition="left"
-			[ariaLabelTranslation]="'modal.manageColumns.title'"
-			[tooltipText]="'modal.manageColumns.title' | translate"
-			(click)="manageColumns()"></centric-button>
-	</ng-container>
-	<ng-container tab-group-buttons *ngIf="shouldDisplayInviteSuppliers()" card-content>
-		<centric-button type="high-emphasis-theme" iconId="plus_b" size="small" (click)="openInviteSuppliersModal()">
-			{{ 'general.inviteSuppliers' | translate }}
-		</centric-button>
-	</ng-container>
+	@if (shouldDisplayManageColumns()) {
+		<ng-container tab-group-buttons>
+			<centric-button
+				ariaAttributes
+				windmill-tooltip
+				class="item"
+				type="icon-ghost-greyscale"
+				iconId="slider-vert_b"
+				size="small"
+				tooltipColor="dark-grey"
+				tooltipPosition="left"
+				[ariaLabelTranslation]="'modal.manageColumns.title'"
+				[tooltipText]="'modal.manageColumns.title' | translate"
+				(click)="manageColumns()"></centric-button>
+		</ng-container>
+	}
+	@if (shouldDisplayInviteSuppliers()) {
+		<ng-container tab-group-buttons card-content>
+			<centric-button
+				type="high-emphasis-theme"
+				iconId="plus_b"
+				size="small"
+				(click)="openInviteSuppliersModal()">
+				{{ 'general.inviteSuppliers' | translate }}
+			</centric-button>
+		</ng-container>
+	}
 
 	<windmill-tab>
 		<ng-template windmill-tab-label>
-			<centric-icon2 [svgIcon]="'shop_b'" [size]="'20'"></centric-icon2>
+			<windmill-icon [svgIcon]="'shop_b'" [size]="'20'"></windmill-icon>
 			<span>{{ 'general.pages.suppliers' | translate }}</span>
 		</ng-template>
-		<ng-container *ngIf="shouldDisplaySuppliersTable(); else noData" card-content>
-			<frontend-active-suppliers class="table-pannel" [dataCount]="suppliersCount" #activeSuppliers>
-			</frontend-active-suppliers>
-		</ng-container>
+		@if (shouldDisplaySuppliersTable()) {
+			<ng-container card-content>
+				<frontend-active-suppliers class="table-pannel" [dataCount]="suppliersCount" #activeSuppliers>
+				</frontend-active-suppliers>
+			</ng-container>
+		} @else {
+			<frontend-no-data class="table-pannel" [noDataTitle]="noDataTitle" [noDataDescription]="noDataDescription">
+				@if (tabIndex !== 1) {
+					<centric-button type="high-emphasis-theme" iconId="plus_b" (click)="openInviteSuppliersModal()">
+						{{ 'general.inviteSuppliers' | translate }}
+					</centric-button>
+				}
+			</frontend-no-data>
+		}
 	</windmill-tab>
 	<windmill-tab>
 		<ng-template windmill-tab-label>
-			<centric-icon2 [svgIcon]="'bell-clock_b'" [size]="'20'"></centric-icon2>
+			<windmill-icon [svgIcon]="'bell-clock_b'" [size]="'20'"></windmill-icon>
 
 			<span
 				centric-badge
 				badgeValue="1"
 				badgeSize="small"
-				[badgeHidden]="!shouldDisplayRequestsTable()"
+				[badgeHidden]="!shouldDisplayRequestsBadge()"
 				[badgeOverlap]="false"
 				>{{ 'general.pendingRequests' | translate }}</span
 			>
 		</ng-template>
 
-		<ng-container *ngIf="shouldDisplayRequestsTable(); else noData" card-content>
-			<frontend-supplier-req
-				class="table-pannel"
-				(countSuppliersEvent)="updateSuppliersNumber($event.count, $event.actionType)"
-				[dataCount]="requestsCount"></frontend-supplier-req>
-		</ng-container>
+		@if (shouldDisplayRequestsTable()) {
+			<ng-container card-content>
+				<frontend-supplier-req
+					class="table-pannel"
+					(countSuppliersEvent)="updateSuppliersNumber($event.count, $event.actionType)"
+					[dataCount]="requestsCount"></frontend-supplier-req>
+			</ng-container>
+		} @else {
+			<frontend-no-data class="table-pannel" [noDataTitle]="noDataTitle" [noDataDescription]="noDataDescription">
+				@if (tabIndex !== 1) {
+					<centric-button type="high-emphasis-theme" iconId="plus_b" (click)="openInviteSuppliersModal()">
+						{{ 'general.inviteSuppliers' | translate }}
+					</centric-button>
+				}
+			</frontend-no-data>
+		}
 	</windmill-tab>
 	<windmill-tab>
 		<ng-template windmill-tab-label>
-			<centric-icon2 [svgIcon]="'envelope_send_bb'" [size]="'20'"></centric-icon2>
+			<windmill-icon [svgIcon]="'envelope_send_bb'" [size]="'20'"></windmill-icon>
 			<span>{{ 'general.pages.invitations' | translate }}</span>
 		</ng-template>
-		<ng-container *ngIf="shouldDisplayInvitationsTable(); else noData">
+		@if (shouldDisplayInvitationsTable()) {
 			<frontend-invitations
 				#invitations
 				[dataCount]="invitationsCount"
 				(countInvitationsEvent)="getInvitationsCount()"></frontend-invitations>
-		</ng-container>
+		} @else {
+			<frontend-no-data class="table-pannel" [noDataTitle]="noDataTitle" [noDataDescription]="noDataDescription">
+				@if (tabIndex !== 1) {
+					<centric-button type="high-emphasis-theme" iconId="plus_b" (click)="openInviteSuppliersModal()">
+						{{ 'general.inviteSuppliers' | translate }}
+					</centric-button>
+				}
+			</frontend-no-data>
+		}
 	</windmill-tab>
 </windmill-tab-group>
-
-<ng-template #noData>
-	<frontend-no-data class="table-pannel" [noDataTitle]="noDataTitle" [noDataDescription]="noDataDescription">
-		<ng-container *ngIf="tabIndex !== 1">
-			<centric-button type="high-emphasis-theme" iconId="plus_b" (click)="openInviteSuppliersModal()">
-				{{ 'general.inviteSuppliers' | translate }}
-			</centric-button>
-		</ng-container>
-	</frontend-no-data>
-</ng-template>

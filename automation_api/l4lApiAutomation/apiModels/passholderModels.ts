@@ -1,7 +1,4 @@
-import { Grant } from "./grantModels";
-import { Tenant } from "./tenantModels";
-
-export interface Passholder{
+export interface Passholder {
 	id: string;
 	name: string;
 	bsn: string;
@@ -9,7 +6,11 @@ export interface Passholder{
 	passNumber: string;
 	residenceCity: string;
 	address: string;
-	grants: Grant[];
 	isRegistered: boolean;
-	tenant: Tenant;
+	citizenGroupName: string;
+}
+
+export interface FilterPassholdersRequest {
+	bsn?: string;
+	passNumber?: string;
 }

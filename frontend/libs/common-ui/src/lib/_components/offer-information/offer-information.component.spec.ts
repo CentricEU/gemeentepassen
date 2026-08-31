@@ -55,6 +55,7 @@ describe('OfferInformationComponent', () => {
 			citizenOfferType: 'CITIZEN_WITH_PASS',
 			title: 'Test Offer',
 			offerType: 'Test Offer Type',
+			offerTypeId: 3,
 			benefit: {
 				name: 'Benefit 1',
 				description: 'Benefit Description',
@@ -72,6 +73,7 @@ describe('OfferInformationComponent', () => {
 			selected: true,
 			isCheckboxDisabled: false,
 			validity: 'test',
+			version: 1,
 		};
 
 		fixture.detectChanges();
@@ -100,6 +102,7 @@ describe('OfferInformationComponent', () => {
 			const offer = {
 				citizenOfferType: 'CITIZEN_WITH_PASS',
 				title: 'Test Offer',
+				offerTypeId: 3,
 				offerType: 'Test Offer Type',
 				benefit: {
 					name: '',
@@ -118,6 +121,7 @@ describe('OfferInformationComponent', () => {
 				selected: true,
 				isCheckboxDisabled: false,
 				validity: 'test',
+				version: 1
 			};
 			const result = component['getAcceptedBenefit'](offer);
 			expect(result).toBe('');
@@ -127,6 +131,7 @@ describe('OfferInformationComponent', () => {
 			const offer = {
 				citizenOfferType: 'CITIZEN_WITH_PASS',
 				title: 'Test Offer',
+				offerTypeId: 3,
 				offerType: 'Test Offer Type',
 				benefit: {
 					name: 'Benefit 1',
@@ -145,6 +150,7 @@ describe('OfferInformationComponent', () => {
 				selected: true,
 				isCheckboxDisabled: false,
 				validity: 'test',
+				version: 1,
 			};
 
 			const result = component['getAcceptedBenefit'](offer);
@@ -156,6 +162,7 @@ describe('OfferInformationComponent', () => {
 				citizenOfferType: 'CITIZEN_WITH_PASS',
 				title: 'Test Offer',
 				offerType: 'Test Offer Type',
+				offerTypeId: 3,
 				benefit: {
 					name: 'Benefit 1',
 					description: 'Benefit Description',
@@ -173,6 +180,7 @@ describe('OfferInformationComponent', () => {
 				selected: true,
 				isCheckboxDisabled: false,
 				validity: 'test',
+				version: 1,
 			};
 
 			const result = component['getAcceptedBenefit'](offer);

@@ -18,7 +18,6 @@ describe('UserService', () => {
 
 	const userMock: UserDto = {
 		companyName: 'company',
-		hasStatusUpdate: false,
 		kvkNumber: '12345678',
 		email: 'email',
 		supplierId: 'supplierId',

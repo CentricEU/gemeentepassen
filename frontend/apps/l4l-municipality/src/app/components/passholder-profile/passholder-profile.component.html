@@ -1,0 +1,59 @@
+<div class="section-title">
+	<p class="generic-color-text bold">{{ 'passholders.profile.personalInformation' | translate }}</p>
+</div>
+
+@if (!!passholderProfileForm) {
+	<form
+		centric-complex-form
+		class="passholder-profile-grid"
+		[class.editable]="!isReadonly"
+		[formGroup]="passholderProfileForm">
+		@for (field of formFields; track field) {
+			<centric-form-item>
+				<centric-form-label>{{ field.label | translate }}</centric-form-label>
+				<centric-form-control frontendRequiredInput [isVisible]="isReadonly">
+					<windmill-input
+						ariaAttributes
+						[formControlName]="field.controlName"
+						[ariaLabelTranslation]="field.label"
+						[readonly]="true">
+					</windmill-input>
+				</centric-form-control>
+			</centric-form-item>
+		}
+	</form>
+}
+
+<div class="section-title">
+	<p class="generic-color-text bold">{{ 'passholders.profile.eligibleBenefits' | translate }}</p>
+</div>
+
+@if (isExpiredPassholder) {
+	<centric-alert type="warning">
+		<div [innerHTML]="'passholders.profile.expiredAlert' | translate"></div>
+	</centric-alert>
+} @else {
+	<section class="group-information">
+		<section class="left-section">
+			<p>{{ 'passholders.profile.assignedTo' | translate }}</p>
+			<p>{{ 'passholders.profile.isRegistered' | translate }}</p>
+		</section>
+		<section>
+			<p class="values-label">{{ citizenGroupName }}</p>
+			<p class="values-label" [ngClass]="registrationClass">{{ isRegisteredLabel | translate }}</p>
+		</section>
+	</section>
+
+	<ol>
+		@for (benefit of benefits; track benefit) {
+			<li>
+				<span class="benefit-title">{{ benefit.name }}</span>
+				<p>{{ benefit.description }}</p>
+				<p>
+					{{ 'general.amount' | translate }}:
+					{{ benefit.amount | currency: 'EUR' : 'symbol' : '1.2-2' : 'nl-NL' }}
+				</p>
+			</li>
+		}
+	</ol>
+}

@@ -1,0 +1,27 @@
+<centric-login>
+	<ng-container title>
+		<frontend-logo-title
+			[title]="'applyForPass.title'"
+			[isVerticalOrientation]="false"></frontend-logo-title>
+	</ng-container>
+	<ng-container form>
+		<div class="inner-form-container full-width">
+			<p>{{ 'applyForPass.description' | translate }}</p>
+			<centric-button
+				[ariaLabel]="'digiD.button' | translate"
+				class="login-button full-width"
+				(click)="loginWithDigiD()"
+				>{{ 'digiD.button' | translate }}</centric-button
+			>
+			<centric-link
+				style="text-decoration: underline"
+				[type]="'ghost-greyscale'"
+				[target]="'_self'"
+				[innerHref]="'/login'"
+				[ariaLabel]="'applyForPass.noExistingDigiD' | translate"
+				[ariaDescription]="'applyForPass.createDigiD' | translate"
+				>{{ 'applyForPass.noExistingDigiD' | translate }}</centric-link
+			>
+		</div>
+	</ng-container>
+</centric-login>

@@ -83,7 +83,7 @@ export default function OfferDetails({ route, navigation }: any) {
 				label: t('offerDetailsPage.description'),
 				textValue: offer.description
 			},
-			getOfferAmount(),
+			...(offer.offerType.offerTypeId === OfferTypeEnum.membershipFee ? [getOfferAmount()] : []),
 			getOfferBenefit(),
 			{
 				label: t('offerDetailsPage.validFrom'),
@@ -153,17 +153,8 @@ export default function OfferDetails({ route, navigation }: any) {
 		const offerAmount = offer.amount;
 		let formattedAmount = '';
 
-		switch (offer.offerType.offerTypeId) {
-			case OfferTypeEnum.percentage:
-				formattedAmount = `${offerAmount}%`;
-				break;
-			case OfferTypeEnum.bogo:
-				formattedAmount = t('offerDetailsPage.bogo');
-				break;
-			case OfferTypeEnum.freeEntry:
-			case OfferTypeEnum.credit:
-				formattedAmount = `€${offerAmount}`;
-				break;
+		if (offer.offerType.offerTypeId === OfferTypeEnum.membershipFee) {
+			formattedAmount = `€${offerAmount}`;
 		}
 
 		return {
@@ -218,66 +209,15 @@ export default function OfferDetails({ route, navigation }: any) {
 	};
 
 	const computeErrorMessage = (): void => {
-		if (!offer?.restrictions || offer?.discountCode) {
+		if (!offer) {
 			return;
 		}
 
-		if (checkFrequencyOfUse()) {
-			computeErrorMessageForUseFrequency();
-			setCustomToasterState(ToasterTypeEnum.ERROR, toasterMessage);
-			setButtonText('offerRestriction.offerUsed');
-			setShouldDisableButton(true);
-			return;
-		}
-
-		if (shouldDisplayTimeSlotsError()) {
-			const messageTimeSlots = new CustomToasterDto('offerRestriction.timeSlotsWarning', {
-				startHour: offer.restrictions.timeFrom.toString().substring(0, 5),
-				endHour: offer.restrictions.timeTo.toString().substring(0, 5)
-			});
-
-			setCustomToasterState(ToasterTypeEnum.ERROR, messageTimeSlots);
-			setShouldDisableButton(true);
-
-			setButtonText('offerRestriction.notAvailableNow');
+		if (offer?.discountCode) {
 			return;
 		}
 
 		setButtonText(offer.discountCode ? 'offerDetailsPage.seeDiscountCode' : 'offerDetailsPage.getOffer');
-		setShouldDisableButton(false);
-	};
-
-	const setCustomToasterState = (toasterType: ToasterTypeEnum, message?: CustomToasterDto): void => {
-		setShouldDisplayToaster(true);
-		setToasterType(toasterType);
-		if (!message?.key) {
-			return;
-		}
-		setToasterMessage(message);
-	};
-
-	const computeErrorMessageForUseFrequency = (): void => {
-		let errorMessageFreq;
-		switch (offer.restrictions?.frequencyOfUse) {
-			case FrequencyOfUseEnum.DAILY:
-				errorMessageFreq = t('offerRestriction.alreadyUsedToday');
-				break;
-			case FrequencyOfUseEnum.MONTHLY:
-				errorMessageFreq = t('offerRestriction.alreadyUsedMonth');
-				break;
-			case FrequencyOfUseEnum.WEEKLY:
-				errorMessageFreq = t('offerRestriction.alreadyUsedWeek');
-				break;
-			case FrequencyOfUseEnum.YEARLY:
-				errorMessageFreq = t('offerRestriction.alreadyUsedYear');
-				break;
-			case FrequencyOfUseEnum.SINGLE_USE:
-				errorMessageFreq = t('offerRestriction.alreadyUsed');
-				break;
-			default:
-				break;
-		}
-		setToasterMessage(new CustomToasterDto(errorMessageFreq as string));
 	};
 
 	const getRestrictions = (): GenericInformationBlockChild[] | null => {
@@ -406,11 +346,11 @@ export default function OfferDetails({ route, navigation }: any) {
 					/>
 				)}
 
-				<GenericButton
-					type={ButtonTypeEnum.primary}
-					text={t(buttonText)}
-					onPressHandler={useOffer}
-					disabled={shouldDisableButton}
+				<GenericButton 
+				type={ButtonTypeEnum.primary} 
+				text={t(buttonText)} 
+				onPressHandler={useOffer} 
+				disabled={shouldDisableButton}
 				/>
 			</View>
 		</>

@@ -21,8 +21,12 @@ export class HtmlContentValidatorDirective implements Validator {
 	public validate(control: AbstractControl): { [key: string]: any } | null {
 		const text = control.value;
 
-		if (!text || (!this.isValidHtml(text) && !this.isValidJavaScript(text))) {
+		if (!text) {
 			return null;
+		}
+
+		if (RegexUtil.jsPattern.test(text)) {
+			return { isHTML: true };
 		}
 
 		const sanitizedText = DOMPurify.sanitize(text, { ALLOWED_TAGS: [] });
@@ -37,18 +41,5 @@ export class HtmlContentValidatorDirective implements Validator {
 		const isValid = sanitizedTextWithEscapes === text;
 
 		return isValid ? null : { isHTML: true };
-	}
-
-	private isValidHtml(text: string): boolean {
-		try {
-			const doc = new DOMParser().parseFromString(text, 'text/html');
-			return doc.body.innerHTML === text;
-		} catch (e) {
-			return false;
-		}
-	}
-
-	private isValidJavaScript(text: string): boolean {
-		return RegexUtil.jsPattern.test(text);
 	}
 }

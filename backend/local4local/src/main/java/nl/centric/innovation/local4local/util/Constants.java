@@ -4,6 +4,7 @@ public class Constants {
     public static final double ZERO_AMOUNT = 0.0;
 
     public static final String URL_REGEX = "^(?:|(?:(?:https?:)?\\/\\/)?(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}(?::[0-9]{1,5})?(?:\\/[^\\s]*)?)$";
+    public static final String TELEPHONE_REGEX = "^\\+?\\d*$";
 
     public static final String ERROR_CODE_SUPPLIER_NOT_APPROVED = "40019";
     public static final String ERROR_CODE_MUNICIPALITY_NOT_APPROVED = "40040";
@@ -19,6 +20,8 @@ public class Constants {
     public static final String UTF_8 = "UTF-8";
     // i8N_FORMAT: Format string for internationalized message keys, e.g., "mail.template.subject"
     public static final String i8N_FORMAT = "mail.%s.%s";
+
+    public static final String NOT_AVAILABLE = "N/A";
 
     private Constants() {
     }

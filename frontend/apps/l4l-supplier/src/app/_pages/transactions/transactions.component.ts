@@ -1,20 +1,18 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatMenu } from '@angular/material/menu';
 import {
 	Breadcrumb,
 	BreadcrumbService,
 	ColumnDataType,
 	commonRoutingConstants,
+	CommonUtil,
 	MonthYearEntry,
 	PaginatedData,
 	TableColumn,
 	TableFilterColumn,
-	TransactionData,
-	TransactionDateMenu,
+	TransactionDateDropdown,
 	TransactionTableDto,
 } from '@frontend/common';
 import { TableBaseComponent, TableComponent } from '@frontend/common-ui';
-import { forkJoin, of } from 'rxjs';
 
 import { TransactionService } from '../../services/transactions/transaction.service';
 
@@ -29,25 +27,23 @@ export class TransactionsComponent extends TableBaseComponent implements OnInit,
 
 	public areTransactionsSelected = false;
 
-	public menuData: TransactionDateMenu[] = [];
-	public yearMenus: MatMenu[] = [];
-
-	//To be implemented
+	public dateOptions: TransactionDateDropdown[] = [];
+	public lastSelectedInterval: TransactionDateDropdown = CommonUtil.currentMonth();
 	public allFilterColumns: TableFilterColumn[];
 
 	public selectedDate: MonthYearEntry;
-	public allMonthTransactionsCount: number;
+	public transactionsCount: number;
 
 	public get innerEmptyStateTitle(): string {
-		return 'transactions.noDataCurrentMonth';
+		return 'transactions.noDataCurrentInterval';
 	}
 
 	public get isTransactionCountZero(): boolean {
-		return this.allMonthTransactionsCount === 0;
+		return this.transactionsCount === 0;
 	}
 
 	public get isInnerEmptyStateVisible(): boolean {
-		return !this.allMonthTransactionsCount;
+		return !this.transactionsCount;
 	}
 
 	public get areFiltersApplied(): boolean {
@@ -66,77 +62,58 @@ export class TransactionsComponent extends TableBaseComponent implements OnInit,
 		this.initBreadcrumbs();
 		this.countTransactions();
 		this.selectedDate = new MonthYearEntry('transactions.menuLabel');
+		this.dateOptions = CommonUtil.getDateIntervals();
 	}
 
 	public ngOnDestroy(): void {
 		this.breadcrumbService.removeBreadcrumbs();
 	}
 
-	public onApplyFilters(): void {
-		console.log('Method not implemented');
-	}
-
 	public manageColumns(): void {
 		this.transactionsTable?.manageColumns();
 	}
 
-	public onSelectMonth(monthYearEntry: MonthYearEntry): void {
-		this.selectedDate = monthYearEntry;
-		this.fetchTransactionCountData(false);
-	}
+	public onSelectDateRange(dateRange: TransactionDateDropdown): void {
+		this.lastSelectedInterval = dateRange;
 
-	public setAreTransactionsSelected(count: number): void {
-		this.areTransactionsSelected = !!count;
+		this.transactionsService
+			.countDateIntervalTransactions(
+				this.lastSelectedInterval.startDateInterval,
+				this.lastSelectedInterval.endDateInterval,
+			)
+			.subscribe({
+				next: (count) => {
+					this.transactionsCount = count;
+					this.cdr.detectChanges();
+					if (count === 0 && this.transactionsTable?.currentDisplayedPage) {
+						this.transactionsTable.afterDataLoaded([]);
+					} else {
+						this.transactionsTable?.initializeData();
+					}
+				},
+			});
 	}
 
 	public loadData(event: PaginatedData<TransactionTableDto>): void {
-		if (!this.allMonthTransactionsCount) {
+		if (!this.transactionsCount) {
 			return;
 		}
 
 		this.transactionsService
-			.getTransactions(event.currentIndex, event.pageSize, this.selectedDate?.monthValue, this.selectedDate.year)
+			.getDateIntervalTransactions(
+				event.currentIndex,
+				event.pageSize,
+				this.lastSelectedInterval.startDateInterval,
+				this.lastSelectedInterval.endDateInterval,
+			)
 			.subscribe((data) => {
-				this.transactionsTable?.afterDataLoaded(data);
+				this.transactionsTable?.afterDataLoaded(
+					data.map((transaction) => ({
+						...transaction,
+						passNumber: transaction.passNumber ?? '-',
+					})),
+				);
 			});
-	}
-
-	private generatePastYearsData(years: number[]): TransactionDateMenu[] {
-		return years.map((year) => ({
-			year,
-			months: this.getMonthKeys(year),
-		}));
-	}
-
-	private generateCurrentYearData(): TransactionDateMenu {
-		const date = new Date();
-		const currentYear = date.getFullYear();
-		const currentMonth = date.getMonth();
-
-		const currentYearMonths = this.getMonthKeys(currentYear)
-			.slice(0, currentMonth + 1)
-			.reverse();
-
-		return { months: currentYearMonths };
-	}
-
-	private getMonthKeys(year: number): MonthYearEntry[] {
-		const months = [
-			'transactions.months.january',
-			'transactions.months.february',
-			'transactions.months.march',
-			'transactions.months.april',
-			'transactions.months.may',
-			'transactions.months.june',
-			'transactions.months.july',
-			'transactions.months.august',
-			'transactions.months.september',
-			'transactions.months.october',
-			'transactions.months.november',
-			'transactions.months.december',
-		];
-
-		return months.map((key, index) => new MonthYearEntry(key, index + 1, year));
 	}
 
 	private countTransactions(): void {
@@ -149,39 +126,24 @@ export class TransactionsComponent extends TableBaseComponent implements OnInit,
 	}
 
 	private initializeTransactionCount(): void {
-		if (!this.dataCount) {
-			return;
-		}
-
 		this.initColumns();
-		this.fetchTransactionCountData();
+		this.countTransactionsByDateInterval();
 	}
 
-	private fetchTransactionCountData(loadYears = true): void {
-		forkJoin({
-			years: loadYears ? this.transactionsService.getDistinctYearsForTransactions() : of([]),
-			currentMonthCount: this.transactionsService.countCurrentMonthTransactions(this.selectedDate),
-		}).subscribe({
-			next: (transactionData) => {
-				this.processTransactionData(transactionData, loadYears);
-			},
-		});
-	}
+	private countTransactionsByDateInterval(): void {
+		this.transactionsService
+			.countDateIntervalTransactions(
+				this.lastSelectedInterval.startDateInterval,
+				this.lastSelectedInterval.endDateInterval,
+			)
+			.subscribe({
+				next: (data) => {
+					this.transactionsCount = data;
 
-	private processTransactionData(transactionData: TransactionData, loadYears: boolean): void {
-		if (loadYears) {
-			this.menuData = [this.generateCurrentYearData(), ...this.generatePastYearsData(transactionData.years)];
-		}
-
-		this.allMonthTransactionsCount = transactionData.currentMonthCount;
-
-		if (this.allMonthTransactionsCount === 0) {
-			this.transactionsTable?.afterDataLoaded([]);
-			return;
-		}
-
-		this.cdr.detectChanges();
-		this.transactionsTable?.initializeData();
+					this.cdr.detectChanges();
+					this.transactionsTable?.initializeData();
+				},
+			});
 	}
 
 	private initColumns(): void {

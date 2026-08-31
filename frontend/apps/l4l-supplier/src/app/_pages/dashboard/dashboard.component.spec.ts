@@ -10,6 +10,7 @@ import {
 	AuthService,
 	commonRoutingConstants,
 	ModalData,
+	StatusUpdate,
 	SupplierRejectionService,
 	SupplierStatus,
 	SupplierViewDto,
@@ -19,7 +20,7 @@ import {
 } from '@frontend/common';
 import { CustomDialogConfigUtil, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of } from 'rxjs';
 
 import { SetupProfileComponent } from '../../_components/setup-profile/setup-profile.component';
@@ -59,7 +60,7 @@ describe('DashboardComponent', () => {
 
 		suplierServiceSpy = {
 			getSupplierById: jest.fn(),
-			resetSupplierHasStatusUpdate: jest.fn(),
+			clearStatusUpdate: jest.fn(),
 			getQRCodeImage: jest.fn(),
 		};
 
@@ -76,6 +77,7 @@ describe('DashboardComponent', () => {
 			sanitize: jest.fn((context, value) => value),
 			bypassSecurityTrustHtml: jest.fn((value: string) => value),
 			bypassSecurityTrustUrl: jest.fn((value: string) => value),
+			bypassSecurityTrustResourceUrl: jest.fn((value: string) => value),
 		} as unknown as jest.Mocked<DomSanitizer>;
 
 		await TestBed.configureTestingModule({
@@ -100,7 +102,7 @@ describe('DashboardComponent', () => {
 		router = TestBed.inject(Router);
 		offerService = TestBed.inject(OfferService);
 		component = fixture.componentInstance;
-		const mockSupplierData = { status: SupplierStatus.APPROVED, hasStatusUpdate: true };
+		const mockSupplierData = { status: SupplierStatus.APPROVED, statusUpdate: StatusUpdate.SIMPLE };
 		const mockSupplierObservable = of(mockSupplierData);
 		jest.spyOn(suplierServiceSpy, 'getSupplierById').mockImplementation(() => mockSupplierObservable);
 		fixture.detectChanges();
@@ -111,6 +113,18 @@ describe('DashboardComponent', () => {
 	});
 
 	describe('displayApprovalWaitingPopup', () => {
+		it('should return early if there are open dialogs', () => {
+			Object.defineProperty(dialogService, 'openDialogs', {
+				get: () => [{}],
+			});
+			const navigateSpy = jest.spyOn(router, 'navigate');
+
+			component['displayApprovalWaitingPopup']();
+
+			expect(dialogService.message).not.toHaveBeenCalled();
+			expect(navigateSpy).not.toHaveBeenCalled();
+		});
+
 		it('should open the approval waiting modal and navigate with reapply param removed after close', () => {
 			const dialogRefMock = { afterClosed: () => of(true) };
 			const messageSpy = jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
@@ -139,8 +153,8 @@ describe('DashboardComponent', () => {
 			component['supplier'] = undefined as any;
 		});
 
-		it('should call displayApprovalWaitingPopup if status is PENDING, hasStatusUpdate is true, isApprovalModal is true, and reapply param is true', () => {
-			const mockData = { status: SupplierStatus.PENDING, hasStatusUpdate: true };
+		it('should call displayApprovalWaitingPopup if status is PENDING, statusUpdate is SIMPLE, isApprovalModal is true, and reapply param is true', () => {
+			const mockData = { status: SupplierStatus.PENDING, statusUpdate: StatusUpdate.SIMPLE };
 			jest.spyOn(suplierServiceSpy, 'getSupplierById').mockReturnValue(of(mockData));
 			const displayApprovalWaitingPopupSpy = jest.spyOn(component as any, 'displayApprovalWaitingPopup');
 
@@ -157,8 +171,8 @@ describe('DashboardComponent', () => {
 			expect(displayApprovalWaitingPopupSpy).toHaveBeenCalled();
 		});
 
-		it('should not call displayApprovalWaitingPopup if status is PENDING, hasStatusUpdate is true, isApprovalModal is true, and reapply param is not true', () => {
-			const mockData = { status: SupplierStatus.PENDING, hasStatusUpdate: true };
+		it('should not call displayApprovalWaitingPopup if status is PENDING, statusUpdate is SIMPLE, isApprovalModal is true, and reapply param is not true', () => {
+			const mockData = { status: SupplierStatus.PENDING, statusUpdate: StatusUpdate.SIMPLE };
 			jest.spyOn(suplierServiceSpy, 'getSupplierById').mockReturnValue(of(mockData));
 			const displayApprovalWaitingPopupSpy = jest.spyOn(component as any, 'displayApprovalWaitingPopup');
 
@@ -186,7 +200,6 @@ describe('DashboardComponent', () => {
 			supplierId: '',
 			isApproved: false,
 			isProfileSet: true,
-			hasStatusUpdate: false,
 			lastName: 'Doe',
 		};
 		expect(component['userFirstName']).toBe('John');
@@ -207,7 +220,6 @@ describe('DashboardComponent', () => {
 			supplierId: '',
 			isApproved: false,
 			isProfileSet: true,
-			hasStatusUpdate: false,
 			firstName: 'User',
 			lastName: 'Test',
 		};
@@ -325,9 +337,9 @@ describe('DashboardComponent', () => {
 			expect(dialogService['message']).toHaveBeenCalled();
 		});
 
-		it('should call openApprovedModal if hasStatusUpdate is true and status is APPROVED', () => {
+		it('should call openApprovedModal if statusUpdate is SIMPLE and status is APPROVED', () => {
 			const userId = '123';
-			const mockSupplierData = { status: SupplierStatus.APPROVED, hasStatusUpdate: true };
+			const mockSupplierData = { status: SupplierStatus.APPROVED, statusUpdate: StatusUpdate.SIMPLE };
 			const mockSupplierObservable = of(mockSupplierData);
 			jest.spyOn(suplierServiceSpy, 'getSupplierById').mockImplementation(() => mockSupplierObservable);
 			authServiceSpy.extractSupplierInformation.mockReturnValue(userId);
@@ -339,7 +351,7 @@ describe('DashboardComponent', () => {
 		});
 
 		it('should open rejection modal when status is REJECTED and isApprovalModal is false', () => {
-			const mockData = { status: SupplierStatus.REJECTED, hasStatusUpdate: true };
+			const mockData = { status: SupplierStatus.REJECTED, statusUpdate: StatusUpdate.SIMPLE };
 			suplierServiceSpy.getSupplierById.mockReturnValue(of(mockData));
 
 			jest.spyOn(component as any, 'openRejectionModal');
@@ -349,9 +361,9 @@ describe('DashboardComponent', () => {
 			expect(component['openRejectionModal']).toHaveBeenCalled();
 		});
 
-		it('should not call openApprovedModal if hasStatusUpdate is false', () => {
+		it('should not call openApprovedModal if statusUpdate is missing', () => {
 			const userId = '123';
-			const mockSupplierData = { status: SupplierStatus.APPROVED, hasStatusUpdate: false };
+			const mockSupplierData = { status: SupplierStatus.APPROVED };
 			const mockObservable = of(mockSupplierData);
 
 			authServiceSpy.extractSupplierInformation.mockReturnValue(userId);
@@ -379,7 +391,7 @@ describe('DashboardComponent', () => {
 			expect(component['setLogo']).toHaveBeenCalledWith('logoUrl');
 		});
 
-		it('should call supplierService.resetSupplierHasStatusUpdate when resetHasStatusUpdate called', () => {
+		it('should call supplierService.clearStatusUpdate when clearStatusUpdate called', () => {
 			const mockedResponse = {};
 			component['supplier'] = new SupplierViewDto(
 				'id',
@@ -392,12 +404,9 @@ describe('DashboardComponent', () => {
 				'status',
 			);
 			const mockObservable = of(mockedResponse);
-			jest.spyOn(suplierServiceSpy, 'resetSupplierHasStatusUpdate').mockImplementation(() => mockObservable);
-			component['resetHasStatusUpdate']();
-			expect(suplierServiceSpy.resetSupplierHasStatusUpdate).toHaveBeenCalledWith(
-				component['supplier'].id,
-				false,
-			);
+			jest.spyOn(suplierServiceSpy, 'clearStatusUpdate').mockImplementation(() => mockObservable);
+			component['clearStatusUpdate']();
+			expect(suplierServiceSpy.clearStatusUpdate).toHaveBeenCalledWith(component['supplier'].id);
 		});
 	});
 
@@ -408,7 +417,7 @@ describe('DashboardComponent', () => {
 			const dialogRefMock = { afterClosed: () => of(true) };
 			jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
 			jest.spyOn(dialogRefMock, 'afterClosed').mockReturnValue(of(true));
-			component['resetHasStatusUpdate'] = jest.fn();
+			component['clearStatusUpdate'] = jest.fn();
 			component['createDialogConfig'] = jest.fn().mockReturnValue(dialogConfig);
 			component['addOffer'] = jest.fn();
 
@@ -420,7 +429,7 @@ describe('DashboardComponent', () => {
 			const dialogRefMock = { afterClosed: () => of(true) };
 			jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
 			jest.spyOn(dialogRefMock, 'afterClosed').mockReturnValue(of(true));
-			component['resetHasStatusUpdate'] = jest.fn();
+			component['clearStatusUpdate'] = jest.fn();
 			component['createDialogConfig'] = jest.fn().mockReturnValue(dialogConfig);
 			component['addOffer'] = jest.fn();
 
@@ -428,29 +437,29 @@ describe('DashboardComponent', () => {
 			expect(dialogService['message']).toHaveBeenCalled();
 		});
 
-		it('should call resetHasStatusUpdate and addOffer after closing dialog  with true', () => {
+		it('should call clearStatusUpdate and addOffer after closing dialog  with true', () => {
 			const dialogRefMock = { afterClosed: () => of(true) };
 			jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
 			jest.spyOn(dialogRefMock, 'afterClosed').mockReturnValue(of(true));
-			component['resetHasStatusUpdate'] = jest.fn();
+			component['clearStatusUpdate'] = jest.fn();
 			component['createDialogConfig'] = jest.fn().mockReturnValue(dialogConfig);
 			component['addOffer'] = jest.fn();
 
 			component['openApprovalModal']();
-			expect(component['resetHasStatusUpdate']).toHaveBeenCalled();
+			expect(component['clearStatusUpdate']).toHaveBeenCalled();
 			expect(component['addOffer']).toHaveBeenCalled();
 		});
 
-		it('should call resetHasStatusUpdate and not call addOffer after closing dialog with false', () => {
+		it('should call clearStatusUpdate and not call addOffer after closing dialog with false', () => {
 			const dialogRefMock = { afterClosed: () => of(false) };
 			jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
 			jest.spyOn(dialogRefMock, 'afterClosed').mockReturnValue(of(false));
-			component['resetHasStatusUpdate'] = jest.fn();
+			component['clearStatusUpdate'] = jest.fn();
 			component['addOffer'] = jest.fn();
 			component['createDialogConfig'] = jest.fn().mockReturnValue(dialogConfig);
 
 			component['openApprovalModal']();
-			expect(component['resetHasStatusUpdate']).toHaveBeenCalled();
+			expect(component['clearStatusUpdate']).toHaveBeenCalled();
 			expect(component['addOffer']).not.toHaveBeenCalled();
 		});
 	});
@@ -502,6 +511,14 @@ describe('DashboardComponent', () => {
 
 		expect(navigateSpy).toHaveBeenCalledWith([commonRoutingConstants.offers]);
 		expect(offerService.shouldOpenOfferPopup).toBe(true);
+	});
+
+	it('should navigate to history when redirectToSupplierProfile is called', () => {
+		const navigateSpy = jest.spyOn(router, 'navigate');
+
+		component['redirectToSupplierProfile']();
+
+		expect(navigateSpy).toHaveBeenCalledWith([commonRoutingConstants.history]);
 	});
 
 	it('should create a MatDialogConfig for APPROVED status', () => {

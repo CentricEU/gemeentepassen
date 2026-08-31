@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -8,7 +9,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AuthService, MockRouter, PdokService, PdokUtil, SupplierCoordinates, SupplierStatus } from '@frontend/common';
+import {
+	AuthService,
+	MockRouter,
+	PdokService,
+	PdokUtil,
+	SilentErrorCode,
+	SupplierCoordinates,
+	SupplierStatus,
+} from '@frontend/common';
 import { ContactInformation, GeneralInformation, UserDto, UserService } from '@frontend/common';
 import {
 	ContactInformationComponent,
@@ -18,10 +27,10 @@ import {
 } from '@frontend/common-ui';
 import { AriaAttributesDirective } from '@innovation/accesibility';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { CentricStepperModule } from '@windmill/ng-windmill/stepper';
 import { ToastrService } from '@windmill/ng-windmill/toastr';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { Observable } from 'rxjs';
 
 import { SetupProfileService } from '../../services/supplier-profile-service/setup-profile-service/setup-profile.service';
@@ -92,7 +101,6 @@ describe('SetupProfileComponent', () => {
 
 		const userMock: UserDto = {
 			companyName: 'company',
-			hasStatusUpdate: false,
 			kvkNumber: '12345678',
 			email: 'email',
 			supplierId: 'supplierId',
@@ -165,7 +173,7 @@ describe('SetupProfileComponent', () => {
 		fixture = TestBed.createComponent(SetupProfileComponent);
 		component = fixture.componentInstance;
 		userService = TestBed.inject(UserService);
-		authService = TestBed.get(AuthService);
+		authService = TestBed.inject(AuthService);
 		pdokService = TestBed.inject(PdokService);
 		toastrService = TestBed.inject(ToastrService);
 		fixture.detectChanges();
@@ -173,12 +181,6 @@ describe('SetupProfileComponent', () => {
 
 	it('should create', () => {
 		expect(component).toBeTruthy();
-	});
-
-	it('should close the dialog and call displaySuccessfulRegistrationDialog', () => {
-		component.saveSupplierSetupProfile();
-
-		expect(dialogRef.close).toHaveBeenCalled();
 	});
 
 	it('should remove local storage data', () => {
@@ -298,8 +300,6 @@ describe('SetupProfileComponent', () => {
 
 		component.saveSupplierSetupProfile();
 
-		expect(dialogRef.close).toHaveBeenCalled();
-
 		expect(pdokService.getCoordinateFromAddress).toHaveBeenCalled();
 		expect(displayErrorToasterSpy).toHaveBeenCalled();
 		expect(displayApprovalWaitingPopupSpy).not.toHaveBeenCalled();
@@ -388,7 +388,7 @@ describe('SetupProfileComponent', () => {
 	];
 
 	nextButtonTestCases.forEach(({ stepIndex, form, isValid, expected }) => {
-		it(`should ${expected ? 'disable' : 'not disable'} 
+		it(`should ${expected ? 'disable' : 'not disable'}
 			the next button if the current step form is ${isValid ? 'valid' : 'invalid'} at step ${stepIndex}`, () => {
 			component.horizontalStepper.selectedIndex = stepIndex;
 			(component as any)[form].setErrors(isValid ? null : { invalid: true });
@@ -413,7 +413,6 @@ describe('SetupProfileComponent', () => {
 			jest.spyOn(component.contactInformationForm, 'valid', 'get').mockReturnValue(contactFormValid);
 			jest.spyOn(component.generalInformationForm, 'valid', 'get').mockReturnValue(generalFormValid);
 			jest.spyOn(component.workingHoursEdit, 'isFormValid').mockReturnValue(workingHourEditFormValid);
-			jest.spyOn(component.generalInformation as any, 'isCashierEmailsFieldValid', 'get').mockReturnValue(true);
 			expect(component.shouldShowFinishButton()).toBe(expected);
 		});
 	});
@@ -514,20 +513,6 @@ describe('SetupProfileComponent', () => {
 		expect(reloadSpy).toHaveBeenCalled();
 	});
 
-	it('should call detectChanges in ngAfterViewInit', () => {
-		const detectChangesSpy = jest.spyOn(component['cdr'], 'detectChanges');
-		component.generalInformation = {
-			generalInformationForm: component.generalInformationForm,
-			isCashierEmailsFieldValid: true,
-			cashierEmailsList: [],
-		} as any;
-		component.contactInformation = {
-			contactInformationForm: component.contactInformationForm,
-		} as any;
-		component.ngAfterViewInit();
-		expect(detectChangesSpy).toHaveBeenCalled();
-	});
-
 	it('should call scrollTo on scrollToTop if container exists', () => {
 		const scrollMock = jest.fn();
 		document.body.innerHTML = `<div mat-dialog-content></div>`;
@@ -537,9 +522,23 @@ describe('SetupProfileComponent', () => {
 		expect(scrollMock).toHaveBeenCalledWith({ top: 0 });
 	});
 
+	it('should call scrollTo on scrollToBottom if container exists', () => {
+		const scrollMock = jest.fn();
+		document.body.innerHTML = `<div mat-dialog-content></div>`;
+		const container = document.querySelector('div[mat-dialog-content]') as HTMLElement;
+		container.scrollTo = scrollMock;
+		component['scrollToBottom']();
+		expect(scrollMock).toHaveBeenCalledWith({ top: container.scrollHeight });
+	});
+
 	it('should not throw if scrollToTop called and container does not exist', () => {
 		document.body.innerHTML = ``;
 		expect(() => component['scrollToTop']()).not.toThrow();
+	});
+
+	it('should not throw if scrollToBottom called and container does not exist', () => {
+		document.body.innerHTML = ``;
+		expect(() => component['scrollToBottom']()).not.toThrow();
 	});
 
 	it.each([
@@ -561,7 +560,6 @@ describe('SetupProfileComponent', () => {
 		(expected, contactValid, generalValid, step, workingHoursValid) => {
 			component.contactInformationForm.setErrors(contactValid ? null : { invalid: true });
 			component.generalInformationForm.setErrors(generalValid ? null : { invalid: true });
-			jest.spyOn(component.generalInformation as any, 'isCashierEmailsFieldValid', 'get').mockReturnValue(true);
 			component.horizontalStepper.selectedIndex = Number(step);
 			jest.spyOn(component.workingHoursEdit, 'isFormValid').mockReturnValue(workingHoursValid);
 
@@ -569,19 +567,181 @@ describe('SetupProfileComponent', () => {
 		},
 	);
 
-	it.each([
-		[true, true, true],
-		[false, false, false],
-		[false, true, false],
-		[false, false, false],
-	])(
-		'should return %s when generalInformationForm.valid=%s and cashierEmailsFieldValid=%s',
-		(expected, generalFormValid, cashierEmailsFieldValid) => {
-			jest.spyOn(component.generalInformationForm, 'valid', 'get').mockReturnValue(generalFormValid);
-			jest.spyOn(component.generalInformation as any, 'isCashierEmailsFieldValid', 'get').mockReturnValue(
-				cashierEmailsFieldValid,
-			);
-			expect(component.isFirstStepValid).toBe(expected);
-		},
-	);
+	it('should return true when generalInformationForm is valid', () => {
+		jest.spyOn(component.generalInformationForm, 'valid', 'get').mockReturnValue(true);
+		expect(component.isFirstStepValid).toBe(true);
+	});
+
+	it('should return false when generalInformationForm is invalid', () => {
+		jest.spyOn(component.generalInformationForm, 'valid', 'get').mockReturnValue(false);
+		expect(component.isFirstStepValid).toBe(false);
+	});
+
+	it('should return undefined when generalInformationForm is null', () => {
+		component.generalInformationForm = null as any;
+		expect(component.isFirstStepValid).toBeUndefined();
+	});
+
+	describe('SetupProfileComponent - Error Handling', () => {
+		describe('checkOnSaveProfileError', () => {
+			it('should set hasDuplicateEmailError to true when error is cashierEmailDuplicated', () => {
+				component['checkOnSaveProfileError'](SilentErrorCode.cashierEmailDuplicated);
+				expect(component.hasDuplicateEmailError).toBe(true);
+			});
+
+			it('should reset stepper to first step on duplicate email error', () => {
+				component['checkOnSaveProfileError'](SilentErrorCode.cashierEmailDuplicated);
+				expect(component.horizontalStepper.selectedIndex).toBe(0);
+			});
+		});
+
+		describe('saveSupplierSetupProfile', () => {
+			it('should save supplier profile successfully and call all expected methods', fakeAsync(() => {
+				const mockPdokData = {
+					response: {
+						numFound: 1,
+					},
+				};
+				const mockCoordinates: SupplierCoordinates = {
+					longitude: 26.1025,
+					latitude: 44.4268,
+				};
+
+				component.contactInformationForm?.setValue(contactInformationForm);
+				component.generalInformationForm?.setValue(generalInformationForm);
+				component['supplierId'] = 'test-supplier-id';
+
+				const displayApprovalWaitingPopupSpy = jest.spyOn<any, any>(component, 'displayApprovalWaitingPopup');
+				const removeLocalStorageDataSpy = jest.spyOn<any, any>(component, 'removeLocalStorageData');
+				const updateUserInformationSpy = jest.spyOn<any, any>(component, 'updateUserInformation');
+
+				jest.spyOn(pdokService, 'getCoordinateFromAddress').mockReturnValue(of(mockPdokData));
+				jest.spyOn(PdokUtil, 'getCoordinatesFromPdok').mockReturnValue(mockCoordinates);
+				jest.spyOn(serviceMock, 'saveSupplierProfile').mockReturnValue(of({}));
+
+				component.saveSupplierSetupProfile();
+				tick();
+
+				expect(pdokService.getCoordinateFromAddress).toHaveBeenCalled();
+				expect(PdokUtil.getCoordinatesFromPdok).toHaveBeenCalledWith(mockPdokData);
+				expect(serviceMock.saveSupplierProfile).toHaveBeenCalled();
+				expect(dialogRef.close).toHaveBeenCalled();
+				expect(displayApprovalWaitingPopupSpy).toHaveBeenCalled();
+				expect(removeLocalStorageDataSpy).toHaveBeenCalled();
+				expect(updateUserInformationSpy).toHaveBeenCalled();
+			}));
+
+			it('should display error toaster when pdok numFound is 0', fakeAsync(() => {
+				const mockPdokData = {
+					response: {
+						numFound: 0,
+					},
+				};
+
+				component.contactInformationForm?.setValue(contactInformationForm);
+				component.generalInformationForm?.setValue(generalInformationForm);
+				component['supplierId'] = 'test-supplier-id';
+
+				const displayErrorToasterSpy = jest.spyOn<any, any>(component, 'displayErrorToaster');
+				const displayApprovalWaitingPopupSpy = jest.spyOn<any, any>(component, 'displayApprovalWaitingPopup');
+
+				jest.spyOn(pdokService, 'getCoordinateFromAddress').mockReturnValue(of(mockPdokData));
+
+				component.saveSupplierSetupProfile();
+				tick();
+
+				expect(pdokService.getCoordinateFromAddress).toHaveBeenCalled();
+				expect(displayErrorToasterSpy).toHaveBeenCalled();
+				expect(displayApprovalWaitingPopupSpy).not.toHaveBeenCalled();
+				expect(dialogRef.close).not.toHaveBeenCalled();
+			}));
+
+			it('should handle save supplier profile error', fakeAsync(() => {
+				const mockPdokData = {
+					response: {
+						numFound: 1,
+					},
+				};
+				const mockCoordinates: SupplierCoordinates = {
+					longitude: 26.1025,
+					latitude: 44.4268,
+				};
+				const mockError = { error: SilentErrorCode.cashierEmailDuplicated };
+
+				component.contactInformationForm?.setValue(contactInformationForm);
+				component.generalInformationForm?.setValue(generalInformationForm);
+				component['supplierId'] = 'test-supplier-id';
+
+				const checkOnSaveProfileErrorSpy = jest.spyOn<any, any>(component, 'checkOnSaveProfileError');
+				const scrollToBottomSpy = jest.spyOn(component as any, 'scrollToBottom').mockImplementation(() => {
+					// eslint-disable-next-line @typescript-eslint/no-empty-function
+				});
+
+				jest.spyOn(pdokService, 'getCoordinateFromAddress').mockReturnValue(of(mockPdokData));
+				jest.spyOn(PdokUtil, 'getCoordinatesFromPdok').mockReturnValue(mockCoordinates);
+				jest.spyOn(serviceMock, 'saveSupplierProfile').mockReturnValue(throwError(() => mockError));
+
+				component.saveSupplierSetupProfile();
+				tick();
+
+				expect(checkOnSaveProfileErrorSpy).toHaveBeenCalledWith(SilentErrorCode.cashierEmailDuplicated);
+				expect(scrollToBottomSpy).toHaveBeenCalled();
+				expect(dialogRef.close).not.toHaveBeenCalled();
+			}));
+
+			it('should not proceed if pdok response is null', fakeAsync(() => {
+				const mockPdokData = {
+					response: {
+						numFound: 0,
+					},
+				};
+
+				component.contactInformationForm?.setValue(contactInformationForm);
+				component.generalInformationForm?.setValue(generalInformationForm);
+				component['supplierId'] = 'test-supplier-id';
+
+				const displayApprovalWaitingPopupSpy = jest.spyOn<any, any>(component, 'displayApprovalWaitingPopup');
+				const removeLocalStorageDataSpy = jest.spyOn<any, any>(component, 'removeLocalStorageData');
+
+				jest.spyOn(pdokService, 'getCoordinateFromAddress').mockReturnValue(of(mockPdokData));
+
+				component.saveSupplierSetupProfile();
+				tick();
+
+				expect(displayApprovalWaitingPopupSpy).not.toHaveBeenCalled();
+				expect(removeLocalStorageDataSpy).not.toHaveBeenCalled();
+				expect(dialogRef.close).not.toHaveBeenCalled();
+			}));
+
+			it('should call pdokService with correct address parameters', fakeAsync(() => {
+				const mockPdokData = {
+					response: {
+						numFound: 1,
+					},
+				};
+				const mockCoordinates: SupplierCoordinates = {
+					longitude: 26.1025,
+					latitude: 44.4268,
+				};
+
+				component.contactInformationForm?.setValue(contactInformationForm);
+				component.generalInformationForm?.setValue(generalInformationForm);
+				component['supplierId'] = 'test-supplier-id';
+
+				const pdokServiceSpy = jest
+					.spyOn(pdokService, 'getCoordinateFromAddress')
+					.mockReturnValue(of(mockPdokData));
+				jest.spyOn(PdokUtil, 'getCoordinatesFromPdok').mockReturnValue(mockCoordinates);
+				jest.spyOn(serviceMock, 'saveSupplierProfile').mockReturnValue(of({}));
+
+				component.saveSupplierSetupProfile();
+				tick();
+
+				expect(pdokServiceSpy).toHaveBeenCalledWith(
+					contactInformationForm.branchLocation,
+					contactInformationForm.branchZip,
+				);
+			}));
+		});
+	});
 });

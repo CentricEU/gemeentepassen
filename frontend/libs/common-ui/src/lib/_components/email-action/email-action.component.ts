@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogConfig } from '@angular/material/dialog';
@@ -14,9 +14,11 @@ import {
 	RecoverPasswordService,
 	Role,
 } from '@frontend/common';
+import { Environment } from '@frontend/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { RecaptchaComponent, RecaptchaFormsModule, RecaptchaModule } from 'ng-recaptcha-2';
+import { RECAPTCHA_SETTINGS, RecaptchaSettings } from 'ng-recaptcha-2';
 
 import { CustomDialogConfigUtil } from '../../_util/custom-dialog-config';
 import { WindmillModule } from '../../windmil.module';
@@ -29,13 +31,22 @@ import { LogoTitleComponent } from '../logo-title/logo-title.component';
 	styleUrls: ['./email-action.component.scss'],
 	standalone: true,
 	imports: [
-		CommonModule,
-		CommonL4LModule,
-		TranslateModule,
-		WindmillModule,
-		LogoTitleComponent,
-		RecaptchaFormsModule,
-		RecaptchaModule,
+    CommonL4LModule,
+    TranslateModule,
+    WindmillModule,
+    LogoTitleComponent,
+    RecaptchaFormsModule,
+    RecaptchaModule
+],
+	providers: [
+		{
+			provide: RECAPTCHA_SETTINGS,
+			useFactory: (env: Environment) =>
+				({
+					siteKey: env.captchaSiteKey,
+				}) as RecaptchaSettings,
+			deps: ['env'],
+		},
 	],
 })
 export class EmailActionComponent implements OnInit {
@@ -115,7 +126,7 @@ export class EmailActionComponent implements OnInit {
 		const recoverPasswordModel = new RecoverPassword(
 			this.form.get('email')?.value,
 			this.form.get('recaptcha')?.value,
-			this.appUserType === AppType.municipality ? Role.MUNICIPALITY_ADMIN : Role.SUPPLIER,
+			this.getRoleByAppType(),
 		);
 
 		this.recoverPasswordService.recoverPassword(recoverPasswordModel).subscribe({
@@ -174,5 +185,16 @@ export class EmailActionComponent implements OnInit {
 
 				this.navigateToLogin();
 			});
+	}
+
+	private getRoleByAppType(): Role {
+		switch (this.appUserType) {
+			case AppType.municipality:
+				return Role.MUNICIPALITY_ADMIN;
+			case AppType.citizen:
+				return Role.CITIZEN;
+			default:
+				return Role.SUPPLIER;
+		}
 	}
 }

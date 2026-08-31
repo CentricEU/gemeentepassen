@@ -44,8 +44,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -361,5 +364,88 @@ class BenefitServiceTests {
                 .build();
         citizenGroup.setId(UUID.randomUUID());
         return citizenGroup;
+    }
+
+    @Test
+    void givenExistingPassholder_whenGetAllBenefitsDtoForPassholderId_thenReturnEligibleBenefitsList() throws Exception {
+
+        // ----- GIVEN -----
+        User user = new User();
+        user.setId(userId);
+        UUID passholderId = UUID.randomUUID();
+        Passholder passholder = new Passholder();
+        passholder.setUser(user);
+        passholder.setId(passholderId);
+
+        List<BenefitResponseDto> responseDtos = List.of(
+                new BenefitResponseDto(
+                        UUID.randomUUID(),
+                        "Test Benefit",
+                        "Description",
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(10),
+                        200.0,
+                        BenefitStatusEnum.ACTIVE,
+                        null,
+                        null,
+                        null
+                ),
+                new BenefitResponseDto(
+                        UUID.randomUUID(),
+                        "Test Benefit2",
+                        "Description",
+                        LocalDate.now(),
+                        LocalDate.now().plusDays(10),
+                        200.0,
+                        BenefitStatusEnum.ACTIVE,
+                        null,
+                        null,
+                        null
+                )
+        );
+
+        // ----- WHEN -----
+        when(principalService.getTenantId()).thenReturn(tenantId);
+
+        when(passholderRepository.findByIdAndTenantId(passholderId, tenantId))
+                .thenReturn(Optional.of(passholder));
+
+
+
+        when(benefitRepository.findAllBenefitsForUserBenefits(tenantId, userId)).thenReturn(responseDtos);
+
+        List<EligibleBenefitDto> result =
+                benefitService.getAllBenefitsDtoForPassholderId(passholderId);
+
+        // ----- THEN -----
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        verify(passholderRepository)
+                .findByIdAndTenantId(passholderId, tenantId);
+    }
+
+    @Test
+    void givenNonExistingPassholder_whenGetAllBenefitsDtoForPassholderId_thenThrowDtoValidateNotFoundException() {
+        // ----- GIVEN -----
+        UUID passholderId = UUID.randomUUID();
+
+        // ----- WHEN -----
+        when(passholderRepository.findByIdAndTenantId(passholderId, tenantId))
+                .thenReturn(Optional.empty());
+
+        when(principalService.getTenantId()).thenReturn(tenantId);
+
+        // ----- THEN -----
+        assertThrows(
+                DtoValidateNotFoundException.class,
+                () -> benefitService.getAllBenefitsDtoForPassholderId(passholderId)
+        );
+
+        verify(passholderRepository)
+                .findByIdAndTenantId(passholderId, tenantId);
+
+        verify(benefitRepository, never())
+                .findAllBenefitsForUserBenefits(any(), any());
     }
 }

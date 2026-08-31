@@ -1,13 +1,19 @@
 package nl.centric.innovation.local4local.util;
 
+import jakarta.annotation.Nullable;
 import nl.centric.innovation.local4local.entity.Role;
 
-import javax.annotation.Nullable;
+import java.util.List;
+
 
 public final class CommonUtils {
 
     public static String getBaseUrl(String role, String baseUrl, String baseMunicipalityUrl, String baseCitizenUrl) {
-        return role.equals(Role.ROLE_SUPPLIER) ? baseUrl : role.equals(Role.ROLE_MUNICIPALITY_ADMIN) ? baseMunicipalityUrl : baseCitizenUrl;
+        return switch (role) {
+            case Role.ROLE_SUPPLIER, Role.ROLE_CASHIER -> baseUrl;
+            case Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN -> baseMunicipalityUrl;
+            default -> baseCitizenUrl;
+        };
     }
 
     /**
@@ -24,19 +30,23 @@ public final class CommonUtils {
                                         @Nullable String municipalityLang,
                                         @Nullable String citizenLang) {
 
-        switch (role != null ? role.toUpperCase() : "") {
-            case "ROLE_SUPPLIER":
-                return isValid(supplierLang) ? supplierLang : "nl-NL";
-            case "ROLE_MUNICIPALITY_ADMIN":
-                return isValid(municipalityLang) ? municipalityLang : "nl-NL";
-            case "ROLE_CITIZEN":
-                return isValid(citizenLang) ? citizenLang : "nl-NL";
-            default:
-                if (isValid(supplierLang)) return supplierLang;
-                if (isValid(municipalityLang)) return municipalityLang;
-                if (isValid(citizenLang)) return citizenLang;
-                return "nl-NL";
-        }
+        return switch (role != null ? role.toUpperCase() : "") {
+            case Role.ROLE_SUPPLIER -> isValid(supplierLang) ? supplierLang : "nl-NL";
+            case Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN ->
+                    isValid(municipalityLang) ? municipalityLang : "nl-NL";
+            case Role.ROLE_CITIZEN -> isValid(citizenLang) ? citizenLang : "nl-NL";
+            default -> {
+                if (isValid(supplierLang)) yield supplierLang;
+                if (isValid(municipalityLang)) yield municipalityLang;
+                if (isValid(citizenLang)) yield citizenLang;
+                yield "nl-NL";
+            }
+        };
+    }
+
+    public static boolean isMunicipality(String role) {
+        List<String> municipalityRoles = List.of(Role.ROLE_SUPER_ADMIN, Role.ROLE_MUNICIPALITY_ADMIN);
+        return municipalityRoles.contains(role);
     }
 
     private static boolean isValid(String lang) {

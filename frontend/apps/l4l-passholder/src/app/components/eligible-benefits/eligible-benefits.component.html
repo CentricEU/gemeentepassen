@@ -1,0 +1,15 @@
+<div class="eligible-benefits-container" tabindex="0">
+	<div class="header" id="eligible-benefits-title-id" aria-hidden="true">
+		<p class="generic-color-text bold">
+			{{ 'uploadDocumentsStep.title' | translate }}
+		</p>
+	</div>
+	<ul [attr.aria-labelledby]="'eligible-benefits-title-id'" role="list" class="benefit-list">
+		@for (benefit of benefitsData; track benefit.name; let i = $index) {
+			<li role="listitem" class="benefit-item">
+				<p class="bold">{{ i + 1 }}. {{ benefit.name }}</p>
+				<p>{{ benefit.description }}</p>
+			</li>
+		}
+	</ul>
+</div>

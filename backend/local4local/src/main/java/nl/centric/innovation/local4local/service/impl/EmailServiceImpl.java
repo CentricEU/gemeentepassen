@@ -1,7 +1,6 @@
 package nl.centric.innovation.local4local.service.impl;
 
 
-import com.amazonaws.services.simpleemail.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.centric.innovation.local4local.enums.AssetsEnum;
@@ -16,6 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 @Slf4j
@@ -50,6 +51,13 @@ public class EmailServiceImpl implements EmailService {
 
     public void sendApproveProfileEmail(String url, String[] toAddress, String language, String receiverName, String municipalityName) {
         MailTemplate mailTemplate = getApproveProfileTemplate(language, url, EmailTemplateEnum.APPROVE_PROFILE.getTemplate(), receiverName + EmailHtmlEnum.EXCL.getTag(), municipalityName);
+        String htmlContent = mailTemplateBuilder.buildEmailTemplate(mailTemplate);
+        String textContent = mailUtils.buildTemplateText(mailTemplate);
+        mailUtils.sendEmail(emailSender, toAddress, mailTemplate.getSubject(), htmlContent, textContent.toString());
+    }
+
+    public void sendProfileApprovedWithChangesEmail(String url, String[] toAddress, String language, String receiverName, String municipalityName, List<String> changedFields, boolean isProfileNew) {
+        MailTemplate mailTemplate = getApprovedWithChangesTemplate(language, url, EmailTemplateEnum.APPROVE_PROFILE.getTemplate(), receiverName + EmailHtmlEnum.EXCL.getTag(), municipalityName, changedFields, isProfileNew);
         String htmlContent = mailTemplateBuilder.buildEmailTemplate(mailTemplate);
         String textContent = mailUtils.buildTemplateText(mailTemplate);
         mailUtils.sendEmail(emailSender, toAddress, mailTemplate.getSubject(), htmlContent, textContent.toString());
@@ -188,6 +196,24 @@ public class EmailServiceImpl implements EmailService {
         return mailTemplate;
     }
 
+    private MailTemplate getApprovedWithChangesTemplate(String language, String url, String templateMiddlePart, String receiverName, String municipalityName, List<String> changedFields, boolean isProfileNew) {
+        Locale locale = new Locale(language);
+
+        List<String> translatedChanges = new ArrayList<>();
+        for (String change : changedFields) {
+            change = mailUtils.getEmailStringText(locale, EmailTemplateEnum.SUPPLIER_CHANGES.getTemplate(), change);
+            translatedChanges.add(change);
+        }
+
+        String changesString = String.join(", ", translatedChanges) + ".";
+        MailTemplate mailTemplate = buildGenericTemplate(locale, language, url, templateMiddlePart, receiverName);
+
+        String content = getContentForApprovedWithChanges(locale, templateMiddlePart, municipalityName, changesString, isProfileNew);
+        mailTemplate.setContent(content);
+
+        return mailTemplate;
+    }
+
     private MailTemplate getApprovedOfferEmail(String language, String url, String templateMiddlePart, String receiverName, String municipalityName) {
         Locale locale = new Locale(language);
         MailTemplate mailTemplate = buildGenericTemplate(locale, language, url, templateMiddlePart, receiverName);
@@ -294,13 +320,21 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private String getContentForApproveProfile(Locale locale, String templateMiddlePart, String municipalityName) {
-        String contentInfo = mailUtils.getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CONTENT.getStructure(), municipalityName).replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
-        String approveText = StringUtils.addStringBeforeAndAfter(EmailHtmlEnum.P_START.getTag(), mailUtils.getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.APPROVE.getStructure()), EmailHtmlEnum.P_END.getTag());
-        return StringUtils.joinStringPieces(contentInfo, approveText);
+        String contentInfo = mailUtils.getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CONTENT.getStructure()).replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
+        return StringUtils.addStringBeforeAndAfter(contentInfo, municipalityName, ".");
+    }
+
+    private String getContentForApprovedWithChanges(Locale locale, String templateMiddlePart, String municipalityName, String changes, boolean isProfileNew) {
+        String contentInfo = mailUtils.getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CONTENT.getStructure()).replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
+        String contentWithMunicipality = StringUtils.addStringBeforeAndAfter(contentInfo, municipalityName, ".");
+        String changeInfo = changes.length() > 1 ? getFormattedChanges(locale, templateMiddlePart, changes) : "";
+        String profileSet = isProfileNew ? mailUtils.getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.PROFILE_CREATED.getStructure()) : "";
+        String formattedProfileSet = StringUtils.addStringBeforeAndAfter(EmailHtmlEnum.P_START.getTag(), profileSet, EmailHtmlEnum.P_END.getTag());
+        return StringUtils.joinStringPieces(contentWithMunicipality, changeInfo, formattedProfileSet);
     }
 
     private String getContentForApprovedOffer(Locale locale, String templateMiddlePart, String municipalityName) {
-        return mailUtils.getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CONTENT.getStructure(), municipalityName).replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
+        return mailUtils.getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CONTENT.getStructure()).replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
     }
 
     private String getContentForRejectedOffer(Locale locale, String templateMiddlePart, String reason) {
@@ -313,5 +347,11 @@ public class EmailServiceImpl implements EmailService {
         String contentInfo = mailUtils.getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CONTENT.getStructure(), municipalityName).replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
         String rejectText = StringUtils.addStringBeforeAndAfter(EmailHtmlEnum.P_START.getTag(), mailUtils.getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.REJECT.getStructure(), reason), EmailHtmlEnum.P_END.getTag());
         return StringUtils.joinStringPieces(contentInfo, rejectText);
+    }
+
+    private String getFormattedChanges(Locale locale, String templateMiddlePart, String changes) {
+        String changesText = mailUtils.getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CHANGES.getStructure());
+        String formattedChanges = StringUtils.addStringBeforeAndAfter(EmailHtmlEnum.BOLD_START.getTag(), changes, EmailHtmlEnum.BOLD_END.getTag());
+        return StringUtils.addStringBeforeAndAfter(EmailHtmlEnum.P_START.getTag(), StringUtils.joinStringPieces(changesText, formattedChanges), EmailHtmlEnum.P_END.getTag());
     }
 }

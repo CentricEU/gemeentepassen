@@ -41,15 +41,7 @@ const Details = ({
 	const { t } = useTranslation('common');
 
 	const offerText = () => {
-		switch (offerType.offerTypeId) {
-			case 2:
-			case 4:
-				return t(offerType.offerTypeLabel);
-			case 3:
-				return `€ ${amount} ${t(offerType.offerTypeLabel)}`;
-			default:
-				return `${amount}% ${t('discounts.discount')}`;
-		}
+		return t(offerType.offerTypeLabel);
 	};
 
 	const expirationDateText = DateUtils.convertDateFormat(expirationDate);
@@ -110,10 +102,11 @@ const DiscountCodeCard = ({
 	const { t } = useTranslation('common');
 
 	const offerDetailsMap: Record<number, { backgroundColor: string }> = {
-		1: { backgroundColor: colors.INFO_400 },
+		1: { backgroundColor: colors.STATUS_DANGER_500 },
 		2: { backgroundColor: colors.WARNING_900 },
-		3: { backgroundColor: colors.DANGER_400 },
-		4: { backgroundColor: colors.VIOLET }
+		3: { backgroundColor: colors.GREEN },
+		4: { backgroundColor: colors.INFO_400 },
+		5: { backgroundColor: colors.VIOLET }
 	};
 
 	const backgroundColor = discountCode.isActive

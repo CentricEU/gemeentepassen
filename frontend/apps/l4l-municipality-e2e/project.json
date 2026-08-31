@@ -1,33 +1,39 @@
 {
-	"name": "l4l-municipality-e2e",
-	"$schema": "../../node_modules/nx/schemas/project-schema.json",
-	"sourceRoot": "apps/l4l-municipality-e2e/src",
-	"projectType": "application",
-	"tags": [],
-	"implicitDependencies": ["l4l-municipality"],
-	"targets": {
-		"e2e": {
-			"executor": "@nx/cypress:cypress",
-			"options": {
-				"cypressConfig": "apps/l4l-municipality-e2e/cypress.config.ts",
-				"devServerTarget": "l4l-municipality:serve:development",
-				"testingType": "e2e"
-			},
-			"configurations": {
-				"production": {
-					"devServerTarget": "l4l-municipality:serve:production"
-				},
-				"ci": {
-					"devServerTarget": "l4l-municipality:serve-static"
-				}
-			}
-		},
-		"lint": {
-			"executor": "@nx/eslint:lint",
-			"outputs": ["{options.outputFile}"],
-			"options": {
-				"lintFilePatterns": ["apps/l4l-municipality-e2e/**/*.{js,ts}"]
-			}
-		}
-	}
+  "name": "l4l-municipality-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/l4l-municipality-e2e/src",
+  "projectType": "application",
+  "tags": [],
+  "implicitDependencies": [
+    "l4l-municipality"
+  ],
+  "targets": {
+    "e2e": {
+      "executor": "@nx/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/l4l-municipality-e2e/cypress.config.ts",
+        "devServerTarget": "l4l-municipality:serve:development",
+        "testingType": "e2e"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "l4l-municipality:serve:production"
+        },
+        "ci": {
+          "devServerTarget": "l4l-municipality:serve-static"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": [
+        "{options.outputFile}"
+      ],
+      "options": {
+        "lintFilePatterns": [
+          "apps/l4l-municipality-e2e/**/*.{js,ts}"
+        ]
+      }
+    }
+  }
 }

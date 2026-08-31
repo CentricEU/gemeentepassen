@@ -3,6 +3,7 @@ package nl.centric.innovation.local4local.repository;
 import nl.centric.innovation.local4local.dto.OfferStatisticsDto;
 import nl.centric.innovation.local4local.entity.DiscountCode;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -24,7 +25,7 @@ public interface DiscountCodeRepository extends JpaRepository<DiscountCode, UUID
             FROM DiscountCode dc
             JOIN dc.offer o
             WHERE o.supplier.id = :supplierId
-            AND o.createdDate >= :intervalPeriod
+            AND dc.createdDate >= :intervalPeriod
             GROUP BY o.offerType.offerTypeId, o.offerType.offerTypeLabel
             """;
 
@@ -47,4 +48,21 @@ public interface DiscountCodeRepository extends JpaRepository<DiscountCode, UUID
             @Param("supplierId") UUID supplierId,
             @Param("intervalPeriod") LocalDateTime intervalPeriod
     );
+
+    Boolean existsByOfferId(UUID offerId);
+
+    List<DiscountCode> findAllByUserId(UUID userId);
+
+    List<DiscountCode> findAllByOfferId(UUID offerId);
+
+    /*
+    Deactivate all discount codes in one atomic DB update.
+    We chose this approach instead of checking "claimed" or using pessimistic locks because:
+            - It is race-proof: even if a new discount code is added during this transaction,
+              it will be deactivated.
+
+    */
+    @Modifying
+    @Query("UPDATE DiscountCode d SET d.isActive = false WHERE d.offer.id = :offerId")
+    void deactivateAllByOfferId(@Param("offerId") UUID offerId);
 }

@@ -17,7 +17,6 @@ public enum EmailStructureEnum {
     LOGO_IMAGE("logoImage"),
     URL("url"),
     BTN_TEXT("btnText"),
-    APPROVE("contentApprove"),
     REJECT("contentReject"),
     SUPPLIER_NAME("supplier"),
     REPRESENTATIVE_NAME("name"),
@@ -26,7 +25,9 @@ public enum EmailStructureEnum {
     TENANT_TELEPHONE("tenantTelephone"),
     TENANT_WEBSITE("tenantWebsite"),
     TENANT_EMAIL("tenantEmail"),
-    END_NOTE("endNote");
+    END_NOTE("endNote"),
+    CHANGES("changes"),
+    PROFILE_CREATED("profileCreated"),;
 
     private final String structure;
 

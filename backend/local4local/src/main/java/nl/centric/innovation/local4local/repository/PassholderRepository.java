@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import nl.centric.innovation.local4local.entity.Passholder;
 
-public interface PassholderRepository extends JpaRepository<Passholder, UUID> {
+public interface PassholderRepository extends JpaRepository<Passholder, UUID>, PassholderRepositoryCustom {
 	Page<Passholder> findAllByTenantIdOrderByCreatedDateDesc(UUID tenantId, Pageable pageable);
 
 	Integer countByTenantId(UUID tenantId);
@@ -22,6 +22,8 @@ public interface PassholderRepository extends JpaRepository<Passholder, UUID> {
 	Optional<Passholder> findByPassNumber(String passNumber);
 
     Optional<Passholder> findByUserId(UUID userId);
+
+    Optional<Passholder> findByIdAndTenantId(UUID id, UUID tenantId);
 
     List<Passholder> findAllByUserNotNullAndCitizenGroupIn(Set<CitizenGroup> citizenGroups);
 

@@ -296,4 +296,143 @@ describe('LoginComponent', () => {
 			expect(component.shouldDisplayRegister).toBeTruthy();
 		});
 	});
+
+	describe('getRoleByAppType', () => {
+		it('should return MUNICIPALITY_ADMIN role when appLoginPage is municipality', () => {
+			component.appLoginPage = AppType.municipality;
+			const role = component['getRoleByAppType']();
+			expect(role).toBe(Role.MUNICIPALITY_ADMIN);
+		});
+
+		it('should return SUPPLIER role when appLoginPage is supplier', () => {
+			component.appLoginPage = AppType.supplier;
+			const role = component['getRoleByAppType']();
+			expect(role).toBe(Role.SUPPLIER);
+		});
+
+		it('should return CITIZEN role when appLoginPage is not municipality or supplier', () => {
+			component.appLoginPage = 'citizen' as AppType;
+			const role = component['getRoleByAppType']();
+			expect(role).toBe(Role.CITIZEN);
+		});
+
+		it('should return CITIZEN role when appLoginPage is undefined', () => {
+			component.appLoginPage = undefined as any;
+			const role = component['getRoleByAppType']();
+			expect(role).toBe(Role.CITIZEN);
+		});
+	});
+	describe('LoginComponent - Additional Tests', () => {
+		describe('checkInformationOnLocalStorage', () => {
+			it('should clear local storage data if adminEmail does not match form email', () => {
+				const clearLocalStorageSpy = jest.spyOn(component as any, 'clearLocalStorageData');
+				const generalInformation = { adminEmail: 'admin@example.com' };
+				localStorage.setItem('generalFormInformation', JSON.stringify(generalInformation));
+
+				component.form.setValue({
+					email: 'test@example.com',
+					password: 'password',
+					rememberMe: false,
+					recaptcha: '',
+				});
+
+				(component as any).checkInformationOnLocalStorage();
+
+				expect(clearLocalStorageSpy).toHaveBeenCalled();
+			});
+
+			it('should not clear local storage data if adminEmail matches form email', () => {
+				const clearLocalStorageSpy = jest.spyOn(component as any, 'clearLocalStorageData');
+				const generalInformation = { adminEmail: 'test@example.com' };
+				localStorage.setItem('generalFormInformation', JSON.stringify(generalInformation));
+
+				component.form.setValue({
+					email: 'test@example.com',
+					password: 'password',
+					rememberMe: false,
+					recaptcha: '',
+				});
+
+				(component as any).checkInformationOnLocalStorage();
+
+				expect(clearLocalStorageSpy).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('getGeneralFormInformation', () => {
+			it('should return parsed general form information from local storage', () => {
+				const generalInformation = { adminEmail: 'admin@example.com' };
+				localStorage.setItem('generalFormInformation', JSON.stringify(generalInformation));
+
+				const result = (component as any).getGeneralFormInformation();
+
+				expect(result).toEqual(generalInformation);
+			});
+
+			it('should return null if general form information is not in local storage', () => {
+				localStorage.removeItem('generalFormInformation');
+
+				const result = (component as any).getGeneralFormInformation();
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('clearLocalStorageData', () => {
+			it('should remove specific keys from local storage', () => {
+				const keysToRemove = [
+					'contactFormInformation',
+					'generalFormInformation',
+					'workingHours',
+					'generalInformationCashiers',
+				];
+
+				keysToRemove.forEach((key) => localStorage.setItem(key, 'test'));
+
+				(component as any).clearLocalStorageData();
+
+				keysToRemove.forEach((key) => {
+					expect(localStorage.getItem(key)).toBeNull();
+				});
+			});
+		});
+
+		describe('addRecaptcha', () => {
+			it('should set userIsBlocked to true if recaptcha is not already added', () => {
+				component.userIsBlocked = false;
+
+				(component as any).addRecaptcha();
+
+				expect(component.userIsBlocked).toBe(true);
+			});
+
+			it('should not modify userIsBlocked if recaptcha is already added', () => {
+				component.userIsBlocked = true;
+
+				(component as any).addRecaptcha();
+
+				expect(component.userIsBlocked).toBe(true);
+			});
+		});
+
+		describe('addRecaptchaValidatorsAndDetechChanges', () => {
+			it('should add required validator to recaptcha if not already present', () => {
+				const recaptcha = component.form.get('recaptcha');
+				recaptcha?.clearValidators();
+
+				(component as any).addRecaptchaValidatorsAndDetechChanges();
+
+				expect(recaptcha?.hasValidator(Validators.required)).toBe(true);
+			});
+
+			it('should not add required validator if already present', () => {
+				const recaptcha = component.form.get('recaptcha');
+				recaptcha?.setValidators(Validators.required);
+
+				(component as any).addRecaptchaValidatorsAndDetechChanges();
+
+				expect(recaptcha?.hasValidator(Validators.required)).toBe(true);
+			});
+		});
+	});
 });

@@ -60,5 +60,36 @@ describe('StatusUtil', () => {
 		it('should return an empty array for an empty array', () => {
 			expect(StatusUtil.getCitizenGroupAgeLabelFromEnum([])).toEqual([]);
 		});
+
+		it('should return correct label for AGE_65_PLUS', () => {
+			const expectedLabel = CitizenGroupAgeMapping().get(CitizenGroupAge.AGE_65_PLUS);
+			expect(StatusUtil.getCitizenGroupAgeLabelFromEnum([CitizenGroupAge.AGE_65_PLUS])).toEqual([expectedLabel]);
+		});
+	});
+
+	it('should map CREATED status to translation label correctly', () => {
+		expect(StatusUtil.mapStatusTranslationLabel(GenericStatusEnum.CREATED)).toBe('status.created');
+	});
+
+	it('should get SVG icon for APPROVED status', () => {
+		expect(StatusUtil.getSvgIconForStatus(GenericStatusEnum.APPROVED)).toBe('check-circle_b');
+	});
+
+	it('should get SVG icon for CREATED status', () => {
+		expect(StatusUtil.getSvgIconForStatus(GenericStatusEnum.CREATED)).toBe('file_edit_bb');
+	});
+
+	it('should get color class for CREATED status', () => {
+		expect(StatusUtil.getColorClassForStatus(GenericStatusEnum.CREATED)).toBe('expired');
+	});
+
+	describe('getMessageForStatus', () => {
+		it('should return general.digital when isRegistered is true', () => {
+			expect(StatusUtil.getMessageForStatus(true)).toBe('general.digital');
+		});
+
+		it('should return general.non-digital when isRegistered is false', () => {
+			expect(StatusUtil.getMessageForStatus(false)).toBe('general.non-digital');
+		});
 	});
 });

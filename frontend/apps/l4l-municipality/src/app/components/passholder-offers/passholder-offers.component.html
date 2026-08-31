@@ -1,0 +1,35 @@
+@if (hasData()) {
+	<table centric-dg [dataSource]="offers" [filters]="showFilters">
+		@for (col of allColumns; track col) {
+			<ng-container centricColumnDef="{{ col['property'] }}">
+				<th centric-header-cell *centricHeaderCellDef>
+					<span class="cell-content-ellipsis">{{ col['columnLabel'] | translate }}</span>
+				</th>
+				@if (col['columnDataType'] === columnDataTypes.TRANSLATION) {
+					<td centric-cell *centricCellDef="let row">
+						<span class="cell-content-ellipsis">{{ row[col['property']] | translate }}</span>
+					</td>
+				} @else if (col['columnDataType'] === columnDataTypes.ACTIONS) {
+					<td centric-cell *centricCellDef="let row">
+						<centric-button [type]="'uncontained-theme'" (click)="downloadCode(row)">
+							{{ 'offer.downloadCode' | translate }}
+						</centric-button>
+					</td>
+				} @else {
+					<td centric-cell *centricCellDef="let row">
+						<span class="cell-content-ellipsis">{{ row[col['property']] }}</span>
+					</td>
+				}
+
+				<td centric-cell *centricCellDef="let row">
+					<span class="cell-content-ellipsis">{{ row[col['property']] }}</span>
+				</td>
+			</ng-container>
+		}
+
+		<tr centric-header-row *centricHeaderRowDef="fixedContentCols"></tr>
+		<tr centric-row *centricRowDef="let row; columns: fixedContentCols"></tr>
+	</table>
+} @else {
+	<frontend-no-data [noDataTitle]="'passholders.noData.offersTitle'"> </frontend-no-data>
+}

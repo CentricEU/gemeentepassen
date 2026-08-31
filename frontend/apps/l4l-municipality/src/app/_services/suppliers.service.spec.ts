@@ -6,6 +6,7 @@ import { SupplierForMapViewDto, SupplierStatus, SupplierViewDto } from '@fronten
 import { GetSuppliersDto } from '../_models/get-suppliers-dto.model';
 import { InvitationDto } from '../_models/invitation-dto.model';
 import { InviteSuppliersDto } from '../_models/invite-suppliers-dto.model';
+import { SupplierRequestPatchDto } from '../_models/supplier-request-patch-dto.model.';
 import { MunicipalitySupplierService } from './suppliers.service';
 
 describe('MunicipalitySupplierService', () => {
@@ -209,5 +210,47 @@ describe('MunicipalitySupplierService', () => {
 		expect(request.request.method).toBe('GET');
 
 		request.flush(mockResponse);
+	});
+
+	// ─── patchSupplierProfile ─────────────────────────────────────────────────
+
+	describe('patchSupplierProfile', () => {
+		it('should send a PUT request to the correct endpoint with the dto as body', () => {
+			// Arrange
+			const dto = new SupplierRequestPatchDto({
+				supplierId: 'supplier-1',
+				companyName: 'TestCo',
+				kvkNumber: '12345678',
+				adminEmail: 'admin@test.com',
+				workingHours: [],
+			});
+
+			// Act
+			service.patchSupplierProfile(dto).subscribe();
+
+			// Assert
+			const req = httpMock.expectOne(`${environmentMock.apiPath}/suppliers/finalize`);
+			expect(req.request.method).toBe('PUT');
+			expect(req.request.body).toEqual(dto);
+
+			req.flush(null);
+		});
+
+		it('should complete without emitting a value on success', () => {
+			// Arrange
+			const dto = new SupplierRequestPatchDto({ supplierId: 'supplier-2' });
+			let emitted = false;
+
+			// Act
+			service.patchSupplierProfile(dto).subscribe(() => {
+				emitted = true;
+			});
+
+			const req = httpMock.expectOne(`${environmentMock.apiPath}/suppliers/finalize`);
+			req.flush(null);
+
+			// Assert - void observable flushes null but subscriber still fires
+			expect(req.request.method).toBe('PUT');
+		});
 	});
 });

@@ -13,7 +13,7 @@ import {
 } from '@frontend/common';
 import { AriaAttributesDirective } from '@innovation/accesibility';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of, throwError } from 'rxjs';
 
 import { CustomDialogConfigUtil } from '../../_util/custom-dialog-config';
@@ -784,5 +784,190 @@ describe('EmailActionComponent', () => {
 		component.sendEmail();
 
 		expect(resendConfirmationEmailSpy).toHaveBeenCalled();
+	});
+
+	describe('getRoleByAppType()', () => {
+		it('should return Role.MUNICIPALITY_ADMIN when appUserType is AppType.municipality', () => {
+			component['appUserType'] = AppType.municipality;
+			const result = component['getRoleByAppType']();
+			expect(result).toBe(Role.MUNICIPALITY_ADMIN);
+		});
+
+		it('should return Role.CITIZEN when appUserType is AppType.citizen', () => {
+			component['appUserType'] = AppType.citizen;
+			const result = component['getRoleByAppType']();
+			expect(result).toBe(Role.CITIZEN);
+		});
+
+		it('should return Role.SUPPLIER when appUserType is AppType.supplier', () => {
+			component['appUserType'] = AppType.supplier;
+			const result = component['getRoleByAppType']();
+			expect(result).toBe(Role.SUPPLIER);
+		});
+
+		it('should return Role.SUPPLIER for default case when appUserType is undefined', () => {
+			component['appUserType'] = undefined as any;
+			const result = component['getRoleByAppType']();
+			expect(result).toBe(Role.SUPPLIER);
+		});
+
+		it('should return Role.SUPPLIER for default case when appUserType is null', () => {
+			component['appUserType'] = null as any;
+			const result = component['getRoleByAppType']();
+			expect(result).toBe(Role.SUPPLIER);
+		});
+	});
+
+	describe('showDialog', () => {
+		it('should not navigate to login when dialog response is false', fakeAsync(() => {
+			const dialogConfig = CustomDialogConfigUtil.MESSAGE_MODAL_CONFIG;
+			const mockDialogRef = {
+				afterClosed: jest.fn().mockReturnValue(of(false)),
+			};
+			jest.spyOn(dialogServiceMock, 'message').mockReturnValue(mockDialogRef);
+			routerMock.navigate.mockClear();
+
+			component['showDialog'](dialogConfig);
+			tick();
+
+			expect(routerMock.navigate).not.toHaveBeenCalled();
+		}));
+
+		it('should not navigate to login when dialog response is null', fakeAsync(() => {
+			const dialogConfig = CustomDialogConfigUtil.MESSAGE_MODAL_CONFIG;
+			const mockDialogRef = {
+				afterClosed: jest.fn().mockReturnValue(of(null)),
+			};
+			jest.spyOn(dialogServiceMock, 'message').mockReturnValue(mockDialogRef);
+			routerMock.navigate.mockClear();
+
+			component['showDialog'](dialogConfig);
+			tick();
+
+			expect(routerMock.navigate).not.toHaveBeenCalled();
+		}));
+
+		it('should not navigate to login when dialog response is undefined', fakeAsync(() => {
+			const dialogConfig = CustomDialogConfigUtil.MESSAGE_MODAL_CONFIG;
+			const mockDialogRef = {
+				afterClosed: jest.fn().mockReturnValue(of(undefined)),
+			};
+			jest.spyOn(dialogServiceMock, 'message').mockReturnValue(mockDialogRef);
+			routerMock.navigate.mockClear();
+
+			component['showDialog'](dialogConfig);
+			tick();
+
+			expect(routerMock.navigate).not.toHaveBeenCalled();
+		}));
+
+		it('should not navigate to login when dialog response is 0', fakeAsync(() => {
+			const dialogConfig = CustomDialogConfigUtil.MESSAGE_MODAL_CONFIG;
+			const mockDialogRef = {
+				afterClosed: jest.fn().mockReturnValue(of(0)),
+			};
+			jest.spyOn(dialogServiceMock, 'message').mockReturnValue(mockDialogRef);
+			routerMock.navigate.mockClear();
+
+			component['showDialog'](dialogConfig);
+			tick();
+
+			expect(routerMock.navigate).not.toHaveBeenCalled();
+		}));
+
+		it('should not navigate to login when dialog response is empty string', fakeAsync(() => {
+			const dialogConfig = CustomDialogConfigUtil.MESSAGE_MODAL_CONFIG;
+			const mockDialogRef = {
+				afterClosed: jest.fn().mockReturnValue(of('')),
+			};
+			jest.spyOn(dialogServiceMock, 'message').mockReturnValue(mockDialogRef);
+			routerMock.navigate.mockClear();
+
+			component['showDialog'](dialogConfig);
+			tick();
+
+			expect(routerMock.navigate).not.toHaveBeenCalled();
+		}));
+
+		it('should handle when dialogService.message returns null', () => {
+			const dialogConfig = CustomDialogConfigUtil.MESSAGE_MODAL_CONFIG;
+			jest.spyOn(dialogServiceMock, 'message').mockReturnValue(null);
+			routerMock.navigate.mockClear();
+
+			expect(() => component['showDialog'](dialogConfig)).not.toThrow();
+			expect(routerMock.navigate).not.toHaveBeenCalled();
+		});
+
+		it('should handle when dialogService.message returns undefined', () => {
+			const dialogConfig = CustomDialogConfigUtil.MESSAGE_MODAL_CONFIG;
+			jest.spyOn(dialogServiceMock, 'message').mockReturnValue(undefined);
+			routerMock.navigate.mockClear();
+
+			expect(() => component['showDialog'](dialogConfig)).not.toThrow();
+			expect(routerMock.navigate).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('description getter', () => {
+		it('should return confirmation email description when isConfirmationEmailComponent returns true', () => {
+			jest.spyOn(component, 'isConfirmationEmailComponent').mockReturnValue(true);
+			expect(component.description).toBe('register.accountConfirmation.validateEmailDescription');
+		});
+
+		it('should return forgot password description when isConfirmationEmailComponent returns false', () => {
+			jest.spyOn(component, 'isConfirmationEmailComponent').mockReturnValue(false);
+			expect(component.description).toBe('forgotPassword.description');
+		});
+	});
+
+	describe('title getter', () => {
+		it('should return confirmation email title when isConfirmationEmailComponent returns true', () => {
+			jest.spyOn(component, 'isConfirmationEmailComponent').mockReturnValue(true);
+			expect(component.title).toBe('register.accountConfirmation.validateEmailTitle');
+		});
+
+		it('should return forgot password title when isConfirmationEmailComponent returns false', () => {
+			jest.spyOn(component, 'isConfirmationEmailComponent').mockReturnValue(false);
+			expect(component.title).toBe('forgotPassword.title');
+		});
+	});
+
+	describe('resendConfirmationEmail() additional coverage', () => {
+		it('should handle when email form control is null', () => {
+			jest.spyOn(component.form, 'get').mockReturnValue(null);
+			const resendConfirmationEmailSpy = jest.spyOn(emailConfirmationService, 'resendConfirmationEmail');
+
+			component['resendConfirmationEmail']();
+
+			expect(resendConfirmationEmailSpy).toHaveBeenCalledWith(undefined);
+		});
+
+		it('should handle when email form control value is undefined', () => {
+			const mockControl = { value: undefined } as any;
+			jest.spyOn(component.form, 'get').mockReturnValue(mockControl);
+			const resendConfirmationEmailSpy = jest
+				.spyOn(emailConfirmationService, 'resendConfirmationEmail')
+				.mockReturnValue(of());
+
+			component['resendConfirmationEmail']();
+
+			expect(resendConfirmationEmailSpy).toHaveBeenCalledWith(undefined);
+		});
+	});
+
+	describe('initForm() additional coverage', () => {
+		it('should initialize form with recaptcha validators when not confirmation email component', () => {
+			jest.spyOn(component, 'isConfirmationEmailComponent').mockReturnValue(false);
+			component['initForm']();
+			const recaptchaControl = component.form.get('recaptcha');
+			expect(recaptchaControl?.hasValidator(Validators.required)).toBe(true);
+		});
+
+		it('should initialize form without recaptcha validators when is confirmation email component', () => {
+			jest.spyOn(component, 'isConfirmationEmailComponent').mockReturnValue(true);
+			component['initForm']();
+			const recaptchaControl = component.form.get('recaptcha');
+			expect(recaptchaControl?.hasValidator(Validators.required)).toBe(false);
+		});
 	});
 });

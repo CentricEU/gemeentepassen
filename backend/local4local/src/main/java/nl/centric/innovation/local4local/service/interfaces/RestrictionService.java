@@ -4,7 +4,10 @@ import nl.centric.innovation.local4local.dto.RestrictionRequestDto;
 import nl.centric.innovation.local4local.entity.Restriction;
 import nl.centric.innovation.local4local.exceptions.DtoValidateException;
 
+import java.util.UUID;
+
 public interface RestrictionService {
     Restriction saveRestriction(RestrictionRequestDto restrictionRequestDto) throws DtoValidateException;
+    void deleteRestriction(UUID restrictionId);
 
 }

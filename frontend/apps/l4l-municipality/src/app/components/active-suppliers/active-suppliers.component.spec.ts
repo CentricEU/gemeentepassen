@@ -1,4 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
+import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import {
@@ -19,6 +20,7 @@ import { MunicipalitySupplierService } from '../../_services/suppliers.service';
 import { MunicipalityMockUtil } from '../../_util/mock.util';
 import { AppModule } from '../../app.module';
 import { ActiveSuppliersComponent } from './active-suppliers.component';
+import { StatusUpdate } from 'libs/common/src/lib/_enums/status-update.enum';
 
 describe('ActiveSuppliersComponent', () => {
 	let component: ActiveSuppliersComponent;
@@ -26,6 +28,7 @@ describe('ActiveSuppliersComponent', () => {
 	let supplierServiceSpy: any;
 	let authServiceSpy: any;
 	let router: Router;
+	let elementRef: ElementRef;
 
 	const sampleSuppliers: SupplierViewDto[] = MunicipalityMockUtil.createSuppliersArray(12);
 
@@ -61,6 +64,8 @@ describe('ActiveSuppliersComponent', () => {
 			providers: [
 				{ provide: MunicipalitySupplierService, useValue: supplierServiceSpy },
 				{ provide: AuthService, useValue: authServiceSpy },
+				{ provide: ElementRef, useValue: { nativeElement: document.createElement('div') } },
+
 				Router,
 			],
 		}).compileComponents();
@@ -69,6 +74,7 @@ describe('ActiveSuppliersComponent', () => {
 		component = fixture.componentInstance;
 		supplierServiceSpy.getSuppliers.mockReturnValue(of(sampleSuppliers));
 		router = TestBed.inject(Router);
+		elementRef = TestBed.inject(ElementRef);
 
 		component.suppliersTable = {
 			initializeData: jest.fn(),
@@ -165,6 +171,12 @@ describe('ActiveSuppliersComponent', () => {
 				'status',
 			),
 		];
+		const mockPanelElement = {
+			scrollTo: jest.fn(),
+		};
+		jest.spyOn(component.suppliersTable['elementRef'].nativeElement, 'querySelector').mockReturnValue(
+			mockPanelElement,
+		);
 		component.suppliersTable.paginatedData.currentIndex = 1;
 		const pages: Page<SupplierViewDto>[] = Array.from({ length: 5 }, () => new Page([]));
 		component.suppliersTable.paginatedData = new PaginatedData<SupplierViewDto>(pages, 10, 0);
@@ -187,12 +199,19 @@ describe('ActiveSuppliersComponent', () => {
 				district: 'Distrcit',
 				category: 'Category',
 				status: 'APPROVED',
-				hasStatusUpdate: true,
+				statusUpdate: StatusUpdate.SIMPLE,
+				province: 'Province',
 				createdDate: new Date(),
 				selected: true,
 				isCheckboxDisabled: false,
 			},
 		};
+		const mockPanelElement = {
+			scrollTo: jest.fn(),
+		};
+		jest.spyOn(component.suppliersTable['elementRef'].nativeElement, 'querySelector').mockReturnValue(
+			mockPanelElement,
+		);
 
 		component.onActionButtonClicked(event);
 
@@ -213,7 +232,8 @@ describe('ActiveSuppliersComponent', () => {
 			district: 'Example District',
 			category: 'Category',
 			status: 'APPROVED',
-			hasStatusUpdate: true,
+			statusUpdate: StatusUpdate.SIMPLE,
+			province: 'Province',
 			createdDate: new Date(),
 			selected: true,
 			isCheckboxDisabled: false,
