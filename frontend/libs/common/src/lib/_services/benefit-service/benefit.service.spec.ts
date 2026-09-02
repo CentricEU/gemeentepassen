@@ -1,8 +1,8 @@
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { BenefitDto } from '@frontend/common';
 
+import { BenefitDto } from '../../_models/benefit-dto.model';
 import { BenefitService } from './benefit.service';
 
 describe('BenefitService', () => {
@@ -236,6 +236,22 @@ describe('BenefitService', () => {
 		expect(errorResponse).toBeTruthy();
 		expect(errorResponse.status).toBe(401);
 		expect(errorResponse.statusText).toBe('Unauthorized');
+	});
+
+	it('should fetch all benefits for a given passholder ID', () => {
+		const passholdeId = '123';
+		const mockResponse = [
+			{ id: '1', name: 'Benefit 1' },
+			{ id: '2', name: 'Benefit 2' },
+		];
+
+		service.getAllBenefitsByPassholderId(passholdeId).subscribe((benefits) => {
+			expect(benefits).toEqual(mockResponse);
+		});
+
+		const req = httpMock.expectOne(`${environmentMock.apiPath}/benefits/passholder/${passholdeId}`);
+		expect(req.request.method).toBe('GET');
+		req.flush(mockResponse);
 	});
 
 	afterEach(() => {

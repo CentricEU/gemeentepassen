@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import nl.centric.innovation.local4local.entity.Benefit;
+import nl.centric.innovation.local4local.enums.BenefitStatusEnum;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -29,6 +30,8 @@ public class BenefitLightDto {
     @NonNull
     private LocalDate expirationDate;
 
+    private BenefitStatusEnum status;
+
     public static BenefitLightDto entityToBenefitTableDto(Benefit benefit) {
         return BenefitLightDto.builder()
                 .id(benefit.getId())
@@ -36,6 +39,7 @@ public class BenefitLightDto {
                 .description(benefit.getDescription())
                 .startDate(benefit.getStartDate())
                 .expirationDate(benefit.getExpirationDate())
+                .status(benefit.getStatus())
                 .build();
     }
 }

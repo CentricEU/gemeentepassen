@@ -7,6 +7,7 @@ import {
 	commonRoutingConstants,
 	ModalData,
 	RejectSupplierDto,
+	StatusUpdate,
 	SupplierRejectionService,
 	SupplierStatus,
 	SupplierViewDto,
@@ -17,7 +18,7 @@ import {
 } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 
 import { SetupProfileComponent } from '../../_components/setup-profile/setup-profile.component';
 import { OfferService } from '../../services/offer-service/offer.service';
@@ -188,7 +189,7 @@ export class DashboardComponent implements OnInit {
 				this.setLogo(supplier.logo);
 			}
 
-			if (!supplier.hasStatusUpdate) {
+			if (!supplier.statusUpdate) {
 				this.areRequestLoaded = true;
 				return;
 			}
@@ -198,7 +199,13 @@ export class DashboardComponent implements OnInit {
 	}
 
 	private handleSupplierStatus(supplier: SupplierViewDto, isApprovalModal: boolean): void {
-		const { status } = supplier;
+		const { status, statusUpdate } = supplier;
+
+		if (statusUpdate === StatusUpdate.WITH_CHANGES) {
+			this.areRequestLoaded = true;
+			this.openApprovedWithChangesModal();
+			return;
+		}
 
 		if (status === SupplierStatus.APPROVED && isApprovalModal) {
 			this.areRequestLoaded = true;
@@ -227,6 +234,10 @@ export class DashboardComponent implements OnInit {
 	}
 
 	private displayApprovalWaitingPopup(): void {
+		if (this.dialogService.openDialogs?.length > 0) {
+			return;
+		}
+
 		const approvalWaitingModalData = new ModalData(
 			'setupProfile.setupSuccessful',
 			'setupProfile.setupSuccessful',
@@ -265,9 +276,23 @@ export class DashboardComponent implements OnInit {
 			.message(CustomDialogComponent, config)
 			?.afterClosed()
 			.subscribe((data) => {
-				this.resetHasStatusUpdate();
+				this.clearStatusUpdate();
 				if (data) {
 					this.addOffer();
+				}
+			});
+	}
+
+	private openApprovedWithChangesModal(): void {
+		const config = this.createDialogConfig(SupplierStatus.APPROVED, true);
+		this.dialogService
+			.message(CustomDialogComponent, config)
+			?.afterClosed()
+			.subscribe((data) => {
+				this.clearStatusUpdate();
+
+				if (data) {
+					this.redirectToSupplierProfile();
 				}
 			});
 	}
@@ -280,7 +305,7 @@ export class DashboardComponent implements OnInit {
 			.message(CustomDialogComponent, config)
 			?.afterClosed()
 			.subscribe((data) => {
-				this.resetHasStatusUpdate();
+				this.clearStatusUpdate();
 				if (data) {
 					this.reapplySupplierProfile();
 				}
@@ -291,7 +316,7 @@ export class DashboardComponent implements OnInit {
 		this.router.navigate([commonRoutingConstants.editProfile]);
 	}
 
-	private createDialogConfig(status: string): MatDialogConfig {
+	private createDialogConfig(status: string, withChanges = false): MatDialogConfig {
 		const comments = this.supplierRejectionInformation?.comments
 			? this.supplierRejectionInformation?.comments
 			: '-';
@@ -314,6 +339,14 @@ export class DashboardComponent implements OnInit {
 				actionBtn: 'general.button.addOffer',
 				icon: 'verified.svg',
 			},
+			WITH_CHANGES: {
+				header: 'approvedModal.header',
+				title: 'approvedWithChangesModal.title',
+				description: 'approvedWithChangesModal.description',
+				cancelBtn: 'general.button.cancel',
+				actionBtn: 'general.button.seeChanges',
+				icon: 'verified.svg',
+			},
 			default: {
 				header: 'generalRejection.modal.header',
 				title: 'generalRejection.modal.title',
@@ -324,8 +357,9 @@ export class DashboardComponent implements OnInit {
 			},
 		};
 
-		const { header, title, description, cancelBtn, actionBtn, icon } =
-			configMap[status as keyof typeof configMap] || configMap['default'];
+		const { header, title, description, cancelBtn, actionBtn, icon } = withChanges
+			? configMap['WITH_CHANGES']
+			: configMap[status as keyof typeof configMap] || configMap['default'];
 
 		const modal = new ModalData(
 			header,
@@ -343,7 +377,11 @@ export class DashboardComponent implements OnInit {
 		return CustomDialogConfigUtil.createMessageModal(modal);
 	}
 
-	private resetHasStatusUpdate(): void {
-		this.supplierService.resetSupplierHasStatusUpdate(this.supplier.id, false).subscribe();
+	private clearStatusUpdate(): void {
+		this.supplierService.clearStatusUpdate(this.supplier.id).subscribe();
+	}
+
+	private redirectToSupplierProfile(): void {
+		this.router.navigate([commonRoutingConstants.history]);
 	}
 }

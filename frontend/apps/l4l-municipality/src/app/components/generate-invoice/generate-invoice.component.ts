@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormUtil, KeyValuePair, ModalData, MonthYearEntry, RegexUtil, WarningDialogData } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import * as moment from 'moment';
 
 import { GenerateInvoiceDto } from '../../_models/generate-invoice-dto.model';

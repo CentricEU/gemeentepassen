@@ -4,16 +4,16 @@ import static nl.centric.innovation.local4local.util.CommonUtils.getBaseUrl;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.servlet.http.HttpServletResponse;
-
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.authentication.JwtUtil;
 import nl.centric.innovation.local4local.dto.CitizenViewDto;
@@ -24,7 +24,9 @@ import nl.centric.innovation.local4local.dto.SetupPasswordDTO;
 import nl.centric.innovation.local4local.dto.SetupPasswordValidateDTO;
 import nl.centric.innovation.local4local.dto.UserTableDto;
 import nl.centric.innovation.local4local.entity.DeletedUser;
+import nl.centric.innovation.local4local.entity.DiscountCode;
 import nl.centric.innovation.local4local.entity.LoginAttempt;
+import nl.centric.innovation.local4local.entity.OfferTransaction;
 import nl.centric.innovation.local4local.entity.Passholder;
 import nl.centric.innovation.local4local.entity.RecoverPassword;
 import nl.centric.innovation.local4local.entity.Role;
@@ -34,6 +36,7 @@ import nl.centric.innovation.local4local.entity.ConfirmationToken;
 import nl.centric.innovation.local4local.enums.AccountDeletionReason;
 import nl.centric.innovation.local4local.exceptions.DtoValidateAlreadyExistsException;
 
+import nl.centric.innovation.local4local.exceptions.UnauthorizedActionException;
 import nl.centric.innovation.local4local.repository.ConfirmationTokenRepository;
 import nl.centric.innovation.local4local.repository.DeletedUserRepository;
 import nl.centric.innovation.local4local.service.interfaces.CaptchaService;
@@ -85,6 +88,8 @@ public class UserService {
 
     private final CaptchaService captchaService;
 
+    private final CitizenBenefitService citizenBenefitService;
+
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final RoleRepository roleRepository;
@@ -100,6 +105,10 @@ public class UserService {
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
     private final DeletedUserRepository deletedUserRepository;
+
+    private final DiscountCodeService discountCodeService;
+
+    private final OfferTransactionService offerTransactionService;
 
     private final JwtUtil jwtUtil;
 
@@ -162,6 +171,12 @@ public class UserService {
     @Value("${error.user.deactivated}")
     private String errorAccountDeactivated;
 
+    @Value("${error.unauthorizedAction}")
+    private String errorUnauthorizedAction;
+
+    @Value("${error.passHasTransactions}")
+    private String errorPassholderHasTransactions;
+
     private static final int ATTEMPTS_LIMIT = 3;
 
     private static final String RESET_URL = "/recover/reset-password/";
@@ -181,9 +196,8 @@ public class UserService {
         return userRepository.findByUsernameIgnoreCase(username);
     }
 
-    public List<User> findAllAdminsByTenantId(UUID tenandId) {
-        Role role = roleRepository.findByName(Role.ROLE_MUNICIPALITY_ADMIN).get();
-        return userRepository.findAllByTenantIdAndRole(tenandId, role);
+    public List<User> findAllAdminsByTenantId(UUID tenantId) {
+        return userRepository.findAllByTenantIdAndRoleIn(tenantId, getAdminRoles());
     }
 
     public List<User> saveAll(List<User> userList) {
@@ -195,23 +209,75 @@ public class UserService {
     }
 
     @Transactional
+    public void saveCitizens(List<RegisterCitizenUserDto> registerCitizenUserDtos, String language) throws DtoValidateException {
+        // Validate all emails first to fail fast
+        for (RegisterCitizenUserDto dto : registerCitizenUserDtos) {
+            validateCitizenEmail(dto);
+        }
+
+        // Store valid Users and Passholders to update
+        List<User> usersToSave = new ArrayList<>();
+
+        Role role = roleRepository.findByName(Role.ROLE_CITIZEN)
+                .orElseThrow(() -> new IllegalArgumentException("Role not found"));
+
+        for (RegisterCitizenUserDto dto : registerCitizenUserDtos) {
+            Passholder passholder = passholderService.getPassholderByPassNumber(dto.passNumber());
+
+            if (passholder.getUser() != null) {
+                throw new DtoValidateAlreadyExistsException(errorCitizenAlreadyUsedPassnumber);
+            }
+
+            User user = updateAndSaveCitizen(dto, passholder, role);
+            usersToSave.add(user);
+            passholder.setUser(user);
+            citizenBenefitService.createCitizenBenefitForUserIdAndBenefits(user.getId(), passholder.getCitizenGroup().getBenefits());
+        }
+
+        // Save all users at once
+        userRepository.saveAll(usersToSave);
+
+    }
+
+    @Transactional
     public CitizenViewDto saveCitizen(RegisterCitizenUserDto registerCitizenUserDto, String language) throws DtoValidateException {
         validateCitizenEmail(registerCitizenUserDto);
 
         Passholder passholder = passholderService.getPassholderByPassNumber(registerCitizenUserDto.passNumber());
 
-        if (Optional.ofNullable(passholder.getUser()).isPresent()) {
+        if (passholder.getUser() == null) {
+            throw new DtoValidateNotFoundException(errorEntityNotFound);
+        }
+
+        if (!passholder.getUser().getUsername().equalsIgnoreCase(passholder.bsn)) {
             throw new DtoValidateAlreadyExistsException(errorCitizenAlreadyUsedPassnumber);
         }
 
         Role role = roleRepository.findByName(Role.ROLE_CITIZEN).orElseThrow(() -> new IllegalArgumentException("Role not found"));
 
-        User savedUser = createAndSaveCitizen(registerCitizenUserDto, passholder, role);
-        passholderService.saveUserForPassholder(passholder, savedUser);
+        User savedUser = updateAndSaveCitizen(registerCitizenUserDto, passholder, role);
 
         sendConfirmation(savedUser, language);
 
         return ModelConverter.entityToCitizenViewDto(savedUser);
+    }
+
+    @Transactional
+    public void deleteCashierUsers(Supplier supplier, Set<String> emails) {
+        if (emails == null || emails.isEmpty()) {
+            return;
+        }
+
+        Set<String> emailsToDelete = Set.copyOf(emails);
+
+        List<User> updatedCashiers = findAllCashiersBySupplierId(supplier.getId()).stream()
+                .filter(user -> emailsToDelete.contains(user.getUsername()))
+                .peek(this::markCashierAsDeleted)
+                .toList();
+
+        if (!updatedCashiers.isEmpty()) {
+            userRepository.saveAll(updatedCashiers);
+        }
     }
 
     public List<User> findAllSuppliersBySupplierId(UUID supplierId) {
@@ -255,11 +321,18 @@ public class UserService {
             throw new DtoValidateException(accountNotConfirmed);
         }
 
-        if(!user.isActive() && user.getRole().getName().equals(Role.ROLE_CITIZEN)) {
+        if (!user.isActive() && user.getRole().getName().equals(Role.ROLE_CITIZEN)) {
             throw new DtoValidateException(errorAccountDeactivated);
         }
 
-        if (!user.getRole().getName().equals(recoverPasswordDTO.role())) {
+        String dbRole = user.getRole().getName();
+        String dtoRole = recoverPasswordDTO.role();
+
+        boolean valid = dbRole.equals(dtoRole)
+                || (dtoRole.equals(Role.ROLE_SUPPLIER) && dbRole.equals(Role.ROLE_CASHIER))
+                || (dtoRole.equals(Role.ROLE_MUNICIPALITY_ADMIN) && dbRole.equals(Role.ROLE_SUPER_ADMIN));
+
+        if (!valid) {
             throw new DtoValidateException(errorRoleNotAllowed);
         }
 
@@ -374,7 +447,7 @@ public class UserService {
         }
         String anonymized = "delete_" + LocalDateTime.now();
 
-        User user = getUser();
+        User user = getCurrentUser();
 
         user.setUsername(anonymized);
         user.setFirstName(anonymized);
@@ -390,12 +463,14 @@ public class UserService {
     }
 
     public void createUser(CreateUserDto createUserDto, String language) throws DtoValidateException {
+        if (createUserDto.isSuperAdmin() && !isRoleSuperAdmin(getCurrentUser())) {
+            throw new UnauthorizedActionException(errorUnauthorizedAction);
+        }
+
         String token = UUID.randomUUID().toString().replace("-", "");
 
         User userToCreate = User.createUserToEntity(createUserDto, principalService.getTenantId(), token);
-        userToCreate.setRole(roleRepository.findByName(Role.ROLE_MUNICIPALITY_ADMIN).get());
-
-        String username = userToCreate.getUsername();
+        userToCreate.setRole(getAdminRole(createUserDto.isSuperAdmin()));
 
         try {
             userRepository.save(userToCreate);
@@ -403,15 +478,17 @@ public class UserService {
             throw new DtoValidateException(errorEmailAlreadyUsed);
         }
 
+        String username = userToCreate.getUsername();
+
         String url = baseMunicipalityUrl + "/set-password/" + token + "/" + username;
-        emailService.sendEmailAfterUserCreated(url, nl.centric.innovation.local4local.util.StringUtils.getLanguageForLocale(language), userToCreate.getUsername());
+        emailService.sendEmailAfterUserCreated(url, nl.centric.innovation.local4local.util.StringUtils.getLanguageForLocale(language), username);
     }
 
     public List<UserTableDto> getAllAdminsByTenantIdPaginated(Integer page, Integer size) throws DtoValidateNotFoundException {
         Pageable pageable = PageRequest.of(page, size, Sort.by(ORDER_CRITERIA).descending());
-        Role municipalityRole = getAdminRole();
-        Page<User> admins = userRepository.findAllByTenantIdAndRole(principalService.getTenantId(), municipalityRole, pageable);
-        UUID currentUserId = getUser().getId();
+        List<Role> municipalityRoles = getAdminRoles();
+        Page<User> admins = userRepository.findAllByTenantIdAndRoleIn(principalService.getTenantId(), municipalityRoles, pageable);
+        UUID currentUserId = getCurrentUser().getId();
 
         return admins.stream()
                 .filter(user -> !user.getId().equals(currentUserId))
@@ -420,15 +497,15 @@ public class UserService {
     }
 
     public Integer countAllAdminsByTenantId() throws DtoValidateNotFoundException {
-        Role municipalityRole = getAdminRole();
-        return userRepository.countAllByTenantIdAndRole(principalService.getTenantId(), municipalityRole) - 1;
+        List<Role> municipalityRoles = getAdminRoles();
+        return userRepository.countAllByTenantIdAndRoleIn(principalService.getTenantId(), municipalityRoles) - 1;
     }
 
     public List<User> createCashierUsers(Supplier supplier, Set<String> emails, String language) {
 
         Role role = roleRepository.findByName(Role.ROLE_CASHIER).orElseThrow(() -> new IllegalArgumentException("Role not found"));
 
-        List<User> users = emails.stream()
+        return emails.stream()
                 .map(email -> {
                     String token = UUID.randomUUID().toString().replace("-", "");
                     User user = createCashierUser(email, supplier, principalService.getTenantId(), token, role);
@@ -436,8 +513,6 @@ public class UserService {
                     return user;
                 })
                 .toList();
-
-        return users;
     }
 
     public List<String> getCashierEmailsForSupplier(UUID supplierId) {
@@ -463,9 +538,46 @@ public class UserService {
         return userRepository.save(userToCreate);
     }
 
-    private Role getAdminRole() throws DtoValidateNotFoundException {
-        return roleRepository.findByName(Role.ROLE_MUNICIPALITY_ADMIN)
-                .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
+    @Transactional
+    public void deletePassholder(UUID passholderId) throws DtoValidateException {
+        Passholder passholder = passholderService.findByIdAndTenantId(passholderId, getCurrentUser().getTenantId());
+
+        // Check if passholder has a transaction and return an error
+        List<OfferTransaction> transactions = offerTransactionService.getTransactionByUserId(passholder.getUser().getId());
+
+        if (!transactions.isEmpty()) {
+            throw new DtoValidateException(errorPassholderHasTransactions);
+        }
+
+        updateUsernameWhenDeletingPassholder(passholder);
+
+        passholderService.deleteById(passholderId);
+
+        citizenBenefitService.deleteCitizenBenefitsByUserIdd(passholder.getUser().getId());
+
+        deleteDiscountCodesForUserId(passholder.getUser().getId());
+    }
+
+    public void deleteDiscountCodesForUserId(UUID userId) {
+        List<DiscountCode> discountCodes = discountCodeService.getAllByUserId(userId);
+        for (DiscountCode discountCode : discountCodes) {
+            discountCode.setIsActive(false);
+        }
+        discountCodeService.saveAll(discountCodes);
+    }
+
+    public void updateUsernameWhenDeletingPassholder(Passholder passholder) {
+        // this means that the use is non-digital
+        if (passholder.bsn.equalsIgnoreCase(passholder.getUser().getUsername())) {
+            String newUsername = String.format("deleted_%d_%s", System.currentTimeMillis(), passholder.bsn);
+            User userToUpdate = passholder.getUser();
+            userToUpdate.setUsername(newUsername);
+            userRepository.save(userToUpdate);
+        }
+    }
+
+    private List<Role> getAdminRoles() {
+        return roleRepository.findByNameIn(List.of(Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN));
     }
 
     private void enforceRateLimiting(UUID id, String remoteAddress) throws RecoverException {
@@ -576,8 +688,11 @@ public class UserService {
         }
     }
 
-    private User createAndSaveCitizen(RegisterCitizenUserDto registerCitizenUserDto, Passholder passholder, Role role) throws DtoValidateException {
+    private User updateAndSaveCitizen(RegisterCitizenUserDto registerCitizenUserDto, Passholder passholder, Role role) throws DtoValidateException {
         User user = validateAndReturnCitizen(registerCitizenUserDto);
+        if (passholder.getUser() != null) {
+            user.setId(passholder.getUser().getId());
+        }
         user.setRole(role);
         user.setIsEnabled(false);
         user.setActive(true);
@@ -595,7 +710,7 @@ public class UserService {
         sendConfirmationEmail(user, token, user.getFirstName(), language);
     }
 
-    private User getUser() {
+    private User getCurrentUser() {
         return principalService.getUser();
     }
 
@@ -606,4 +721,24 @@ public class UserService {
     private boolean isRoleCashier(User user) {
         return user.getRole().getName().equals(Role.ROLE_CASHIER);
     }
+
+    private boolean isRoleSuperAdmin(User user) {
+        return user.getRole().getName().equals(Role.ROLE_SUPER_ADMIN);
+    }
+
+    private Role getAdminRole(boolean isSuperAdmin) {
+        if (isSuperAdmin) {
+            return roleRepository.findByName(Role.ROLE_SUPER_ADMIN).get();
+        }
+
+        return roleRepository.findByName(Role.ROLE_MUNICIPALITY_ADMIN).get();
+    }
+
+    private void markCashierAsDeleted(User user) {
+        String deletedUsername = String.format("deleted_%d_%s", System.currentTimeMillis(), user.getUsername());
+        user.setUsername(deletedUsername);
+        user.setActive(false);
+    }
+
+
 }

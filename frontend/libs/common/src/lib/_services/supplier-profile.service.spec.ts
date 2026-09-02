@@ -201,4 +201,44 @@ describe('SupplierProfileService', () => {
 
 		req.flush(mockData);
 	});
+
+	it('should add cashiers to profile', () => {
+		const mockCashiersList = new Set(['cashier1', 'cashier2', 'cashier3']);
+		const mockResponse = ['cashier1', 'cashier2', 'cashier3'];
+
+		service.addCashiersToProfile(mockCashiersList).subscribe((result: string[]) => {
+			expect(result).toEqual(mockResponse);
+		});
+
+		const req = httpTestingController.expectOne(`${environmentMock.apiPath}/supplier-profiles/cashiers`);
+		expect(req.request.method).toBe('POST');
+		expect(req.request.body).toEqual(Array.from(mockCashiersList));
+
+		req.flush(mockResponse);
+	});
+
+	it('should convert Set to array when adding cashiers to profile', () => {
+		const mockCashiersList = new Set(['cashier1', 'cashier2']);
+
+		service.addCashiersToProfile(mockCashiersList).subscribe();
+
+		const req = httpTestingController.expectOne(`${environmentMock.apiPath}/supplier-profiles/cashiers`);
+		expect(Array.isArray(req.request.body)).toBe(true);
+		expect(req.request.body).toEqual(['cashier1', 'cashier2']);
+
+		req.flush([]);
+	});
+
+	it('should handle empty cashiers list', () => {
+		const mockCashiersList = new Set<string>();
+
+		service.addCashiersToProfile(mockCashiersList).subscribe((result: string[]) => {
+			expect(result).toEqual([]);
+		});
+
+		const req = httpTestingController.expectOne(`${environmentMock.apiPath}/supplier-profiles/cashiers`);
+		expect(req.request.body).toEqual([]);
+
+		req.flush([]);
+	});
 });

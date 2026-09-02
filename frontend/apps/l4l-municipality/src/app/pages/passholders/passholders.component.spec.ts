@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import {
+	ActionButtons,
 	ColumnDataType,
 	commonRoutingConstants,
 	Page,
@@ -10,7 +13,7 @@ import {
 } from '@frontend/common';
 import { CustomDialogComponent, TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of } from 'rxjs';
 
 import { PassholdersService } from '../../_services/passholders.service';
@@ -25,11 +28,12 @@ describe('PassholdersComponent', () => {
 	let fixture: ComponentFixture<PassholdersComponent>;
 	let dialogService: DialogService;
 	let passholdersServiceSpy: any;
+	let elementRef: ElementRef;
 
 	beforeEach(async () => {
 		passholdersServiceSpy = {
-			getPassholders: jest.fn(),
-			countPassholders: jest.fn(),
+			countFilteredPassholders: jest.fn(),
+			getFilteredPassholders: jest.fn(),
 			deletePassholder: jest.fn(),
 		};
 
@@ -52,16 +56,18 @@ describe('PassholdersComponent', () => {
 			providers: [
 				{ provide: PassholdersService, useValue: passholdersServiceSpy },
 				{ provide: DialogService, useValue: dialogServiceMock },
+				{ provide: ElementRef, useValue: { nativeElement: document.createElement('div') } },
 				{ provide: MatDialog, useValue: {} },
 			],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(PassholdersComponent);
 		component = fixture.componentInstance;
-		passholdersServiceSpy.getPassholders.mockReturnValue(of([]));
-		passholdersServiceSpy.countPassholders.mockReturnValue(of(0));
+		passholdersServiceSpy.getFilteredPassholders.mockReturnValue(of([]));
+		passholdersServiceSpy.countFilteredPassholders.mockReturnValue(of(0));
 		passholdersServiceSpy.deletePassholder.mockReturnValue(of());
 		dialogService = TestBed.inject(DialogService);
+		elementRef = TestBed.inject(ElementRef);
 
 		component.passholdersTable = {
 			initializeData: jest.fn(),
@@ -79,7 +85,7 @@ describe('PassholdersComponent', () => {
 
 	it('should manage columns on calling manageColumns', () => {
 		component['dataCount'] = 2;
-		component.passholdersTable = new TableComponent<PassholderViewDto>(dialogService);
+		component.passholdersTable = new TableComponent<PassholderViewDto>(dialogService, elementRef);
 		const manageColumnsSpy = jest.spyOn(component.passholdersTable, 'manageColumns');
 		component.manageColumns();
 		expect(manageColumnsSpy).toHaveBeenCalled();
@@ -96,25 +102,25 @@ describe('PassholdersComponent', () => {
 		});
 	});
 
-	it('should call service on countPassholders', () => {
-		component['countPassholders']();
-		expect(passholdersServiceSpy.countPassholders).toHaveBeenCalledWith();
+	it('should call service on countFilteredPassholders', () => {
+		component['countFilteredPassholders']();
+		expect(passholdersServiceSpy.countFilteredPassholders).toHaveBeenCalled();
 	});
 
 	it('should not call initializeComponentData when passholders count = 0', () => {
 		jest.spyOn(component, 'initializeComponentData');
-		component['countPassholders']();
-		expect(passholdersServiceSpy.countPassholders).toHaveBeenCalledWith();
+		component['countFilteredPassholders']();
+		expect(passholdersServiceSpy.countFilteredPassholders).toHaveBeenCalled();
 		expect(component.initializeComponentData).not.toHaveBeenCalled();
 	});
 
 	it('should call initializeComponentData when passholders count > 0', () => {
 		jest.spyOn(component, 'initializeComponentData');
-		passholdersServiceSpy.countPassholders.mockReturnValue(of(2));
+		passholdersServiceSpy.countFilteredPassholders.mockReturnValue(of(2));
 
-		component['countPassholders']();
+		component['countFilteredPassholders'](true);
 
-		expect(passholdersServiceSpy.countPassholders).toHaveBeenCalledWith();
+		expect(passholdersServiceSpy.countFilteredPassholders).toHaveBeenCalled();
 		expect(component.initializeComponentData).toHaveBeenCalled();
 	});
 
@@ -142,14 +148,15 @@ describe('PassholdersComponent', () => {
 		expect(component.allColumns).toEqual(expectedColumns);
 	});
 
-	it('should call service on getPassholders', () => {
+	it('should call service on getFilteredPassholders', () => {
 		const pages: Page<PassholderViewDto>[] = Array.from({ length: 5 }, () => new Page([]));
 
 		component['dataCount'] = 1;
-		component.passholdersTable = new TableComponent<PassholderViewDto>(dialogService);
+		component.passholdersTable = new TableComponent<PassholderViewDto>(dialogService, elementRef);
 		component.passholdersTable.paginatedData = new PaginatedData<PassholderViewDto>(pages, 10, 0);
 		component.loadData(component.passholdersTable.paginatedData);
-		expect(passholdersServiceSpy.getPassholders).toHaveBeenCalledWith(
+		expect(passholdersServiceSpy.getFilteredPassholders).toHaveBeenCalledWith(
+			undefined,
 			component.passholdersTable.paginatedData.currentIndex,
 			component.passholdersTable.paginatedData.pageSize,
 		);
@@ -161,11 +168,11 @@ describe('PassholdersComponent', () => {
 		it('should call dialogService.message on openApprovedModal and not do anything if dismissed', () => {
 			jest.spyOn(dialogService, 'message').mockReturnValue(dialogRefMock as any);
 			jest.spyOn(dialogRefMock, 'afterClosed').mockReturnValue(of(false));
-			component['countPassholders'] = jest.fn();
+			component['countFilteredPassholders'] = jest.fn();
 
 			component.openPassholdersModal();
 			expect(dialogService['message']).toHaveBeenCalled();
-			expect(component['countPassholders']).not.toHaveBeenCalled();
+			expect(component['countFilteredPassholders']).not.toHaveBeenCalled();
 		});
 
 		it('should call dialogService.message on openApprovedModal and recount if confirmed', () => {
@@ -176,11 +183,11 @@ describe('PassholdersComponent', () => {
 				deselectAllCheckboxes: jest.fn(),
 			} as any;
 
-			component['countPassholders'] = jest.fn();
+			component['countFilteredPassholders'] = jest.fn();
 
 			component.openPassholdersModal();
 			expect(dialogService['message']).toHaveBeenCalled();
-			expect(component['countPassholders']).toHaveBeenCalled();
+			expect(component['countFilteredPassholders']).toHaveBeenCalled();
 		});
 	});
 
@@ -307,7 +314,7 @@ describe('PassholdersComponent', () => {
 
 		jest.spyOn(dialogService, 'alert').mockReturnValue(dialogRefMock as any);
 		jest.spyOn(dialogRefMock, 'afterClosed').mockReturnValue(of(true));
-		component['countPassholders'] = jest.fn();
+		component['countFilteredPassholders'] = jest.fn();
 
 		component['openDialogDelete']('testId');
 		expect(dialogService['alert']).toHaveBeenCalled();
@@ -366,6 +373,7 @@ describe('PassholdersComponent', () => {
 			expect(toastrSuccessSpy).toHaveBeenCalledWith('passholders.successDelete', '', {
 				toastBackground: 'toast-light',
 			});
+			expect(component['countFilteredPassholders']).toHaveBeenCalled();
 		});
 	});
 
@@ -399,5 +407,240 @@ describe('PassholdersComponent', () => {
 		const navigateSpy = jest.spyOn(component['router'], 'navigate');
 		component.goToProfilePage();
 		expect(navigateSpy).toHaveBeenCalledWith([commonRoutingConstants.profile]);
+	});
+
+	it('should navigate to passholder details page', () => {
+		const passholderId = 'abc123';
+
+		const navigateSpy = jest.spyOn(component['router'], 'navigateByUrl');
+		(component as any).navigateToPassholderDetails(passholderId);
+		expect(navigateSpy).toHaveBeenCalledWith(`${commonRoutingConstants.passholders}/${passholderId}`);
+	});
+
+	describe('areFiltersApplied', () => {
+		it('should return true when filters are applied', () => {
+			component.passholdersTable = {
+				areFiltersApplied: jest.fn().mockReturnValue(true),
+			} as any;
+
+			expect(component.areFiltersApplied).toBe(true);
+			expect(component.passholdersTable.areFiltersApplied).toHaveBeenCalled();
+		});
+
+		it('should return false when filters are not applied', () => {
+			component.passholdersTable = {
+				areFiltersApplied: jest.fn().mockReturnValue(false),
+			} as any;
+
+			expect(component.areFiltersApplied).toBe(false);
+			expect(component.passholdersTable.areFiltersApplied).toHaveBeenCalled();
+		});
+
+		it('should return undefined when passholdersTable is not initialized', () => {
+			component.passholdersTable = undefined as any;
+
+			expect(component.areFiltersApplied).toBeUndefined();
+		});
+	});
+
+	describe('paginatedData', () => {
+		it('should return paginatedData from passholdersTable', () => {
+			const mockPaginatedData = new PaginatedData<PassholderViewDto>([], 10, 0);
+			component.passholdersTable = {
+				paginatedData: mockPaginatedData,
+			} as any;
+
+			expect(component.paginatedData).toBe(mockPaginatedData);
+		});
+
+		it('should return undefined when passholdersTable is not initialized', () => {
+			component.passholdersTable = undefined as any;
+
+			expect(component.paginatedData).toBeUndefined();
+		});
+	});
+
+	describe('onApplyFilters', () => {
+		it('should reset page content and index when isFirstFiltering is true', () => {
+			const mockFilters = { bsnFilter: '123456789', passholderNumberFilter: 'PH001' };
+			const mockData = [{ id: '1', name: 'Test' }] as PassholderViewDto[];
+
+			component.passholdersTable = {
+				paginatedData: new PaginatedData<PassholderViewDto>([], 10, 5),
+				resetPageContent: jest.fn(),
+				deselectAllCheckboxes: jest.fn(),
+				filterFormGroup: { value: mockFilters },
+			} as any;
+
+			passholdersServiceSpy.getFilteredPassholders.mockReturnValue(of(mockData));
+
+			component.onApplyFilters(mockFilters, true);
+
+			expect(component.passholdersTable.paginatedData.currentIndex).toBe(0);
+			expect(component.passholdersTable.resetPageContent).toHaveBeenCalled();
+			expect(component.passholdersTable.deselectAllCheckboxes).toHaveBeenCalled();
+		});
+
+		it('should not reset page content when isFirstFiltering is false', () => {
+			const mockFilters = { bsnFilter: '123456789', passholderNumberFilter: 'PH001' };
+			const mockData = [{ id: '1', name: 'Test' }] as PassholderViewDto[];
+
+			component.passholdersTable = {
+				paginatedData: new PaginatedData<PassholderViewDto>([], 10, 5),
+				resetPageContent: jest.fn(),
+				deselectAllCheckboxes: jest.fn(),
+				filterFormGroup: { value: mockFilters },
+			} as any;
+
+			passholdersServiceSpy.getFilteredPassholders.mockReturnValue(of(mockData));
+
+			component.onApplyFilters(mockFilters, false);
+
+			expect(component.passholdersTable.paginatedData.currentIndex).toBe(5);
+			expect(component.passholdersTable.resetPageContent).not.toHaveBeenCalled();
+			expect(component.passholdersTable.deselectAllCheckboxes).toHaveBeenCalled();
+		});
+
+		it('should call getFilteredPassholders with correct parameters', () => {
+			const mockFilters = { bsnFilter: '123456789', passholderNumberFilter: 'PH001' };
+			const mockData = [{ id: '1', name: 'Test' }] as PassholderViewDto[];
+
+			component.passholdersTable = {
+				paginatedData: new PaginatedData<PassholderViewDto>([], 10, 2),
+				resetPageContent: jest.fn(),
+				deselectAllCheckboxes: jest.fn(),
+				filterFormGroup: { value: mockFilters },
+			} as any;
+
+			passholdersServiceSpy.getFilteredPassholders.mockReturnValue(of(mockData));
+
+			component.onApplyFilters(mockFilters, false);
+
+			expect(passholdersServiceSpy.getFilteredPassholders).toHaveBeenCalledWith(
+				expect.objectContaining({
+					bsnFilter: '123456789',
+					passholderNumberFilter: 'PH001',
+				}),
+				2,
+				10,
+			);
+		});
+
+		it('should call afterDataLoaded and countFilteredPassholders after successful filter', () => {
+			const mockFilters = { bsnFilter: '123456789', passholderNumberFilter: 'PH001' };
+			const mockData = [{ id: '1', name: 'Test' }] as PassholderViewDto[];
+
+			component.passholdersTable = {
+				paginatedData: new PaginatedData<PassholderViewDto>([], 10, 0),
+				resetPageContent: jest.fn(),
+				deselectAllCheckboxes: jest.fn(),
+				afterDataLoaded: jest.fn(),
+				filterFormGroup: { value: mockFilters },
+			} as any;
+
+			jest.spyOn(component, 'afterDataLoaded');
+			component['countFilteredPassholders'] = jest.fn();
+			passholdersServiceSpy.getFilteredPassholders.mockReturnValue(of(mockData));
+
+			component.onApplyFilters(mockFilters, true);
+
+			expect(component.afterDataLoaded).toHaveBeenCalledWith(mockData);
+			expect(component['countFilteredPassholders']).toHaveBeenCalled();
+		});
+	});
+
+	describe('clearFilters', () => {
+		it('should call clearFilters on passholdersTable', () => {
+			component.passholdersTable = {
+				clearFilters: jest.fn(),
+			} as any;
+
+			component.clearFilters();
+
+			expect(component.passholdersTable.clearFilters).toHaveBeenCalled();
+		});
+	});
+
+	describe('loadData', () => {
+		it('should call onApplyFilters when filterDto exists', () => {
+			const mockFilters = { bsnFilter: '123456789', passholderNumberFilter: 'PH001' };
+			const mockEvent = new PaginatedData<PassholderViewDto>([], 10, 2);
+
+			component.filterDto = { bsnFilter: '123456789', passholderNumberFilter: 'PH001' } as any;
+			component.passholdersTable = {
+				filterFormGroup: { value: mockFilters },
+				paginatedData: mockEvent,
+				deselectAllCheckboxes: jest.fn(),
+			} as any;
+
+			jest.spyOn(component, 'onApplyFilters');
+
+			component.loadData(mockEvent);
+
+			expect(component.onApplyFilters).toHaveBeenCalledWith(mockFilters, false);
+		});
+
+		it('should call getFilteredPassholders when filterDto does not exist', () => {
+			const mockEvent = new PaginatedData<PassholderViewDto>([], 10, 2);
+			const mockData = [{ id: '1', name: 'Test' }] as PassholderViewDto[];
+
+			component.filterDto = undefined as any;
+			passholdersServiceSpy.getFilteredPassholders.mockReturnValue(of(mockData));
+			jest.spyOn(component, 'afterDataLoaded');
+
+			component.loadData(mockEvent);
+
+			expect(passholdersServiceSpy.getFilteredPassholders).toHaveBeenCalledWith(
+				undefined,
+				mockEvent.currentIndex,
+				mockEvent.pageSize,
+			);
+			expect(component.afterDataLoaded).toHaveBeenCalledWith(mockData);
+		});
+
+		it('should not call getFilteredPassholders when filterDto exists', () => {
+			const mockFilters = { bsnFilter: '123456789', passholderNumberFilter: 'PH001' };
+			const mockEvent = new PaginatedData<PassholderViewDto>([], 10, 2);
+
+			component.filterDto = { bsnFilter: '123456789', passholderNumberFilter: 'PH001' } as any;
+			component.passholdersTable = {
+				filterFormGroup: { value: mockFilters },
+				paginatedData: mockEvent,
+				deselectAllCheckboxes: jest.fn(),
+			} as any;
+
+			jest.spyOn(component, 'onApplyFilters').mockImplementation(jest.fn());
+
+			component.loadData(mockEvent);
+
+			expect(passholdersServiceSpy.getFilteredPassholders).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('onActionButtonClicked', () => {
+		const mockRow: PassholderViewDto = {
+			id: 'mockId',
+			name: 'name',
+			bsn: 'bsn',
+			address: 'test',
+			passNumber: '3423232',
+			residenceCity: 'Gouda',
+			expiringDate: new Date(),
+			citizenGroupName: 'groupName',
+			selected: false,
+			isCheckboxDisabled: false,
+		};
+
+		it('should call openDialogDelete when action is trashIcon', () => {
+			const spy = jest.spyOn(component as any, 'openDialogDelete').mockImplementation();
+			component.onActionButtonClicked({ actionButton: ActionButtons.trashIcon, row: mockRow });
+			expect(spy).toHaveBeenCalledWith(mockRow.id);
+		});
+
+		it('should call navigateToPassholderDetails when action is visibilityIcon', () => {
+			const spy = jest.spyOn(component as any, 'navigateToPassholderDetails').mockImplementation();
+			component.onActionButtonClicked({ actionButton: ActionButtons.visibilityIcon, row: mockRow });
+			expect(spy).toHaveBeenCalledWith(mockRow.id);
+		});
 	});
 });

@@ -1,0 +1,53 @@
+@if (hasData) {
+	<div class="container">
+		<p id="group-citizen-card-title-id" class="bold">
+			{{ 'applyForPass.groupCitizenAssignmentNotFittingDigiD.title' | translate }}
+		</p>
+		<div [attr.aria-describedby]="'group-citizen-card-title-id'" role="listbox" class="category-list">
+			@for (group of citizenGroupData; track group) {
+				<app-citizen-group-card
+					role="option"
+					tabindex="0"
+					[ariaSelected]="selectedCitizenGroupId === group.id"
+					[groupCardData]="{
+						categoryTitle: group.groupName,
+						ageGroup: group.ageGroup,
+						dependentChildren: group.isDependentChildrenIncluded,
+						maxIncome: group.maxIncome,
+						selected: selectedCitizenGroupId === group.id,
+						isReadonly: true,
+					}"
+					(click)="selectCurrentCategory(group.id)"
+					(keydown.enter)="selectCurrentCategory(group.id)"
+					(keydown.space)="$event.preventDefault(); selectCurrentCategory(group.id)">
+				</app-citizen-group-card>
+			}
+		</div>
+
+		<div class="buttons-container">
+			<centric-button
+				[type]="'uncontained-theme'"
+				[ariaLabel]="'general.button.back' | translate"
+				(click)="goBack()">
+				{{ 'general.button.back' | translate }}
+			</centric-button>
+			<centric-button
+				[type]="'outlined-theme'"
+				[ariaLabel]="'applyForPass.noneFitMe' | translate"
+				(click)="reportNoCategoryFit()"
+				>{{ 'applyForPass.noneFitMe' | translate }}</centric-button
+			>
+			<centric-button
+				[disabled]="!selectedCitizenGroupId"
+				[ariaLabel]="'applyForPass.confirmCategory' | translate"
+				(click)="confirmAssignedCategory()">
+				{{ 'applyForPass.confirmCategory' | translate }}
+			</centric-button>
+		</div>
+	</div>
+} @else {
+	<app-no-data
+		[noDataTitle]="'applyForPass.groupCitizenAssignmentNotFittingDigiD.noData.title'"
+		[noDataDescription]="'applyForPass.groupCitizenAssignmentNotFittingDigiD.noData.description'">
+	</app-no-data>
+}

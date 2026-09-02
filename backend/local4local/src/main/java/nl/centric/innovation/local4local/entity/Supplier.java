@@ -1,24 +1,23 @@
 package nl.centric.innovation.local4local.entity;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedSubgraph;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedSubgraph;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import nl.centric.innovation.local4local.enums.StatusUpdateEnum;
+import org.hibernate.annotations.JdbcType;
 
-import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,8 +25,15 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import nl.centric.innovation.local4local.enums.SupplierStatusEnum;
-
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
+import org.javers.core.metamodel.annotation.DiffIgnore;
 import java.util.List;
+
+/**
+ * @DiffIgnore is used to ignore the tenant field when comparing Supplier entities with JaVers, since
+ * is not relevant for most comparisons of Supplier entities.
+ * Also, the profile field is ignored in the default entity graph to prevent performance issues (lazy loading).
+ */
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -36,8 +42,11 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TypeDef(name = "pgsql_enum", typeClass = PostgreSQLEnumType.class)
 
+@NamedEntityGraph(
+        name = "Supplier.withWorkingHours",
+        attributeNodes = @NamedAttributeNode("workingHours")
+)
 @NamedEntityGraph(
         name = "include-supplier-profile-graph",
         attributeNodes = {
@@ -69,6 +78,7 @@ public class Supplier extends BaseEntity {
 
     @ManyToOne
     @ToString.Exclude
+    @DiffIgnore
     @JoinColumn(name = "tenant_id")
     private Tenant tenant;
 
@@ -78,12 +88,14 @@ public class Supplier extends BaseEntity {
     @Column(name = "is_reviewed")
     private Boolean isReviewed;
 
-    @Column(name = "has_status_update")
-    private boolean hasStatusUpdate;
+    @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "status_update", columnDefinition = "status_update_enum")
+    private StatusUpdateEnum statusUpdate;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "status")
-    @Type(type = "pgsql_enum")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    @Column(name = "status", columnDefinition = "supplier_status")
     private SupplierStatusEnum status;
 
     @Column(name = "admin_email")
@@ -91,6 +103,7 @@ public class Supplier extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "profile_id")
+    @DiffIgnore
     private SupplierProfile profile;
 
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)

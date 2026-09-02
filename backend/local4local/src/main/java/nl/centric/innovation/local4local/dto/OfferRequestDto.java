@@ -1,15 +1,17 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import nl.centric.innovation.local4local.util.annotation.ValidOfferAmount;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 
 @Builder
+@ValidOfferAmount
 public record OfferRequestDto(
         @NotEmpty(message = "Title is required")
         String title,
@@ -25,7 +27,9 @@ public record OfferRequestDto(
         LocalDate startDate,
         @NotNull(message = "Expiration date is required")
         LocalDate expirationDate,
-        @NotNull(message = "Benefit is required")
-        UUID benefitId,
+        @NotEmpty(message = "Benefit ids are required")
+        Set<UUID> benefitIds,
+        @NotNull(message = "Version is required")
+        Long version,
         RestrictionRequestDto restrictionRequestDto) {
 }

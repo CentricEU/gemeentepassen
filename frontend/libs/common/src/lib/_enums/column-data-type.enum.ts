@@ -9,4 +9,5 @@ export enum ColumnDataType {
 	PERCENTAGE,
 	FROM_CITIZEN_GROUP_AGE_ENUM,
 	DATE,
+	ACTIONS
 }

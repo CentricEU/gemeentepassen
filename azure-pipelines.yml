@@ -1,22 +1,30 @@
-# Node.js with Angular
-# Build a Node.js project that uses Angular.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+# CityPasses (Gemeentepassen) — CI pipeline
+# Builds the Nx/Angular frontend apps and runs their unit tests.
+# NOTE: backend (Maven) and Playwright suites are not yet covered here — see README "CI/CD" section.
 
 trigger:
-- development
+  - development
 
 pool:
   name: default
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '16.x'
-  displayName: 'Install Node.js'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '20.19.5'
+    displayName: 'Install Node.js 20'
 
-- script: |
-    npm install -g @angular/cli
-    npm install
-    ng build --prod
-  displayName: 'npm install and build'
+  - script: |
+      npm install --legacy-peer-deps
+    workingDirectory: frontend
+    displayName: 'Install frontend dependencies'
+
+  - script: |
+      npx nx run-many --all --target=build --configuration=production
+    workingDirectory: frontend
+    displayName: 'Build frontend apps'
+
+  - script: |
+      npm run all-tests
+    workingDirectory: frontend
+    displayName: 'Run frontend unit tests'

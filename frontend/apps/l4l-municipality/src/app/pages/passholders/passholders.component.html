@@ -1,17 +1,20 @@
-@if (isDataExisting) {
+@if (shouldDisplayTable()) {
 	<frontend-table
 		#passholdersTable
 		class="table-pannel"
 		[columns]="allColumns"
+		[filterColumns]="allFilterColumns"
 		[listLength]="dataCount"
+		[hasFilters]="true"
 		[showFooter]="true"
 		[showHeader]="true"
 		(actionButtonClicked)="onActionButtonClicked($event)"
 		(getSelectedItemsNumber)="onGetSelectedItemsNumber($event)"
+		(applyFilters)="onApplyFilters($event, true)"
 		(loadDataEvent)="loadData($event)">
 		<ng-container>
 			<span class="left-container">{{ 'general.pages.passholders' | translate }} </span>
-			<ng-container *ngIf="isDataExisting">
+			@if (isDataExisting || filterDto) {
 				<section class="right-container">
 					<centric-button
 						ariaAttributes
@@ -25,7 +28,14 @@
 						[ariaLabelTranslation]="'modal.manageColumns.title'"
 						[tooltipText]="'modal.manageColumns.title' | translate"
 						(click)="manageColumns()"></centric-button>
-
+					<centric-button
+						ariaAttributes
+						type="uncontained-greyscale"
+						class="clear-filters-button"
+						[disabled]="!areFiltersApplied"
+						(click)="clearFilters()">
+						{{ 'general.button.clearFilter' | translate }}
+					</centric-button>
 					<centric-button
 						ariaAttributes
 						type="high-emphasis-theme"
@@ -35,15 +45,15 @@
 						{{ 'passholders.import' | translate }}
 					</centric-button>
 				</section>
-			</ng-container>
+			}
 		</ng-container>
 	</frontend-table>
 } @else {
-	<centric-panel class="table-pannel" [class.full-size-panel]="true" [showFooter]="false" [header]="true">
-		<ng-container panel-header>
+	<windmill-card class="table-pannel" [class.full-size-panel]="true" [hasFooter]="false" [hasHeader]="true">
+		<ng-container card-header>
 			<span class="left-container">{{ 'general.pages.passholders' | translate }} </span>
 		</ng-container>
-		<ng-container panel-content>
+		<ng-container card-content>
 			@if (showCreateCitizenGroupState) {
 				<frontend-no-data
 					[imageName]="'no-groups.svg'"
@@ -63,5 +73,5 @@
 				</frontend-no-data>
 			}
 		</ng-container>
-	</centric-panel>
+	</windmill-card>
 }

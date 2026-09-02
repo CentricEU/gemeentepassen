@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { map, Observable, Subject, tap } from 'rxjs';
+import { map, Observable, ReplaySubject, tap } from 'rxjs';
 
 import { Environment } from '../_models/environment.model';
 import { ProfileDropdownsDto } from '../_models/profile-dropdowns-dto.model';
@@ -11,7 +11,7 @@ import { SupplierProfilePatchDto } from '../_models/supplier-profile-patch-dto.m
 	providedIn: 'root',
 })
 export class SupplierProfileService {
-	public supplierProfileInformationSubject = new Subject<SupplierProfile>();
+	public supplierProfileInformationSubject = new ReplaySubject<SupplierProfile>(1);
 	public supplierProfileInformationObservable: Observable<SupplierProfile> =
 		this.supplierProfileInformationSubject.asObservable();
 
@@ -35,14 +35,36 @@ export class SupplierProfileService {
 	}
 
 	public updateSupplierProfile(supplierProfileDto: SupplierProfilePatchDto): Observable<void> {
-		return this.httpClient.patch<void>(`${this.environment.apiPath}/supplier-profiles`, supplierProfileDto);
+		return this.httpClient.patch<void>(`${this.environment.apiPath}/supplier-profiles`, supplierProfileDto).pipe(
+			tap(() => {
+				this._supplierProfileInformation = {
+					...this._supplierProfileInformation,
+					...supplierProfileDto,
+				} as unknown as SupplierProfile;
+				this.supplierProfileInformationSubject.next(this._supplierProfileInformation);
+			}),
+		);
+	}
+
+	public addCashiersToProfile(cashiersList: Set<string>): Observable<string[]> {
+		return this.httpClient.post<string[]>(
+			`${this.environment.apiPath}/supplier-profiles/cashiers`,
+			Array.from(cashiersList),
+		);
 	}
 
 	public reapplySupplierProfile(supplierProfileDto: SupplierProfilePatchDto): Observable<void> {
-		return this.httpClient.patch<void>(
-			`${this.environment.apiPath}/supplier-profiles/reapplication`,
-			supplierProfileDto,
-		);
+		return this.httpClient
+			.patch<void>(`${this.environment.apiPath}/supplier-profiles/reapplication`, supplierProfileDto)
+			.pipe(
+				tap(() => {
+					this._supplierProfileInformation = {
+						...this._supplierProfileInformation,
+						...supplierProfileDto,
+					} as unknown as SupplierProfile;
+					this.supplierProfileInformationSubject.next(this._supplierProfileInformation);
+				}),
+			);
 	}
 
 	public getSupplierProfile(supplierId: string): Observable<SupplierProfile> {

@@ -13,6 +13,12 @@ export class SupplierDetailsComponent implements OnInit {
 	public supplierId: string;
 	public tabIndex = 0;
 
+	private readonly tabRoutes = [
+		commonRoutingConstants.supplierDetails,
+		commonRoutingConstants.supplierOffers,
+		commonRoutingConstants.supplierHistory,
+	];
+
 	constructor(
 		private route: ActivatedRoute,
 		private router: Router,
@@ -23,12 +29,11 @@ export class SupplierDetailsComponent implements OnInit {
 	}
 
 	public tabChanged(event: WindmillTabComponent): void {
-		this.tabIndex = event.index;
 		if (!this.supplierId) {
 			return;
 		}
-		const computedLocation =
-			this.tabIndex === 0 ? commonRoutingConstants.supplierDetails : commonRoutingConstants.supplierOffers;
+
+		const computedLocation = this.tabRoutes[event.index];
 		this.router.navigate([computedLocation.replace(':id', this.supplierId)], { replaceUrl: false });
 	}
 
@@ -37,9 +42,13 @@ export class SupplierDetailsComponent implements OnInit {
 			this.supplierId = params.get('id') as string;
 		});
 
-		if (!this.route.snapshot.data['route']) {
+		const currentRoute = this.route.snapshot.data['route'];
+
+		if (!currentRoute) {
 			return;
 		}
-		this.tabIndex = 1;
+
+		const index = this.tabRoutes.indexOf(currentRoute);
+		this.tabIndex = index !== -1 ? index : 0;
 	}
 }

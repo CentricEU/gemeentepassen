@@ -1,5 +1,5 @@
-import { Grant } from './grantModels';
 import { LatLon, WorkingHour } from './supplierProfileModels';
+import { BenefitResponseDto } from './benefitModels';
 
 export interface OfferResponse {
 	id: string;
@@ -14,7 +14,7 @@ export interface OfferResponse {
 	startDate: Date;
 	expirationDate: Date;
 	description: string;
-	grants: Grant[];
+	benefit: BenefitResponseDto;
 }
 
 export interface OfferReactivate {
@@ -31,7 +31,8 @@ export interface OfferRequest {
 	offerTypeId: number;
 	startDate: Date;
 	expirationDate: Date;
-	grantsIds: string[];
+	benefitIds: string[];
+	version: number;
 	restrictionRequestDto?: Restriction;
 }
 
@@ -53,11 +54,13 @@ export interface OfferUse {
 export interface OfferReject {
 	offerId: string;
 	reason: string;
+	version: string;
 }
 
 export interface OfferType {
 	offerTypeId: number;
 	offerTypeLabel: string;
+	enabled: boolean;
 }
 
 export interface OfferCountsTimePeriod {
@@ -75,8 +78,8 @@ export interface OfferFull {
 	offerTypeId: number;
 	startDate: Date;
 	expirationDate: Date;
-	grants: Grant[];
 	restrictionRequestDto: Restriction;
+	benefit: BenefitResponseDto;
 }
 
 export interface OfferDetails {
@@ -96,7 +99,6 @@ export interface OfferDetails {
 	companyCategory: string;
 	restrictions: Restriction & { id: string };
 	companyLogo: string;
-	grants: Grant[];
 	workingHours: WorkingHour[];
 	discountCode: string;
 	isActive: boolean;
@@ -119,4 +121,16 @@ export interface OffersListViewport {
 	currentDay: string;
 	offerTypeId: number;
 	searchKeyword?: string;
+}
+
+export interface OfferApprove {
+	offerId: string;
+	version: number;
+}
+
+export interface OfferDownloadRequest {
+	offerId: string;
+	passholderId: string;
+	currentTime: string;
+	amount: number;
 }

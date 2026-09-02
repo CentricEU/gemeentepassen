@@ -1,0 +1,28 @@
+<windmill-tab-group
+	[theme]="'underlined'"
+	[hasPadding]="false"
+	[selectedIndex]="tabIndex"
+	(selectedTabChange)="tabChanged($event)">
+	<windmill-tab>
+		<ng-template windmill-tab-label>
+			<windmill-icon [svgIcon]="'shop_b'" [size]="'20'"></windmill-icon>
+			<span>{{ 'general.pages.supplierDetails' | translate }}</span>
+		</ng-template>
+		<ng-container card-content class="supplier-edit">
+			<frontend-supplier-edit></frontend-supplier-edit>
+		</ng-container>
+	</windmill-tab>
+	<windmill-tab class="history-tab">
+		<ng-template windmill-tab-label>
+			<windmill-icon [svgIcon]="'timeline-bars-right_b'" [size]="'20'"></windmill-icon>
+			<span>{{ 'general.pages.history' | translate }}</span>
+		</ng-template>
+		<ng-container card-content>
+			<frontend-supplier-history [supplierId]="supplierId"></frontend-supplier-history>
+		</ng-container>
+	</windmill-tab>
+</windmill-tab-group>
+
+<ng-template #noData>
+	<frontend-no-data [noDataTitle]="'noDataTitle'" [noDataDescription]="'noDataDescription'"> </frontend-no-data>
+</ng-template>

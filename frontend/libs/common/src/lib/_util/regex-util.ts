@@ -11,7 +11,7 @@ export class RegexUtil {
 
 	public static zipCodeRegexPattern = new RegExp(/^\d{4}(?:\s)?[A-Za-z]{2}$/);
 
-	public static telephoneRegexPattern = new RegExp(/^\+31\d{9}$/);
+	public static telephoneRegexPattern = new RegExp(/^\+?\d*$/);
 
 	public static discountCodeRegexPattern = new RegExp(/^[A-Za-z0-9]{5}$/);
 

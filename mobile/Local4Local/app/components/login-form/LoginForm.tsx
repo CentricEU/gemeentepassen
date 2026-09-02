@@ -232,7 +232,7 @@ function LoginForm({ navigation }: LoginFormProps) {
 						<GoogleRecaptcha
 							siteKey="6Ld-jb4pAAAAAI34pOa8uqqGX407eykhcPLDTdO7"
 							ref={recaptchaRef}
-							baseUrl="https://citizen.testing.gemeentepassen.eu"
+							baseUrl="https://passholder.testing.gemeentepassen.eu"
 							onVerify={onVerify}
 							action={GoogleRecaptchaActionName.LOGIN}
 						/>

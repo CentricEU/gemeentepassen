@@ -2,23 +2,32 @@ package nl.centric.innovation.local4local.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.dto.MonthlyTransactionDto;
+import nl.centric.innovation.local4local.dto.MonthlyTransactionView;
 import nl.centric.innovation.local4local.dto.OfferTransactionInvoiceDto;
 import nl.centric.innovation.local4local.dto.OfferTransactionInvoiceTenantDto;
+import nl.centric.innovation.local4local.dto.OfferTransactionInvoiceTenantView;
 import nl.centric.innovation.local4local.dto.OfferTransactionTableDto;
+import nl.centric.innovation.local4local.dto.OfferTransactionTableView;
 import nl.centric.innovation.local4local.dto.OfferTransactionTenantTableDto;
+import nl.centric.innovation.local4local.dto.OfferTransactionTenantTableView;
 import nl.centric.innovation.local4local.dto.OfferTransactionsGroupedDto;
+import nl.centric.innovation.local4local.dto.OfferTransactionsGroupedView;
 import nl.centric.innovation.local4local.dto.TransactionDetailsDto;
 import nl.centric.innovation.local4local.entity.DiscountCode;
 import nl.centric.innovation.local4local.entity.OfferTransaction;
 import nl.centric.innovation.local4local.entity.Role;
 import nl.centric.innovation.local4local.enums.TimeIntervalPeriod;
+import nl.centric.innovation.local4local.exceptions.InvalidDateRangeException;
 import nl.centric.innovation.local4local.repository.OfferTransactionRepository;
+import nl.centric.innovation.local4local.util.CommonUtils;
 import nl.centric.innovation.local4local.util.DateUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -46,11 +55,19 @@ public class OfferTransactionService {
     private final OfferTransactionRepository offerTransactionRepository;
     private final PrincipalService principalService;
 
+    @Value("${error.general.availability}")
+    private String errorGeneralAvailability;
+
+
     public void saveTransaction(DiscountCode code, Double transactionAmount, LocalDateTime currentTime) {
         OfferTransaction offerTransactionToSave = OfferTransaction.offerTransactionDtoToEntity(code, currentTime);
-        offerTransactionToSave.setAmount(transactionAmount);
+        offerTransactionToSave.setAmount(BigDecimal.valueOf(transactionAmount));
 
         offerTransactionRepository.save(offerTransactionToSave);
+    }
+
+    public List<OfferTransaction> getTransactionByUserId(UUID userId) {
+        return offerTransactionRepository.findAllByDiscountCode_UserId(userId);
     }
 
     public Optional<OfferTransaction> getLastOfferValidationForCitizen(UUID offerId, UUID citizenId) {
@@ -69,40 +86,64 @@ public class OfferTransactionService {
         return offerTransactionRepository.findDistinctYearByCreatedDateDesc(getSupplierId());
     }
 
-    public Integer countMonthYearTransactionsBySupplierId(Integer month, Integer year) {
-        return offerTransactionRepository.countMonthYearTransactionsBySupplierId(getSupplierId(), month, year);
+    public Integer countIntervalTransactionsBySupplierId(LocalDate startDate, LocalDate endDate) {
+        return offerTransactionRepository.countIntervalTransactionsBySupplierId(getSupplierId(), DateUtils.convertToLocalDateTime(startDate, false), DateUtils.convertToLocalDateTime(endDate, true));
     }
 
     public Integer countAllTransactionsBySupplierId() {
         return offerTransactionRepository.countByDiscountCodeOfferSupplierId(getSupplierId());
     }
 
-    public List<OfferTransactionTableDto> getTransactionsByMonthAndYear(Integer month, Integer year, Integer page, Integer size) {
+    public List<OfferTransactionTableView> getTransactionsInterval(LocalDate startDate, LocalDate endDate, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        return offerTransactionRepository.findTransactionsByMonthAndYear(
-                getSupplierId(), month, year, pageable);
+        return offerTransactionRepository.findTransactionsByInterval(
+                getSupplierId(), DateUtils.convertToLocalDateTime(startDate, false), DateUtils.convertToLocalDateTime(endDate, true), pageable);
     }
 
     public List<Integer> getDistinctYearsForTransactionsByTenantId() {
         return offerTransactionRepository.findDistinctYearByTenantIdAndCreatedDateDesc(getTenantId());
     }
 
-    public Integer countMonthYearTransactionsByTenantId(Integer month, Integer year) {
-        return offerTransactionRepository.countMonthYearTransactionsByTenantId(getTenantId(), month, year);
+    public Integer countIntervalTransactions(LocalDate startDate, LocalDate endDate, String supplierId) {
+        if (supplierId == null || supplierId.isEmpty()) {
+            return countIntervalTransactionsByTenantId(startDate, endDate);
+        }
+        return countIntervalTransactionsByTenantIdAndSupplierId(startDate, endDate, supplierId);
     }
 
-    public List<OfferTransactionInvoiceTenantDto> getTransactionsByMonthYearAndTenantId(LocalDate startDate, LocalDate endDate) {
-        LocalDateTime endOfDay = endDate.atStartOfDay().plusDays(1).minusNanos(1);
+    public Integer countIntervalTransactionsByTenantId(LocalDate startDate, LocalDate endDate) {
+        return offerTransactionRepository.countIntervalTransactionsByTenantId(getTenantId(), DateUtils.convertToLocalDateTime(startDate, false), DateUtils.convertToLocalDateTime(endDate, true));
+    }
+
+    public Integer countIntervalTransactionsByTenantIdAndSupplierId(LocalDate startDate, LocalDate endDate, String supplierId) {
+        return offerTransactionRepository.countIntervalTransactionsByTenantIdAndSupplierId(getTenantId(), DateUtils.convertToLocalDateTime(startDate, false), DateUtils.convertToLocalDateTime(endDate, true), UUID.fromString(supplierId));
+    }
+
+    public List<OfferTransactionInvoiceTenantView> getTransactionsByIntervalAndTenantId(LocalDate startDate, LocalDate endDate) {
         return offerTransactionRepository.findTransactionsBetweenDatesByTenantId(
-                getTenantId(), startDate.atStartOfDay(), endOfDay);
+                getTenantId(), DateUtils.convertToLocalDateTime(startDate, false), DateUtils.convertToLocalDateTime(endDate, true));
     }
 
-    public List<OfferTransactionTenantTableDto> getTransactionsByMonthYearAndTenantId(Integer month, Integer year, Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public List<OfferTransactionInvoiceTenantView> getTransactionsByIntervalAndTenantIdAndSupplierId(LocalDate startDate, LocalDate endDate, String supplierId) {
+        return offerTransactionRepository.findTransactionsBetweenDatesByTenantIdAndSupplierId(
+                getTenantId(), DateUtils.convertToLocalDateTime(startDate, false), DateUtils.convertToLocalDateTime(endDate, true), UUID.fromString(supplierId));
+    }
 
-        return offerTransactionRepository.findTransactionsByMonthYearAndTenantId(
-                getTenantId(), month, year, pageable);
+
+    public List<OfferTransactionTenantTableView> getTransactionsByIntervalAndTenantId(LocalDate startDate, LocalDate endDate, Integer page, Integer size, String supplierId) throws InvalidDateRangeException {
+        Pageable pageable = PageRequest.of(page, size);
+        if (startDate.isAfter(endDate)) {
+            throw new InvalidDateRangeException(errorGeneralAvailability);
+        }
+        if (supplierId != null) {
+            return offerTransactionRepository.findTransactionsByIntervalAndTenantIdAndSupplierId(
+                    getTenantId(), UUID.fromString(supplierId), DateUtils.convertToLocalDateTime(startDate, false), DateUtils.convertToLocalDateTime(endDate, true), pageable);
+        }
+
+        return offerTransactionRepository.findTransactionsByIntervalAndTenantId(
+                getTenantId(), DateUtils.convertToLocalDateTime(startDate, false), DateUtils.convertToLocalDateTime(endDate, true), pageable);
+
     }
 
     public List<OfferTransactionInvoiceDto> getTransactionsByMonthAndYear(LocalDate startDate, LocalDate endDate) {
@@ -111,11 +152,11 @@ public class OfferTransactionService {
                 getSupplierId(), startDate.atStartOfDay(), endOfDay);
     }
 
-    public Map<YearMonth, List<OfferTransactionsGroupedDto>> getUserTransactionsGrouped(Integer pageIndex, Integer pageSize) {
+    public Map<YearMonth, List<OfferTransactionsGroupedView>> getUserTransactionsGrouped(Integer pageIndex, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageIndex, pageSize);
 
-        List<OfferTransactionsGroupedDto> transactions = getTransactions(pageable);
-        Map<YearMonth, List<OfferTransactionsGroupedDto>> grouped = groupTransactionsByMonth(transactions);
+        List<OfferTransactionsGroupedView> transactions = getTransactions(pageable);
+        Map<YearMonth, List<OfferTransactionsGroupedView>> grouped = groupTransactionsByMonth(transactions);
 
         List<YearMonth> monthsRange = determineMonthsRange(grouped, transactions.size(), pageSize);
         return fillMissingMonths(monthsRange, grouped);
@@ -135,7 +176,7 @@ public class OfferTransactionService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime fromDate = DateUtils.calculateCreatedDate(period);
 
-        List<MonthlyTransactionDto> transactionStats = geTransactionsOnRole(fromDate);
+        List<MonthlyTransactionView> transactionStats = geTransactionsOnRole(fromDate);
 
         Set<Integer> expectedMonths = getExpectedMonthsForPeriod(now, period);
         Map<Integer, Double> statsMap = toMonthAmountMap(transactionStats);
@@ -146,7 +187,7 @@ public class OfferTransactionService {
                 .toList();
     }
 
-    private List<YearMonth> determineMonthsRange(Map<YearMonth, List<OfferTransactionsGroupedDto>> grouped, int transactionCount, int pageSize) {
+    private List<YearMonth> determineMonthsRange(Map<YearMonth, List<OfferTransactionsGroupedView>> grouped, int transactionCount, int pageSize) {
         if (transactionCount < pageSize) {
             YearMonth startMonth = YearMonth.from(getUserCreatedTime());
             YearMonth endMonth = YearMonth.from(LocalDate.now());
@@ -159,12 +200,11 @@ public class OfferTransactionService {
         return getAllMonthsBetween(min, max);
     }
 
-    private List<MonthlyTransactionDto> geTransactionsOnRole(LocalDateTime fromDate) {
-        if (Objects.equals(getUserRole(), Role.ROLE_MUNICIPALITY_ADMIN)) {
+    private List<MonthlyTransactionView> geTransactionsOnRole(LocalDateTime fromDate) {
+        if (CommonUtils.isMunicipality(getUserRole())) {
             return offerTransactionRepository
                     .sumTransactionsByMonthAndTenantIdSince(getTenantId(), fromDate);
         }
-
         return offerTransactionRepository
                 .sumTransactionsByMonthAndSupplierIdSince(getSupplierId(), fromDate);
     }
@@ -184,30 +224,30 @@ public class OfferTransactionService {
                 .collect(Collectors.toSet());
     }
 
-    private Map<Integer, Double> toMonthAmountMap(List<MonthlyTransactionDto> transactions) {
+    private Map<Integer, Double> toMonthAmountMap(List<MonthlyTransactionView> transactions) {
         return transactions.stream()
-                .collect(Collectors.toMap(MonthlyTransactionDto::month, MonthlyTransactionDto::totalAmount));
+                .collect(Collectors.toMap(MonthlyTransactionView::getMonth, MonthlyTransactionView::getTotalAmount));
     }
 
 
-    private List<OfferTransactionsGroupedDto> getTransactions(Pageable pageable) {
+    private List<OfferTransactionsGroupedView> getTransactions(Pageable pageable) {
         return offerTransactionRepository.findOfferTransactionsForCitizen(getUserId(), pageable);
     }
 
-    private Map<YearMonth, List<OfferTransactionsGroupedDto>> groupTransactionsByMonth(List<OfferTransactionsGroupedDto> transactions) {
+    private Map<YearMonth, List<OfferTransactionsGroupedView>> groupTransactionsByMonth(List<OfferTransactionsGroupedView> transactions) {
         return transactions.stream()
                 .collect(Collectors.groupingBy(
-                        transaction -> YearMonth.from(LocalDate.parse(transaction.createdDate(), getDefaultDateTimeFormatter())),
+                        transaction -> YearMonth.from(LocalDate.parse(transaction.getCreatedDate(), getDefaultDateTimeFormatter())),
                         LinkedHashMap::new,
                         Collectors.toList()
                 ));
     }
 
-    private LinkedHashMap<YearMonth, List<OfferTransactionsGroupedDto>> fillMissingMonths(
+    private LinkedHashMap<YearMonth, List<OfferTransactionsGroupedView>> fillMissingMonths(
             List<YearMonth> monthsRange,
-            Map<YearMonth, List<OfferTransactionsGroupedDto>> groupedTransactions
+            Map<YearMonth, List<OfferTransactionsGroupedView>> groupedTransactions
     ) {
-        LinkedHashMap<YearMonth, List<OfferTransactionsGroupedDto>> result = new LinkedHashMap<>();
+        LinkedHashMap<YearMonth, List<OfferTransactionsGroupedView>> result = new LinkedHashMap<>();
         for (YearMonth month : monthsRange) {
             result.put(month, groupedTransactions.getOrDefault(month, new ArrayList<>()));
         }

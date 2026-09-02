@@ -1,4 +1,4 @@
-<ng-container *ngIf="isDataExisting; else noData">
+@if (isDataExisting) {
 	<frontend-table
 		#offersMunicipalityTable
 		class="table-pannel"
@@ -14,34 +14,41 @@
 		<ng-container>
 			<span class="left-container">{{ 'general.pages.pendingOffers' | translate }} </span>
 			<!-- <section class="right-container">
-				<centric-button
-					ariaAttributes
-					type="outlined-theme"
-					iconId="filter_b"
-					[ariaLabelTranslation]="'general.button.filter'">
-					{{ 'general.button.filter' | translate }}
-				</centric-button>
-			</section> -->
+      <centric-button
+        ariaAttributes
+        type="outlined-theme"
+        iconId="filter_b"
+        [ariaLabelTranslation]="'general.button.filter'">
+        {{ 'general.button.filter' | translate }}
+      </centric-button>
+    </section> -->
 		</ng-container>
 	</frontend-table>
-</ng-container>
+} @else {
+	@if (isOffersSupplierPath) {
+		<frontend-no-data
+		class="no-data"
+			[noDataTitle]="'pendingOffer.noData.title'"
+			[noDataDescription]="'pendingOffer.noData.description'">
+		</frontend-no-data>
 
-<ng-template #noData>
-	<centric-panel
-		class="no-offers-data"
-		[class.full-height]="!!supplierId"
-		[class.table-pannel]="isSupplierAvailable"
-		[class.full-size-panel]="true"
-		[showFooter]="false"
-		[header]="!isSupplierAvailable">
-		<ng-container panel-header>
-			<span class="left-container">{{ 'general.pages.pendingOffers' | translate }} </span>
-		</ng-container>
-		<ng-container panel-content>
-			<frontend-no-data
-				[noDataTitle]="'pendingOffer.noData.title'"
-				[noDataDescription]="'pendingOffer.noData.description'">
-			</frontend-no-data>
-		</ng-container>
-	</centric-panel>
-</ng-template>
+	} @else {
+		<windmill-card
+			class="no-offers-data"
+			[class.full-height]="!!supplierId"
+			[class.table-pannel]="isSupplierAvailable"
+			[class.full-size-panel]="true"
+			[hasFooter]="false"
+			[hasHeader]="!isSupplierAvailable">
+			<ng-container card-header>
+				<span class="left-container">{{ 'general.pages.pendingOffers' | translate }} </span>
+			</ng-container>
+			<ng-container card-content>
+				<frontend-no-data
+					[noDataTitle]="'pendingOffer.noData.title'"
+					[noDataDescription]="'pendingOffer.noData.description'">
+				</frontend-no-data>
+			</ng-container>
+		</windmill-card>
+	}
+}

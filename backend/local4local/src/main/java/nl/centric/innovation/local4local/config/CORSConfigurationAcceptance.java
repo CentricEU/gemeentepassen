@@ -14,6 +14,7 @@ public class CORSConfigurationAcceptance implements WebMvcConfigurer {
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedOrigins("https://supplier.acceptance.gemeentepassen.eu/",
+                        "https://passholder.acceptance.gemeentepassen.eu/",
                         "https://municipality.acceptance.gemeentepassen.eu/")
                 .exposedHeaders("Set-Cookie")
                 .allowCredentials(true)

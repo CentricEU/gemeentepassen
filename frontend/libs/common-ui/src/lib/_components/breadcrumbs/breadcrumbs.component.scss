@@ -1,3 +1,24 @@
 :host(.should-add-padding) {
 	padding-bottom: 16px;
 }
+
+:host {
+	.breadcrumbs-container {
+		width: calc(100dvw - 292px);
+		display: flex;
+		flex-wrap: nowrap;
+		overflow: hidden;
+	}
+
+	.breadcrumbs-container li {
+		flex: 0 1 auto;
+		min-width: 0;
+	}
+
+	.breadcrumbs-container li a {
+		display: block;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+}

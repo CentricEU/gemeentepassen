@@ -1,19 +1,23 @@
 {
 	"general": {
 		"logout": "Log out",
-		"welcomeL4L": "Welcome to Gemeentepassen!",
+		"welcomeL4L": "Welcome to Gemeentepas!",
 		"hello": "Hello",
 		"password": "Password",
 		"filter": "Filter",
 		"checkbox": "Checkbox",
 		"approve": "Approve",
 		"reject": "Reject",
+		"adminEdit": "Admin edit",
 		"uploadFile": "Upload file",
 		"replaceFile": "Replace file",
 		"bsn": "BSN",
 		"address": "Address",
+		"fullName": "Full name",
+		"residence": "Residence",
 		"residenceCity": "Residence city",
 		"expiringDate": "Expiring date",
+		"expirationDate": "Expiration date",
 		"passNumber": "Pass number",
 		"preview": "Preview",
 		"remainingItems": "Remaining items",
@@ -21,10 +25,11 @@
 		"valuePlaceholder": "Value",
 		"selectAll": "Select all",
 		"citizenGroup": "Citizen group",
+		"role": "Role",
 		"success": {
 			"title": "Congratulations",
 			"accountCreatedText": "Your account has been successfully created!",
-			"accountCreatedTextForCitizen": "Your account has been successfully created!<br>Please go to your Gemeentepassen mobile app to log in.",
+			"accountCreatedTextForCitizen": "Your account has been successfully created!<br>Please go to your Gemeentepas mobile app to log in.",
 			"recoverPasswordText": "Password recovery email sent!",
 			"confirmEmailText": "We have sent the confirmation e-mail.",
 			"passwordUpdateText": "Your password has been successfully updated!",
@@ -47,6 +52,8 @@
 			"sendLink": "Send me link",
 			"back": "Go back",
 			"confirm": "Confirm",
+			"clear": "Clear",
+			"apply": "Apply",
 			"remove": "Remove",
 			"view": "View",
 			"suspend": "Suspend",
@@ -64,7 +71,17 @@
 			"sendMessage": "Send message",
 			"stepperNext": "Next",
 			"stepperBack": "Back",
-			"send": "Send"
+			"send": "Send",
+			"edit": "Edit",
+			"prevMonthLabel": "Previous month",
+			"nextMonthLabel": "Next month",
+			"prevYearLabel": "Previous year",
+			"nextYearLabel": "Next year",
+			"prevMultiYearLabel": "Previous 24 years",
+			"nextMultiYearLabel": "Next 24 years",
+			"discard": "Discard changes",
+			"saveAndApprove": "Save and approve",
+			"seeChanges": "See changes"
 		},
 		"chip": {
 			"title": "Chosen items",
@@ -104,7 +121,9 @@
 			"offerValidation": "Offer Validation",
 			"transactions": "Transactions",
 			"profile": "Profile",
-			"benefits": "Benefits"
+			"benefits": "Benefits",
+			"discounts": "Discounts",
+			"history": "History"
 		},
 		"welcome": "Welcome, {{name}}!",
 		"warning": "Warning",
@@ -129,7 +148,8 @@
 			"timeFrom": "Time from input",
 			"timeTo": "Time to input",
 			"timePickerIcon": "Time picker icon",
-			"timeSlotCompareError": "Please ensure the start time precedes the end time."
+			"timeSlotCompareError": "Please ensure the start time precedes the end time.",
+			"timeSlotRequiredError": "Both start and end times are required."
 		},
 		"noFilterData": {
 			"title": "There are no results for your current filter selection.",
@@ -143,6 +163,8 @@
 		"registered": "Registered",
 		"yes": "Yes",
 		"no": "No",
+		"digital": "Digital",
+		"non-digital": "Non-digital",
 		"monthPrefix": {
 			"january": "Jan.",
 			"february": "Feb.",
@@ -199,7 +221,7 @@
 		"amount": {
 			"amountFormControlRequired": "Amount is required.",
 			"nonZeroAmount": "Value must be greater than 0.",
-			"nonMaxBenefitAmountValidator": "Amount exceeds the {{amount}} € maximum allowed for the selected benefit."
+			"nonMaxBenefitAmountValidator": "Amount exceeds the {{amount}} € maximum allowed for the selected Benefits."
 		},
 		"website": {
 			"invalidUrl": "Please enter a valid website URL. (e.g. www.example.com)."
@@ -219,7 +241,7 @@
 	},
 	"errors": {
 		"error": "Error",
-		"htmlContent": "This field cannot contain HTML content.",
+		"htmlContent": "Unsupported characters detected. Please use plain text only.",
 		"generic": "An error occurred. Please attempt again at a later time.",
 		"supplierNotApproved": "Your municipality should approve your supplier before you can access full-functionality.",
 		"400": "The server couldn't understand the request, please review and submit a valid request.",
@@ -231,7 +253,7 @@
 		"40002": "Password update failed. Please ensure your new password meets the specified requirements and try again.",
 		"40003": "Failed to send email. The provided email address appears to be invalid. Please double-check and try again.",
 		"40004": "Authentication failed. Please double-check your credentials and try again.",
-		"40005": "Request failed due to a violation of a unique constraint. Please ensure that the provided information is unique and try again.        ",
+		"40005": "Request failed due to a violation of a unique constraint. Please ensure that the provided information is unique and try again.",
 		"40006": "Certain details in your request are incomplete. Please give it another try. ",
 		"40007": "ERR ADD",
 		"40008": "The entered password and the confirmed password do not match. Revise the password, update it, and attempt again.",
@@ -244,6 +266,7 @@
 		"40015": "Your new password matches your old one. Please choose a different password.",
 		"40016": "Your login session has ended. Kindly log in again.",
 		"40017": "Your login session has ended. Kindly log in again.",
+		"40018": "Start date is after end date",
 		"40019": "Full functionality will be available once your municipal approval is complete, typically within 5 business days. Please wait for confirmation to access all features.",
 		"40020": "We could not parse the CSV file",
 		"40021": "Invalid date format in CSV file ",
@@ -264,7 +287,11 @@
 		"40052": "Some documents failed to upload. Please try again.",
 		"40053": "A document with this name has already been uploaded. Please rename your file and try again.",
 		"40054": "The uploaded document exceeds the maximum allowed size of 10 MB.",
-		"40055": "The uploaded document is empty, corrupted or unreadable. Please upload a valid document."
+		"40055": "The uploaded document is empty, corrupted or unreadable. Please upload a valid document.",
+		"40056": "This passholder is expired, so it has no offers available",
+		"40059": "This offer has already been approved by the municipality in the meantime. Please refresh the page.",
+		"40060": "The offer has been updated by the supplier since you last loaded it. Please refresh and review the latest version before approving.",
+		"40063": "Unable to delete a passholder that has associated transactions."
 	},
 	"alerts": {
 		"passwordAlertRequirements1": "Password must be at least 8 characters.",
@@ -285,7 +312,7 @@
 	},
 	"register": {
 		"registerButton": "Register",
-		"title": "Register to Gemeentepassensen!",
+		"title": "Register to Gemeentepas!",
 		"companyName": "Company name",
 		"kvkNumber": "KvK number",
 		"municipality": "Municipality",
@@ -335,7 +362,8 @@
 	},
 	"suppliersApproval": {
 		"reviewSuppliers": "Review supplier’s request",
-		"successfulApproval": "The request was successfully approved. The supplier has been moved from 'Pending requests' to 'Suppliers'."
+		"successfulApproval": "The request was successfully approved. The supplier has been moved from 'Pending requests' to 'Suppliers'.",
+		"adminApproval": "You’re in <b>Admin edit mode</b> and you are editing the supplier’s application. Changes will be saved and logged."
 	},
 	"invitations": {
 		"welcome": "Invite new suppliers",
@@ -351,7 +379,8 @@
 		"emailsLimitReached": "You've reached the limit of 50 emails.",
 		"leavingWarning": "Invite suppliers process will be canceled and unsaved changes will be discarded.",
 		"sentSuccessfully": "The invitation was sent successfully.",
-		"hintMessage": "Press Enter or Space to confirm each email and easily add multiple addresses."
+		"hintMessage": "Press Enter or Space to add each email. Emails are also added automatically when leaving the field.",
+		"cashierInfoMessage": "You can add cashiers now or later from your Profile page, after your account has been approved by the Municipality."
 	},
 	"generalInformation": {
 		"header": "General information",
@@ -362,6 +391,8 @@
 		"ownerNamePlaceholder": "Enter the owner name",
 		"legalFormPlaceholder": "Select legal form",
 		"legalFormFormControlRequired": "Legal form is required",
+		"kvkNumberFormControlRequired": "Chamber of commerce number is required.",
+		"adminEmailFormControlRequired": "Company administrator e-mail is required.",
 		"categoryPlaceholder": "Select category",
 		"commerceNumberPlaceholder": "Enter the chamber of commerce number",
 		"email": "Company administartor e-mail",
@@ -373,6 +404,7 @@
 		"commerceMainLocation": "Chamber of commerce main location",
 		"commercePostalAdress": "Chamber of commerce postal address",
 		"commerceMainLocationPlaceholder": "Enter the chamber of commerce main location",
+		"companyNamePlaceholder": "Enter your company name",
 		"commercePostalAdressPlaceholder": "Enter the chamber of commerce postal address",
 		"companyNameFormControlRequired": "Company name is required.",
 		"ownerNameFormControlRequired": "Owner name is required.",
@@ -389,34 +421,37 @@
 		"logoAlt": "Gemeente Tilburg logo",
 		"sizeExcedeedLogo": "The file you are trying to upload exceeds the maximum allowed file size of 200KB.",
 		"companyAdminstratorEmail": "Company administrator e-mail",
-		"cashierEmails": "Cashiers"
+		"cashierEmails": "Cashiers",
+		"duplicateEmailError": "One of the entered emails is already assigned to another cashier. Please use a different email.",
+		"addCashiers": "Add cashiers"
 	},
 	"contactInformation": {
 		"header": "Contact information",
-		"companyBranchAddress": "Company branch address",
-		"companyBranchAddressFormControlRequired": "Company branch address is required.",
+		"companyBranchAddress": "Visiting address",
+		"companyBranchAddressFormControlRequired": "Visiting address is required.",
 		"companyBranchAddressPlaceholder": "Enter the supplier address",
-		"branchProvince": "Branch province",
-		"branchProvinceFormControlRequired": "Branch province is required.",
-		"branchProvincePlaceholder": "Enter the branch province",
-		"branchZip": "Branch zip code",
-		"branchZipFormControlRequired": "Branch zip code is required.",
-		"branchZipPlaceholder": "Enter the branch zip code",
-		"branchLocation": "Branch location",
-		"branchLocationFormControlRequired": "Branch location is required.",
-		"branchLocationPlaceholder": "Enter the branch location",
-		"branchTelephone": "Branch telephone",
-		"branchTelephoneFormControlRequired": "Branch telephone is required.",
-		"branchTelephonePlaceholder": "Enter the branch telephone",
+		"branchProvince": "Province",
+		"branchProvinceFormControlRequired": "Province is required.",
+		"branchProvincePlaceholder": "Enter the province",
+		"branchZip": "Zip code",
+		"branchZipFormControlRequired": "Zip code is required.",
+		"branchZipPlaceholder": "Enter the zip code",
+		"branchLocation": "Location",
+		"branchLocationFormControlRequired": "Location is required.",
+		"branchLocationPlaceholder": "Enter the location",
+		"branchTelephone": "Telephone",
+		"branchTelephoneFormControlRequired": "Telephone is required.",
+		"branchTelephoneInvalid": "Please enter a valid telephone number.",
+		"branchTelephonePlaceholder": "Enter the telephone",
 		"emailFormControlRequired": "E-mail is required.",
 		"emailPlaceholder": "Enter the supplier e-mail",
 		"website": "Website",
 		"websitePlaceholder": "Enter the supplier website",
-		"accountManager": "Account manager",
-		"accountManagerFormControlRequired": "Account manager name is required.",
-		"accountManagerPlaceholder": "Enter the account manager's name",
-		"validZipCode": "Please enter a valid branch zip code.",
-		"validTelephone": "Please enter a valid branch telephone."
+		"accountManager": "Contact person",
+		"accountManagerFormControlRequired": "Contact person name is required.",
+		"accountManagerPlaceholder": "Enter the contact person's name",
+		"validZipCode": "Please enter a valid zip code.",
+		"validTelephone": "Please enter a valid telephone."
 	},
 	"workingHours": {
 		"header": "Working hours",
@@ -454,12 +489,15 @@
 		"details": "Details",
 		"remove": "Remove",
 		"viewSupplier": "View supplier",
+		"viewOffer": "View offer",
 		"suspendSupplier": "Suspend supplier",
 		"delete": "Delete",
 		"viewPassholder": "View passholder",
 		"rejected": "Rejected",
 		"suspend": "Suspend",
-		"reactivate": "Reactivate"
+		"reactivate": "Reactivate",
+		"edit": "Edit",
+		"adminEdit": "Admin edit"
 	},
 	"paginator": {
 		"next": "Next page",
@@ -480,14 +518,19 @@
 	"approvedModal": {
 		"header": "Request approved",
 		"title": "Your request was approved!",
-		"description": "Your request to join Gemeentepassensen has been approved by {{municipality}}."
+		"description": "Your request to join Gemeentepas has been approved by the municipality."
+	},
+	"approvedWithChangesModal": {
+		"title": "Your request was approved with changes!",
+		"description": "Your request to join Gemeentepas has been approved by the municipality. Some details were updated during the review process. You can view these changes by pressing “See changes”."
 	},
 	"passholders": {
 		"title": "Import passholders",
 		"noData": {
 			"title": "Welcome to Passholders",
 			"description": "It looks like you don't have any passholders yet.<br> Let's get started by importing your list of passholders.",
-			"descriptionNoCitizenGroup": "It looks like you haven’t created any citizen groups yet.<br> To import passholders, you'll need at least one group. Let's start by adding your first citizen group!"
+			"descriptionNoCitizenGroup": "It looks like you haven’t created any citizen groups yet.<br> To import passholders, you'll need at least one group. Let's start by adding your first citizen group!",
+			"offersTitle": "No available offers yet."
 		},
 		"successDelete": "The passholder was successfully deleted.",
 		"import": "Import CSV file",
@@ -500,7 +543,16 @@
 			"content": "The selected passholder will be deleted </br> Deleted data cannot be recovered."
 		},
 		"citizenGroupPlaceholder": "Select citizen group",
-		"citizenGroupRequired": "Citizen group is required."
+		"citizenGroupRequired": "Citizen group is required.",
+		"overview": "Overview",
+		"availableOffers": "Available offers",
+		"profile": {
+			"personalInformation": "Personal information",
+			"eligibleBenefits": "Eligible benefits",
+			"assignedTo": "The citizen was assigned to:",
+			"isRegistered": "Citizen is registered?",
+			"expiredAlert": "This citizen's pass has expired. There are no eligible benefits available for this person at this time."
+		}
 	},
 	"offer": {
 		"noData": {
@@ -511,20 +563,31 @@
 		"addOffer": "Add new offer",
 		"reactivateOffer": "Reactivate offer",
 		"reactivateAlert": "You are about to activate an offer that expired.",
+		"reactivateAlertExpiredBenefit": "This offer can't be reactivated. The benefit tied to this offer is no longer available.",
+		"offerAlreadyClaimed": "<b>This offer has already been used.</b> As a result, certain fields are read-only and cannot be modified.",
+		"offerBenefitUnavailableAndClaimedAlert": "<b>The benefit tied to this offer is no longer available.</b> Since this offer has already been used, it cannot be modified or reactivated anymore.",
+		"offerBenefitUnavailableAlert": "<b>The benefit tied to this offer is no longer available.</b> The accepted benefit field needs to be updated.",
 		"offer": "Offer",
 		"title": "Listing title",
+		"supplierName": "Supplier name",
+		"offerName": "Offer name",
+		"offerType": "Offer type",
 		"acceptedBenefitsPlaceholder": "Select accepted benefit",
 		"titlePlaceholder": "Enter listing title",
 		"typeOfOffer": "Type of offer",
+		"downloadCode": "Download code",
 		"typeOfOfferPlaceholder": "Select type of offer",
 		"description": "Offer description",
 		"descriptionPlaceholder": "Enter offer description",
-		"amount": "Discount amount",
-		"amountCreditPlaceholder": "Insert the credit discount amount in Euro (€)",
-		"amountPercentagePlaceholder": "Insert the discount amount in percentage %",
-		"amountFreeEntryPlaceholder": "Insert the free entry discount amount in Euro (€)",
+		"amount": "Fee amount",
+		"amountFeeMembershipPlaceholder": "Enter the value of the fee in Euros (€)",
 		"offerCreatedFor": "Offer created for",
 		"restrictions": "Restrictions",
+		"leavingWarningCreate": "Offer creation process will be canceled and unsaved changes will be discarded.",
+		"leavingWarningEdit": "Offer editing process will be canceled and unsaved changes will be discarded.",
+		"expiredBenefitPlaceholder": "The benefit tied to this offer is no longer available.",
+		"suspendedOfferAlert": "Suspending this offer will change its status to Expired. Citizens who have already claimed it will no longer be able to use it.<br> You can reactivate the offer later if needed.",
+		"offerSuspendedText": "The offer was successfully suspended.",
 		"frequencyOfUse": {
 			"label": "Frequency of use",
 			"singleUse": "Single use",
@@ -553,28 +616,29 @@
 		"dialogOfferBenefits": {
 			"createSuccessful": "Wait for approval",
 			"mainContent": "Wait for approval",
-			"mainContentText": "You've set up an offer that allows citizens to make payments using municipal benefits, which requires municipal approval. Municipality approval typically takes up to 5 business days."
+			"mainContentText": "You've set up an offer that allows citizens to make payments using municipal benefits, which requires municipal approval. The municipality will approve the offer as soon as possible."
 		},
 		"formRequired": {
 			"titleFormControlRequired": "Offer title is required.",
 			"descriptionFormControlRequired": "Offer description is required.",
 			"validityFormControlRequired": "Please fill in both date input fields",
-			"benefitFormControlRequired": "Selecting a benefit is required."
+			"benefitFormControlRequired": "Selecting a benefit is required.",
+			"offerTypeFormControlRequired": "Selecting an offer type is required."
 		},
 		"types": {
 			"benefit": "Benefit",
-			"percentage": "Discount",
+			"storeCredit": "Store credit",
 			"bogo": "Buy one get one",
-			"credit": "Credit",
-			"percentageDiscount": "Percentage discount",
-			"creditDiscount": "Credit discount",
-			"freeEntry": "Free entry/Product"
+			"membershipFee": "Membership fee",
+			"freeEntry": "Admission",
+			"freeProduct": "Product"
 		},
 		"approve": {
 			"review": "Review supplier’s offer",
 			"titleLeft": "Offer information",
 			"titleRight": "Supplier information",
 			"successfulApproval": "The request was successfully approved.",
+			"offerEditedInfo": "This offer has been updated by the supplier. Please review the changes before approving it again.",
 			"information": {
 				"createdFor": "Offer created for",
 				"title": "Listing title",
@@ -588,12 +652,14 @@
 		"delete": {
 			"titleSingular": "Delete offer",
 			"titlePlural": "Delete offers",
+			"descriptionSingularWithoutName": "The offer will be deleted. Deleted data cannot be recovered.",
 			"descriptionSingular": "The {{ offerTitle }} will be deleted. Deleted data cannot be recovered.",
 			"descriptionPlural": "The selected offers will be deleted. Deleted data cannot be recovered.",
 			"toasterSingular": "Your offer has been successfully deleted.",
 			"toasterPlural": "Your offers have been successfully deleted."
 		},
-		"freeEntry": "Entry price"
+		"freeEntry": "Entry price",
+		"maxValueValidator": "The maximum amount that can be used (and for which offers will be created) is the minimum value among the selected benefits: {{amount}} €."
 	},
 	"pendingOffer": {
 		"noData": {
@@ -616,7 +682,7 @@
 		"placeHolderComments": "Enter your comments here",
 		"leavingWarning": "Reject supplier process will be canceled and unsaved changes will be discarded.",
 		"modal": {
-			"description": "Your request to join Gemeentepassensen has been rejected at this time by {{municipality}}.<br><br><b>Rejection reason:</b> {{reason}}<br><b>Rejection details:</b> {{comments}}<br>"
+			"description": "Your request to join Gemeentepas has been rejected at this time.<br><br><b>Rejection reason:</b> {{reason}}<br><b>Rejection details:</b> {{comments}}<br>"
 		},
 		"reasons": {
 			"notInRegion": "Not in region",
@@ -628,6 +694,10 @@
 		"reasonPlaceholder": "Rejection reason:",
 		"commentPlaceholder": "Rejection details:",
 		"reapplication": "To reapply, please make the necessary adjustments based on the rejection reason and any comments provided:"
+	},
+	"superadmin": {
+		"leavingWarning": "Super-admin edit process will be canceled and unsaved changes will be discarded.",
+		"success": "The request was successfully approved. The supplier has been moved from \"Pending requests\" to \"Suppliers\"."
 	},
 	"rejectOffer": {
 		"success": "The offer has been successfully rejected.",
@@ -643,7 +713,8 @@
 		"expired": "Expired",
 		"approved": "Approved",
 		"rejected": "Rejected",
-		"active": "Active"
+		"active": "Active",
+		"created": "Incomplete"
 	},
 	"dashboard": {
 		"qrCode": {
@@ -676,7 +747,7 @@
 			"noDataMessage": "There is no offer usage data yet.",
 			"legend": "Usage by offer type"
 		},
-		"addOfferDescription": "The citizens are eagerly awaiting your latest offers. Don't keep them waiting 🛒 💸 !",
+		"addOfferDescription": "The citizens are eagerly awaiting your latest offers. Don't keep them waiting!",
 		"bankDetails": {
 			"title": "Bank details required",
 			"description": "Please enter your municipality’s bank details. This is a one-time setup.",
@@ -709,9 +780,9 @@
 			"culture": "Culture",
 			"music": "Music",
 			"foodAndDrinks": "Food & Drinks",
-			"courses": "Courses",
 			"sport": "Sport",
-			"dance": "Dance"
+			"other": "Other",
+			"shop": "Shop"
 		}
 	},
 	"subcategory": {
@@ -738,7 +809,14 @@
 		"lastNamePlaceholder": "Enter the user’s last name",
 		"emailPlaceholder": "Enter the user’s e-mail address",
 		"leavingWarning": "Create user process will be canceled and unsaved changes will be discarded.",
-		"success": "The user was successfully created."
+		"success": "The user was successfully created.",
+		"superAdminPermission": "Give this user Super-Administrator permissions",
+		"superAdminInfo": "Super-Administrators have full system permissions. Assign this role only to trusted users.",
+		"superAdminPermissionDescription": "By granting Super-Administrator permissions, this user will have access to all system functionalities, including editing supplier profiles. Please ensure that you trust this user with such extensive access before assigning this role.",
+		"roles": {
+			"administrator": "Administrator",
+			"superAdministrator": "Super-Administrator"
+		}
 	},
 	"validationPage": {
 		"validate": "Validate code",
@@ -763,6 +841,7 @@
 		"passholderNumber": "Pass holder no.",
 		"citizenName": "Citizen name",
 		"menuLabel": "This month",
+		"customRangeHeader": "Custom range",
 		"months": {
 			"january": "January",
 			"february": "February",
@@ -777,7 +856,15 @@
 			"november": "November",
 			"december": "December"
 		},
-		"noDataCurrentMonth": "No transactions found for this month.",
+		"dateInterval": {
+			"thisMonth": "This month",
+			"lastMonth": "Last month",
+			"lastThreeMonths": "Last 3 months",
+			"lastSixMonths": "Last 6 months",
+			"thisYear": "This year",
+			"customRange": "Custom range"
+		},
+		"noDataCurrentInterval": "No transactions found for this date interval.",
 		"noData": {
 			"title": "Welcome to Transactions Management",
 			"description": "It looks like there aren’t any transactions yet."
@@ -813,11 +900,9 @@
 		"leavingWarning": "Create benefit process will be canceled and unsaved changes will be discarded."
 	},
 	"discount": {
-		"applyDiscount": "Apply discount",
+		"applyDiscount": "Apply offer",
 		"enterAmount": "Enter amount",
-		"description": "The citizen is eligible for a <b>{{offerType}}</b> offer named <b>{{offerName}}</b>. Please enter the amount to apply the discount.",
-		"percentageDiscount": "percentage discount",
-		"bogoDiscount": "Buy One Get One (BOGO)"
+		"description": "The citizen is eligible for the <b>{{offerType}}</b> offer named <b>{{offerName}}</b>. Please enter the amount to apply the discount."
 	},
 	"profilePage": {
 		"header": "Citizen groups",
@@ -835,8 +920,8 @@
 		"button": "Log in with DigiD",
 		"logoAlt": "DigiD logo",
 		"fallback": {
-			"description": "Something went wrong during the DigiD login. Please open the Gemeentepassensen app and try again.",
-			"mobileButton": "Open Gemeentepassen App",
+			"description": "Something went wrong during the DigiD login. Please open the Gemeentepas app and try again.",
+			"mobileButton": "Open Gemeentepas App",
 			"imageAlt": "Illustration showing DigiD login fallback"
 		}
 	},
@@ -882,8 +967,8 @@
 		"leavingWarning": "Create citizen group will be canceled and unsaved changes will be discarded."
 	},
 	"applyForPass": {
-		"description": "Apply for a free Gemeentepassen if you live in Netherlands and have a low income. The pass gives access to museums, sporting facilities, and more.",
-		"title": "Apply for Gemeentepassen",
+		"description": "Apply for a free Gemeentepas if you live in Netherlands and have a low income. The pass gives access to museums, sporting facilities, and more.",
+		"title": "Apply for Gemeentepas",
 		"noExistingDigiD": "You don’t have DigiD yet?",
 		"createDigiD": "Click here to create a DigiD account.",
 		"noneFitMe": "None fit – help me",
@@ -1048,5 +1133,87 @@
 			"item_5": "How long do we keep your data?",
 			"item_6": "Which security measures are in place?"
 		}
+	},
+	"timeline": {
+		"itemChanged": "was changed from \"{{oldValue}}\" to \"{{newValue}}\".",
+		"itemSet": "was set to \"{{newValue}}\".",
+		"newCashier": "Cashier \"{{newValue}}\" was added.",
+		"defaultChangesSingular": "was changed.",
+		"defaultChangesPlural": "were changed.",
+		"title": {
+			"APPLICATION_CREATED": "Application created",
+			"APPLICATION_CONFIRMED": "Application confirmed",
+			"APPLICATION_SUBMITTED": "Application submitted",
+			"APPLICATION_REJECTED": "Application rejected",
+			"APPLICATION_APPROVED": "Application approved",
+			"APPLICATION_APPROVED_WITH_EDITS": "Application approved and information edited",
+			"INFORMATION_EDITED": "Information edited"
+		},
+		"property": {
+			"companyName": "Company name",
+			"kvk": "KvK",
+			"adminEmail": "Admin email",
+			"workingHours": "Working hours",
+			"ownerName": "Owner name",
+			"legalForm": "Legal form",
+			"groupName": "Group",
+			"category": "Category",
+			"subcategory": "Subcategory",
+			"iban": "IBAN",
+			"bic": "BIC",
+			"companyBranchAddress": "Company branch address",
+			"branchProvince": "Branch province",
+			"branchZip": "Branch zip",
+			"branchLocation": "Branch location",
+			"branchTelephone": "Branch telephone",
+			"email": "Email",
+			"website": "Website",
+			"accountManager": "Account manager",
+			"cashierEmails": "Cashier emails",
+			"logo": "Logo"
+		},
+		"event": {
+			"APPLICATION_CREATED": "{{actor}} started the supplier registration process.",
+			"APPLICATION_CONFIRMED": "{{actor}} confirmed their account.",
+			"APPLICATION_SUBMITTED": "Application was submitted for review by {{actor}}.",
+			"APPLICATION_REJECTED": "Application was rejected by {{actor}}.",
+			"APPLICATION_APPROVED": "Application was approved by {{actor}}.",
+			"APPLICATION_APPROVED_WITH_EDITS": "Application was approved by {{actor}}.\n\n{{actor}} made {{count}} change:",
+			"APPLICATION_APPROVED_WITH_EDITS_MUL": "Application was approved by {{actor}}.\n\n{{actor}} made {{count}} changes:",
+			"INFORMATION_EDITED": "{{actor}} made {{count}} change:",
+			"INFORMATION_EDITED_MUL": "{{actor}} made {{count}} changes:"
+		},
+		"category": {
+			"0": "Culture",
+			"1": "Sport",
+			"2": "Food & Drinks",
+			"3": "Shop",
+			"4": "Other",
+			"5": "Music"
+		},
+		"subcategory": {
+			"0": "Museums",
+			"1": "Theatre",
+			"2": "Singing"
+		},
+		"groupName": {
+			"0": "Commercial",
+			"1": "Public",
+			"2": "Association",
+			"3": "Social"
+		},
+		"legalForm": {
+			"0": "Sole proprietorship",
+			"1": "Foundation",
+			"2": "Association",
+			"3": "Cooperative",
+			"4": "Public limited company",
+			"5": "Private limited company",
+			"6": "Limited partnership",
+			"7": "Public partnership",
+			"8": "Commercial partnership"
+		},
+		"noDataTitle": "No history yet.",
+		"noDataDescription": "Any edits made to this profile will be logged here."
 	}
 }

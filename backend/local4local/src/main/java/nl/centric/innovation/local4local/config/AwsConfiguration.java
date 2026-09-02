@@ -5,11 +5,14 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.sesv2.SesV2Client;
 
 @Configuration
 public class AwsConfiguration {
@@ -21,11 +24,10 @@ public class AwsConfiguration {
     private String secretKey;
 
     @Bean
-    public AmazonSimpleEmailService amazonSimpleEmailService() {
-
-        return AmazonSimpleEmailServiceClientBuilder.standard()
-                .withCredentials(awstStaticCredentialsProvider())
-                .withRegion(Regions.EU_CENTRAL_1)
+    public SesV2Client sesClient() {
+        return SesV2Client.builder()
+                .credentialsProvider(awsCredentialsProvider())
+                .region(Region.EU_CENTRAL_1)
                 .build();
     }
 
@@ -42,5 +44,12 @@ public class AwsConfiguration {
     public AWSStaticCredentialsProvider awstStaticCredentialsProvider() {
         BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
         return new AWSStaticCredentialsProvider(credentials);
+    }
+
+    @Bean
+    public AwsCredentialsProvider awsCredentialsProvider() {
+        return StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(accessKey, secretKey)
+        );
     }
 }

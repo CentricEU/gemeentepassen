@@ -1,0 +1,21 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "2T2W8U5F83.com.centric.stadspasapp",
+                "paths": [
+                    "/open-in-app",
+                    "/recover/reset-password/*"
+                ]
+            },
+            {
+                "appID": "2T2W8U5F83.com.centric.stadspasappacceptance",
+                "paths": [
+                    "/open-in-app",
+                    "/recover/reset-password/*"
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,116 @@
+<div class="stepper-container">
+	<span mat-dialog-title tabindex="0">
+		<h4>{{ 'applyForPassSetup.stepper.title' | translate }}</h4>
+	</span>
+
+	@if (isSuccessfullySubmitted) {
+		<app-no-data
+			[imageName]="'verified.svg'"
+			[noDataTitle]="'applyForPassSetup.successTitle'"
+			[noDataDescription]="'applyForPassSetup.successDescription'"
+			[translateParams]="translateParams">
+		</app-no-data>
+	} @else {
+		<div mat-dialog-content class="centric-stepper">
+			<ng-template #stepContent let-step>
+				@if (step.stepType === StepTypeInstance.ConfirmIdentity) {
+					<app-confirm-identity
+						#confirmIdentity
+						[confirmIdentityFormGroup]="confirmIdentityFormGroup"
+						[inputFields]="inputFields"
+						[isStepActive]="selectedIndex === 0"
+						(inputValueChanged)="onEmailValueChanged($event)">
+					</app-confirm-identity>
+				}
+
+				@if (step.stepType === StepTypeInstance.FilesUpload) {
+					<app-eligible-benefits></app-eligible-benefits>
+					<app-citizen-documents-needed
+						#fileUpload
+						[files]="filesAdded"
+						(filesUploadedChanged)="onFilesUploadedChanged($event)">
+					</app-citizen-documents-needed>
+					<app-additional-information
+						#additionalInformation
+						[additionalInformationFormGroup]="additionalInformationFormGroup"
+						(additionalMessageChanged)="onAdditionalMessageChanged($event)"></app-additional-information>
+				}
+
+				@if (step.stepType === StepTypeInstance.CheckAndSend) {
+					<app-check-and-send
+						#checkAndSend
+						[checkAndSendFormGroup]="checkAndSendFormGroup"
+						[inputFields]="inputFields"
+						[filesAdded]="filesAdded"
+						[additionalMessage]="additionalMessage"
+						[isStepActive]="selectedIndex === 2">
+					</app-check-and-send>
+				}
+
+				<div class="action-buttons-container">
+					<centric-button
+						[type]="'uncontained-theme'"
+						[ariaLabel]="'general.button.cancel' | translate"
+						(click)="cancel()">
+						{{ 'general.button.cancel' | translate }}
+					</centric-button>
+
+					<centric-button
+						[type]="'outlined-theme'"
+						[disabled]="step.stepType === StepTypeInstance.ConfirmIdentity"
+						[ariaLabel]="'general.button.stepperBack' | translate"
+						(click)="goToPreviousStep()">
+						{{ 'general.button.stepperBack' | translate }}
+					</centric-button>
+
+					<centric-button
+						[disabled]="!step.isNextEnabled()"
+						[ariaLabel]="getLastButtonLabel(step.stepType) | translate"
+						(click)="handleNextAction(step.stepType)">
+						@if (step.stepType === StepTypeInstance.CheckAndSend) {
+							{{ 'general.button.send' | translate }}
+						} @else {
+							{{ 'general.button.stepperNext' | translate }}
+						}
+					</centric-button>
+				</div>
+			</ng-template>
+
+			@if (breakpointName === 'small') {
+				<centric-vertical-stepper
+					#verticalStepper
+					[linear]="true"
+					[disableInactiveSteps]="true"
+					[selectedIndex]="selectedIndex"
+					(selectionChange)="onSelectedStep($event)">
+					@for (step of steps; track step.label) {
+						<centric-step [stepControl]="step.control" [completed]="step.completed(step.control)">
+							<ng-template centricStepLabel>
+								<span class="line-clamp-{{ maxLines }}">{{ step.label | translate }}</span>
+							</ng-template>
+
+							<ng-container *ngTemplateOutlet="stepContent; context: { $implicit: step }"></ng-container>
+						</centric-step>
+					}
+				</centric-vertical-stepper>
+			} @else {
+				<centric-horizontal-stepper
+					#horizontalStepper
+					[linear]="true"
+					[disableInactiveSteps]="true"
+					[selectedIndex]="selectedIndex"
+					(selectionChange)="onSelectedStep($event)">
+					@for (step of steps; track step.label) {
+						<centric-step [stepControl]="step.control" [completed]="step.completed(step.control)">
+							<ng-template centricStepLabel>
+								<span class="line-clamp-{{ maxLines }}">{{ step.label | translate }}</span>
+							</ng-template>
+
+							<ng-container *ngTemplateOutlet="stepContent; context: { $implicit: step }"></ng-container>
+						</centric-step>
+					}
+				</centric-horizontal-stepper>
+			}
+		</div>
+	}
+</div>

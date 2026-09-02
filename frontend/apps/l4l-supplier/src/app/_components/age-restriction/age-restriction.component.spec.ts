@@ -191,4 +191,45 @@ describe('AgeRestrictionComponent', () => {
 			expect(component.shouldDisplayOtherAgeField).toHaveReturnedWith(false);
 		});
 	});
+	describe('shouldCheckEntry', () => {
+		it('should return true if value is "offer.ageRestriction.other" and shouldDisplayOtherAgeField returns true', () => {
+			jest.spyOn(component, 'shouldDisplayOtherAgeField').mockReturnValue(true);
+
+			const result = component.shouldCheckEntry('offer.ageRestriction.other');
+
+			expect(result).toBeTruthy();
+		});
+
+		it('should return false if value is "offer.ageRestriction.other" and shouldDisplayOtherAgeField returns false', () => {
+			jest.spyOn(component, 'shouldDisplayOtherAgeField').mockReturnValue(false);
+
+			const result = component.shouldCheckEntry('offer.ageRestriction.other');
+
+			expect(result).toBeFalsy();
+		});
+
+		it('should return false if isReadonly is true', () => {
+			component.isReadonly = true;
+
+			const result = component.shouldCheckEntry('offer.ageRestriction.aboveEighteen');
+
+			expect(result).toBeFalsy();
+		});
+
+		it('should return true if value is "offer.ageRestriction.aboveEighteen" and isReadonly is false', () => {
+			component.isReadonly = false;
+
+			const result = component.shouldCheckEntry('offer.ageRestriction.aboveEighteen');
+
+			expect(result).toBeTruthy();
+		});
+
+		it('should return false if value is neither "offer.ageRestriction.other" nor "offer.ageRestriction.aboveEighteen"', () => {
+			component.isReadonly = false;
+
+			const result = component.shouldCheckEntry('offer.ageRestriction.aboveTwentyOne');
+
+			expect(result).toBeFalsy();
+		});
+	});
 });

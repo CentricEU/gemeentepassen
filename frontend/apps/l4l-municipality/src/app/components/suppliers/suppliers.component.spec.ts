@@ -4,7 +4,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthService, PaginatedData, SupplierStatus, SupplierViewDto } from '@frontend/common';
 import { TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { ToastrService } from '@windmill/ng-windmill/toastr';
 import { of } from 'rxjs';
 
@@ -133,6 +133,7 @@ describe('SuppliersListComponent', () => {
 
 		expect(component.suppliersCount).toBe(sampleCount);
 		expect(component.requestsCount).toBe(sampleCount);
+		expect(component.actionableRequestsCount).toBe(sampleCount);
 		expect(component.invitationsCount).toBe(sampleCount);
 	});
 
@@ -166,6 +167,18 @@ describe('SuppliersListComponent', () => {
 	it('should return true for shouldDisplayRequestsTable when requestsCount > 0', () => {
 		component.requestsCount = 3;
 		expect(component.shouldDisplayRequestsTable()).toBe(true);
+	});
+
+	it('should display the requests badge only when pending or incomplete suppliers exist', () => {
+		component.requestsCount = 3;
+		component.actionableRequestsCount = 0;
+
+		expect(component.shouldDisplayRequestsTable()).toBe(true);
+		expect(component.shouldDisplayRequestsBadge()).toBe(false);
+
+		component.actionableRequestsCount = 2;
+
+		expect(component.shouldDisplayRequestsBadge()).toBe(true);
 	});
 
 	it('should return true for shouldDisplayInvitationsTable when invitationsCount > 0', () => {
@@ -229,10 +242,12 @@ describe('SuppliersListComponent', () => {
 		const data = 42;
 
 		jest.spyOn(component as any, 'displaySuccessToaster');
+		jest.spyOn(component as any, 'refreshActionableRequestsCount');
 
 		component.updateSuppliersNumber(data, SupplierStatus.APPROVED);
 
 		expect(component.requestsCount).toBe(data);
+		expect(component['refreshActionableRequestsCount']).toHaveBeenCalled();
 		expect(component['displaySuccessToaster']).toHaveBeenCalledWith('suppliersApproval.successfulApproval');
 	});
 
@@ -277,5 +292,43 @@ describe('SuppliersListComponent', () => {
 		component['openInviteSuppliersModal']();
 
 		expect(component['getInvitationsCount']).not.toHaveBeenCalled();
+	});
+
+	it('should call countSuppliers with PENDING, REJECTED, and CREATED statuses for requests', () => {
+		// Arrange
+		supplierServiceSpy.countSuppliers.mockClear();
+
+		// Act
+		component.ngOnInit();
+
+		// Assert
+		expect(supplierServiceSpy.countSuppliers).toHaveBeenCalledWith('sampleTenantId', [
+			SupplierStatus.PENDING,
+			SupplierStatus.REJECTED,
+			SupplierStatus.CREATED,
+		]);
+	});
+
+	it('should call countSuppliers with PENDING and CREATED statuses for the requests badge', () => {
+		supplierServiceSpy.countSuppliers.mockClear();
+
+		component.ngOnInit();
+
+		expect(supplierServiceSpy.countSuppliers).toHaveBeenCalledWith('sampleTenantId', [
+			SupplierStatus.PENDING,
+			SupplierStatus.CREATED,
+		]);
+	});
+
+	it('should not call countSuppliers service when tenantId is not available', () => {
+		// Arrange
+		authServiceSpy.extractSupplierInformation.mockReturnValue(null);
+		supplierServiceSpy.countSuppliers.mockClear();
+
+		// Act
+		component.ngOnInit();
+
+		// Assert
+		expect(supplierServiceSpy.countSuppliers).not.toHaveBeenCalled();
 	});
 });

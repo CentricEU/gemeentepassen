@@ -13,6 +13,7 @@
 					</ng-template>
 					<frontend-general-information
 						#generalInformation
+						[hasDuplicateEmailError]="hasDuplicateEmailError"
 						(selectedSupplierEvent)="onCurrentSupplierId($event)"></frontend-general-information>
 				</centric-step>
 
@@ -43,7 +44,7 @@
 			(click)="goToPreviousStep()">
 			{{ 'general.back' | translate }}
 		</centric-button>
-		<ng-container *ngIf="shouldShowNextButton()">
+		@if (shouldShowNextButton()) {
 			<centric-button
 				ariaAttributes
 				[disabled]="shouldDisableNextButton()"
@@ -51,8 +52,8 @@
 				(click)="goToNextStep()"
 				>{{ 'generalInformation.next' | translate }}</centric-button
 			>
-		</ng-container>
-		<ng-container *ngIf="shouldShowFinishButton()">
+		}
+		@if (shouldShowFinishButton()) {
 			<centric-button
 				ariaAttributes
 				[id]="data.acceptButtonText"
@@ -61,6 +62,6 @@
 				(click)="saveSupplierSetupProfile()">
 				{{ 'general.button.finish' | translate }}
 			</centric-button>
-		</ng-container>
+		}
 	</div>
 </ng-container>

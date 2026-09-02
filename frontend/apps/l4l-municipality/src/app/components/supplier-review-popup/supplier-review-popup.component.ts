@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
+	AuthService,
 	CharacterLimitMessageService,
 	FormUtil,
 	ModalData,
@@ -14,7 +15,7 @@ import {
 } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 
 import { RejectSupplierDto } from '../../_models/reject-supplier-dto.model';
 import { MunicipalitySupplierService } from '../../_services/suppliers.service';
@@ -48,10 +49,19 @@ export class SupplierReviewPopupComponent implements OnInit {
 		]),
 	);
 
+	public get isSuperAdmin(): boolean {
+		return this.authService.isSuperAdmin;
+	}
+
+	private get supplierId() {
+		return this.supplierProfileService.supplierProfileInformation?.supplierId;
+	}
+
 	constructor(
 		public readonly characterLimitMessageService: CharacterLimitMessageService,
 		private readonly dialogService: DialogService,
 		private readonly supplierRejectionService: SupplierRejectionService,
+		private readonly authService: AuthService,
 		@Inject(MAT_DIALOG_DATA) public data: any,
 		private supplierService: MunicipalitySupplierService,
 		private supplierProfileService: SupplierProfileService,
@@ -86,7 +96,7 @@ export class SupplierReviewPopupComponent implements OnInit {
 		const rejectSupplierDto = this.createRejectSupplierDto(this.supplierId);
 
 		this.supplierRejectionService.rejectSupplier(rejectSupplierDto).subscribe(() => {
-			this.dialogRef.close(SupplierStatus.REJECTED);
+			this.dialogRef.close({ actionType: 'update', status: SupplierStatus.REJECTED });
 		});
 	}
 
@@ -101,7 +111,7 @@ export class SupplierReviewPopupComponent implements OnInit {
 		}
 
 		this.supplierService.approveSupplier(this.supplierId).subscribe(() => {
-			this.dialogRef.close(SupplierStatus.APPROVED);
+			this.dialogRef.close({ actionType: 'update', status: SupplierStatus.APPROVED });
 		});
 	}
 
@@ -141,8 +151,8 @@ export class SupplierReviewPopupComponent implements OnInit {
 			});
 	}
 
-	private get supplierId() {
-		return this.supplierProfileService.supplierProfileInformation?.supplierId;
+	public adminEditSupplier(): void {
+		this.dialogRef.close({ actionType: 'adminEdit', supplierId: this.supplierId });
 	}
 
 	private createRejectSupplierDto(supplierId: string): RejectSupplierDto {

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.entity.Role;
-import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
+import nl.centric.innovation.local4local.exceptions.DtoValidateException;
 import nl.centric.innovation.local4local.service.impl.SepaService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,6 @@ import org.springframework.http.MediaType;
 
 import java.time.LocalDate;
 
-
 @RestController
 @RequestMapping("sepa")
 @RequiredArgsConstructor
@@ -28,13 +27,20 @@ public class SepaController {
 
     @Operation(
             summary = "Generate SEPA XML file",
-            description = "Generates a SEPA XML file for the given month and returns it as a downloadable attachment."
+            description = "Generates a SEPA XML file for the given interval and returns it as a downloadable attachment."
     )
     @PostMapping
-    @Secured(Role.ROLE_MUNICIPALITY_ADMIN)
-    public ResponseEntity<String> generateSepaFile(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @Parameter(description = "Month for which the SEPA file is generated") LocalDate month) throws DtoValidateNotFoundException {
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
+    public ResponseEntity<String> generateSepaFile(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @Parameter(description = "Start date for which the SEPA file is generated") LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @Parameter(description = "End date for which the SEPA file is generated") LocalDate endDate,
+            @RequestParam(required = false) String supplierId)
 
-        String xml = sepaService.generateSepaFile(month);
+            throws DtoValidateException {
+
+        String xml = sepaService.generateSepaFile(startDate, endDate, supplierId);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=sepa_" + LocalDate.now() + ".xml")

@@ -11,7 +11,7 @@ import {
 } from '@frontend/common';
 import { TableBaseComponent, TableComponent } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { ToastrService } from '@windmill/ng-windmill/toastr';
 
 import { CreateUserPopupComponent } from '../../components/create-user-popup/create-user-popup.component';
@@ -99,6 +99,7 @@ export class UserManagementComponent extends TableBaseComponent implements OnIni
 			new TableColumn('general.name', 'fullName', 'fullName', true, false),
 			new TableColumn('general.email', 'email', 'email', true, true),
 			new TableColumn('general.createdDate', 'createdDate', 'createdDate', true, false, ColumnDataType.DATE),
+			new TableColumn('general.role', 'role', 'role', true, false, ColumnDataType.TRANSLATION),
 			//To-DO: Actions can be added here!
 			//new TableColumn('general.actions', 'actions', 'actions', true, true, ColumnDataType.DEFAULT, true),
 		];
@@ -107,6 +108,7 @@ export class UserManagementComponent extends TableBaseComponent implements OnIni
 	private afterDataLoaded(data: Array<UserTableDto>): void {
 		const dataWithActions = data.map((element) => ({
 			...element,
+			role: element.isSuperAdmin ? 'createUser.roles.superAdministrator' : 'createUser.roles.administrator',
 			actionButtons: [],
 		}));
 

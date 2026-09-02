@@ -7,6 +7,7 @@ import { SuppliersListComponent } from './components/suppliers/suppliers.compone
 import { BenefitsComponent } from './pages/benefits/benefits.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { OffersForMuniciaplityComponent } from './pages/offers-for-municipality/offers-for-municipality.component';
+import { PassholderDetailsComponent } from './pages/passholder-details/passholder-details.component';
 import { PassholdersComponent } from './pages/passholders/passholders.component';
 import { ProfilePageComponent } from './pages/profile-page/profile-page.component';
 import { MunicipalityTransactionsComponent } from './pages/transactions/transactions.component';
@@ -25,6 +26,12 @@ export const appRoutes: Route[] = [
 		canActivate: [authGuard],
 		data: { route: commonRoutingConstants.supplierOffers },
 	},
+	{
+		path: commonRoutingConstants.supplierHistory,
+		component: SupplierDetailsComponent,
+		canActivate: [authGuard],
+		data: { route: commonRoutingConstants.supplierHistory },
+	},
 	{ path: commonRoutingConstants.suppliers, component: SuppliersListComponent, canActivate: [authGuard] },
 	{
 		path: commonRoutingConstants.offers,
@@ -32,6 +39,11 @@ export const appRoutes: Route[] = [
 		canActivate: [authGuard],
 	},
 	{ path: commonRoutingConstants.passholders, component: PassholdersComponent, canActivate: [authGuard] },
+	{
+		path: `${commonRoutingConstants.passholders}/:id`,
+		component: PassholderDetailsComponent,
+		canActivate: [authGuard],
+	},
 	{
 		path: commonRoutingConstants.login,
 		component: LoginComponent,

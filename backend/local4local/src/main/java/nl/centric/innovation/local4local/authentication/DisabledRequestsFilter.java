@@ -1,17 +1,21 @@
 package nl.centric.innovation.local4local.authentication;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import nl.centric.innovation.local4local.entity.Role;
 import nl.centric.innovation.local4local.entity.User;
 import nl.centric.innovation.local4local.enums.SupplierStatusEnum;
 import nl.centric.innovation.local4local.exceptions.DisabledRequestsException;
+import nl.centric.innovation.local4local.util.CommonUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -30,17 +34,21 @@ public class DisabledRequestsFilter extends OncePerRequestFilter {
             "/api/suppliers/approve/{UUID}",
             "/api/suppliers/rejection/{UUID}",
             "/api/suppliers/change-has-status-update/{UUID}",
+            "/api/suppliers/clear-status-update/{UUID}",
             "/api/suppliers/{UUID}",
             "/api/suppliers/register",
+            "/api/suppliers/{UUID}/cashiers",
+            "/api/suppliers/detail/{UUID}",
             "/api/supplier-profiles",
             "/api/supplier-profiles/reapplication",
+            "/api/supplier-profiles/cashiers",
+            "/api/supplier-profiles/dropdown-data",
             "/api/tenants/{UUID}",
             "/api/tenants/all",
             "/api/tenants/create",
             "/api/users",
             "/api/users/recover",
             "/api/users/recover/reset-password",
-            "/api/supplier-profiles/dropdown-data",
             "/api/working-hours/{UUID}",
             "/api/working-hours/availability/{UUID}"
     );
@@ -55,12 +63,13 @@ public class DisabledRequestsFilter extends OncePerRequestFilter {
             "/api/tenants/bank-information"
     );
 
-    static final String SUPPLIER_PROFILE_PATH ="/api/supplier-profiles/{UUID}";
+    static final String SUPPLIER_PROFILE_PATH = "/api/supplier-profiles/{UUID}";
+    static final String TIMELINE_PATH = "/api/audit/timeline/{UUID}";
 
     @Override
     protected void doFilterInternal(
             HttpServletRequest request, HttpServletResponse response, FilterChain filterChain
-    ) throws ServletException, IOException {
+    ) throws IOException, ServletException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -68,7 +77,7 @@ public class DisabledRequestsFilter extends OncePerRequestFilter {
             User user = (User) authentication.getPrincipal();
             String path = request.getRequestURI();
 
-            if (isRejectedSupplierAccessingOwnProfile(user, path)) {
+            if (isRejectedSupplierAccessingOwnProfileOrTimeline(user, path)) {
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -88,9 +97,9 @@ public class DisabledRequestsFilter extends OncePerRequestFilter {
 
     }
 
-    private boolean isRejectedSupplierAccessingOwnProfile(User user, String path) {
+    private boolean isRejectedSupplierAccessingOwnProfileOrTimeline(User user, String path) {
         return isSupplier(user)
-                && matchesPath(SUPPLIER_PROFILE_PATH, path)
+                && (matchesPath(SUPPLIER_PROFILE_PATH, path) || matchesPath(TIMELINE_PATH, path))
                 && user.getSupplier().getStatus() == SupplierStatusEnum.REJECTED;
     }
 
@@ -111,7 +120,7 @@ public class DisabledRequestsFilter extends OncePerRequestFilter {
     }
 
     private boolean isMunicipality(User user) {
-        return Objects.equals(user.getRole().getName(), Role.ROLE_MUNICIPALITY_ADMIN);
+        return CommonUtils.isMunicipality(user.getRole().getName());
     }
 
     private static boolean matchesPath(String pathToCheck, String path) {

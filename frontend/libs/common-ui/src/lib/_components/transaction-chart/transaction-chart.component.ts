@@ -23,8 +23,8 @@ export class TransactionChartComponent {
 				top: 40,
 				bottom: 16,
 				left: 32,
-				right: 32
-			}
+				right: 32,
+			},
 		},
 		plugins: {
 			legend: {
@@ -38,18 +38,18 @@ export class TransactionChartComponent {
 					pointStyle: 'rectRounded',
 					font: {
 						family: 'Open Sans',
-						size: 14
+						size: 14,
 					},
-					color: AppColors.DarkBlue
+					color: AppColors.DarkBlue,
 				},
-				onClick: () => {}
+				onClick: () => {},
 			},
 			tooltip: {
 				padding: {
 					top: 8,
 					bottom: 4,
 					left: 8,
-					right: 8
+					right: 8,
 				},
 				titleFont: { size: 0 },
 				bodyFont: { size: 14 },
@@ -70,14 +70,14 @@ export class TransactionChartComponent {
 						// Use the current language for number formatting
 						const lang = this.translateService.currentLang || 'de-DE';
 						return `€${Number(realValue).toLocaleString(lang)}`;
-					}
-				}
-			}
+					},
+				},
+			},
 		},
 		scales: {
 			x: {
 				grid: { display: false },
-				ticks: { color: AppColors.DarkBlue }
+				ticks: { color: AppColors.DarkBlue },
 			},
 			y: {
 				grid: { display: false },
@@ -86,11 +86,11 @@ export class TransactionChartComponent {
 					callback: (value) => {
 						const lang = this.translateService.currentLang || 'de-DE';
 						return `€${Number(value).toLocaleString(lang)}`;
-					}
+					},
 				},
-				suggestedMin: 0
-			}
-		}
+				suggestedMin: 0,
+			},
+		},
 	};
 
 	public noDataPlugin = {
@@ -98,7 +98,7 @@ export class TransactionChartComponent {
 		beforeDraw: (chart: Chart) => {
 			const datasets = chart.data.datasets;
 			const allZeroOrNull = datasets.every(
-				(ds) => Array.isArray(ds.data) && ds.data.every((val) => val === null || val === 0)
+				(ds) => Array.isArray(ds.data) && ds.data.every((val) => val === null || val === 0),
 			);
 
 			if (!allZeroOrNull) return;
@@ -112,7 +112,7 @@ export class TransactionChartComponent {
 			ctx.textAlign = 'center';
 			ctx.fillText(message, (chartArea.left + chartArea.right) / 2, (chartArea.top + chartArea.bottom) / 2);
 			ctx.restore();
-		}
+		},
 	};
 
 	constructor(public translateService: TranslateService) {}
@@ -147,10 +147,10 @@ export class TransactionChartComponent {
 							? (this.lineChartOptions.scales['y'] as any).ticks
 							: {}) as Record<string, unknown>),
 						stepSize,
-						callback: (value) => `€${Number(value).toLocaleString(lang)}`
-					}
-				}
-			}
+						callback: (value) => `€${Number(value).toLocaleString(lang)}`,
+					},
+				},
+			},
 		};
 
 		this.setLineChartData(labels, values);
@@ -196,7 +196,7 @@ export class TransactionChartComponent {
 		const niceFractions = [1, 2, 5, 10];
 		let niceFraction =
 			niceFractions.find((_nf, i) =>
-				round ? fraction < [1.5, 3, 7, Infinity][i] : fraction <= [1, 2, 5, Infinity][i]
+				round ? fraction < [1.5, 3, 7, Infinity][i] : fraction <= [1, 2, 5, Infinity][i],
 			) ?? 10;
 
 		return niceFraction * Math.pow(10, exponent);
@@ -233,7 +233,7 @@ export class TransactionChartComponent {
 			'general.monthPrefix.september',
 			'general.monthPrefix.october',
 			'general.monthPrefix.november',
-			'general.monthPrefix.december'
+			'general.monthPrefix.december',
 		];
 
 		return data.map((entry) => {
@@ -259,9 +259,9 @@ export class TransactionChartComponent {
 					tension: 0,
 					showLine: !allZeroOrNull,
 					pointRadius: allZeroOrNull ? 0 : 3,
-					pointHoverRadius: allZeroOrNull ? 0 : 4
-				}
-			]
+					pointHoverRadius: allZeroOrNull ? 0 : 4,
+				},
+			],
 		};
 	}
 }

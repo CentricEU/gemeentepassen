@@ -1,9 +1,12 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import nl.centric.innovation.local4local.entity.Pass;
 
-import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Builder

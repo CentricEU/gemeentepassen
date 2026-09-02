@@ -20,8 +20,11 @@ import {
 	UserService,
 } from '@frontend/common';
 import { TranslateService } from '@ngx-translate/core';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { ValidatorService } from 'angular-iban';
 import { Subscription } from 'rxjs';
+
+import { AddCashierModalComponent } from '../add-cashiers-modal/add-cashier-modal';
 
 @Component({
 	selector: 'frontend-general-information',
@@ -31,6 +34,8 @@ import { Subscription } from 'rxjs';
 })
 export class GeneralInformationComponent implements OnInit, OnDestroy {
 	@Input() isReadonly = false;
+	@Input() isAdminEditing = false;
+	@Input() hasDuplicateEmailError = false;
 	@Input() isEditProfileComponent = false;
 
 	@Output() selectedSupplierEvent: EventEmitter<string> = new EventEmitter<string>();
@@ -41,6 +46,8 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 
 	public hasFormControlRequiredErrors = FormUtil.hasFormControlRequiredErrors;
 	public validationFunctionError = FormUtil.validationFunctionError;
+	public validationFunctionErrorForKVK = FormUtil.validationFunctionErrorForKVK;
+	public validationNoSpaceFunctionError = FormUtil.validationNoSpaceFunctionError;
 
 	public dropdownSourceCategories: CategoryDto[] = [];
 	public dropdownSourceSubcategories: ProfileLabelDto[] = [];
@@ -65,18 +72,13 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 	private readonly userService = inject(UserService);
 	private readonly router = inject(Router);
 	private readonly supplierProfileService = inject(SupplierProfileService);
+	private readonly dialogService = inject(DialogService);
 
 	private userInformationSubscription: Subscription;
+	private supplierInformationSubscription: Subscription;
 
 	public get dropdownLabelTypes(): typeof DropdownLabel {
 		return DropdownLabel;
-	}
-
-	public get isCashierEmailsFieldValid(): boolean {
-		if (this.isReadonly || this.isEditProfileComponent) {
-			return true;
-		}
-		return this.cashierEmailsList.size > 0;
 	}
 
 	public ngOnInit(): void {
@@ -85,6 +87,7 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 
 	public ngOnDestroy(): void {
 		this.userInformationSubscription?.unsubscribe();
+		this.supplierInformationSubscription?.unsubscribe();
 	}
 
 	@HostListener('document:keydown.enter', ['$event'])
@@ -101,7 +104,7 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 		switch (value) {
 			case GeneralInfoFormFields.ownerName:
 				return this.translateService.instant('generalInformation.ownerNameFormControlRequired');
-			case GeneralInfoFormFields.catgeory:
+			case GeneralInfoFormFields.category:
 				return this.translateService.instant('generalInformation.catgeoryFormControlRequired');
 			case GeneralInfoFormFields.group:
 				return this.translateService.instant('generalInformation.groupFormControlRequired');
@@ -115,6 +118,12 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 				return this.translateService.instant('generalInformation.commercePostalAdressFormControlRequired');
 			case GeneralInfoFormFields.legalform:
 				return this.translateService.instant('generalInformation.legalFormFormControlRequired');
+			case GeneralInfoFormFields.companyName:
+				return this.translateService.instant('generalInformation.companyNameFormControlRequired');
+			case GeneralInfoFormFields.kvkNumber:
+				return this.translateService.instant('generalInformation.kvkNumberFormControlRequired');
+			case GeneralInfoFormFields.adminEmail:
+				return this.translateService.instant('generalInformation.adminEmailFormControlRequired');
 			default: {
 				return null;
 			}
@@ -153,6 +162,10 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 		}
 
 		this.resetFormValue('subcategory', '');
+
+		if (event === null) {
+			this.dropdownSourceSubcategories = [];
+		}
 
 		if (!this.shouldDisableSubcategoryDropdown(event)) {
 			this.generalInformationForm.get('subcategory')?.disable();
@@ -240,9 +253,60 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 		}
 	}
 
+	public handleBlur(event: unknown): void {
+		if (event === null || event === undefined || event === '') {
+			return;
+		}
+		this.handleKeyPressed();
+	}
+
 	public removeEmailFromList(email: string): void {
+		this.hasDuplicateEmailError = false;
 		this.cashierEmailsList.delete(email);
 		this.updateCashiersOnLocalStorage();
+	}
+
+	public openAddCashiersModal(): void {
+		this.dialogService
+			.message(AddCashierModalComponent, {
+				width: '824px',
+				height: '400px',
+				disableClose: true,
+				ariaLabel: this.translateService.instant('generalInformation.addCashiers'),
+			})
+			?.afterClosed()
+			.subscribe((cashiers: Set<string>) => {
+				this.addCashiersToProfile(cashiers);
+			});
+	}
+
+	public getKVKErrorMessage(): string | null {
+		const kvkControl = this.generalInformationForm.get('kvkNumber');
+		const lengthValue = kvkControl?.value.length;
+		const lengthValidator = (lengthValue ?? 0) > 0 && (lengthValue ?? 0) < 8;
+
+		if (lengthValidator) {
+			return this.translateService.instant('register.kvkFormControlLength');
+		}
+
+		if (kvkControl?.errors?.['required']) {
+			return this.translateService.instant('register.kvkFormControlRequired');
+		}
+
+		return null;
+	}
+
+	private addCashiersToProfile(cashiers: Set<string>): void {
+		if (!cashiers || cashiers.size === 0) {
+			return;
+		}
+		this.supplierProfileService.addCashiersToProfile(cashiers).subscribe((result) => {
+			if (!result) {
+				return;
+			}
+
+			this.cashierEmailsList = new Set<string>([...this.cashierEmailsList, ...cashiers]);
+		});
 	}
 
 	private updateCashiersOnLocalStorage(): void {
@@ -251,18 +315,32 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 
 	private handleKeyPressed(): void {
 		const emailRegex = RegexUtil.emailRegexPattern;
-		const email = this.generalInformationForm.get('cashierEmails')?.value;
+		let emailsInput = this.generalInformationForm.get('cashierEmails')?.value || '';
+		const emails: string[] = emailsInput.split(/[\s,]+/).filter((e: string) => e.trim());
 
-		if (!email || !emailRegex.test(email)) {
-			this.emailError = 'genericFields.email.validEmail';
-			return;
+		for (const email of emails) {
+			const trimmedEmail = email.trim();
+
+			if (!trimmedEmail || !emailRegex.test(trimmedEmail)) {
+				this.emailError = 'genericFields.email.validEmail';
+				this.generalInformationForm.controls['cashierEmails'].setValue(emailsInput);
+				return;
+			}
+
+			if (this.cashierEmailsList.has(trimmedEmail)) {
+				this.emailError = 'inviteSuppliers.emailAlreadyInList';
+				this.generalInformationForm.controls['cashierEmails'].setValue(emailsInput);
+				return;
+			}
+
+			this.hasDuplicateEmailError = false;
+			this.cashierEmailsList.add(trimmedEmail);
+			emailsInput = emailsInput
+				.replace(trimmedEmail, '')
+				.replace(/[\s,]{2,}/g, ' ')
+				.trim();
 		}
 
-		if (this.cashierEmailsList.has(email)) {
-			this.emailError = 'inviteSuppliers.emailAlreadyInList';
-			return;
-		}
-		this.cashierEmailsList.add(email);
 		this.updateCashiersOnLocalStorage();
 		this.emailError = '';
 		this.generalInformationForm.controls['cashierEmails'].setValue('');
@@ -278,21 +356,21 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 				logo: [this.getFieldValue('logo', enumValue, data)],
 				ownerName: [
 					this.getFieldValue('ownerName', enumValue, data, this.userInformationData),
-					[Validators.required],
+					[Validators.required, this.validationNoSpaceFunctionError],
 				],
 				legalForm: [this.getFieldValue('legalForm', enumValue, data), [Validators.required]],
 				category: [this.getFieldValue('category', enumValue, data), [Validators.required]],
 				kvkNumber: [
 					this.getFieldValue('kvkNumber', enumValue, data, this.userInformationData),
-					[Validators.required],
+					[Validators.required, this.validationNoSpaceFunctionError],
 				],
 				companyName: [
 					this.getFieldValue('companyName', enumValue, data, this.userInformationData),
-					[Validators.required],
+					[Validators.required, this.validationNoSpaceFunctionError],
 				],
 				adminEmail: [
 					this.getFieldValue(this.checkFormControlName(enumValue), enumValue, data, this.userInformationData),
-					[Validators.required],
+					[Validators.required, this.validationNoSpaceFunctionError, Validators.email],
 				],
 				group: [this.getFieldValue('group', enumValue, data), [Validators.required]],
 				subcategory: [this.getFieldValue('subcategory', enumValue, data)],
@@ -381,16 +459,14 @@ export class GeneralInformationComponent implements OnInit, OnDestroy {
 	}
 
 	private getSupplierProfileInformation(): void {
-		this.supplierProfileService.supplierProfileInformationObservable.subscribe((data) => {
-			if (!data) {
-				return;
-			}
-			this.setupProfileForm(data);
-		});
+		this.supplierInformationSubscription =
+			this.supplierProfileService.supplierProfileInformationObservable.subscribe((data) => {
+				if (!data) {
+					return;
+				}
+				this.setupProfileForm(data);
+			});
 
-		if (this.supplierProfileService.supplierProfileInformation) {
-			this.setupProfileForm(this.supplierProfileService.supplierProfileInformation);
-		}
 	}
 
 	private setupCashierEmails(supplierId: string): void {

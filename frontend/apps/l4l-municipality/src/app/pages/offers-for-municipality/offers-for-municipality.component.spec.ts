@@ -1,3 +1,4 @@
+import { ElementRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
 	ActionButtons,
@@ -12,7 +13,7 @@ import {
 } from '@frontend/common';
 import { ChipRemainingDialogComponent, TableComponent, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of } from 'rxjs';
 
 import { AppModule } from '../../app.module';
@@ -26,6 +27,7 @@ describe('OffersForMuniciaplityComponent', () => {
 	let supplierProfileService: jest.Mocked<SupplierProfileService>;
 	let dialogService: DialogService;
 	let offerServiceSpy: any;
+	let elementRef: ElementRef;
 
 	beforeEach(async () => {
 		supplierProfileService = {
@@ -50,6 +52,7 @@ describe('OffersForMuniciaplityComponent', () => {
 			providers: [
 				{ provide: DialogService, useValue: dialogServiceMock },
 				{ provide: SupplierProfileService, useValue: supplierProfileService },
+				{ provide: ElementRef, useValue: { nativeElement: document.createElement('div') } },
 				{ provide: PendingOffersService, useValue: offerServiceSpy },
 			],
 		}).compileComponents();
@@ -57,6 +60,7 @@ describe('OffersForMuniciaplityComponent', () => {
 		fixture = TestBed.createComponent(OffersForMuniciaplityComponent);
 		component = fixture.componentInstance;
 		dialogService = TestBed.inject(DialogService);
+		elementRef = TestBed.inject(ElementRef);
 
 		component.offersMunicipalityTable = {
 			initializeData: jest.fn(),
@@ -143,7 +147,7 @@ describe('OffersForMuniciaplityComponent', () => {
 
 		it('should call service on getOffers', () => {
 			component['dataCount'] = 1;
-			component.offersMunicipalityTable = new TableComponent<OfferTableDto>(dialogService);
+			component.offersMunicipalityTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
 			const pages: Page<OfferTableDto>[] = Array.from({ length: 5 }, () => new Page([]));
 			component.offersMunicipalityTable.paginatedData = new PaginatedData<OfferTableDto>(pages, 10, 0);
 			component.loadData(component.offersMunicipalityTable.paginatedData);
@@ -161,6 +165,7 @@ describe('OffersForMuniciaplityComponent', () => {
 					123,
 					'CITIZEN_WITH_PASS',
 					'offerType',
+					0,
 					'validity',
 					GenericStatusEnum.EXPIRED,
 					'test',
@@ -181,6 +186,7 @@ describe('OffersForMuniciaplityComponent', () => {
 					123,
 					'CITIZEN_WITH_PASS',
 					'offerType',
+					3,
 					'validity',
 					GenericStatusEnum.PENDING,
 					'test',
@@ -197,7 +203,13 @@ describe('OffersForMuniciaplityComponent', () => {
 				),
 			];
 			component['dataCount'] = 3;
-			component.offersMunicipalityTable = new TableComponent<OfferTableDto>(dialogService);
+			component.offersMunicipalityTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
+			const mockPanelElement = {
+				scrollTo: jest.fn(),
+			};
+			jest.spyOn(component.offersMunicipalityTable['elementRef'].nativeElement, 'querySelector').mockReturnValue(
+				mockPanelElement,
+			);
 			const pages: Page<OfferTableDto>[] = Array.from({ length: 5 }, () => new Page([]));
 			component.offersMunicipalityTable.paginatedData = new PaginatedData<OfferTableDto>(pages, 10, 0);
 			component.afterDataLoaded(testData);
@@ -216,6 +228,7 @@ describe('OffersForMuniciaplityComponent', () => {
 				123,
 				'CITIZEN_WITH_PASS',
 				'offerType',
+				3,
 				'validity',
 				GenericStatusEnum.PENDING,
 				'test',
@@ -242,6 +255,7 @@ describe('OffersForMuniciaplityComponent', () => {
 			123,
 			'CITIZEN_WITH_PASS',
 			'offerType',
+			3,
 			'validity',
 			GenericStatusEnum.PENDING,
 			'test',
@@ -338,6 +352,7 @@ describe('OffersForMuniciaplityComponent', () => {
 			123,
 			'CITIZEN_WITH_PASS',
 			'offerType',
+			3,
 			'validity',
 			GenericStatusEnum.PENDING,
 			'test',
@@ -388,6 +403,7 @@ describe('OffersForMuniciaplityComponent', () => {
 			123,
 			'CITIZEN_WITH_PASS',
 			'offerType',
+			0,
 			'validity',
 			GenericStatusEnum.PENDING,
 			'test',
@@ -434,6 +450,7 @@ describe('OffersForMuniciaplityComponent', () => {
 				123,
 				'CITIZEN_WITH_PASS',
 				'offerType',
+				0,
 				'validity',
 				GenericStatusEnum.EXPIRED,
 				'test',
@@ -454,6 +471,7 @@ describe('OffersForMuniciaplityComponent', () => {
 				123,
 				'CITIZEN_WITH_PASS',
 				'offerType',
+				0,
 				'validity',
 				GenericStatusEnum.REJECTED,
 				'test',
@@ -474,6 +492,7 @@ describe('OffersForMuniciaplityComponent', () => {
 				123,
 				'CITIZEN_WITH_PASS',
 				'offerType',
+				0,
 				'validity',
 				GenericStatusEnum.PENDING,
 				'test',
@@ -489,10 +508,18 @@ describe('OffersForMuniciaplityComponent', () => {
 				'Benefit 3',
 			),
 		];
+
 		jest.spyOn(component, 'initializeComponentData');
 		offerServiceSpy.countPendingOffers.mockReturnValue(of(4));
 		component['dataCount'] = 4;
-		component.offersMunicipalityTable = new TableComponent<OfferTableDto>(dialogService);
+		component.offersMunicipalityTable = new TableComponent<OfferTableDto>(dialogService, elementRef);
+		const mockPanelElement = {
+			scrollTo: jest.fn(),
+		};
+		jest.spyOn(component.offersMunicipalityTable['elementRef'].nativeElement, 'querySelector').mockReturnValue(
+			mockPanelElement,
+		);
+
 		const pages: Page<OfferTableDto>[] = Array.from({ length: 4 }, () => new Page([]));
 		component.offersMunicipalityTable.paginatedData = new PaginatedData<OfferTableDto>(pages, 10, 0);
 		// const dataPaginated = new PaginatedData<OfferTableDto>(pages, 10, 0);

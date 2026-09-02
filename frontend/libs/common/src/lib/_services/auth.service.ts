@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Inject, Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+
 import { Role } from '../_enums/roles.enum';
 import { UserInfo } from '../_enums/user-information.enum';
 import { DecodedToken } from '../_models/decoded-token.model';
@@ -38,6 +39,10 @@ export class AuthService {
 
 	public get userRole(): RoleDto | undefined {
 		return this.checkIfTokenExists() ? this.token?.role : undefined;
+	}
+
+	public get isSuperAdmin(): boolean {
+		return this.userRole?.name === Role.SUPER_ADMIN;
 	}
 
 	public get jwtToken(): string {

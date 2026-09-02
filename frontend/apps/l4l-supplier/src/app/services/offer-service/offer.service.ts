@@ -31,8 +31,14 @@ export class OfferService {
 		private httpClient: HttpClient,
 	) {}
 
-	public createOffer(offerDto: OfferDto): Observable<OfferDto> {
-		return this.httpClient.post<OfferDto>(`${this.environment.apiPath}/offers`, offerDto, {
+	public createOffer(offerDto: OfferDto): Observable<OfferDto[]> {
+		return this.httpClient.post<OfferDto[]>(`${this.environment.apiPath}/offers`, offerDto, {
+			headers: OfferService.httpHeaders,
+		});
+	}
+
+	public editOffer(offerId: string, offerDto: OfferDto): Observable<OfferDto> {
+		return this.httpClient.patch<OfferDto>(`${this.environment.apiPath}/offers/edit/${offerId}`, offerDto, {
 			headers: OfferService.httpHeaders,
 		});
 	}
@@ -43,12 +49,12 @@ export class OfferService {
 		size: number,
 	): Observable<OfferTableDto[] | []> {
 		let httpParams = new HttpParams()
-			.set('status', filterOfferRequestDto.status || '')
-			.set('benefitId', filterOfferRequestDto.benefitId || '')
+			.set('status', filterOfferRequestDto?.status || '')
+			.set('benefitId', filterOfferRequestDto?.benefitId || '')
 			.set('pageIndex', page.toString())
 			.set('pageSize', size.toString());
 
-		const offerTypeId = filterOfferRequestDto.offerTypeId;
+		const offerTypeId = filterOfferRequestDto?.offerTypeId;
 
 		if (typeof offerTypeId === 'number') {
 			httpParams = httpParams.set('offerTypeId', offerTypeId.toString());
@@ -97,6 +103,10 @@ export class OfferService {
 
 	public reactivateOffer(reactivateOfferDto: ReactivateOfferDto): Observable<void> {
 		return this.httpClient.put<void>(`${this.environment.apiPath}/offers/reactivate`, reactivateOfferDto);
+	}
+
+	public suspendOffer(offerId: string): Observable<void> {
+		return this.httpClient.patch<void>(`${this.environment.apiPath}/offers/suspend/${offerId}`, {});
 	}
 
 	public getOfferRejectionReason(offerId: string): Observable<OfferRejectionReasonDto> {

@@ -14,7 +14,7 @@ public interface OfferSearchHistoryRepository extends JpaRepository<OfferSearchH
     String FIND_TOP_5_SEARCH_KEYWORDS =
             "SELECT o.search_keyword FROM l4l_global.offer_search_history o WHERE o.user_id = :userId ORDER BY o.created_date DESC LIMIT 5";
 
-    Optional<OfferSearchHistory> findBySearchKeywordAndUserId(String searchKeyword, UUID userId);
+    Optional<OfferSearchHistory> findFirstBySearchKeywordAndUserId(String searchKeyword, UUID userId);
 
     @Query(value = FIND_TOP_5_SEARCH_KEYWORDS, nativeQuery = true)
     List<String> findTop5SearchKeywordsByUserIdOrderByCreatedDateDesc(@Param("userId") UUID userId);

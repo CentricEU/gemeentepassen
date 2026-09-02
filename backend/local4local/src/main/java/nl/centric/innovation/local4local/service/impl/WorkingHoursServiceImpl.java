@@ -75,6 +75,36 @@ public class WorkingHoursServiceImpl implements WorkingHoursService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<WorkingHours> createWorkingHoursAsAdmin(List<WorkingHoursDto> workingHoursDtos, Supplier supplier) throws DtoValidateException {
+        validateWorkWeek(workingHoursDtos);
+
+        List<WorkingHoursCreateDto> workingHoursCreateDtos = workingHoursDtos.stream()
+                .map(WorkingHoursDto::toCreateDto)
+                .toList();
+
+        return createWorkingHours(workingHoursCreateDtos, supplier);
+    }
+
+    public void validateWorkWeek(List<WorkingHoursDto> workingHours) throws DtoValidateException {
+        if (workingHours.size() != 7) {
+            throw new DtoValidateException(errorEntityValidate);
+        }
+
+        if (workingHours.stream().noneMatch(WorkingHoursDto::isChecked)) {
+            throw new DtoValidateException(errorEntityValidate);
+        }
+
+        long distinctDays = workingHours.stream()
+                .map(WorkingHoursDto::day)
+                .distinct()
+                .count();
+
+        if (distinctDays != workingHours.size()) {
+            throw new DtoValidateException(errorEntityValidate);
+        }
+    }
+
     private void validateWorkingHours(boolean isChecked, String openTime, String closeTime) throws DtoValidateException {
         if (isChecked &&
                 Time.valueOf(openTime).compareTo(Time.valueOf(closeTime)) >= 0) {

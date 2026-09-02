@@ -1,6 +1,7 @@
 export enum OfferTypeEnum {
-	percentage = 1,
+	storeCredit = 1,
 	bogo = 2,
-	credit = 3,
-	freeEntry = 4
+	membershipFee = 3,
+	freeEntry = 4,
+	freeProduct = 5
 }

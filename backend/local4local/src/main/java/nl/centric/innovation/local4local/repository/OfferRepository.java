@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import nl.centric.innovation.local4local.dto.OfferMobileListDto;
-import nl.centric.innovation.local4local.dto.OfferMobileMapLightDto;
+import nl.centric.innovation.local4local.dto.OfferMobileMapLightView;
 import nl.centric.innovation.local4local.dto.OfferStatusCountsDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,10 +33,21 @@ public interface OfferRepository extends JpaRepository<Offer, UUID>, OfferReposi
                 )
             """;
 
+    String BENEFIT_ACCESS_FOR_OFFER_BY_PASSHOLDER = """
+                AND EXISTS (
+                    SELECT 1
+                    FROM Benefit b
+                    JOIN b.citizenGroups cg
+                    JOIN Passholder ph ON ph.citizenGroup.id = cg.id
+                    WHERE b = o.benefit
+                    AND ph.id = :passholderId
+                )
+            """;
+
     String FIND_ALL_OFFERS_ORDERED_BY_DISTANCE_TO_USER = """
-            SELECT new nl.centric.innovation.local4local.dto.OfferMobileListDto(o,
-            ST_Distance(Geography(ST_SetSRID(ST_MakePoint(:longitude,:latitude),4326)), o.coordinates) * 1.0 AS distance,
-            CASE WHEN o.startDate <= :currentDay THEN true ELSE false END AS isActive)
+            SELECT o,
+            ST_Distance(Geography(ST_SetSRID(ST_MakePoint(:longitude,:latitude),4326)), o.coordinates) AS distance,
+            CASE WHEN o.startDate <= :currentDay THEN true ELSE false END AS isActive 
             FROM Offer o JOIN o.supplier supplier where supplier.tenant.id = :tenantId AND o.status = 'ACTIVE'
             AND o.isActive = true
             """ + BENEFIT_ACCESS_FOR_OFFER + """
@@ -44,18 +55,34 @@ public interface OfferRepository extends JpaRepository<Offer, UUID>, OfferReposi
             order by ST_Distance(Geography(ST_SetSRID(ST_MakePoint(:longitude,:latitude),4326)),o.coordinates) asc
             """;
     String GET_OFFER_DISTANCE = """
-            SELECT (ST_Distance(Geography(ST_SetSRID(ST_MakePoint(:longitude,:latitude),4326)), offer.coordinates) * 1.0) FROM Offer offer WHERE offer.id = :id
+            SELECT (ST_Distance(Geography(ST_SetSRID(ST_MakePoint(:longitude,:latitude),4326)), offer.coordinates)) FROM Offer offer WHERE offer.id = :id
             """;
 
     String FIND_ACTIVE_OFFERS_IN_VIEWPORT = """
-            SELECT new nl.centric.innovation.local4local.dto.OfferMobileMapLightDto(
-            o,
-            CASE WHEN o.startDate <= :currentDay THEN true ELSE false END AS isActive
-            ) FROM Offer o JOIN o.supplier supplier
-            WHERE o.isActive = true AND o.status='ACTIVE' AND supplier.tenant.id = :tenantId
-            AND ST_Within(o.coordinates, ST_MakeEnvelope(:minLongitude, :minLatitude, :maxLongitude, :maxLatitude, 4326)) = true
-            AND (:offerType = -1 OR o.offerType.id = :offerType)
+            SELECT
+                o.id AS id,
+                o.title AS title,
+                o.description AS description,
+                o.offerType AS offerType,
+                o.coordinatesString AS coordinatesString,
+                CASE WHEN o.startDate <= :currentDay THEN true ELSE false END AS isActive
+            FROM Offer o
+            JOIN o.supplier supplier
+            WHERE o.isActive = true
+              AND o.status = 'ACTIVE'
+              AND supplier.tenant.id = :tenantId
+              AND ST_Within(
+                    o.coordinates,
+                    ST_MakeEnvelope(:minLongitude, :minLatitude, :maxLongitude, :maxLatitude, 4326)
+                  )
+              AND (:offerType = -1 OR o.offerType.id = :offerType)
             """ + BENEFIT_ACCESS_FOR_OFFER;
+
+    String FIND_ACTIVE_OFFERS_FOR_PASSHOLDER = """
+            SELECT o FROM Offer o JOIN o.supplier supplier
+            WHERE o.isActive = true AND o.status='ACTIVE' AND supplier.tenant.id = :tenantId
+            """ + BENEFIT_ACCESS_FOR_OFFER_BY_PASSHOLDER;
+
     String COUNT_OFFERS_BY_STATUS_QUERY = """
             SELECT new nl.centric.innovation.local4local.dto.OfferStatusCountsDto(
                             COUNT(CASE WHEN o.status = 'ACTIVE' THEN 1 END),
@@ -81,9 +108,9 @@ public interface OfferRepository extends JpaRepository<Offer, UUID>, OfferReposi
 
 
     String FIND_SEARCHED_OFFERS_ORDERED_BY_DISTANCE_TO_USER = """
-            SELECT new nl.centric.innovation.local4local.dto.OfferMobileListDto(o,
-            ST_Distance(Geography(ST_SetSRID(ST_MakePoint(:longitude,:latitude),4326)), o.coordinates) * 1.0 AS distance,
-            CASE WHEN o.startDate <= :currentDay THEN true ELSE false END AS isActive)
+            SELECT o,
+            ST_Distance(Geography(ST_SetSRID(ST_MakePoint(:longitude,:latitude),4326)), o.coordinates) AS distance,
+            CASE WHEN o.startDate <= :currentDay THEN true ELSE false END AS isActive
             FROM Offer o JOIN o.supplier supplier WHERE (
                 LOWER(o.title) LIKE LOWER(CONCAT(:keyword, '%'))
                 OR LOWER(o.title) LIKE LOWER(CONCAT('% ', :keyword, '%'))
@@ -96,15 +123,26 @@ public interface OfferRepository extends JpaRepository<Offer, UUID>, OfferReposi
             """;
 
     String FIND_ACTIVE_SEARCHED_OFFERS_IN_VIEWPORT = """
-            SELECT new nl.centric.innovation.local4local.dto.OfferMobileMapLightDto(
-            o,
-            CASE WHEN o.startDate <= :currentDay THEN true ELSE false END AS isActive
-            ) FROM Offer o JOIN o.supplier supplier
+            SELECT
+                o.id AS id,
+                o.title AS title,
+                o.description AS description,
+                o.offerType AS offerType,
+                o.coordinatesString AS coordinatesString,
+                CASE WHEN o.startDate <= :currentDay THEN true ELSE false END AS isActive
+            FROM Offer o
+            JOIN o.supplier supplier
             WHERE (
                 LOWER(o.title) LIKE LOWER(CONCAT(:keyword, '%')) 
                 OR LOWER(o.title) LIKE LOWER(CONCAT('% ', :keyword, '%'))
-            ) AND o.isActive = true AND o.status='ACTIVE' AND supplier.tenant.id = :tenantId
-            AND ST_Within(o.coordinates, ST_MakeEnvelope(:minLongitude, :minLatitude, :maxLongitude, :maxLatitude, 4326)) = true
+            )
+            AND o.isActive = true
+            AND o.status = 'ACTIVE'
+            AND supplier.tenant.id = :tenantId
+            AND ST_Within(
+                o.coordinates,
+                ST_MakeEnvelope(:minLongitude, :minLatitude, :maxLongitude, :maxLatitude, 4326)
+            )
             AND (:offerType = -1 OR o.offerType.id = :offerType)
             """ + BENEFIT_ACCESS_FOR_OFFER;
 
@@ -134,14 +172,14 @@ public interface OfferRepository extends JpaRepository<Offer, UUID>, OfferReposi
                                                                        @Param("offerType") Integer offerType);
 
     @Query(FIND_ACTIVE_OFFERS_IN_VIEWPORT)
-    List<OfferMobileMapLightDto> findActiveOffersInViewport(@Param("minLatitude") Double minLatitude,
-                                                            @Param("maxLatitude") Double maxLatitude,
-                                                            @Param("minLongitude") Double minLongitude,
-                                                            @Param("maxLongitude") Double maxLongitude,
-                                                            @Param("currentDay") LocalDate currentDay,
-                                                            @Param("tenantId") UUID tenantId,
-                                                            @Param("offerType") Integer offerType,
-                                                            @Param("userId") UUID userId);
+    List<OfferMobileMapLightView> findActiveOffersInViewport(@Param("minLatitude") Double minLatitude,
+                                                             @Param("maxLatitude") Double maxLatitude,
+                                                             @Param("minLongitude") Double minLongitude,
+                                                             @Param("maxLongitude") Double maxLongitude,
+                                                             @Param("currentDay") LocalDate currentDay,
+                                                             @Param("tenantId") UUID tenantId,
+                                                             @Param("offerType") Integer offerType,
+                                                             @Param("userId") UUID userId);
 
     @Query(GET_OFFER_DISTANCE)
     Double getOfferDistance(UUID id, @Param("latitude") Double latitude,
@@ -153,8 +191,8 @@ public interface OfferRepository extends JpaRepository<Offer, UUID>, OfferReposi
     @Query(FIND_BY_ID_AND_STATUS_WITH_BENEFIT_ACCESS)
     @EntityGraph(value = "include-supplier-restriction-profile-graph", type = EntityGraph.EntityGraphType.LOAD)
     Optional<Offer> findByIdAndStatusWithBenefitAccess(@Param("id") UUID id,
-                                                     @Param("status") GenericStatusEnum status,
-                                                     @Param("userId") UUID userId);
+                                                       @Param("status") GenericStatusEnum status,
+                                                       @Param("userId") UUID userId);
 
     @EntityGraph(value = "include-supplier-graph", type = EntityGraph.EntityGraphType.LOAD)
     Page<Offer> findAllBySupplierIdAndIsActive(UUID supplierId, boolean isActive, Pageable pageable);
@@ -177,13 +215,20 @@ public interface OfferRepository extends JpaRepository<Offer, UUID>, OfferReposi
             @Param("userId") UUID userId);
 
     @Query(FIND_ACTIVE_SEARCHED_OFFERS_IN_VIEWPORT)
-    List<OfferMobileMapLightDto> findActiveSearchOffersInViewport(@Param("minLatitude") Double minLatitude,
-                                                                  @Param("maxLatitude") Double maxLatitude,
-                                                                  @Param("minLongitude") Double minLongitude,
-                                                                  @Param("maxLongitude") Double maxLongitude,
-                                                                  @Param("currentDay") LocalDate currentDay,
-                                                                  @Param("tenantId") UUID tenantId,
-                                                                  @Param("offerType") Integer offerType,
-                                                                  @Param("userId") UUID userId,
-                                                                  @Param("keyword") String searchKeyword);
+    List<OfferMobileMapLightView> findActiveSearchOffersInViewport(@Param("minLatitude") Double minLatitude,
+                                                                   @Param("maxLatitude") Double maxLatitude,
+                                                                   @Param("minLongitude") Double minLongitude,
+                                                                   @Param("maxLongitude") Double maxLongitude,
+                                                                   @Param("currentDay") LocalDate currentDay,
+                                                                   @Param("tenantId") UUID tenantId,
+                                                                   @Param("offerType") Integer offerType,
+                                                                   @Param("userId") UUID userId,
+                                                                   @Param("keyword") String searchKeyword);
+
+    Optional<Offer> findByIdAndSupplierId(UUID offerId, UUID supplierId);
+
+    @Query(FIND_ACTIVE_OFFERS_FOR_PASSHOLDER)
+    @EntityGraph(value = "include-supplier-graph", type = EntityGraph.EntityGraphType.LOAD)
+    List<Offer> findAllActiveOffersForPassholderId(@Param("passholderId") UUID passholderId,
+                                                   @Param("tenantId") UUID tenantId);
 }

@@ -7,11 +7,11 @@
 	}
 
 	::ng-deep {
-		centric-panel {
+		windmill-card {
 			height: 100%;
 		}
 
-		.panel-content {
+		.card-content {
 			@include mixins.flex(column, flex-start, flex-start);
 			gap: 16px;
 			height: 100%;

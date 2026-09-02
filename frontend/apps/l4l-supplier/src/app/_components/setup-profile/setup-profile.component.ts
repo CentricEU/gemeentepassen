@@ -9,6 +9,7 @@ import {
 	NavigationService,
 	PdokService,
 	PdokUtil,
+	SilentErrorCode,
 	SupplierCoordinates,
 	SupplierProfileDto,
 	SupplierProfilePatchDto,
@@ -23,10 +24,10 @@ import {
 	WorkingHoursEditComponent,
 } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { CentricHorizontalStepperComponent } from '@windmill/ng-windmill/stepper';
 import { ToastrService } from '@windmill/ng-windmill/toastr';
-import { of, switchMap } from 'rxjs';
+import { catchError, finalize, of, switchMap } from 'rxjs';
 
 import { SetupProfileService } from '../../services/supplier-profile-service/setup-profile-service/setup-profile.service';
 
@@ -45,12 +46,15 @@ export class SetupProfileComponent implements AfterViewInit {
 
 	public maxLines = 1;
 	public shouldDisplaySuccessfulSetupDialog = false;
+	public hasDuplicateEmailError = false;
 	public contactInformationForm: FormGroup = new FormGroup([]);
 	public generalInformationForm: FormGroup = new FormGroup([]);
 
 	public formatDate = FormUtil.formatDate;
 
 	private supplierId: string;
+
+	private isSaving = false;
 
 	constructor(
 		@Inject(MAT_DIALOG_DATA) public data: any,
@@ -69,7 +73,7 @@ export class SetupProfileComponent implements AfterViewInit {
 	}
 
 	public get isFirstStepValid(): boolean {
-		return this.generalInformationForm?.valid && this.generalInformation?.isCashierEmailsFieldValid;
+		return this.generalInformationForm?.valid;
 	}
 
 	public ngAfterViewInit(): void {
@@ -102,7 +106,7 @@ export class SetupProfileComponent implements AfterViewInit {
 		const generalFormInvalid = this.generalInformationForm?.invalid;
 		const workingHourEditFormInvalid = !this.workingHoursEdit?.isFormValid();
 
-		return contactFormInvalid || generalFormInvalid || workingHourEditFormInvalid;
+		return contactFormInvalid || generalFormInvalid || workingHourEditFormInvalid || this.isSaving;
 	}
 
 	public shouldDisableNextButton(): boolean {
@@ -122,7 +126,9 @@ export class SetupProfileComponent implements AfterViewInit {
 	}
 
 	public saveSupplierSetupProfile(): void {
-		this.dialogRef.close();
+		if (this.isSaving) return;
+		this.isSaving = true;
+
 		const supplierProfileDto = this.mapSupplierProfile();
 
 		this.pdokService
@@ -139,14 +145,23 @@ export class SetupProfileComponent implements AfterViewInit {
 
 					const coordinates: SupplierCoordinates = PdokUtil.getCoordinatesFromPdok(data);
 					supplierProfileDto.supplierProfilePatchDto.latlon = coordinates;
-					return this.setupProfileService.saveSupplierProfile(supplierProfileDto);
+					this.hasDuplicateEmailError = false;
+					this.cdr.detectChanges();
+					return this.setupProfileService.saveSupplierProfile(supplierProfileDto).pipe(
+						catchError((errors) => {
+							this.checkOnSaveProfileError(errors.error);
+							return of(null);
+						}),
+					);
 				}),
+				finalize(() => (this.isSaving = false)),
 			)
 			.subscribe((result) => {
 				if (!result) {
 					return;
 				}
 
+				this.dialogRef.close();
 				this.displayApprovalWaitingPopup();
 				this.removeLocalStorageData();
 				this.updateUserInformation();
@@ -161,6 +176,22 @@ export class SetupProfileComponent implements AfterViewInit {
 		this.authService.logout();
 		this.dialogRef.close();
 		this.navigationService.reloadCurrentRoute();
+	}
+
+	private checkOnSaveProfileError(error: number): void {
+		if (error === SilentErrorCode.cashierEmailDuplicated) {
+			this.hasDuplicateEmailError = true;
+			this.horizontalStepper.selectedIndex = 0;
+			this.cdr.detectChanges();
+			setTimeout(() => this.scrollToBottom(), 0);
+		}
+	}
+
+	private scrollToBottom(): void {
+		const container = document.querySelector('div[mat-dialog-content]') as HTMLElement | null;
+		if (container) {
+			container.scrollTo({ top: container.scrollHeight });
+		}
 	}
 
 	private scrollToTop(): void {
@@ -194,6 +225,7 @@ export class SetupProfileComponent implements AfterViewInit {
 		localStorage.removeItem('generalFormInformation');
 		localStorage.removeItem('contactFormInformation');
 		localStorage.removeItem('workingHours');
+		localStorage.removeItem('generalInformationCashiers');
 	}
 
 	private mapSupplierProfile(): SupplierProfileDto {

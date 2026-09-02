@@ -4,10 +4,10 @@ import { ChangePasswordComponent, LoginComponent } from '@frontend/common-ui';
 import { EmailActionComponent } from '@frontend/common-ui';
 
 import { RegistrationSuccessfulComponent } from './_components/registration-successful/registration-successful.component';
-import { SupplierEditComponent } from './_components/supplier-edit/supplier-edit.component';
 import { DashboardComponent } from './_pages/dashboard/dashboard.component';
 import { OfferValidationComponent } from './_pages/offer-validation/offer-validation.component';
 import { OffersComponent } from './_pages/offers/offers.component';
+import { ProfileComponent } from './_pages/profile/profile.component';
 import { TransactionsComponent } from './_pages/transactions/transactions.component';
 import { SupplierRegisterComponent } from './supplier-register/supplier-register.component';
 
@@ -15,7 +15,12 @@ export const appRoutes: Route[] = [
 	{ path: '', component: DashboardComponent, canActivate: [authGuard] },
 	{
 		path: commonRoutingConstants.editProfile,
-		component: SupplierEditComponent,
+		component: ProfileComponent,
+		canActivate: [authGuardSupplier],
+	},
+	{
+		path: commonRoutingConstants.history,
+		component: ProfileComponent,
 		canActivate: [authGuardSupplier],
 	},
 	{

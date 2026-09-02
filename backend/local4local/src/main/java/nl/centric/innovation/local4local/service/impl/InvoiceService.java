@@ -9,7 +9,7 @@ import nl.centric.innovation.local4local.dto.OfferTransactionInvoiceDto;
 import nl.centric.innovation.local4local.entity.SupplierProfile;
 import nl.centric.innovation.local4local.entity.Tenant;
 import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
-import nl.centric.innovation.local4local.exceptions.InvoiceGenerationException;
+import nl.centric.innovation.local4local.exceptions.ExportPdfGenerationException;
 import nl.centric.innovation.local4local.util.DateUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,7 @@ public class InvoiceService {
     /**
      * Generates a PDF invoice based on the provided invoice data and language.
      *
-     * @throws InvoiceGenerationException if an error occurs during PDF generation, e.g. not closing the stream
+     * @throws ExportPdfGenerationException if an error occurs during PDF generation, e.g. not closing the stream
      */
     public byte[] generateInvoice(InvoiceDto invoiceDto, String language) {
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -50,7 +50,7 @@ public class InvoiceService {
             HtmlConverter.convertToPdf(htmlContent, writer);
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
-            throw new InvoiceGenerationException("Error generating invoice PDF", e);
+            throw new ExportPdfGenerationException("Error generating invoice PDF", e);
         }
     }
 

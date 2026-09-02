@@ -1,6 +1,7 @@
 package nl.centric.innovation.local4local.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.dto.TenantBankInformationDto;
 import nl.centric.innovation.local4local.dto.TenantDto;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,7 +46,7 @@ public class TenantController {
             description = "Retrieves the details of a specific tenant by its unique identifier."
     )
     @GetMapping("/{tenantId}")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPPLIER, Role.ROLE_CITIZEN, Role.ROLE_CASHIER})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN, Role.ROLE_SUPPLIER, Role.ROLE_CITIZEN, Role.ROLE_CASHIER})
     public ResponseEntity<TenantViewDto> getTenantById(@PathVariable("tenantId") UUID tenantId) throws DtoValidateException {
         TenantViewDto tenant = tenantService.findByTenantId(tenantId);
         return ResponseEntity.ok(tenant);
@@ -57,7 +57,7 @@ public class TenantController {
             description = "Creates a new tenant with the provided details and returns the created tenant's information."
     )
     @PostMapping()
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     public ResponseEntity<TenantViewDto> saveTenant(@Valid @RequestBody TenantDto tenant) {
         return ResponseEntity.status(HttpStatus.CREATED).body(tenantService.save(tenant));
     }
@@ -67,7 +67,7 @@ public class TenantController {
             description = "Sets up or updates the bank information for a tenant."
     )
     @PatchMapping("/bank-information")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     public ResponseEntity<Void> setupTenantBankInformation(@RequestBody @Valid TenantBankInformationDto tenantBankInformationDto)
             throws DtoValidateException {
         tenantService.saveTenantBankInformation(tenantBankInformationDto);

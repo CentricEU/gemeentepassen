@@ -19,7 +19,8 @@ export default StyleSheet.create({
 		fontSize: BASE_UNIT,
 		fontWeight: 'bold',
 		marginBottom: BASE_UNIT,
-		marginLeft: BASE_UNIT
+		marginLeft: BASE_UNIT,
+		color: colors.GREY_SCALE_7
 	},
 	noTransactionsText: {
 		fontSize: 14,

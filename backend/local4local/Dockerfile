@@ -18,7 +18,7 @@ RUN aws codeartifact get-authorization-token --domain innovation-centric --domai
 RUN aws secretsmanager get-secret-value --region eu-west-2 --secret-id cityPasses/${SECRET} --query SecretString --output text > ./secret.json
 
 #stage 2 - build project
-FROM maven:3-amazoncorretto-17 AS builder
+FROM maven:3-amazoncorretto-25 AS builder
 WORKDIR /app
 COPY --from=codeartifact /app/result .
 COPY --from=codeartifact /app/secret.json .
@@ -53,7 +53,7 @@ RUN mvn flyway:migrate --settings settings.xml
 RUN mvn install --settings settings.xml
 
 #stage 3 - run project
-FROM amazoncorretto:17-al2-jdk
+FROM amazoncorretto:25-al2023-jdk
 WORKDIR /app
 COPY --from=builder /app/target/local4local-0.0.1-SNAPSHOT.jar .
 

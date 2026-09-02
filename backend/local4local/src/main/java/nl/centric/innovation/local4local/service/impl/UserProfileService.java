@@ -32,21 +32,23 @@ public class UserProfileService {
 
     @Transactional
     public UserProfileDto save(UserProfileDto userProfileDto) throws DtoValidateNotFoundException {
-        Optional<User> user = userRepository.findById(getUserId());
-        if (user.isEmpty()) {
-            throw new DtoValidateNotFoundException(errorEntityNotFound);
+        User user = userRepository.findById(getUserId())
+                .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
+
+        user.setLastName(userProfileDto.lastName());
+        user.setFirstName(userProfileDto.firstName());
+
+        UserProfile userProfile = user.getUserProfile();
+
+        if (userProfile == null) {
+            userProfile = new UserProfile();
+            userProfile.setUser(user);
+            user.setUserProfile(userProfile);
         }
-        User updatedUser = user.get();
-        updatedUser.setLastName(userProfileDto.lastName());
-        updatedUser.setFirstName(userProfileDto.firstName());
 
-        UserProfile userProfile = UserProfile.userProfileDtoToEntity(userProfileDto);
-        userProfile.setUser(user.get());
-        userProfile.setId(updatedUser.getId());
-        updatedUser.setUserProfile((userProfile));
-
-        User savedUser = userRepository.save(updatedUser);
-        return UserProfileDto.entityToUserProfileDto(savedUser.getUserProfile());
+        userProfile.setAddress(userProfileDto.address());
+        userProfile.setTelephone(userProfileDto.telephone());
+        return UserProfileDto.entityToUserProfileDto(userProfile);
     }
 
     public UserProfileDto findByUserId() throws DtoValidateNotFoundException {

@@ -15,7 +15,6 @@ public record DiscountCodeViewDto(@NonNull String companyName,
                                   @NonNull OfferType offerType,
                                   @NonNull LocalDate expirationDate,
                                   @NonNull String code,
-
                                   @NonNull Boolean isActive,
                                   String companyLogo,
                                   Double amount,

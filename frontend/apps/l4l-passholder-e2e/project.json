@@ -1,0 +1,31 @@
+{
+  "name": "l4l-passholder-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/l4l-passholder-e2e/src",
+  "tags": [],
+  "implicitDependencies": [
+    "l4l-passholder"
+  ],
+  "targets": {
+    "e2e": {
+      "executor": "@nx/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/l4l-passholder-e2e/cypress.json",
+        "testingType": "e2e",
+        "devServerTarget": "l4l-passholder:serve:development"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "l4l-passholder:serve:production"
+        },
+        "ci": {
+          "devServerTarget": "l4l-passholder:serve-static"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

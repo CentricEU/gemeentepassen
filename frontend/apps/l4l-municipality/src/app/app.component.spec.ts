@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthMock, AuthService, MultilanguageService, SidenavService, Tenant, TenantService } from '@frontend/common';
-import { CommonUiModule, WindmillModule } from '@frontend/common-ui';
+import { AppLoaderComponent, BreadcrumbsComponent, CommonUiModule, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
@@ -34,6 +34,8 @@ describe('AppComponent', () => {
 
 		await TestBed.configureTestingModule({
 			imports: [
+				AppLoaderComponent,
+				BreadcrumbsComponent,
 				RouterTestingModule,
 				HttpClientModule,
 				BrowserAnimationsModule,
@@ -54,7 +56,7 @@ describe('AppComponent', () => {
 
 		fixture = TestBed.createComponent(AppComponent);
 		component = fixture.componentInstance;
-		authService = TestBed.get(AuthService) as AuthMock;
+		authService = TestBed.inject(AuthService) as unknown as AuthMock;
 	});
 
 	it('should not call tenantService.getTenant and tenant should not be present after authService emits false', () => {

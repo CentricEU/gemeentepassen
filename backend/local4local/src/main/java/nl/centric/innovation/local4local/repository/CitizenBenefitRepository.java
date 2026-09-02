@@ -11,5 +11,6 @@ import java.util.UUID;
 public interface CitizenBenefitRepository extends JpaRepository<CitizenBenefit, UUID> {
     Optional<CitizenBenefit> findByUserIdAndBenefitId(UUID userId, UUID benefitId);
     List<CitizenBenefit> findByUserId(UUID userId);
+    void deleteByUserId(UUID userId);
 
 }

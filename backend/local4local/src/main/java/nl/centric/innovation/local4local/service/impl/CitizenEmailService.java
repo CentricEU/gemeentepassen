@@ -1,7 +1,6 @@
 package nl.centric.innovation.local4local.service.impl;
 
 
-import com.amazonaws.services.simpleemail.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.centric.innovation.local4local.entity.Tenant;

@@ -8,7 +8,7 @@ import {
 	UserInfo,
 } from '@frontend/common';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { WindmillTabComponent } from '@windmill/ng-windmill/tabs';
 import { ToastrService } from '@windmill/ng-windmill/toastr';
 
@@ -29,6 +29,7 @@ export class SuppliersListComponent implements OnInit, OnDestroy {
 
 	public suppliersCount: number;
 	public requestsCount: number;
+	public actionableRequestsCount: number;
 	public invitationsCount: number;
 
 	public tabIndex = 0;
@@ -82,6 +83,8 @@ export class SuppliersListComponent implements OnInit, OnDestroy {
 
 	public shouldDisplayRequestsTable = (): boolean => this.requestsCount > 0;
 
+	public shouldDisplayRequestsBadge = (): boolean => this.actionableRequestsCount > 0;
+
 	public shouldDisplayManageColumns = (): boolean => this.tabIndex === 0;
 
 	public shouldDisplayInviteSuppliers = (): boolean => {
@@ -103,16 +106,17 @@ export class SuppliersListComponent implements OnInit, OnDestroy {
 	}
 
 	public manageColumns(): void {
-		this.activeSuppliers.manageColumns();
+		this.activeSuppliers?.manageColumns();
 	}
 
 	public updateSuppliersNumber(data: number, actionType: SupplierStatus): void {
 		this.requestsCount = data;
+		this.refreshActionableRequestsCount();
 		this.suppliersCount++;
 		this.displaySuccessToaster(
 			actionType === SupplierStatus.APPROVED ? 'suppliersApproval.successfulApproval' : 'rejectSupplier.success',
 		);
-		this.activeSuppliers.initializeComponentData();
+		this.activeSuppliers?.initializeComponentData();
 	}
 
 	public openInviteSuppliersModal(): void {
@@ -165,10 +169,26 @@ export class SuppliersListComponent implements OnInit, OnDestroy {
 			this.suppliersCount = data;
 		});
 
-		const statuses = [SupplierStatus.PENDING, SupplierStatus.REJECTED];
+		const statuses = [SupplierStatus.PENDING, SupplierStatus.REJECTED, SupplierStatus.CREATED];
 
 		this.municipalitySupplierService.countSuppliers(tenantId, statuses).subscribe((data) => {
 			this.requestsCount = data;
+		});
+
+		this.refreshActionableRequestsCount(tenantId);
+	}
+
+	private refreshActionableRequestsCount(tenantId?: string): void {
+		const currentTenantId = tenantId ?? this.authService.extractSupplierInformation(UserInfo.TenantId);
+
+		if (!currentTenantId) {
+			this.actionableRequestsCount = 0;
+			return;
+		}
+
+		const actionableStatuses = [SupplierStatus.PENDING, SupplierStatus.CREATED];
+		this.municipalitySupplierService.countSuppliers(currentTenantId, actionableStatuses).subscribe((data) => {
+			this.actionableRequestsCount = data;
 		});
 	}
 

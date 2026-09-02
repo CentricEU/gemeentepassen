@@ -1,3 +1,4 @@
+import { StatusUpdate } from '../_enums/status-update.enum';
 import { SupplierStatus } from '../_enums/supplier-status.enum';
 
 export class UserDto {
@@ -7,7 +8,7 @@ export class UserDto {
 	public status: SupplierStatus;
 	public isProfileSet: boolean;
 	public supplierId: string;
-	public hasStatusUpdate: boolean;
+	public statusUpdate?: StatusUpdate;
 	public isApproved: boolean;
 	public tenantName?: string;
 	public firstName: string;

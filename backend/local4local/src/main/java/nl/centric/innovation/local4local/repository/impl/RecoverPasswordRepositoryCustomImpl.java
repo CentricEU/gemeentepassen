@@ -1,12 +1,10 @@
 package nl.centric.innovation.local4local.repository.impl;
 
+import jakarta.persistence.StoredProcedureQuery;
 import nl.centric.innovation.local4local.repository.GenericRepository;
 import nl.centric.innovation.local4local.repository.RecoverPasswordRepositoryCustom;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.StoredProcedureQuery;
 
 @Repository
 public class RecoverPasswordRepositoryCustomImpl extends GenericRepository implements RecoverPasswordRepositoryCustom {

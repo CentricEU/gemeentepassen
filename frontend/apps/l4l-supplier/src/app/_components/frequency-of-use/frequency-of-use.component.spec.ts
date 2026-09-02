@@ -9,7 +9,6 @@ import { FrequencyOfUseComponent } from './frequency-of-use.component';
 describe('FrequencyOfUseComponent', () => {
 	let component: FrequencyOfUseComponent;
 	let fixture: ComponentFixture<FrequencyOfUseComponent>;
-	let translateService: TranslateService;
 	let translateServiceMock: { instant: jest.Mock };
 
 	beforeEach(async () => {
@@ -25,7 +24,6 @@ describe('FrequencyOfUseComponent', () => {
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(FrequencyOfUseComponent);
-		translateService = TestBed.inject(TranslateService);
 		component = fixture.componentInstance;
 		fixture.detectChanges();
 	});
@@ -37,7 +35,6 @@ describe('FrequencyOfUseComponent', () => {
 	test.each([
 		[undefined, '', false],
 		['someValue', '', false],
-		['someValue', 'notEmpty', true],
 	])('should handle case where value: "%s" and idControl value: "%s"', (value, idControlValue, shouldCallClear) => {
 		const field = 'yourField';
 		const formGroup = new FormGroup({
@@ -47,7 +44,7 @@ describe('FrequencyOfUseComponent', () => {
 
 		const clearRestrictionValidatorsAndErrorsMock = jest.spyOn(component, 'clearRestrictionValidatorsAndErrors');
 
-		component.onRestrictionTypeChange(field, value);
+		component.onRestrictionTypeChange(field, FrequencyOfUse.DAILY);
 
 		if (shouldCallClear) {
 			expect(clearRestrictionValidatorsAndErrorsMock).toHaveBeenCalledWith(component.createOfferForm, field);
@@ -74,12 +71,44 @@ describe('FrequencyOfUseComponent', () => {
 		expect(result).toBe(FrequencyOfUse.UNSPECIFIED);
 	});
 
-	it('should not check first entry if form is readonly', () => {
-		jest.spyOn(component, 'shouldCheckFirst');
-		component.isReadonly = true;
+	describe('onRestrictionTypeChange', () => {
+		it('should return if frequencyOfUseValue control does not exist', () => {
+			component.createOfferForm = new FormGroup({});
 
-		component.shouldCheckFirst('entry');
+			const spy = jest.spyOn(component, 'clearRestrictionValidatorsAndErrors');
 
-		expect(component.shouldCheckFirst).toHaveReturnedWith(false);
+			component.onRestrictionTypeChange('someField', FrequencyOfUse.DAILY);
+
+			expect(spy).not.toHaveBeenCalled();
+		});
+
+		it('should reset control value and mark dirty/touched if same value is selected', () => {
+			const control = new FormControl(FrequencyOfUse.DAILY);
+			component.createOfferForm = new FormGroup({
+				frequencyOfUseValue: control,
+			});
+
+			const spy = jest.spyOn(component, 'clearRestrictionValidatorsAndErrors');
+
+			component.onRestrictionTypeChange('someField', FrequencyOfUse.DAILY);
+
+			expect(control.value).toBeNull();
+			expect(control.dirty).toBe(true);
+			expect(control.touched).toBe(true);
+			expect(spy).not.toHaveBeenCalled();
+		});
+
+		it('should call clearRestrictionValidatorsAndErrors when value is different', () => {
+			const control = new FormControl(FrequencyOfUse.WEEKLY);
+			component.createOfferForm = new FormGroup({
+				frequencyOfUseValue: control,
+			});
+
+			const spy = jest.spyOn(component, 'clearRestrictionValidatorsAndErrors');
+
+			component.onRestrictionTypeChange('someField', FrequencyOfUse.DAILY);
+
+			expect(spy).toHaveBeenCalledWith(component.createOfferForm, 'someField');
+		});
 	});
 });

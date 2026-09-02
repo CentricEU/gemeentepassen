@@ -6,7 +6,7 @@
 		[attr.ariaLabel]="'general.button.close' | translate"
 		[ariaLabelTranslation]="'general.button.close'"
 		(click)="close()">
-		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+		<windmill-icon [svgIcon]="'cancel_b'" [size]="'20'"></windmill-icon>
 	</button>
 </section>
 <section mat-dialog-content>
@@ -42,16 +42,20 @@
 							</span>
 						</ng-container>
 					}
-					<ng-container errors *ngIf="hasFormControlRequiredErrors('invitationMessage', inviteSuppliersForm)">
-						<span class="centric-error-message">
-							{{ 'inviteSuppliers.invitationMessageRequired' | translate }}
-						</span>
-					</ng-container>
-					<ng-container errors *ngIf="inviteSuppliersForm.get('invitationMessage')?.hasError('isHTML')">
-						<span class="centric-error-message">
-							{{ 'errors.htmlContent' | translate }}
-						</span>
-					</ng-container>
+					@if (hasFormControlRequiredErrors('invitationMessage', inviteSuppliersForm)) {
+						<ng-container errors>
+							<span class="centric-error-message">
+								{{ 'inviteSuppliers.invitationMessageRequired' | translate }}
+							</span>
+						</ng-container>
+					}
+					@if (inviteSuppliersForm.get('invitationMessage')?.hasError('isHTML')) {
+						<ng-container errors>
+							<span class="centric-error-message">
+								{{ 'errors.htmlContent' | translate }}
+							</span>
+						</ng-container>
+					}
 				</centric-textarea2>
 			</centric-form-control>
 		</centric-form-item>
@@ -71,20 +75,21 @@
 				</windmill-input>
 			</centric-form-control>
 			<centric-chips-list class="email-chip-list">
-				<centric-chip
-					class="email-chip"
-					*ngFor="let email of supplierEmails"
-					[message]="email"
-					[hasTitle]="true"
-					(deleteChip)="removeEmailFromList(email)"
-					[ariaLabelDeleteButton]="'general.label.clear' | translate">
-				</centric-chip>
+				@for (email of supplierEmails; track email) {
+					<centric-chip
+						class="email-chip"
+						[message]="email"
+						[hasTitle]="true"
+						(deleteChip)="removeEmailFromList(email)"
+						[ariaLabelDeleteButton]="'general.label.clear' | translate">
+					</centric-chip>
+				}
 			</centric-chips-list>
-			<ng-container *ngIf="emailError">
+			@if (emailError) {
 				<span class="email-error-message">
 					{{ emailError | translate }}
 				</span>
-			</ng-container>
+			}
 		</centric-form-item>
 	</form>
 </section>

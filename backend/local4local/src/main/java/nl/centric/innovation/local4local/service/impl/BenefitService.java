@@ -63,6 +63,9 @@ public class BenefitService {
     @Value("${error.citizenGroup.notFound}")
     private String errorCitizenGroupNotFound;
 
+    @Value("${error.entity.notfound}")
+    private String errorEntityNotFound;
+
     public Optional<Benefit> findById(UUID benefitId) throws DtoValidateException {
         return benefitRepository.findById(benefitId);
     }
@@ -121,6 +124,17 @@ public class BenefitService {
     public List<BenefitTableDto> getAllBenefitsForTenant() {
         List<Benefit> benefits = benefitRepository.findAllByTenantIdAndStatus(principalService.getTenantId(), BenefitStatusEnum.ACTIVE);
         return benefits.stream().map(this::toBenefitTableDto).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<EligibleBenefitDto> getAllBenefitsDtoForPassholderId(UUID passholderId) throws DtoValidateNotFoundException {
+        Passholder passholder = passholderRepository.findByIdAndTenantId(passholderId, getTenantId())
+                .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
+
+        List<BenefitResponseDto> benefits = fetchBenefitsForCitizen(getTenantId(), passholder.getUser().getId());
+        return benefits.stream()
+                .map(EligibleBenefitDto::toEligibleDto)
+                .collect(Collectors.toList());
     }
 
     public Map<String, List<BenefitResponseDto>> getAllBenefitsForCitizen() throws DtoValidateNotFoundException {

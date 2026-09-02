@@ -1,5 +1,10 @@
 {
-	"name": "Automation Tenant Test",
-	"address": "Automation Street",
-	"wage": 1500
+  "id": "949a0db2-7e16-11ee-b91f-73139c2b8399",
+  "name": "Automation",
+  "address": "Address",
+  "wage": 2245.80,
+  "createdDate": "2023-11-08T16:48:16.825385",
+  "email": "l4l.centric@gmail.com",
+  "phone": "+31 6 22459638",
+  "logo": null
 }

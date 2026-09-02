@@ -1,3 +1,4 @@
+import { StatusUpdate } from '../_enums/status-update.enum';
 import { GenericTableData } from './generic-table-data.model';
 
 export class SupplierViewDto extends GenericTableData {
@@ -8,8 +9,9 @@ export class SupplierViewDto extends GenericTableData {
 	public district: string;
 	public category: string;
 	public status: string;
-	public hasStatusUpdate: boolean;
+	public statusUpdate?: StatusUpdate;
 	public createdDate: Date;
+	public province: string;
 	public logo?: string;
 
 	constructor(
@@ -21,7 +23,7 @@ export class SupplierViewDto extends GenericTableData {
 		category: string,
 		date: Date,
 		status: string,
-		hasStatusUpdate = false,
+		statusUpdate?: StatusUpdate,
 		logo?: string,
 	) {
 		super();
@@ -33,7 +35,7 @@ export class SupplierViewDto extends GenericTableData {
 		this.createdDate = date;
 		this.id = id;
 		this.status = status;
-		this.hasStatusUpdate = hasStatusUpdate;
+		this.statusUpdate = statusUpdate;
 		this.logo = logo;
 	}
 }

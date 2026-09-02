@@ -1,0 +1,21 @@
+{
+    "groupName": "CitizenGroup_Automation",
+    "ageGroup": [
+        "AGE_18_64"
+    ],
+    "isDependentChildrenIncluded": true,
+    "thresholdAmount": 34,
+    "maxIncome": 763.57,
+    "eligibilityCriteria": [
+        "HAS_EXISTING_DIGID",
+        "IS_AGE_18_OR_OLDER",
+        "RESIDES_IN_CITY",
+        "IS_NOT_A_STUDENT"
+    ],
+    "requiredDocuments": [
+        "PROOF_OF_IDENTITY",
+        "INCOME_PROOF",
+        "ASSETS",
+        "DEBTS_OR_ALIMONY_OBLIGATIONS"
+    ]
+}

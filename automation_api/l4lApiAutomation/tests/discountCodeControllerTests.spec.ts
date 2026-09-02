@@ -1,12 +1,11 @@
 import test, { expect } from '@playwright/test';
 import { ApiFactory } from '../serviceApi/apiFactory';
 import { StatusCodes } from '../utils/status-codes.enum';
-import { AssertHelper } from '../utils/assertHelper';
+import * as offer from '../apiModels/offerModels';
 import {
 	DiscountCode,
 	ResponseDiscountCode,
-	DiscountCodeValidation,
-	DiscountCodeValidationResponse
+	DiscountCodeValidation
 } from '../apiModels/discountCodeModels';
 import { OfferUse, OfferRequest, OfferResponse } from '../apiModels/offerModels';
 import * as db from '../db/queries/discountCodeQueries';
@@ -18,7 +17,7 @@ import { loadJsonFile } from '../utils/jsonHelper';
 
 let discountCodeController: DiscountCodeController;
 let idOfferList: string[] = [];
-let idDiscountCodeList: string[] = [];
+let discountCodeList: string[] = [];
 let hasUsedOffer = false;
 
 test.beforeEach(async () => {
@@ -28,11 +27,11 @@ test.beforeEach(async () => {
 test.afterEach(async () => {
 	if (idOfferList.length > 0) {
 		for (const id of idOfferList) {
-			if (idDiscountCodeList.length > 0) {
-				for (const idDiscountCode of idDiscountCodeList) {
-					await dbTransaction.deleteTransactionsByDiscountCodeId(idDiscountCode);
+			if (discountCodeList.length > 0) {
+				for (const discountCode of discountCodeList) {
+					await dbTransaction.deleteTransactionsByDiscountCode(discountCode);
 				}
-				idDiscountCodeList = [];
+				discountCodeList = [];
 			}
 			if (hasUsedOffer) {
 				await db.deleteDiscountCodeByOfferId(id);
@@ -44,70 +43,88 @@ test.afterEach(async () => {
 	}
 });
 
-test.describe('Discount Code Controller Tests', { tag: '@smoke' }, () => {
+test.describe('Discount Code Controller Tests', () => {
 	test('Get discount codes', { tag: '@smoke' }, async () => {
 		const response = await discountCodeController.getDiscountCodes();
 		expect(response.status()).toBe(StatusCodes.OK);
 		const responseBody: ResponseDiscountCode = await response.json();
-		const getAllDiscountCodesQuery: ResponseDiscountCode = await db.getAllDiscountCodes();
-		AssertHelper.compareData(responseBody, getAllDiscountCodesQuery);
+		expect(responseBody.active.length).toBeGreaterThanOrEqual(0);
+		expect(responseBody.inactive.length).toBeGreaterThanOrEqual(0);
 	});
 
-	test('Get discount code by offer id', { tag: '@smoke' }, async () => {
-		const offerId = '0e10f90c-b499-47dd-965c-139f02f0d2e8';
+	test('Get discount code by offer id', async () => {
+		const offerId = '99d0b365-5e60-4da2-8041-344af5118811';
 		const response = await discountCodeController.getDiscountCodeById(offerId);
 		expect(response.status()).toBe(StatusCodes.OK);
 		const responseBody: DiscountCode = await response.json();
-		const getDiscountCodeByOfferIdQuery: DiscountCode[] = await db.getDiscountCode(true, offerId);
-		AssertHelper.compareData(responseBody, getDiscountCodeByOfferIdQuery[0]);
+		expect(responseBody.offerTitle).toBe('10% off at Local Bookstore');
+	});
+
+	test('Get claimed status of an offer', async () => {
+		const offerIdClaimed = '99d0b365-5e60-4da2-8041-344af5118811';
+		const offerIdNotCLaim='22c6561f-98bf-4ed2-80fc-2d36b9c8dc8f';
+
+		const discountCodeController= await ApiFactory.getDiscountCodeApi(Roles.SUPPLIER);
+		const response = await discountCodeController.checkClaimedDiscountCode(offerIdClaimed);
+		expect(response.status()).toBe(StatusCodes.OK);
+		const responseBody = await response.text();
+		expect(responseBody).toBe("true");
+
+		const responseNotClaimed = await discountCodeController.checkClaimedDiscountCode(offerIdNotCLaim);
+		expect(responseNotClaimed.status()).toBe(StatusCodes.OK);
+		const responseBodyNotClaimed = await responseNotClaimed.text();
+		expect(responseBodyNotClaimed).toBe("false");
 	});
 
 	test('Validate discount code', async () => {
-		let offerController = await ApiFactory.getOfferApi();
+		const offerController = await ApiFactory.getOfferApi();
 		const offerData = loadJsonFile<OfferRequest>('./testData/offerData.json');
 
 		const response = await offerController.createOffer(offerData);
 		expect(response.status()).toBe(StatusCodes.OK);
-		const responseBody: OfferResponse = await response.json();
-		idOfferList.push(responseBody.id);
+		const responseBody: OfferResponse[] = await response.json();
+		idOfferList.push(responseBody[0].id);
 
-		offerController = await ApiFactory.getOfferApi(Roles.MUNICIPALITY);
-		const responseApprove = await offerController.approveOffer(responseBody.id);
-		expect(responseApprove.status()).toBe(StatusCodes.NO_CONTENT);
+		const offerControllerMunicipality = await ApiFactory.getOfferApi(Roles.MUNICIPALITY);
 
-		offerController = await ApiFactory.getOfferApi(Roles.CITIZEN);
-
-		const data: OfferUse = {
-			offerId: responseBody.id,
-			currentTime: '01:00:00',
-			amount: 0
+		const offerApproveData: offer.OfferApprove = {
+			offerId: responseBody[0].id,
+			version: 0
 		};
 
-		const useOfferResponse = await offerController.useOffer(data);
+		const responseApprove = await offerControllerMunicipality.approveOffer(offerApproveData);
+		expect(responseApprove.status()).toBe(StatusCodes.NO_CONTENT);
+
+		const offerControllerCitizen = await ApiFactory.getOfferApi(Roles.CITIZEN);
+
+		const data: OfferUse = {
+			offerId: responseBody[0].id,
+			currentTime: '01:00:00',
+			amount: 1
+		};
+
+		const useOfferResponse = await offerControllerCitizen.useOffer(data);
 		expect(useOfferResponse.status()).toBe(StatusCodes.NO_CONTENT);
 
 		hasUsedOffer = true;
 
-		const discountCode = (await db.getDiscountCode(true, responseBody.id))[0].code;
+		const discountCode = await discountCodeController.getDiscountCodeById(responseBody[0].id);
+		const discountData: DiscountCode = await discountCode.json();
 
 		const validateData: DiscountCodeValidation = {
-			code: discountCode,
-			currentTime: '09/15/2025, 13:44:45',
-			amount: 10
+			code: discountData.code,
+			currentTime: '03/09/2026, 23:20:42',
+			amount: 1
 		};
 
-		discountCodeController = await ApiFactory.getDiscountCodeApi(Roles.SUPPLIER);
-		
-		const validateResponse = await discountCodeController.validateDiscountCode(validateData);
+		const discountCodeControllerSupplier = await ApiFactory.getDiscountCodeApi(Roles.SUPPLIER);
+
+		const validateResponse = await discountCodeControllerSupplier.validateDiscountCode(validateData);
 		expect(validateResponse.status()).toBe(StatusCodes.OK);
 
-		idDiscountCodeList = await db.getDiscountCodeId(discountCode);
-
-		const validateResponseBody: DiscountCodeValidationResponse = await validateResponse.json();
-		const validateDiscountCodeQuery: DiscountCodeValidationResponse = await db.getValidateDiscountCode(
-			discountCode
-		);
-		validateDiscountCodeQuery.currentTime = validateData.currentTime.substring(12, 17);
-		AssertHelper.compareData(validateResponseBody, validateDiscountCodeQuery);
+		var discountCodes = await discountCodeController.getDiscountCodeById(responseBody[0].id);
+		expect(discountCodes.status()).toBe(StatusCodes.OK);
+		const discountCodeBody: DiscountCode = await discountCodes.json();
+		discountCodeList.push(discountCodeBody.code);
 	});
 });

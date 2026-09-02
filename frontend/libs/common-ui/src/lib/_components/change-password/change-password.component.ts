@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { MatDialogConfig } from '@angular/material/dialog';
@@ -19,7 +19,7 @@ import {
 	Toaster,
 } from '@frontend/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { RecaptchaFormsModule, RecaptchaModule } from 'ng-recaptcha-2';
 import { CustomDialogConfigUtil } from '../../_util/custom-dialog-config';
 import { WindmillModule } from '../../windmil.module';
@@ -33,14 +33,13 @@ import { ToastrService } from '@windmill/ng-windmill/toastr';
 	styleUrls: ['./change-password.component.scss'],
 	standalone: true,
 	imports: [
-		CommonModule,
-		CommonL4LModule,
-		TranslateModule,
-		WindmillModule,
-		LogoTitleComponent,
-		RecaptchaFormsModule,
-		RecaptchaModule,
-	],
+    CommonL4LModule,
+    TranslateModule,
+    WindmillModule,
+    LogoTitleComponent,
+    RecaptchaFormsModule,
+    RecaptchaModule
+],
 })
 export class ChangePasswordComponent implements OnInit {
 	public form: FormGroup;

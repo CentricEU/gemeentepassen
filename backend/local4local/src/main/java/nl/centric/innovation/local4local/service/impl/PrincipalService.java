@@ -2,14 +2,13 @@ package nl.centric.innovation.local4local.service.impl;
 
 import java.util.UUID;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import nl.centric.innovation.local4local.entity.Tenant;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import nl.centric.innovation.local4local.entity.User;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 @Service
 public class PrincipalService {

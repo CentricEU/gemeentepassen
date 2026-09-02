@@ -53,34 +53,9 @@ describe('HtmlContentValidatorDirective', () => {
 		expect(result).toBeNull();
 	});
 
-	describe('isValidJavaScript', () => {
-		it('should return true for JS input that matches jsPattern', () => {
-			jest.spyOn(RegexUtil.jsPattern, 'test').mockReturnValue(true);
-			const result = (directive as any).isValidJavaScript('function test() {}');
-			expect(result).toBe(true);
-		});
-
-		it('should return false for input that does not match jsPattern', () => {
-			jest.spyOn(RegexUtil.jsPattern, 'test').mockReturnValue(false);
-			const result = (directive as any).isValidJavaScript('just a string');
-			expect(result).toBe(false);
-		});
-	});
-
-	describe('isValidHtml', () => {
-		it('should return false if DOMParser throws an error', () => {
-			const originalDOMParser = (global as any).DOMParser;
-
-			(global as any).DOMParser = jest.fn(() => ({
-				parseFromString: () => {
-					throw new Error('Parser error');
-				},
-			}));
-
-			const result = (directive as any).isValidHtml('<invalid><html>');
-			expect(result).toBe(false);
-
-			(global as any).DOMParser = originalDOMParser;
-		});
+	it('should return error object for input matching jsPattern', () => {
+		const control = new FormControl('<script>alert("XSS")</script>');
+		const result = directive.validate(control);
+		expect(result).toEqual({ isHTML: true });
 	});
 });

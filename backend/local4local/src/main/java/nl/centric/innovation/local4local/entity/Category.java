@@ -1,23 +1,29 @@
 package nl.centric.innovation.local4local.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.javers.core.metamodel.annotation.DiffIgnore;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.List;
+
+/**
+ * @DiffIgnore is used to ignore the subcategories field when comparing Category entities with JaVers,
+ * as it can lead to performance issues (lazy issues) and is not relevant for most comparisons of Category entities.
+ */
 
 @Entity
 @Table(schema = "l4l_global", name = "profile_dropdowns_categories")
@@ -40,6 +46,7 @@ public class Category implements Serializable {
     private String categoryLabel;
 
     @OneToMany
+    @DiffIgnore
     @JoinTable(
             schema = "l4l_global", name = "profile_dropdowns_subcategories",
             joinColumns = @JoinColumn(name = "category_id"),

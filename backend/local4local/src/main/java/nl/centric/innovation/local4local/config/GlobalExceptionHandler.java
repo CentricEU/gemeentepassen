@@ -1,22 +1,27 @@
 package nl.centric.innovation.local4local.config;
 
 import com.nimbusds.jwt.proc.BadJWTException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import nl.centric.innovation.local4local.exceptions.InvalidDateRangeException;
+import nl.centric.innovation.local4local.exceptions.UnauthorizedActionException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import java.util.HashMap;
 import nl.centric.innovation.local4local.exceptions.AuthenticationLoginException;
 import nl.centric.innovation.local4local.exceptions.CaptchaException;
@@ -38,7 +43,8 @@ import java.util.Map;
 import java.util.Set;
 
 
-@ControllerAdvice
+@RestControllerAdvice
+@RequiredArgsConstructor
 @PropertySource({"classpath:errorcodes.properties"})
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -52,7 +58,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private String uniqueViolation;
 
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex, @NotNull HttpHeaders headers,
+            @NotNull HttpStatusCode status, @NotNull WebRequest request) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
@@ -74,12 +82,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = {DtoValidateException.class, DtoValidateNotFoundException.class, L4LException.class, NotFoundException.class, CsvManipulationException.class})
+    @ExceptionHandler(value = {DtoValidateException.class, DtoValidateNotFoundException.class, L4LException.class, NotFoundException.class, CsvManipulationException.class, InvalidDateRangeException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handle(
             Exception ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-
     }
 
     @ExceptionHandler(value = {DtoValidateAlreadyExistsException.class})
@@ -156,6 +163,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(uniqueViolation);
+    }
+
+    @ExceptionHandler(UnauthorizedActionException.class)
+    public ResponseEntity<Object> handleUnauthorizedAccessException(UnauthorizedActionException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
 }

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { MatDialogConfig } from '@angular/material/dialog';
@@ -23,7 +22,7 @@ import {
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CentricButtonModule } from '@windmill/ng-windmill/button';
 import { WindmillCheckboxModule } from '@windmill/ng-windmill/checkbox';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { CentricLinkModule } from '@windmill/ng-windmill/link';
 
 import { FormFields } from '../enums/form-fields.enum';
@@ -35,7 +34,6 @@ import { RegisterService } from '../services/register.service';
 	templateUrl: './supplier-register.component.html',
 	styleUrls: ['./supplier-register.component.scss'],
 	imports: [
-		CommonModule,
 		CommonL4LModule,
 		FormsModule,
 		ReactiveFormsModule,
@@ -124,7 +122,7 @@ export class SupplierRegisterComponent implements OnInit {
 	}
 
 	public getKVKErrorMessage(): string | null {
-		const kvkControl = this.registerForm.get('kvk');
+		const kvkControl = this.registerForm.get('kvkNumber');
 		const lengthValue = kvkControl?.value.length;
 		const lengthValidator = (lengthValue ?? 0) > 0 && (lengthValue ?? 0) < 8;
 
@@ -199,7 +197,7 @@ export class SupplierRegisterComponent implements OnInit {
 			firstName: new FormControl('', Validators.required),
 			lastName: new FormControl('', Validators.required),
 			company: new FormControl('', Validators.required),
-			kvk: new FormControl('', Validators.required),
+			kvkNumber: new FormControl('', Validators.required),
 			municipality: new FormControl('', Validators.required),
 			email: new FormControl('', [Validators.required, this.emailValidator]),
 			password: new FormControl('', [Validators.required, this.passwordValidator]),
@@ -217,7 +215,7 @@ export class SupplierRegisterComponent implements OnInit {
 			lastName: registerFormValue.lastName,
 			email: registerFormValue.email,
 			companyName: registerFormValue.company,
-			kvk: registerFormValue.kvk,
+			kvk: registerFormValue.kvkNumber,
 			tenantId: this.selectTentantId,
 			password: registerFormValue.password,
 			retypedPassword: registerFormValue.confirmPassword,

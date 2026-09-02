@@ -1,15 +1,11 @@
 package nl.centric.innovation.local4local.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.NonNull;
-import nl.centric.innovation.local4local.entity.Benefit;
 import nl.centric.innovation.local4local.entity.Offer;
 
 import java.time.LocalDate;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static nl.centric.innovation.local4local.util.ModelConverter.entityToRestrictionViewDto;
 

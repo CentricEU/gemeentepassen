@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -10,12 +10,11 @@ import {
 	TimeIntervalPeriod,
 	UserService,
 } from '@frontend/common';
-import { WindmillModule } from '@frontend/common-ui';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { WindmillComboButtonMenuItem } from '@windmill/ng-windmill/combo-button';
-import { DialogService } from '@windmill/ng-windmill/dialog';
-import { CentricToastrModule } from '@windmill/ng-windmill/toastr';
-import { of } from 'rxjs';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
+import { ToastrService } from '@windmill/ng-windmill/toastr';
+import { of, Subject } from 'rxjs';
 
 import { DashboardComponent } from './dashboard.component';
 
@@ -26,6 +25,7 @@ describe('DashboardComponent', () => {
 	let dialogService: DialogService;
 	let authServiceSpy: { extractSupplierInformation: jest.Mock };
 	let userService: { getUserInformation: jest.Mock };
+	let translateService: TranslateService;
 
 	const STATS: MunicipalityStatistics = {
 		suppliersCount: 12,
@@ -37,6 +37,13 @@ describe('DashboardComponent', () => {
 		production: false,
 		envName: 'dev',
 		apiPath: '/api',
+	};
+
+	const toastrMock = {
+		success: jest.fn(),
+		error: jest.fn(),
+		warning: jest.fn(),
+		info: jest.fn(),
 	};
 
 	beforeEach(async () => {
@@ -61,14 +68,7 @@ describe('DashboardComponent', () => {
 
 		await TestBed.configureTestingModule({
 			schemas: [NO_ERRORS_SCHEMA],
-			imports: [
-				WindmillModule,
-				CommonModule,
-				BrowserAnimationsModule,
-				HttpClientModule,
-				TranslateModule.forRoot(),
-				CentricToastrModule.forRoot(),
-			],
+			imports: [CommonModule, BrowserAnimationsModule, TranslateModule.forRoot()],
 			declarations: [DashboardComponent],
 			providers: [
 				{ provide: DashboardService, useValue: dashboardServiceMock },
@@ -76,11 +76,14 @@ describe('DashboardComponent', () => {
 				{ provide: AuthService, useValue: authServiceSpy },
 				{ provide: 'env', useValue: environmentMock },
 				{ provide: UserService, useValue: userService },
+				{ provide: ToastrService, useValue: toastrMock },
+				TranslateService,
 			],
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(DashboardComponent);
 		component = fixture.componentInstance;
+		translateService = TestBed.inject(TranslateService);
 		(component as any).transactionChart = {
 			loadChartData: jest.fn(),
 		};
@@ -210,6 +213,57 @@ describe('DashboardComponent', () => {
 			await fixture.whenStable();
 
 			expect(openDialogSpy).toHaveBeenCalled();
+		});
+	});
+	describe('language change subscription', () => {
+		it('should call initChartOnce when language changes', () => {
+			const subject = new Subject();
+			const initChartOnceSpy = jest.spyOn(component as any, 'initChartOnce');
+
+			jest.spyOn(translateService, 'onLangChange', 'get').mockReturnValue(subject.asObservable() as any);
+
+			dashboardServiceMock['getMuniciplaityStatistics'].mockReturnValue(of(STATS));
+			fixture.detectChanges();
+
+			subject.next({});
+
+			expect(initChartOnceSpy).toHaveBeenCalled();
+		});
+
+		it('should subscribe to language changes on init', () => {
+			const subscribeSpy = jest.spyOn(translateService.onLangChange, 'subscribe');
+
+			dashboardServiceMock['getMuniciplaityStatistics'].mockReturnValue(of(STATS));
+			fixture.detectChanges();
+
+			expect(subscribeSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('initChartOnce', () => {
+		it('should initialize chart only once', () => {
+			const initChartSpy = jest.spyOn(component as any, 'initChart');
+
+			dashboardServiceMock['getMuniciplaityStatistics'].mockReturnValue(of(STATS));
+			fixture.detectChanges();
+
+			(component as any).initChartOnce();
+			(component as any).initChartOnce();
+			(component as any).initChartOnce();
+
+			expect(initChartSpy).toHaveBeenCalledTimes(1);
+			expect(initChartSpy).toHaveBeenCalledWith(TimeIntervalPeriod.MONTHLY);
+		});
+
+		it('should set chartInitialized to true after first call', () => {
+			dashboardServiceMock['getMuniciplaityStatistics'].mockReturnValue(of(STATS));
+			fixture.detectChanges();
+
+			expect((component as any).chartInitialized).toBe(false);
+
+			(component as any).initChartOnce();
+
+			expect((component as any).chartInitialized).toBe(true);
 		});
 	});
 });

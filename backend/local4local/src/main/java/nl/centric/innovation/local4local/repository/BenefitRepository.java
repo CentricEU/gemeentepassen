@@ -1,7 +1,6 @@
 package nl.centric.innovation.local4local.repository;
 
 import nl.centric.innovation.local4local.dto.BenefitResponseDto;
-import nl.centric.innovation.local4local.dto.BenefitSpentDto;
 import nl.centric.innovation.local4local.entity.Benefit;
 import nl.centric.innovation.local4local.enums.BenefitStatusEnum;
 import org.springframework.data.domain.Page;
@@ -36,8 +35,6 @@ public interface BenefitRepository extends JpaRepository<Benefit, UUID> {
     void updateBenefitStatus();
 
     Page<Benefit> findAllByTenantId(UUID tenantId, Pageable pageable);
-
-    List<Benefit> findAllByTenantId(UUID tenantId);
 
     List<Benefit> findAllByTenantIdAndStatus(UUID tenantId, BenefitStatusEnum status);
 

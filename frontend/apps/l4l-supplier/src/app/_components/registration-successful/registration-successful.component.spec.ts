@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { RouterTestingModule } from '@angular/router/testing';
 import { commonRoutingConstants, MobileBrowserUtil } from '@frontend/common';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { of } from 'rxjs';
 
 import { RegistrationSuccessfulComponent } from './registration-successful.component';
@@ -80,5 +80,11 @@ describe('RegistrationSuccessfulComponent', () => {
 		dialogRefSpyObj.afterClosed().subscribe(() => {
 			expect(navigateSpy).toHaveBeenCalled();
 		});
+	});
+
+	it('should not navigate when response is false', () => {
+		const navigateSpy = jest.spyOn(component as any, 'navigateToLogin');
+		component['handleDialogClose'](false);
+		expect(navigateSpy).not.toHaveBeenCalled();
 	});
 });

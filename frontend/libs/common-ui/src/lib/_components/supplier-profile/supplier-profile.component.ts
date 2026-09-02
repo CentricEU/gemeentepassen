@@ -18,7 +18,7 @@ import {
 } from '@frontend/common';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from '@windmill/ng-windmill/toastr';
-import { of, switchMap, tap } from 'rxjs';
+import { finalize, of, switchMap, tap } from 'rxjs';
 
 @Component({
 	selector: 'frontend-supplier-profile',
@@ -36,6 +36,7 @@ export class SupplierProfileComponent implements OnInit, OnDestroy {
 
 	public isGenericState = false;
 	public isSizeExceeded = false;
+	public isSaving = false;
 
 	public contactInformationForm: FormGroup = new FormGroup([]);
 	public initialContactInformationForm: FormGroup;
@@ -108,6 +109,9 @@ export class SupplierProfileComponent implements OnInit, OnDestroy {
 		toastText: string,
 		isRejectedStatus: boolean,
 	): void {
+		if (this.isSaving) return;
+		this.isSaving = true;
+
 		this.pdokService
 			.getCoordinateFromAddress(supplierProfilePatchDto.branchLocation, supplierProfilePatchDto.branchZip)
 			.pipe(
@@ -140,6 +144,7 @@ export class SupplierProfileComponent implements OnInit, OnDestroy {
 						}),
 					);
 				}),
+				finalize(() => (this.isSaving = false)),
 			)
 			.subscribe((result) => {
 				if (!result) {

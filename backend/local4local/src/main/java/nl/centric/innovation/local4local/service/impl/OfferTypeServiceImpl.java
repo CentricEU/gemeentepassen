@@ -16,6 +16,6 @@ public class OfferTypeServiceImpl implements OfferTypeService {
 
     @Override
     public List<OfferType> getAllOfferTypes() {
-        return offerTypeRepository.findAll();
+        return offerTypeRepository.findAllByIsEnabledTrueOrderByOfferTypeLabel();
     }
 }

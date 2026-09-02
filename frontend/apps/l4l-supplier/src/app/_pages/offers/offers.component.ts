@@ -16,6 +16,7 @@ import {
 	FilterCriteria,
 	GenericStatusEnum,
 	ModalData,
+	OfferInformationDto,
 	OfferTableDto,
 	PaginatedData,
 	TableActionButton,
@@ -25,7 +26,7 @@ import {
 } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil, TableBaseComponent, TableComponent } from '@frontend/common-ui';
 import { TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import { ToastrService } from '@windmill/ng-windmill/toastr';
 import { forkJoin, Observable } from 'rxjs';
 
@@ -101,6 +102,7 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 
 		if (isFirstFiltering) {
 			this.paginatedData.currentIndex = 0;
+			this.offersTable.resetPageContent();
 		}
 
 		this.offersTable.deselectAllCheckboxes();
@@ -141,14 +143,7 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 			new TableColumn('general.status', 'status', 'status', true, true, ColumnDataType.STATUS),
 			new TableColumn('offer.title', 'title', 'title', true, true),
 			new TableColumn('offer.typeOfOffer', 'offerType', 'offerType', true, false, ColumnDataType.TRANSLATION),
-			new TableColumn(
-				'general.acceptedBenefit',
-				'benefitName',
-				'benefitName',
-				true,
-				false,
-				ColumnDataType.DEFAULT,
-			),
+			new TableColumn('general.acceptedBenefit', 'benefit', 'benefitName', true, false, ColumnDataType.DEFAULT),
 			new TableColumn('genericFields.validity.label', 'validity', 'validity', true, false),
 			new TableColumn('general.actions', 'actions', 'actions', true, true, ColumnDataType.DEFAULT, true),
 		];
@@ -167,13 +162,25 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 		this.areOffersSelected = count > 0;
 	}
 
-	public onActionButtonClicked(action: { actionButton: string; row: OfferTableDto }): void {
+	public onActionButtonClicked(action: { actionButton: string; row: OfferInformationDto }): void {
 		switch (action.actionButton) {
 			case ActionButtons.trashIcon:
 				this.openDeleteDialog(action.row.id, action.row.title);
 				break;
+			case ActionButtons.editIcon:
+				this.openActionModal(action.row, false, true, false, false, action.row.status);
+				break;
 			case ActionButtons.circlePlay:
-				this.openReactivateOfferModal(action.row.id);
+				this.openActionModal(action.row, true);
+				break;
+			case ActionButtons.visibilityIcon:
+				this.openActionModal(action.row, false, false, false, false, action.row.status);
+				break;
+			case ActionButtons.reapply:
+				this.openActionModal(action.row, false, false, true);
+				break;
+			case ActionButtons.circlePause:
+				this.openActionModal(action.row, false, false, false, true, GenericStatusEnum.ACTIVE);
 				break;
 			default:
 				return;
@@ -191,7 +198,7 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 			return;
 		}
 
-		this.offerService.getOffers(event.currentIndex, event.pageSize).subscribe((data) => {
+		this.offerService.getFilteredOffers(this.filterDto, event.currentIndex, event.pageSize).subscribe((data) => {
 			this.afterDataLoaded(data);
 		});
 	}
@@ -442,61 +449,74 @@ export class OffersComponent extends TableBaseComponent implements OnInit, OnDes
 		});
 	}
 
-	private openReactivateOfferModal(offerId?: string): void {
+	//Todo: refactor this method, there are too many parameters and it's hard to understand the purpose of each of them
+	//also, the logic for data passed to the modal is too complex and hard to follow
+	private openActionModal(
+		offer: OfferInformationDto,
+		isReactivating: boolean,
+		isEditing = false,
+		isReapply = false,
+		isSuspending = false,
+		offerStatus?: GenericStatusEnum,
+	): void {
 		this.dialogService
 			.message(CreateOfferComponent, {
 				width: '70%',
 				closeOnNavigation: false,
-				data: {
-					offerToReactivate: offerId,
-				},
+				data: isReactivating
+					? { offerToReactivate: offer }
+					: isEditing
+						? { offerToEdit: offer, offerStatus: offerStatus }
+						: isReapply
+							? { offerToReapply: offer, offerStatus: offerStatus }
+						: isSuspending
+							? { offerToSuspend: offer, offerStatus: offerStatus }
+							: { offerToView: offer, offerStatus: offerStatus },
 			})
 			?.afterClosed()
-			.subscribe(() => {
-				this.countOffers();
+			.subscribe((data) => {
+				if (!data) {
+					return;
+				}
+
+				if (data.shouldDelete) {
+					this.deleteOffersAndRefresh(offer.id);
+				} else {
+					this.countOffers();
+				}
 			});
 	}
 
 	private createActionButtons(status: GenericStatusEnum): TableActionButton[] {
-		const actionButtons = [
-			// new TableActionButton(
-			// 	ActionButtons.visibilityIcon,
-			// 	'actionButtons.details',
-			// 	false,
-			// 	'',
-			// 	ActionButtonIcons.uncontained,
-			// ),
+		const actionButtons: TableActionButton[] = [
+			this.createButton(ActionButtons.visibilityIcon, 'actionButtons.viewOffer'),
 		];
 
-		if (status === GenericStatusEnum.ACTIVE) {
-			actionButtons.push(
-				new TableActionButton(ActionButtons.minusCircle, '', false, '', ActionButtonIcons.uncontained),
-			);
-		} else {
-			actionButtons.push(
-				new TableActionButton(
-					ActionButtons.trashIcon,
-					'actionButtons.delete',
-					false,
-					'',
-					ActionButtonIcons.uncontained,
-				),
-			);
+		switch (status) {
+			case GenericStatusEnum.EXPIRED:
+				actionButtons.push(this.createButton(ActionButtons.circlePlay, 'actionButtons.reactivate'));
+				break;
+
+			case GenericStatusEnum.REJECTED:
+				actionButtons.push(this.createButton(ActionButtons.reapply, 'general.button.applyAgain'));
+				break;
+
+			default:
+				actionButtons.push(this.createButton(ActionButtons.editIcon, 'actionButtons.edit'));
+				break;
 		}
 
-		if (status === GenericStatusEnum.EXPIRED) {
-			actionButtons.push(
-				new TableActionButton(
-					ActionButtons.circlePlay,
-					'actionButtons.reactivate',
-					false,
-					'',
-					ActionButtonIcons.uncontained,
-				),
-			);
+		if (status === GenericStatusEnum.ACTIVE) {
+			actionButtons.push(this.createButton(ActionButtons.circlePause, 'actionButtons.suspend'));
+		} else {
+			actionButtons.push(this.createButton(ActionButtons.trashIcon, 'actionButtons.delete'));
 		}
 
 		return actionButtons;
+	}
+
+	private createButton(icon: ActionButtons, label: string): TableActionButton {
+		return new TableActionButton(icon, label, false, '', ActionButtonIcons.uncontained);
 	}
 
 	private initBreadcrumbs(): void {

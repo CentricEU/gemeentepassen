@@ -1,33 +1,39 @@
 package nl.centric.innovation.local4local.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import nl.centric.innovation.local4local.dto.CreateUserDto;
-import org.hibernate.annotations.TypeDef;
+import org.javers.core.metamodel.annotation.DiffIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 
+
+/**
+ * @DiffIgnore is used to ignore the refreshToken & password fields when comparing User entities with JaVers,
+ * because they are sensitive information that should not be included in comparisons.
+ * Also, Role is ignored since it is not relevant for most comparisons of User entities.
+ */
+
+
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@TypeDef(name = "pgsql_enum", typeClass = PostgreSQLEnumType.class)
 @Table(schema = "l4l_security", name = "user")
 @Data
 @AllArgsConstructor
@@ -47,21 +53,24 @@ public class User extends BaseEntity implements UserDetails {
     private String lastName;
 
     @Column(name = "password")
+    @DiffIgnore
     private String password;
 
     @Column(name = "is_active") // indicates if the citizen user has "removed" their account
     private boolean isActive;
 
-    @Column(name = "is_approved")
+    @Column(name = "is_approved") // available only for supplier users to indicate if the supplier user has been approved by the municipality admin
     private boolean isApproved;
 
     @Column(name = "tenant_id")
+    @DiffIgnore
     private UUID tenantId;
 
     @OneToOne()
     @JoinTable(schema = "l4l_security", name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @DiffIgnore
     private Role role;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
@@ -72,12 +81,20 @@ public class User extends BaseEntity implements UserDetails {
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
 
-    @Column(name = "is_enabled")
+    @Column(name = "is_enabled") // indicates if the user has verified their email address and can log in
     private Boolean isEnabled;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
+    @DiffIgnore
     private RefreshToken refreshToken;
+
+    public void setRefreshToken(RefreshToken refreshToken) {
+        this.refreshToken = refreshToken;
+        if (refreshToken != null && refreshToken.getUser() != this) {
+            refreshToken.setUser(this);
+        }
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

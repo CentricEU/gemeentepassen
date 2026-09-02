@@ -1,24 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
-import {
-	AuthService,
-	ContactInformation,
-	GeneralInformation,
-	SupplierProfile,
-	SupplierProfileService,
-} from '@frontend/common';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { AuthService, SupplierProfile, SupplierProfileService } from '@frontend/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
 import { CommonUiModule } from '../../common-ui.module';
 import { WindmillModule } from '../../windmil.module';
+import { SupplierProfileComponent } from '../supplier-profile/supplier-profile.component';
 import { SupplierInformationPanelComponent } from './supplier-profile-panel.component';
 
 describe('SupplierInformationPanelComponent', () => {
 	let component: SupplierInformationPanelComponent;
 	let fixture: ComponentFixture<SupplierInformationPanelComponent>;
 	let supplierProfileService: jest.Mocked<SupplierProfileService>;
-	let activatedRouteMock: any;
-	let authServiceMock: any;
+	let activatedRouteMock: Pick<ActivatedRoute, 'paramMap'>;
+	let authServiceMock: Pick<AuthService, 'extractSupplierInformation'>;
 
 	const environmentMock = {
 		production: false,
@@ -46,29 +42,14 @@ describe('SupplierInformationPanelComponent', () => {
 		supplierId: '123',
 	};
 
-	const generalInformationForm: GeneralInformation = {
-		logo: '',
-		companyName: 'companyName',
-		adminEmail: 'admin@gmail.com',
-		kvkNumber: '12345678',
-		ownerName: 'owner',
-		legalForm: '0',
-		group: '0',
-		category: '0',
-		subcategory: '0',
-		bic: 'ABNANL2A',
-		iban: 'NL91ABNA0417164300',
-	};
-
-	const contactInformationForm: ContactInformation = {
-		branchProvince: 'branchProvince',
-		companyBranchAddress: 'companyBranchAddress',
-		branchLocation: 'branchLocation',
-		branchZip: '1234ZD',
-		branchTelephone: '+31852158217',
-		accountManager: 'account',
-		email: 'test@gmail.com',
-		website: 'website.com',
+	const createProfileInformationMock = (
+		contactFormInvalid: boolean,
+		generalFormInvalid: boolean,
+	): SupplierProfileComponent => {
+		return {
+			contactInformationForm: { invalid: contactFormInvalid },
+			generalInformationForm: { invalid: generalFormInvalid },
+		} as unknown as SupplierProfileComponent;
 	};
 
 	beforeEach(async () => {
@@ -78,7 +59,7 @@ describe('SupplierInformationPanelComponent', () => {
 		} as unknown as jest.Mocked<SupplierProfileService>;
 
 		activatedRouteMock = {
-			paramMap: of({ get: jest.fn() }),
+			paramMap: of(convertToParamMap({})),
 		};
 
 		authServiceMock = {
@@ -87,7 +68,7 @@ describe('SupplierInformationPanelComponent', () => {
 
 		await TestBed.configureTestingModule({
 			declarations: [SupplierInformationPanelComponent],
-			imports: [WindmillModule, CommonUiModule],
+			imports: [WindmillModule, CommonUiModule, TranslateModule.forRoot()],
 			providers: [
 				{ provide: SupplierProfileService, useValue: supplierProfileService },
 				{ provide: 'env', useValue: environmentMock },
@@ -111,7 +92,7 @@ describe('SupplierInformationPanelComponent', () => {
 	it('should return null when supplierProfileInfomationComponent is undefined', () => {
 		component.supplierProfileInfomationComponent = {
 			decodedImage: null,
-		} as any;
+		} as unknown as SupplierProfileComponent;
 
 		expect(component.decodedImage).toBeNull();
 	});
@@ -120,7 +101,7 @@ describe('SupplierInformationPanelComponent', () => {
 		const decodedImageMock = 'mockedDecodedImage';
 		component.supplierProfileInfomationComponent = {
 			decodedImage: decodedImageMock,
-		} as any;
+		} as unknown as SupplierProfileComponent;
 
 		expect(component.decodedImage).toBe(decodedImageMock);
 	});
@@ -133,7 +114,7 @@ describe('SupplierInformationPanelComponent', () => {
 	it('should call saveChanges method of supplierProfileInfomationComponent', () => {
 		component.supplierProfileInfomationComponent = {
 			saveChanges: jest.fn(),
-		} as any;
+		} as unknown as SupplierProfileComponent;
 
 		component.saveChanges();
 		expect(component.supplierProfileInfomationComponent.saveChanges).toHaveBeenCalled();
@@ -152,40 +133,28 @@ describe('SupplierInformationPanelComponent', () => {
 	});
 
 	describe('Tests for shouldDisableFinishButton ', () => {
-		const invalidContactInformationForm = {
-			...contactInformationForm,
-			companyBranchAddress: null,
-		};
-
-		const invalidGeneralInformationForm = {
-			...generalInformationForm,
-			kvkNumber: null,
-		};
 		it('should return true if both forms are invalid', () => {
-			component.supplierProfileInfomationComponent?.contactInformationForm?.setValue(
-				invalidContactInformationForm,
-			);
-			component.supplierProfileInfomationComponent?.generalInformationForm?.setValue(
-				invalidGeneralInformationForm,
-			);
+			component.supplierProfileInfomationComponent = createProfileInformationMock(true, true);
 
 			expect(component.shouldDisableFinishButton()).toBe(true);
 		});
 
 		it('should return true if contact form is invalid and general form is valid', () => {
-			component.supplierProfileInfomationComponent?.contactInformationForm?.setValue(
-				invalidContactInformationForm,
-			);
-			component.supplierProfileInfomationComponent?.generalInformationForm?.setValue(generalInformationForm);
+			component.supplierProfileInfomationComponent = createProfileInformationMock(true, false);
+
 			expect(component.shouldDisableFinishButton()).toBe(true);
 		});
 
 		it('should return true if contact form is valid and general form is invalid', () => {
-			component.supplierProfileInfomationComponent?.contactInformationForm?.setValue(contactInformationForm);
-			component.supplierProfileInfomationComponent?.generalInformationForm?.setValue(
-				invalidGeneralInformationForm,
-			);
+			component.supplierProfileInfomationComponent = createProfileInformationMock(false, true);
+
 			expect(component.shouldDisableFinishButton()).toBe(true);
+		});
+
+		it('should return false if both forms are valid', () => {
+			component.supplierProfileInfomationComponent = createProfileInformationMock(false, false);
+
+			expect(component.shouldDisableFinishButton()).toBe(false);
 		});
 	});
 

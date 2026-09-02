@@ -2,12 +2,24 @@ import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AuthMock, AuthService, MultilanguageService, SidenavService, Tenant, TenantService } from '@frontend/common';
-import { CommonUiModule, WindmillModule } from '@frontend/common-ui';
+import {
+	AuthMock,
+	AuthService,
+	MultilanguageService,
+	Role,
+	SidenavService,
+	Tenant,
+	TenantService,
+} from '@frontend/common';
+import { AppLoaderComponent, BreadcrumbsComponent, CommonUiModule, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
 import { AppComponent } from './app.component';
+
+interface AuthMockWithRole extends AuthMock {
+	userRole?: { name: string };
+}
 
 describe('AppComponent', () => {
 	const environmentMock = {
@@ -23,7 +35,7 @@ describe('AppComponent', () => {
 
 	let component: AppComponent;
 	let fixture: ComponentFixture<AppComponent>;
-	let authService: AuthMock;
+	let authService: AuthMockWithRole;
 	let authServiceSpy: any;
 
 	beforeEach(async () => {
@@ -40,6 +52,8 @@ describe('AppComponent', () => {
 				CommonUiModule,
 				WindmillModule,
 				TranslateModule.forRoot(),
+				AppLoaderComponent,
+				BreadcrumbsComponent,
 			],
 			declarations: [AppComponent],
 			providers: [
@@ -54,7 +68,7 @@ describe('AppComponent', () => {
 
 		fixture = TestBed.createComponent(AppComponent);
 		component = fixture.componentInstance;
-		authService = TestBed.get(AuthService) as AuthMock;
+		authService = TestBed.inject(AuthService) as unknown as AuthMock;
 	});
 
 	it('should create the app', () => {
@@ -119,5 +133,29 @@ describe('AppComponent', () => {
 		expect(tenantServiceMock.getTenant).toHaveBeenCalledWith('1');
 		expect(tenantServiceMock.tenant).toBeNull();
 		expect(result).toBeFalsy();
+	});
+
+	describe('AppComponent', () => {
+		it('should return true for isCashierRole when userRole is CASHIER', () => {
+			authService.userRole = { name: Role.CASHIER };
+			expect(component.isCashierRole).toBe(true);
+		});
+
+		it('should return false for isCashierRole when userRole is not CASHIER', () => {
+			authService.userRole = { name: Role.MUNICIPALITY_ADMIN };
+			expect(component.isCashierRole).toBe(false);
+		});
+
+		it('should return false for isCashierRole when userRole is null', () => {
+			authService.userRole = undefined;
+			expect(component.isCashierRole).toBe(false);
+		});
+
+		it('should call ngOnInit and subscribe to authService emitEvent', () => {
+			const emitSpy = jest.spyOn(authService, 'emitEvent');
+			component.ngOnInit();
+			expect(tenantServiceMock.getTenant).toHaveBeenCalled();
+			expect(emitSpy).toBeDefined();
+		});
 	});
 });

@@ -5,14 +5,20 @@
 		.mat-mdc-card {
 			min-height: 248px;
 		}
-		.mdc-card.centric-card .mat-mdc-card-content, .mdc-card.centric-card .mat-mdc-card-actions {
+		.card-content {
 			padding: 0px !important;
 		}
 		.outer-chart-container {
 			min-height: 248px;
 		}
+
 		.windmill-combo-button.dropdown .dropdown-combo-button .combo-button-text {
 			white-space: nowrap;
+		}
+
+		.card-title {
+			@include mixins.flex(row, space-between, center);
+			width: 100%;
 		}
 	}
 }

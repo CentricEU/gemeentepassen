@@ -1,4 +1,4 @@
-<ng-container *ngIf="dataCount; else noData">
+@if (dataCount) {
 	<frontend-table
 		#transactionsTable
 		class="table-pannel"
@@ -7,16 +7,16 @@
 		[hasCheckbox]="false"
 		[innerEmptyState]="isInnerEmptyStateVisible"
 		[innerEmptyStateTitle]="innerEmptyStateTitle"
+		[hasFilters]="true"
 		[showFooter]="true"
 		[showHeader]="true"
-		[listLength]="allMonthTransactionsCount"
-		(getSelectedItemsNumber)="setAreTransactionsSelected($event)"
+		[listLength]="transactionsCount"
+		(applyFilters)="onApplyFilters($event)"
 		(loadDataEvent)="loadData($event)">
 		<ng-container>
 			<span class="left-container">
 				{{ 'general.pages.transactions' | translate }}
 			</span>
-
 			<div class="right-container">
 				<centric-button
 					ariaAttributes
@@ -31,7 +31,6 @@
 					[tooltipText]="'modal.manageColumns.title' | translate"
 					(click)="manageColumns()">
 				</centric-button>
-
 				<centric-button
 					ariaAttributes
 					windmill-tooltip
@@ -46,24 +45,29 @@
 					[tooltipText]="'general.button.generateSEPA' | translate"
 					(click)="generateSEPA()">
 				</centric-button>
-
-				<frontend-transactions-date-menu
-					[selectedDate]="selectedDate"
-					[menuData]="menuData"
-					(selectedMonth)="onSelectMonth($event)">
-				</frontend-transactions-date-menu>
+				<centric-button
+					ariaAttributes
+					type="uncontained-greyscale"
+					class="clear-filters-button"
+					[disabled]="!areFiltersApplied"
+					(click)="clearFilters()">
+					{{ 'general.button.clearFilter' | translate }}
+				</centric-button>
+				<frontend-transactions-date-dropdown
+					[dateOptions]="dateOptions"
+					[lastSelectedInterval]="lastSelectedInterval"
+					(selectedDateRange)="onSelectDateRange($event)">
+				</frontend-transactions-date-dropdown>
 			</div>
 		</ng-container>
 	</frontend-table>
-</ng-container>
-
-<ng-template #noData>
-	<centric-panel class="table-pannel" [class.full-size-panel]="true" [showFooter]="false">
-		<ng-container panel-content>
+} @else {
+	<windmill-card class="table-pannel" [class.full-size-panel]="true" [hasFooter]="false">
+		<ng-container card-content>
 			<frontend-no-data
 				[noDataTitle]="'transactions.noData.title'"
 				[noDataDescription]="'transactions.noData.description'">
 			</frontend-no-data>
 		</ng-container>
-	</centric-panel>
-</ng-template>
+	</windmill-card>
+}

@@ -1,18 +1,19 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import nl.centric.innovation.local4local.entity.CitizenGroup;
 import nl.centric.innovation.local4local.enums.CitizenAgeGroup;
 import nl.centric.innovation.local4local.enums.EligibilityCriteria;
 import nl.centric.innovation.local4local.enums.RequiredDocuments;
 
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+
 import java.math.BigDecimal;
 
 @Builder

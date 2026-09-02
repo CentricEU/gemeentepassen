@@ -1,0 +1,17 @@
+<centric-login>
+	<ng-container title>
+		<frontend-logo-title
+			[title]="'general.welcomeL4L'"></frontend-logo-title>
+	</ng-container>
+	<ng-container form>
+		<div class="inner-form-container full-width">
+			<img src="/assets/images/digid_login_image.svg" [alt]="'digiD.logoAlt' | translate" class="logo-image" />
+			<centric-button
+				[ariaLabel]="'digiD.button' | translate"
+				class="login-button full-width"
+				(click)="loginWithDigiD()"
+				>{{ 'digiD.button' | translate }}</centric-button
+			>
+		</div>
+	</ng-container>
+</centric-login>

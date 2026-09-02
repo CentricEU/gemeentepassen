@@ -1,9 +1,9 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import nl.centric.innovation.local4local.util.DateUtils;
 
-import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
 @Builder

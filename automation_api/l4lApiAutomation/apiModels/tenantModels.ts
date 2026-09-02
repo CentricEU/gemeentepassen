@@ -7,3 +7,8 @@ export interface Tenant {
 	bic?: string;
 	wage: number;
 }
+
+export interface TenantBankInformation{
+	iban : string;
+	bic : string;
+}

@@ -8,7 +8,15 @@ export interface WorkingHour {
 	openTime: string;
 	isChecked: boolean;
 }
-export interface SupplierProfile {
+export interface SupplierProfilePatchDto {
+	logo?: string;
+	ownerName: string;
+	legalForm: number;
+	group: number;
+	category: number;
+	subcategory: number;
+	iban: string;
+	bic: string;
 	companyBranchAddress: string;
 	branchProvince: string;
 	branchZip: string;
@@ -17,18 +25,15 @@ export interface SupplierProfile {
 	email: string;
 	website?: string;
 	accountManager: string;
-	logo?: string;
-	ownerName: string;
-	kvkNumber: string;
-	companyName: string;
-	adminEmail: string;
-	legalForm: number;
-	group: number;
-	category: number;
-	subcategory: number;
 	supplierId: string;
-	iban: string;
-	bic: string;
-	coordinates: string;
-	latLon: LatLon;
+	latlon: LatLon;
+	workingHours: WorkingHour[];
+	cashierEmails: string[];
+}
+
+export interface SupplierProfileRequestDto {
+	companyName: string;
+	kvkNumber: string;
+	adminEmail: string;
+	supplierProfilePatchDto: SupplierProfilePatchDto;
 }

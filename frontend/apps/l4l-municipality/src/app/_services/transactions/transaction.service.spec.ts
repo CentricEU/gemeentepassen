@@ -1,6 +1,6 @@
 import { HttpClient, HttpClientModule, HttpParams } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { MonthYearEntry, TransactionTableDto } from '@frontend/common';
+import { TransactionTableDto, TransactionTableTenantDto } from '@frontend/common';
 import { of } from 'rxjs';
 
 import { TransactionService } from './transaction.service';
@@ -42,36 +42,6 @@ describe('TransactionService', () => {
 		});
 
 		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/transactions/admin/count-all`);
-	});
-
-	it('should return the number of all current month transactions', () => {
-		const selectedDate = { monthValue: 1, year: 2024 };
-		const httpParams = new HttpParams().set('month', selectedDate.monthValue).set('year', selectedDate.year);
-
-		const expectedUrl = `${environmentMock.apiPath}/transactions/admin/count-by-month-and-year`;
-
-		httpClientSpy.get.mockReturnValue(of(15));
-
-		service.countCurrentMonthTransactionsByTenant(new MonthYearEntry('january', 1, 2024)).subscribe((data) => {
-			expect(data).toEqual(15);
-		});
-
-		expect(httpClientSpy.get).toHaveBeenCalledWith(expectedUrl, {
-			params: httpParams,
-			responseType: 'json',
-		});
-	});
-
-	it('should return the number of all distinct years for transactions', () => {
-		const years = [2023, 2024, 2025];
-
-		httpClientSpy.get.mockReturnValue(of(years));
-
-		service.getDistinctYearsForTransactionsByTenant().subscribe((data) => {
-			expect(data).toEqual(years);
-		});
-
-		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/transactions/admin/years`);
 	});
 
 	it('should return paginated transactions', () => {
@@ -144,5 +114,116 @@ describe('TransactionService', () => {
 		const actualQueryString = httpClientSpy.get.mock.calls[0][1].params.toString();
 
 		expect(actualQueryString).toBe(expectedParams.toString());
+	});
+
+	it('should call count-all when startDate or endDate is missing', () => {
+		httpClientSpy.get.mockReturnValue(of(3));
+
+		service.countDateIntervalTransactionsByTenant(undefined, new Date().toISOString()).subscribe((data) => {
+			expect(data).toEqual(3);
+		});
+		expect(httpClientSpy.get).toHaveBeenLastCalledWith(`${environmentMock.apiPath}/transactions/admin/count-all`);
+
+		service.countDateIntervalTransactionsByTenant(new Date().toISOString(), undefined).subscribe((data) => {
+			expect(data).toEqual(3);
+		});
+		expect(httpClientSpy.get).toHaveBeenLastCalledWith(`${environmentMock.apiPath}/transactions/admin/count-all`);
+	});
+
+	it('should call count with start/end date params when both dates are provided', () => {
+		const startDate = '2024-01-01';
+		const endDate = '2024-01-31';
+		httpClientSpy.get.mockReturnValue(of(7));
+
+		service.countDateIntervalTransactionsByTenant(startDate, endDate).subscribe((data) => expect(data).toEqual(7));
+
+		const call = httpClientSpy.get.mock.calls[0];
+		expect(call[0]).toBe(`${environmentMock.apiPath}/transactions/admin/count`);
+		const params: HttpParams = call[1].params;
+		expect(params.get('startDate')).toBe(startDate);
+		expect(params.get('endDate')).toBe(endDate);
+		expect(params.get('supplierId')).toBeNull();
+	});
+
+	it('should include supplierId when provided for countDateIntervalTransactionsByTenant', () => {
+		const startDate = '2024-02-01';
+		const endDate = '2024-02-28';
+		const supplierId = 'supplier-123';
+		httpClientSpy.get.mockReturnValue(of(10));
+
+		service
+			.countDateIntervalTransactionsByTenant(startDate, endDate, supplierId)
+			.subscribe((data) => expect(data).toEqual(10));
+
+		const call = httpClientSpy.get.mock.calls[0];
+		const params: HttpParams = call[1].params;
+		expect(params.get('startDate')).toBe(startDate);
+		expect(params.get('endDate')).toBe(endDate);
+		expect(params.get('supplierId')).toBe(supplierId);
+		expect(call[1].responseType).toBe('json');
+	});
+
+	it('should return [] and not call http when dates are missing', () => {
+		const page = 0;
+		const size = 10;
+
+		service
+			.getDateIntervalTransactionsByTenant(page, size, undefined, new Date().toISOString())
+			.subscribe((data) => {
+				expect(data).toEqual([]);
+			});
+		service
+			.getDateIntervalTransactionsByTenant(page, size, new Date().toISOString(), undefined)
+			.subscribe((data) => {
+				expect(data).toEqual([]);
+			});
+
+		expect(httpClientSpy.get).not.toHaveBeenCalled();
+	});
+
+	it('should call filter endpoint with page/size and dates', () => {
+		const page = 1;
+		const size = 20;
+		const startDate = '2024-03-01';
+		const endDate = '2024-03-31';
+		const mockTransactions: TransactionTableTenantDto[] = [];
+
+		httpClientSpy.get.mockReturnValue(of(mockTransactions));
+
+		service
+			.getDateIntervalTransactionsByTenant(page, size, startDate, endDate)
+			.subscribe((data) => expect(data).toEqual(mockTransactions));
+
+		const call = httpClientSpy.get.mock.calls[0];
+		expect(call[0]).toBe(`${environmentMock.apiPath}/transactions/admin/filter`);
+		const params: HttpParams = call[1].params;
+		expect(params.get('page')).toBe(page.toString());
+		expect(params.get('size')).toBe(size.toString());
+		expect(params.get('startDate')).toBe(startDate);
+		expect(params.get('endDate')).toBe(endDate);
+		expect(params.get('supplierId')).toBeNull();
+	});
+
+	it('should include supplierId when provided for getDateIntervalTransactionsByTenant', () => {
+		const page = 2;
+		const size = 5;
+		const startDate = '2024-04-01';
+		const endDate = '2024-04-30';
+		const supplierId = 'sup-987';
+		const mockTransactions: TransactionTableTenantDto[] = [];
+
+		httpClientSpy.get.mockReturnValue(of(mockTransactions));
+
+		service
+			.getDateIntervalTransactionsByTenant(page, size, startDate, endDate, supplierId)
+			.subscribe((data) => expect(data).toEqual(mockTransactions));
+
+		const call = httpClientSpy.get.mock.calls[0];
+		const params: HttpParams = call[1].params;
+		expect(params.get('page')).toBe(page.toString());
+		expect(params.get('size')).toBe(size.toString());
+		expect(params.get('startDate')).toBe(startDate);
+		expect(params.get('endDate')).toBe(endDate);
+		expect(params.get('supplierId')).toBe(supplierId);
 	});
 });

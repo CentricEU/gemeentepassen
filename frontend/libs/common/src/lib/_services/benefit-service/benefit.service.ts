@@ -1,10 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+
 import { BenefitDto } from '../../_models/benefit-dto.model';
+import { BenefitTableDto } from '../../_models/benefit-table-dto.model';
 import { EligibleBenefitDto } from '../../_models/eligible-benefit-dto.model';
 import { Environment } from '../../_models/environment.model';
-import { BenefitTableDto } from '../../_models/benefit-table-dto.model';
 
 @Injectable({
 	providedIn: 'root',
@@ -21,6 +22,12 @@ export class BenefitService {
 
 	public getAllBenefitsForCitizenGroup(): Observable<EligibleBenefitDto[]> {
 		return this.httpClient.get<EligibleBenefitDto[]>(`${this.environment.apiPath}/benefits`);
+	}
+
+	public getAllBenefitsByPassholderId(passholderId: string): Observable<EligibleBenefitDto[]> {
+		return this.httpClient.get<EligibleBenefitDto[]>(
+			`${this.environment.apiPath}/benefits/passholder/${passholderId}`,
+		);
 	}
 
 	public getAllBenefits(): Observable<BenefitDto[]> {

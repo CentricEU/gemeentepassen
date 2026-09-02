@@ -1,65 +1,66 @@
-<centric-alert *ngIf="shouldDisplayInfoMessage">
-	<div message>{{ 'setupProfile.successfulInfoMessage' | translate }}</div>
-</centric-alert>
+@if (shouldDisplayInfoMessage) {
+  <centric-alert>
+    <div message>{{ 'setupProfile.successfulInfoMessage' | translate }}</div>
+  </centric-alert>
+}
 <div class="welcome bold">{{ 'general.welcome' | translate: { name: userFirstName } }}</div>
 
 <div class="dashboard-container">
-	<centric-panel class="add-offer-section" [header]="false" [shadow]="true">
-		<ng-container panel-content>
-			<ng-container *ngIf="supplierLogoSrc; else emptyLogo">
-				<img class="img-fit" [src]="supplierLogoSrc" alt="logo" />
-			</ng-container>
-			<ng-template #emptyLogo>
-				<section class="empty-logo">
-					<centric-icon2 [svgIcon]="'image_b'" [size]="'48'"></centric-icon2>
-				</section>
-			</ng-template>
-			<section class="right-section">
-				<p class="bold">
-					{{ 'dashboard.addOfferDescription' | translate }}
-				</p>
-				<centric-button
-					type="high-emphasis-theme"
-					iconId="plus_r"
-					[disabled]="shouldDisableAddOfferButton"
-					(click)="addOffer()">
-					{{ 'offer.addOffer' | translate }}
-				</centric-button>
-			</section>
-		</ng-container>
-	</centric-panel>
-	<!-- <centric-panel class="qr-code-panel" [shadow]="true">
-		<ng-container panel-header>
-			<span>{{ 'dashboard.qrCode.header' | translate }}</span>
-		</ng-container>
-		<ng-container panel-content>
-			<p>{{ qrTranslationLabel | translate }}</p>
-			<img [src]="qrImageUrl" alt="QR Code" />
-			<ng-container *ngIf="!qrHasEmptyState">
-				<centric-button
-					ariaAttributes
-					size="small"
-					type="outlined-theme"
-					iconId="arrow-down_r"
-					(click)="downloadQrCodeImage()">
-					{{ 'general.button.download' | translate }}
-				</centric-button>
-			</ng-container>
-		</ng-container>
-	</centric-panel> -->
-	<ng-container *ngIf="areRequestLoaded">
-		<frontend-transactions-panel
-			[skipErrorToaster]="skipErrorToaster"
-			[isSupplierActive]="!shouldDisplayInfoMessage"></frontend-transactions-panel>
-		<frontend-offers-chart-panel
-			class="used-offer-chart"
-			[skipErrorToaster]="skipErrorToaster"
-			[isUsedOfferChart]="true"
-			[isSupplierActive]="!shouldDisplayInfoMessage"></frontend-offers-chart-panel>
-		<frontend-offers-chart-panel
-			class="offer-chart"
-			[skipErrorToaster]="skipErrorToaster"
-			[isUsedOfferChart]="false"
-			[isSupplierActive]="!shouldDisplayInfoMessage"></frontend-offers-chart-panel>
-	</ng-container>
+  <windmill-card class="add-offer-section" [hasHeader]="false" [hasShadow]="true">
+    <ng-container card-content>
+      @if (supplierLogoSrc) {
+        <img class="img-fit" [src]="supplierLogoSrc" alt="logo" />
+      } @else {
+        <section class="empty-logo">
+          <windmill-icon [svgIcon]="'image_b'" [size]="'48'"></windmill-icon>
+        </section>
+      }
+      <section class="right-section">
+        <p class="bold">
+          {{ 'dashboard.addOfferDescription' | translate }}
+        </p>
+        <centric-button
+          type="high-emphasis-theme"
+          iconId="plus_r"
+          [disabled]="shouldDisableAddOfferButton"
+          (click)="addOffer()">
+          {{ 'offer.addOffer' | translate }}
+        </centric-button>
+      </section>
+    </ng-container>
+  </windmill-card>
+  <!-- <windmill-card class="qr-code-panel" [shadow]="true">
+  <ng-container card-header>
+    <span>{{ 'dashboard.qrCode.header' | translate }}</span>
+  </ng-container>
+  <ng-container card-content>
+    <p>{{ qrTranslationLabel | translate }}</p>
+    <img [src]="qrImageUrl" alt="QR Code" />
+    <ng-container *ngIf="!qrHasEmptyState">
+      <centric-button
+        ariaAttributes
+        size="small"
+        type="outlined-theme"
+        iconId="arrow-down_r"
+        (click)="downloadQrCodeImage()">
+        {{ 'general.button.download' | translate }}
+      </centric-button>
+    </ng-container>
+  </ng-container>
+</windmill-card> -->
+@if (areRequestLoaded) {
+  <frontend-transactions-panel
+    [skipErrorToaster]="skipErrorToaster"
+  [isSupplierActive]="!shouldDisplayInfoMessage"></frontend-transactions-panel>
+  <frontend-offers-chart-panel
+    class="used-offer-chart"
+    [skipErrorToaster]="skipErrorToaster"
+    [isUsedOfferChart]="true"
+  [isSupplierActive]="!shouldDisplayInfoMessage"></frontend-offers-chart-panel>
+  <frontend-offers-chart-panel
+    class="offer-chart"
+    [skipErrorToaster]="skipErrorToaster"
+    [isUsedOfferChart]="false"
+  [isSupplierActive]="!shouldDisplayInfoMessage"></frontend-offers-chart-panel>
+}
 </div>

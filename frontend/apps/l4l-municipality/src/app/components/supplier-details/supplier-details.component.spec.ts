@@ -58,18 +58,12 @@ describe('SupplierDetailsComponent', () => {
 		expect(component.supplierId).toBe('123e4567-e89b-12d3-a456-426614174000');
 	});
 
-	it('should set tabIndex to 1 if route snapshot data contains "route"', () => {
-		(activatedRoute.snapshot.data as any).route = true;
-		component.ngOnInit();
-		expect(component.tabIndex).toBe(1);
-	});
-
 	it('should not update location on tab change when supplierId is not present', () => {
 		component.supplierId = '';
-		const event: any = { index: 1, tab: {} as any };
+		const event: any = { index: 0, tab: {} as any };
 		component.tabChanged(event);
 
-		expect(component.tabIndex).toBe(1);
+		expect(component.tabIndex).toBe(0);
 		expect(location.go).not.toHaveBeenCalled();
 	});
 
@@ -80,7 +74,6 @@ describe('SupplierDetailsComponent', () => {
 
 		component.tabChanged(event);
 
-		expect(component.tabIndex).toBe(0);
 		expect(navigateSpy).toHaveBeenCalledWith(['supplier-details/123e4567-e89b-12d3-a456-426614174000'], {
 			replaceUrl: false,
 		});
@@ -93,8 +86,19 @@ describe('SupplierDetailsComponent', () => {
 
 		component.tabChanged(event);
 
-		expect(component.tabIndex).toBe(1);
 		expect(navigateSpy).toHaveBeenCalledWith(['supplier-details/123e4567-e89b-12d3-a456-426614174000/offers'], {
+			replaceUrl: false,
+		});
+	});
+
+	it('should navigate to supplierHistory when tabIndex is 2 and supplierId is present', () => {
+		component.supplierId = '123e4567-e89b-12d3-a456-426614174000';
+		const event: any = { index: 2, tab: {} as any };
+		const navigateSpy = jest.spyOn(component['router'], 'navigate');
+
+		component.tabChanged(event);
+
+		expect(navigateSpy).toHaveBeenCalledWith(['supplier-details/123e4567-e89b-12d3-a456-426614174000/history'], {
 			replaceUrl: false,
 		});
 	});

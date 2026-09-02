@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -19,14 +18,14 @@ import {
 } from '@frontend/common';
 import { CustomDialogComponent, CustomDialogConfigUtil, WindmillModule } from '@frontend/common-ui';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 
 @Component({
 	selector: 'frontend-create-citizen-popup-popup',
 	templateUrl: './create-citizen-group-popup.component.html',
 	styleUrls: ['./create-citizen-group-popup.component.scss'],
 	standalone: true,
-	imports: [CommonModule, CommonL4LModule, TranslateModule, WindmillModule],
+	imports: [CommonL4LModule, TranslateModule, WindmillModule],
 })
 export class CreateCitizenGroupPopupComponent implements OnInit {
 	private readonly dialogService = inject(DialogService);

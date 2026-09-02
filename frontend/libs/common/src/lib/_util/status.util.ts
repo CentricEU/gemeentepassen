@@ -14,6 +14,8 @@ export class StatusUtil {
 				return 'status.expired';
 			case GenericStatusEnum.PENDING:
 				return 'status.pending';
+			case GenericStatusEnum.CREATED:
+				return 'status.created';
 			default:
 				return '';
 		}
@@ -30,6 +32,8 @@ export class StatusUtil {
 				return 'cancel-circle_b';
 			case GenericStatusEnum.PENDING:
 				return 'clock_b';
+			case GenericStatusEnum.CREATED:
+				return 'file_edit_bb';
 			default:
 				return '';
 		}
@@ -41,6 +45,7 @@ export class StatusUtil {
 			case GenericStatusEnum.APPROVED:
 				return 'active';
 			case GenericStatusEnum.EXPIRED:
+			case GenericStatusEnum.CREATED:
 				return 'expired';
 			case GenericStatusEnum.REJECTED:
 				return 'rejected';
@@ -61,6 +66,10 @@ export class StatusUtil {
 
 	public static getMessagesForIsAnswerYesNo(isAnswerYesNo: boolean): string {
 		return isAnswerYesNo ? 'general.yes' : 'general.no';
+	}
+
+	public static getMessageForStatus(isRegistered: boolean): string {
+		return isRegistered ? 'general.digital' : 'general.non-digital';
 	}
 
 	public static getCitizenGroupAgeLabelFromEnum(ageGroups: CitizenGroupAge[]): string[] {

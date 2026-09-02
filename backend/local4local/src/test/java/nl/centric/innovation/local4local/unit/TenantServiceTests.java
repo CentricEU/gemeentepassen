@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -43,7 +44,9 @@ class TenantServiceTests {
     @BeforeEach
     void setUp() {
         Tenant tenant1 = new Tenant();
+        tenant1.setId(UUID.randomUUID());
         Tenant tenant2 = new Tenant();
+        tenant2.setId(UUID.randomUUID());
         tenantList = List.of(tenant1, tenant2);
     }
 
@@ -62,7 +65,7 @@ class TenantServiceTests {
         expectedTenant.setId(tenantId);
         expectedTenant.setName("Test Tenant");
         expectedTenant.setAddress("Test Address");
-        expectedTenant.setWage(1000.0);
+        expectedTenant.setWage(BigDecimal.valueOf(1000.0));
 
         expectedTenant.setLogo("logo-image-data-as-string".getBytes());
 
@@ -92,7 +95,7 @@ class TenantServiceTests {
         UUID id = UUID.randomUUID();
         Tenant tenant = new Tenant();
         tenant.setId(id);
-        TenantDto tenantDto = new TenantDto("Test Tenant", "Test Address", 1115.0, "test@municipality.nl", "+33 123 456");
+        TenantDto tenantDto = new TenantDto("Test Tenant", "Test Address", (BigDecimal.valueOf(1115.0)), "test@municipality.nl", "+33 123 456");
 
         when(tenantRepositoryMock.save(any(Tenant.class))).thenReturn(tenant);
 

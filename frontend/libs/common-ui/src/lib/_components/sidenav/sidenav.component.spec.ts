@@ -30,8 +30,8 @@ describe('SidenavComponent', () => {
 
 	beforeEach(async () => {
 		await TestBed.configureTestingModule({
-			declarations: [SidenavComponent],
 			imports: [
+				SidenavComponent,
 				CommonUiModule,
 				BrowserAnimationsModule,
 				RouterTestingModule,
@@ -49,8 +49,8 @@ describe('SidenavComponent', () => {
 
 		fixture = TestBed.createComponent(SidenavComponent);
 		component = fixture.componentInstance;
-		tenantService = TestBed.get(TenantService);
-		authService = TestBed.get(AuthService);
+		tenantService = TestBed.inject(TenantService);
+		authService = TestBed.inject(AuthService);
 
 		fixture.detectChanges();
 	});
@@ -91,6 +91,6 @@ describe('SidenavComponent', () => {
 		const router = TestBed.inject(Router);
 		const navigateSpy = jest.spyOn(router, 'navigate');
 		component.navigateToDashboard();
-		expect(navigateSpy).toHaveBeenCalledWith([commonRoutingConstants.dashboard]);
+		expect(navigateSpy).toHaveBeenCalledWith(['/']);
 	});
 });

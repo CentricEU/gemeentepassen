@@ -1,7 +1,6 @@
 import { AbstractControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 import { TextAreaCounterResult } from '../_models/text-area-counter-result.model';
-import { CommonUtil } from './common-util';
 import { RegexUtil } from './regex-util';
 
 export class FormUtil {
@@ -95,7 +94,7 @@ export class FormUtil {
 	}
 
 	public static validationFunctionErrorForKVK(form: FormGroup): boolean | undefined {
-		const formControl = form.get('kvk');
+		const formControl = form.get('kvkNumber');
 		const isFormInvalid = FormUtil.isInvalidForm(formControl);
 		const lengthValidator = (formControl?.value?.length ?? 0) > 0 && (formControl?.value?.length ?? 0) < 8;
 
@@ -157,7 +156,7 @@ export class FormUtil {
 		if (controlName === 'email') {
 			return formControl?.errors?.['validEmail'];
 		}
-		return formControl?.errors?.['validTelephone'];
+		return formControl?.errors?.['pattern'];
 	}
 
 	public static getEmailErrorMessage(form: FormGroup): string {
@@ -282,16 +281,12 @@ export class FormUtil {
 	 * Method to compare two inputs if the first one is lower than the second one.
 	 * Errors will be set to the fields if they won't respect the condition.
 	 */
-	public static shouldDisplayCompareError(
-		form: FormGroup,
-		firstField: string,
-		secondField: string,
-		fullField: string,
-	): boolean {
+	public static shouldDisplayCompareError(form: FormGroup, firstField: string, secondField: string): boolean {
 		const firstFieldValue = form?.controls[firstField].value;
 		const secondFieldValue = form?.controls[secondField].value;
+
 		if (firstFieldValue && secondFieldValue && firstFieldValue >= secondFieldValue) {
-			FormUtil.setErrorToFormField(form, fullField);
+			FormUtil.setErrorToFormField(form, firstField);
 			return true;
 		}
 
@@ -304,27 +299,35 @@ export class FormUtil {
 	 * @param secondField ex: timeTo
 	 * @param fullField is the parent of 2 fields ex: timeSlots for timeFrom and timeTo
 	 */
-	public static onRestrictionTypeChange(
-		form: FormGroup,
-		firstField: string,
-		secondField: string,
-		fullField: string,
-		value: string | unknown,
-	): void {
-		const idControl = form.get(fullField);
+	public static onRestrictionTypeChange(form: FormGroup, firstField: string, secondField: string): void {
 		const firstFieldValue = form?.controls[firstField].value;
 		const secondFieldValue = form?.controls[secondField].value;
-
-		if (!CommonUtil.hasValidValue(value) || idControl?.value === '') {
-			return;
-		}
 
 		if (firstFieldValue && secondFieldValue && firstFieldValue > secondFieldValue) {
 			return;
 		}
 
-		if (firstFieldValue || secondFieldValue) {
-			FormUtil.clearRestrictionValidatorsAndErrors(form, fullField);
+		if (firstFieldValue && secondFieldValue) {
+			FormUtil.clearRestrictionValidatorsAndErrors(form, firstField);
+			FormUtil.clearValidatorsRangedFields(form, firstField, secondField);
+			return;
+		}
+	}
+
+	public static onRestrictionChangeWithBothOrNoneFields(
+		form: FormGroup,
+		firstField: string,
+		secondField: string,
+	): void {
+		const firstFieldValue = form?.controls[firstField].value;
+		const secondFieldValue = form?.controls[secondField].value;
+
+		if (firstFieldValue && secondFieldValue && firstFieldValue > secondFieldValue) {
+			return;
+		}
+
+		if ((firstFieldValue && secondFieldValue) || (!firstFieldValue && !secondFieldValue)) {
+			FormUtil.clearRestrictionValidatorsAndErrors(form, firstField);
 			FormUtil.clearValidatorsRangedFields(form, firstField, secondField);
 			return;
 		}
@@ -421,6 +424,24 @@ export class FormUtil {
 		return normalizedDate.toISOString().split('T')[0];
 	}
 
+	// TO DO:  Move these two methods to DateUtil later
+	public static normalizeDateToLocale(date: string): string {
+		const normalizedDate = new Date(date);
+		normalizedDate.setMinutes(normalizedDate.getMinutes() - normalizedDate.getTimezoneOffset());
+		const day = String(normalizedDate.getDate()).padStart(2, '0');
+		const month = String(normalizedDate.getMonth() + 1).padStart(2, '0');
+		const year = normalizedDate.getFullYear();
+		return `${day}/${month}/${year}`;
+	}
+
+	public static displayDate(date: string): string {
+		const dateObj = new Date(date);
+		const day = String(dateObj.getDate()).padStart(2, '0');
+		const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+		const year = dateObj.getFullYear();
+		return `${month}/${day}/${year}`;
+	}
+
 	public static getClientDateTime(): string {
 		const now = new Date();
 		const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -440,5 +461,38 @@ export class FormUtil {
 
 	public static hasControlMinMaxErrors(controlName: string, form: FormGroup): boolean {
 		return form && (form.get(controlName)?.errors?.['max'] || form.get(controlName)?.errors?.['min']);
+	}
+
+	public static shouldDisplayCompareTimeError(form: FormGroup, firstField: string, secondField: string): boolean {
+		const firstFieldValue = form?.controls[firstField].value;
+		const secondFieldValue = form?.controls[secondField].value;
+
+		if (firstFieldValue && secondFieldValue) {
+			const firstDate = new Date(firstFieldValue);
+			const secondDate = new Date(secondFieldValue);
+			const today = new Date();
+
+			firstDate.setFullYear(today.getFullYear(), today.getMonth(), today.getDate());
+			secondDate.setFullYear(today.getFullYear(), today.getMonth(), today.getDate());
+
+			if (firstDate >= secondDate) {
+				FormUtil.setErrorToFormField(form, firstField);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static shouldDisplayRequiredTimeError(form: FormGroup, firstField: string, secondField: string): boolean {
+		const firstValue = form.get(firstField)?.value;
+		const secondValue = form.get(secondField)?.value;
+
+		if (!!firstValue !== !!secondValue) {
+			FormUtil.setErrorToFormField(form, !firstValue ? firstField : secondField);
+			return true;
+		}
+
+		return false;
 	}
 }

@@ -1,7 +1,9 @@
 import { HttpClientModule } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { OfferUseDto } from '@frontend/common';
 
+import { ApproveOfferDto } from './_models/approve-offer-dto.model';
 import { RejectOfferDto } from './_models/reject-offer-dto.model';
 import { PendingOffersService } from './pending-offers.service';
 
@@ -83,19 +85,19 @@ describe('PendingOffersService', () => {
 	});
 
 	it('should send a PUT request to approve an offer', () => {
-		const offerId = 'offerId';
+		const dto = new ApproveOfferDto('testId', 1);
 
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		service.approveOffer(offerId).subscribe(() => {});
+		service.approveOffer(dto).subscribe(() => {});
 
-		const req = httpMock.expectOne(`${environmentMock.apiPath}/offers/approve/${offerId}`);
+		const req = httpMock.expectOne(`${environmentMock.apiPath}/offers/approve`);
 		expect(req.request.method).toEqual('PUT');
 
 		req.flush({});
 	});
 
 	it('should send a POST request to reject an offer', () => {
-		const rejectOfferDto = new RejectOfferDto('testId', 'reason for rejection');
+		const rejectOfferDto = new RejectOfferDto('testId', 'reason for rejection', 0);
 
 		// eslint-disable-next-line @typescript-eslint/no-empty-function
 		service.rejectOffer(rejectOfferDto).subscribe(() => {});
@@ -105,5 +107,37 @@ describe('PendingOffersService', () => {
 		expect(req.request.body).toEqual(rejectOfferDto);
 
 		req.flush({});
+	});
+
+	it('should call the correct API endpoint and return an array of OfferTableDto', () => {
+		const passholderId = '12345';
+		const mockResponse = [
+			{ id: 1, name: 'Offer 1' },
+			{ id: 2, name: 'Offer 2' },
+		];
+
+		service.getOffersForPassholder(passholderId).subscribe((offers) => {
+			expect(offers).toEqual(mockResponse);
+		});
+
+		const req = httpMock.expectOne(`${environmentMock.apiPath}/offers/passholder/${passholderId}`);
+		expect(req.request.method).toBe('GET');
+		req.flush(mockResponse);
+	});
+
+	it('should send a POST request to download an offer', () => {
+		const offerUseDto = new OfferUseDto('passholderIdValue', 'offerIdValue', new Date().toISOString(), undefined);
+		const mockBlob = new Blob(['test'], { type: 'application/pdf' });
+
+		service.downloadOffer(offerUseDto).subscribe((response) => {
+			expect(response).toEqual(mockBlob);
+		});
+
+		const req = httpMock.expectOne(`${environmentMock.apiPath}/offers/download`);
+		expect(req.request.method).toBe('POST');
+		expect(req.request.headers.get('Accept')).toBe('application/pdf');
+		expect(req.request.body).toEqual(offerUseDto);
+
+		req.flush(mockBlob);
 	});
 });

@@ -2,20 +2,25 @@
 
 :host {
 	::ng-deep {
-		.mdc-card.centric-card .mat-mdc-card-content {
+		.card-content {
 			@include mixins.flex(column);
 			@include mixins.size(100%, 100%);
 			padding: 0 !important;
 		}
 
 		.metrics-section {
-			.mdc-card.centric-card.mat-mdc-card {
+			.windmill-card {
 				height: 100%;
 			}
 		}
 
 		.windmill-combo-button.dropdown .dropdown-combo-button .combo-button-text {
 			white-space: nowrap;
+		}
+
+		.card-title {
+			@include mixins.flex(row, space-between, center);
+			width: 100%;
 		}
 	}
 }

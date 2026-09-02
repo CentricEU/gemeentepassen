@@ -325,7 +325,7 @@ describe('OffersChartPanelComponent', () => {
 
 				const result = component['getChartCountsForUsedOffer']();
 
-				expect(result).toEqual([10, 20, 30, 40]);
+				expect(result).toEqual([10, 20, 30, 40, 0]);
 			});
 
 			it('should return an array with zeros for missing offerTypeIds', () => {
@@ -344,7 +344,7 @@ describe('OffersChartPanelComponent', () => {
 
 				const result = component['getChartCountsForUsedOffer']();
 
-				expect(result).toEqual([10, 0, 30, 0]);
+				expect(result).toEqual([10, 0, 30, 0, 0]);
 			});
 
 			it('should return an array of zeros when chartValuesUsedOffer is empty', () => {
@@ -352,7 +352,7 @@ describe('OffersChartPanelComponent', () => {
 
 				const result = component['getChartCountsForUsedOffer']();
 
-				expect(result).toEqual([0, 0, 0, 0]);
+				expect(result).toEqual([0, 0, 0, 0, 0]);
 			});
 
 			it('should return an array of zeros when chartValuesUsedOffer is undefined', () => {
@@ -384,7 +384,7 @@ describe('OffersChartPanelComponent', () => {
 
 				const result = component['getChartCountsForUsedOffer']();
 
-				expect(result).toEqual([10, 0, 0, 0]);
+				expect(result).toEqual([10, 0, 0, 0, 15]);
 			});
 		});
 		describe('OffersChartPanelComponent', () => {
@@ -526,15 +526,15 @@ describe('OffersChartPanelComponent', () => {
 						{ offerTypeId: 1, citizenCount: 10, offerTypeLabel: 'Percentage' },
 						{ offerTypeId: 2, citizenCount: 20, offerTypeLabel: 'BOGO' },
 					];
-					expect(component['getChartCountsForUsedOffer']()).toEqual([10, 20, 0, 0]);
+					expect(component['getChartCountsForUsedOffer']()).toEqual([10, 20, 0, 0, 0]);
 				});
 
 				it('should return zeros when chartValuesUsedOffer is empty', () => {
 					component.chartValuesUsedOffer = [];
-					expect(component['getChartCountsForUsedOffer']()).toEqual([0, 0, 0, 0]);
+					expect(component['getChartCountsForUsedOffer']()).toEqual([0, 0, 0, 0, 0]);
 				});
 
-				it('should return zeros when chartValuesUsedOffer is undefined', () => {
+				it('should return empty array when chartValuesUsedOffer is undefined', () => {
 					component.chartValuesUsedOffer = undefined as unknown as OfferStatisticsDto[];
 					expect(component['getChartCountsForUsedOffer']()).toEqual([]);
 				});
@@ -724,17 +724,19 @@ describe('OffersChartPanelComponent', () => {
 				it('should return translated labels for used offer types', () => {
 					jest.spyOn(component['translateService'], 'instant').mockImplementation((key: any) => {
 						const translations: Record<string, string> = {
-							'offer.types.percentageDiscount': 'Percentage Discount',
+							'offer.types.storeCredit': 'Store Credit',
 							'offer.types.bogo': 'Buy One Get One',
-							'offer.types.creditDiscount': 'Credit Discount',
+							'offer.types.membershipFee': 'Membership Fee',
 							'offer.types.freeEntry': 'Free Entry',
+							'offer.types.freeProduct': 'Free Product',
+
 						};
 						return translations[key] || key;
 					});
 
 					const result = (component as any).chartLegendUsedOffers();
 
-					expect(result).toEqual(['Percentage Discount', 'Buy One Get One', 'Credit Discount', 'Free Entry']);
+					expect(result).toEqual(['Store Credit', 'Buy One Get One', 'Membership Fee', 'Free Entry', 'Free Product']);
 				});
 
 				it('should call translateService.instant for each offer type key', () => {
@@ -742,10 +744,11 @@ describe('OffersChartPanelComponent', () => {
 
 					(component as any).chartLegendUsedOffers();
 
-					expect(translateSpy).toHaveBeenCalledWith('offer.types.percentageDiscount');
+					expect(translateSpy).toHaveBeenCalledWith('offer.types.storeCredit');
 					expect(translateSpy).toHaveBeenCalledWith('offer.types.bogo');
-					expect(translateSpy).toHaveBeenCalledWith('offer.types.creditDiscount');
+					expect(translateSpy).toHaveBeenCalledWith('offer.types.membershipFee');
 					expect(translateSpy).toHaveBeenCalledWith('offer.types.freeEntry');
+					expect(translateSpy).toHaveBeenCalledWith('offer.types.freeProduct');
 				});
 			});
 
@@ -789,20 +792,22 @@ describe('OffersChartPanelComponent', () => {
 			describe('chartDataUsedOffer getter', () => {
 				it('should return correct data when chartValuesUsedOffer has values', () => {
 					component.chartValuesUsedOffer = [
-						{ offerTypeId: 1, citizenCount: 10, offerTypeLabel: 'Percentage' },
-						{ offerTypeId: 2, citizenCount: 20, offerTypeLabel: 'BOGO' },
-						{ offerTypeId: 3, citizenCount: 30, offerTypeLabel: 'Credit' },
-						{ offerTypeId: 4, citizenCount: 40, offerTypeLabel: 'Free Entry' },
+						{ offerTypeId: 1, citizenCount: 10, offerTypeLabel: 'storeCredit' },
+						{ offerTypeId: 2, citizenCount: 20, offerTypeLabel: 'bogo' },
+						{ offerTypeId: 3, citizenCount: 30, offerTypeLabel: 'membershipFee' },
+						{ offerTypeId: 4, citizenCount: 40, offerTypeLabel: 'freeEntry' },
+						{ offerTypeId: 5, citizenCount: 50, offerTypeLabel: 'freeProduct' },
 					];
 					const chartData = component.chartDataUsedOffer;
 
 					expect(chartData.labels).toEqual([
-						'offer.types.percentageDiscount',
+						'offer.types.storeCredit',
 						'offer.types.bogo',
-						'offer.types.creditDiscount',
+						'offer.types.membershipFee',
 						'offer.types.freeEntry',
+						'offer.types.freeProduct',
 					]);
-					expect(chartData.datasets[0].data).toEqual([10, 20, 30, 40]);
+					expect(chartData.datasets[0].data).toEqual([10, 20, 30, 40, 50]);
 					expect(chartData.datasets[0].backgroundColor).toBe('#0B5E22');
 				});
 
@@ -814,12 +819,13 @@ describe('OffersChartPanelComponent', () => {
 					const chartData = component.chartDataUsedOffer;
 
 					expect(chartData.labels).toEqual([
-						'offer.types.percentageDiscount',
+						'offer.types.storeCredit',
 						'offer.types.bogo',
-						'offer.types.creditDiscount',
+						'offer.types.membershipFee',
 						'offer.types.freeEntry',
+						'offer.types.freeProduct',
 					]);
-					expect(chartData.datasets[0].data).toEqual([10, 0, 30, 0]);
+					expect(chartData.datasets[0].data).toEqual([10, 0, 30, 0, 0]);
 				});
 
 				it('should return zeros when chartValuesUsedOffer is undefined', () => {
@@ -827,10 +833,11 @@ describe('OffersChartPanelComponent', () => {
 					const chartData = component.chartDataUsedOffer;
 
 					expect(chartData.labels).toEqual([
-						'offer.types.percentageDiscount',
+						'offer.types.storeCredit',
 						'offer.types.bogo',
-						'offer.types.creditDiscount',
+						'offer.types.membershipFee',
 						'offer.types.freeEntry',
+						'offer.types.freeProduct',
 					]);
 					expect(chartData.datasets[0].data).toEqual([]);
 				});
@@ -889,7 +896,7 @@ describe('OffersChartPanelComponent', () => {
 
 				const mockChart = {
 					data: {
-						datasets: [{ data: [0, 0, 0, 0] }],
+						datasets: [{ data: [0, 0, 0, 0, 0] }],
 					},
 					chartArea: {
 						left: 0,

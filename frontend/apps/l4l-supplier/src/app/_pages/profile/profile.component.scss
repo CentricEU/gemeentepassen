@@ -1,0 +1,28 @@
+:host {
+	height: 100%;
+
+	::ng-deep {
+		.windmill-tab,
+		.windmill-tab-body,
+		.windmill-tab-group {
+			height: 100%;
+			max-height: calc(100vh - 140px);
+		}
+
+		.windmill-card-container {
+			border: 0px;
+		}
+
+		.timeline {
+			padding: 32px !important;
+			height: 100%;
+			overflow: auto;
+		}
+
+		.history-tab {
+			.windmill-tab {
+				height: calc(100vh - 140px);
+			}
+		}
+	}
+}

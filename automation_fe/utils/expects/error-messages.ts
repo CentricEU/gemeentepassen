@@ -1,0 +1,15 @@
+export const ErrorMessages = {
+  EMAIL_REQUIRED: "E-mail is verplicht.",
+  PASSWORD_REQUIRED: "Wachtwoord is verplicht",
+  EMAIL_INVALID: "Voer een geldig e-mailadres in.",
+  HTML_ERROR: "Dit veld mag geen HTML-inhoud bevatten.",
+  ONE_CHARACTER_OVER_THE_LIMIT:"1 teveel tekens",
+  BENEFIT_NAME_REQUIRED: "Tegoednaam is verplicht.",
+  DESCRIPTION_REQUIRED: "Beschrijving is verplicht.",
+  AMOUNT_REQUIRED: "Bedrag is verplicht",
+  DATE_VALIDATION: "Voer in beide velden geldige datums in met alleen cijfers (DD/MM/YYYY).",
+  KVK_NUMBER_LENGTH: "KvK nummer moet 8 cijfers hebben",
+  PASSWORDS_DO_NOT_MATCH: "Wachtwoorden moeten overeenkomen",
+  FIRST_NAME_REQUIRED: "Voornaam is verplicht.",
+  LAST_NAME_REQUIRED: "Achternaam is verplicht.",
+};

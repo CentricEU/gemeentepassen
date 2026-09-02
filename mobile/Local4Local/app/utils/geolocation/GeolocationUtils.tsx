@@ -63,7 +63,7 @@ export default class GeolocationUtils {
 				}
 			]);
 		} else {
-			Alert.alert('Permission denied', 'Without your permission, Gemeentepassen App can not access your location.', [
+			Alert.alert('Permission denied', 'Without your permission, Gemeentepas App can not access your location.', [
 				{
 					text: 'Try Again',
 					onPress: () => GeolocationUtils.watchCurrentLocation(setLocation)

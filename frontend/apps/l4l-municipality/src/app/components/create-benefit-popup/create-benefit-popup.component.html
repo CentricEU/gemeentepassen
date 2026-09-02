@@ -6,7 +6,7 @@
 		[attr.ariaLabel]="'general.button.close' | translate"
 		[ariaLabelTranslation]="'general.button.close'"
 		(click)="close()">
-		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+		<windmill-icon [svgIcon]="'cancel_b'" [size]="'20'"></windmill-icon>
 	</button>
 </section>
 <section mat-dialog-content>
@@ -186,11 +186,11 @@
 						</section>
 					</centric-form-control>
 					@if (displayValidityError()) {
-						<ng-container errors>
+						<div class="states-messages">
 							<span class="centric-error-message" [attr.id]="'validity-type-error'"
 								>{{ 'genericFields.validity.validityFormControlRequired' | translate }}
 							</span>
-						</ng-container>
+						</div>
 					}
 				</centric-form-item>
 			</centric-form-item-group>

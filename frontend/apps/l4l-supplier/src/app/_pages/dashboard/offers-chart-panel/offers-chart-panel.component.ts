@@ -253,7 +253,7 @@ export class OffersChartPanelComponent implements OnInit {
 		private translateService: TranslateService,
 		private dashboardService: DashboardService,
 		private router: Router,
-	) {}
+	) { }
 
 	public createCustomMessage: Plugin<'bar'> = {
 		id: 'customMessage',
@@ -357,10 +357,11 @@ export class OffersChartPanelComponent implements OnInit {
 
 	private chartLegendUsedOffers(): string[] {
 		return [
-			this.translateService.instant('offer.types.percentageDiscount'),
+			this.translateService.instant('offer.types.storeCredit'),
 			this.translateService.instant('offer.types.bogo'),
-			this.translateService.instant('offer.types.creditDiscount'),
+			this.translateService.instant('offer.types.membershipFee'),
 			this.translateService.instant('offer.types.freeEntry'),
+			this.translateService.instant('offer.types.freeProduct'),
 		];
 	}
 
@@ -438,7 +439,7 @@ export class OffersChartPanelComponent implements OnInit {
 				counts[index] = entry.citizenCount || 0;
 			}
 			return counts;
-		}, Array(4).fill(0));
+		}, Array(5).fill(0));
 
 		return defaultCounts;
 	}

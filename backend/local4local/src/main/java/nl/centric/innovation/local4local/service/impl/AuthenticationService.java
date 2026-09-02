@@ -1,5 +1,6 @@
 package nl.centric.innovation.local4local.service.impl;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.authentication.JwtUtil;
 import nl.centric.innovation.local4local.dto.AuthResponseDto;
@@ -28,7 +29,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -106,7 +106,9 @@ public class AuthenticationService {
 
         boolean isRoleValid = authorities.stream()
                 .anyMatch(a -> a.getAuthority().equals(loginRequestDTO.role()) ||
-                        (a.getAuthority().equals("ROLE_CASHIER") && loginRequestDTO.role().equals("ROLE_SUPPLIER")));
+                        (a.getAuthority().equals(Role.ROLE_CASHIER) && loginRequestDTO.role().equals(Role.ROLE_SUPPLIER)) ||
+                        (a.getAuthority().equals(Role.ROLE_SUPER_ADMIN) && loginRequestDTO.role().equals(Role.ROLE_MUNICIPALITY_ADMIN))
+                );
 
         if (!isRoleValid) {
             throw new InvalidRoleException("Unexpected role");

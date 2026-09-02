@@ -7,7 +7,7 @@ import { DiscountCodeService } from './discount-code.service';
 
 describe('DiscountCodeService', () => {
 	let service: DiscountCodeService;
-	let httpClientSpy: { post: jest.Mock };
+	let httpClientSpy: { post: jest.Mock; get: jest.Mock };
 
 	const environmentMock = {
 		production: false,
@@ -16,7 +16,7 @@ describe('DiscountCodeService', () => {
 	};
 
 	beforeEach(() => {
-		httpClientSpy = { post: jest.fn() };
+		httpClientSpy = { post: jest.fn(), get: jest.fn() };
 
 		TestBed.configureTestingModule({
 			imports: [HttpClientModule],
@@ -48,5 +48,19 @@ describe('DiscountCodeService', () => {
 			`${environmentMock.apiPath}/discount-codes/validate`,
 			codeValidation,
 		);
+	});
+
+	it('should return true if the discount code is claimed', (done) => {
+		const offerId = 'offer123';
+		const expectedResult = true;
+
+		httpClientSpy.get.mockReturnValue(of(expectedResult));
+
+		service.isDiscountCodeClaimedForOffer(offerId).subscribe((result) => {
+			expect(result).toBe(true);
+			done();
+		});
+
+		expect(httpClientSpy.get).toHaveBeenCalledWith(`${environmentMock.apiPath}/discount-codes/claimed/${offerId}`);
 	});
 });

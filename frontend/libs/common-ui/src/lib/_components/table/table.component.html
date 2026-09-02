@@ -1,8 +1,8 @@
-<centric-panel [class.full-height]="!hasData && filterColumns" [header]="showHeader" [showFooter]="showFooter">
-	<ng-container panel-header>
+<windmill-card [class.full-height]="!hasData && filterColumns" [hasHeader]="showHeader" [hasFooter]="showFooter">
+	<ng-container card-header>
 		<ng-content></ng-content>
 	</ng-container>
-	<ng-container panel-content>
+	<ng-container card-content>
 		<table
 			centric-dg
 			aria-labelledby="table-label"
@@ -50,25 +50,23 @@
 							<ng-container
 								*ngTemplateOutlet="actionButtonsTemplate; context: { row: row }"></ng-container>
 						} @else {
-							<ng-container [ngSwitch]="col['columnDataType']">
-								<ng-container *ngSwitchCase="columnDataTypes.TRANSLATION">
+							@switch (col['columnDataType']) {
+								@case (columnDataTypes.TRANSLATION) {
 									<span
 										windmill-tooltip
 										class="cell-content-ellipsis"
 										[frontendTooltipOnEllipsis]="row[col['value']] | translate">
 										{{ row[col['value']] | translate }}</span
 									>
-								</ng-container>
-
-								<ng-container *ngSwitchCase="columnDataTypes.STATUS">
+								}
+								@case (columnDataTypes.STATUS) {
 									<section class="status-section">
 										<span class="status-icon">
-											<centric-icon2
+											<windmill-icon
 												[svgIcon]="statusUtil.getSvgIconForStatus(row[col['value']])"
 												[class]="statusUtil.getColorClassForStatus(row[col['value']])"
-												[size]="'20'"></centric-icon2>
+												[size]="'20'"></windmill-icon>
 										</span>
-
 										<span
 											windmill-tooltip
 											class="cell-content-ellipsis"
@@ -80,39 +78,33 @@
 											}}</span
 										>
 									</section>
-								</ng-container>
-
-								<ng-container *ngSwitchCase="columnDataTypes.CURRENCY">
+								}
+								@case (columnDataTypes.CURRENCY) {
 									<span class="cell-content-ellipsis">
 										{{ row[col['value']] | currency: 'EUR' : 'symbol' : '1.2-2' : 'nl-NL' }}
 									</span>
-								</ng-container>
-
-								<ng-container *ngSwitchCase="columnDataTypes.CHIPS">
+								}
+								@case (columnDataTypes.CHIPS) {
 									<frontend-chip-cell
 										[row]="row"
 										[typeOfT]="typeOfT"
 										[columnWithChips]="columnWithChips"
 										[shouldDisplayButton]="shouldDisplayButtonForChips"></frontend-chip-cell>
-								</ng-container>
-
-								<ng-container *ngSwitchCase="columnDataTypes.REGISTERED">
+								}
+								@case (columnDataTypes.REGISTERED) {
 									<div class="flex-row-start registered">
 										<span class="status-icon">
-											<centric-icon2
+											<windmill-icon
 												[svgIcon]="statusUtil.getSvgIconForIsAnswerYesNo(row[col['value']])"
 												[class]="statusUtil.getColorClassForIsAnswerYesNo(row[col['value']])"
-												[size]="'20'"></centric-icon2>
+												[size]="'20'"></windmill-icon>
 										</span>
 										<span>
-											{{
-												statusUtil.getMessagesForIsAnswerYesNo(row[col['value']]) | translate
-											}}</span
+											{{ statusUtil.getMessageForStatus(row[col['value']]) | translate }}</span
 										>
 									</div>
-								</ng-container>
-
-								<ng-container *ngSwitchCase="columnDataTypes.YES_NO">
+								}
+								@case (columnDataTypes.YES_NO) {
 									<div class="flex-row-start">
 										<span>
 											{{
@@ -120,15 +112,13 @@
 											}}</span
 										>
 									</div>
-								</ng-container>
-
-								<ng-container *ngSwitchCase="columnDataTypes.PERCENTAGE">
+								}
+								@case (columnDataTypes.PERCENTAGE) {
 									<div class="flex-row-start">
 										<span>{{ row[col['value']] + '%' }}</span>
 									</div>
-								</ng-container>
-
-								<ng-container *ngSwitchCase="columnDataTypes.FROM_CITIZEN_GROUP_AGE_ENUM">
+								}
+								@case (columnDataTypes.FROM_CITIZEN_GROUP_AGE_ENUM) {
 									<div class="flex-row-start">
 										<span>
 											@for (
@@ -140,25 +130,24 @@
 											}
 										</span>
 									</div>
-								</ng-container>
-								<ng-container *ngSwitchCase="columnDataTypes.DATE">
+								}
+								@case (columnDataTypes.DATE) {
 									<span
 										windmill-tooltip
 										class="cell-content-ellipsis"
 										[frontendTooltipOnEllipsis]="row[col['value']]">
 										{{ row[col['value']] | date: 'dd/MM/yyyy' }}
 									</span>
-								</ng-container>
-
-								<ng-container *ngSwitchCase="columnDataTypes.DEFAULT">
+								}
+								@case (columnDataTypes.DEFAULT) {
 									<span
 										windmill-tooltip
 										class="cell-content-ellipsis"
 										[frontendTooltipOnEllipsis]="row[col['value']]">
 										{{ row[col['value']] }}</span
 									>
-								</ng-container>
-							</ng-container>
+								}
+							}
 						}
 					</td>
 				</ng-container>
@@ -174,19 +163,28 @@
 							[ariaLabelTranslation]="'general.filter'"
 							[ariaLabelTranslation]="'general.filter'">
 							@if (isFilterCriteria(col.filterName)) {
-								<windmill-dropdown-search
-									ariaAttributes
-									[formControlName]="col.filterName"
-									[valuePropertyName]="'key'"
-									[displayPropertyName]="'value' | translate"
-									[ariaLabelTranslation]="col.placeholder | translate"
-									[ariaLabelClearButtonSearchInput]="'general.label.close' | translate"
-									[ariaLabelClearButton]="'general.label.close' | translate"
-									[dropdownPlaceholder]="col.placeholder | translate"
-									[source]="col.source"
-									[hasClearIcon]="true"
-									(searchValueChange)="onSearchValueChanged($event, col.filterName)">
-								</windmill-dropdown-search>
+								@if (col.filterType === 'text') {
+									<windmill-input
+										ariaAttributes
+										[formControlName]="col.filterName"
+										[placeholder]="col.placeholder | translate"
+										[hasClearIcon]="true">
+									</windmill-input>
+								} @else {
+									<windmill-dropdown-search
+										ariaAttributes
+										[formControlName]="col.filterName"
+										[valuePropertyName]="'key'"
+										[displayPropertyName]="'value' | translate"
+										[ariaLabelTranslation]="col.placeholder | translate"
+										[ariaLabelClearButtonSearchInput]="'general.label.close' | translate"
+										[ariaLabelClearButton]="'general.label.close' | translate"
+										[dropdownPlaceholder]="col.placeholder | translate"
+										[source]="col.source"
+										[hasClearIcon]="true"
+										(searchValueChange)="onSearchValueChanged($event, col.filterName)">
+									</windmill-dropdown-search>
+								}
 							}
 						</th>
 					</ng-container>
@@ -211,7 +209,7 @@
 						[tooltipColor]="'surface'"
 						[ariaLabelTranslation]="actionButton.tooltipTranslationLabel"
 						[tooltipText]="actionButton.tooltipTranslationLabel | translate"
-						[isTooltipDisabled]="isTooltipDisabled(actionButton.text)"
+						[isTooltipDisabled]="isTooltipDisabled(actionButton)"
 						(click)="onActionButtonPress(actionButton.name, row)">
 						{{ actionButton.text | translate }}
 					</centric-button>
@@ -225,15 +223,13 @@
 				[noDataTitle]="'general.noFilterData.title'"
 				[noDataDescription]="'general.noFilterData.description'">
 			</frontend-no-data>
-		}
-
-		@if (innerEmptyState) {
+		} @else if (innerEmptyState) {
 			<frontend-no-data class="no-data" [noDataTitle]="innerEmptyStateTitle" [noDataDescription]="''">
 			</frontend-no-data>
 		}
 	</ng-container>
 
-	<ng-container panel-footer>
+	<ng-container card-footer>
 		<windmill-paginator
 			#paginatorRequests
 			[length]="listLength"
@@ -252,4 +248,4 @@
 			(selectedPage)="handlePageSizeChange($event)">
 		</windmill-paginator>
 	</ng-container>
-</centric-panel>
+</windmill-card>

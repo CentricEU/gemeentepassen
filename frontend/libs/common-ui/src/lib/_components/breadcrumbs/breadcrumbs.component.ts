@@ -1,13 +1,17 @@
+
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Breadcrumb, BreadcrumbService } from '@frontend/common';
+import { TranslateModule } from '@ngx-translate/core';
+import { CentricBreadcrumbsModule } from '@windmill/ng-windmill/breadcrumbs';
 import { Subscription } from 'rxjs';
 
 @Component({
 	selector: 'frontend-breadcrumbs',
 	templateUrl: './breadcrumbs.component.html',
 	styleUrls: ['./breadcrumbs.component.scss'],
-	standalone: false,
+	standalone: true,
+	imports: [CentricBreadcrumbsModule, TranslateModule],
 })
 export class BreadcrumbsComponent implements OnInit, OnDestroy {
 	public breadcrumbs: Breadcrumb[];

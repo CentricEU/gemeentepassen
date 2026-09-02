@@ -1,3 +1,4 @@
+
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { AppLoaderService } from '@frontend/common';
 import { Subscription } from 'rxjs';
@@ -6,7 +7,8 @@ import { Subscription } from 'rxjs';
 	selector: 'frontend-app-loader',
 	templateUrl: './app-loader.component.html',
 	styleUrls: ['./app-loader.component.scss'],
-	standalone: false,
+	standalone: true,
+	imports: [],
 })
 export class AppLoaderComponent implements OnInit, OnDestroy {
 	public show = false;

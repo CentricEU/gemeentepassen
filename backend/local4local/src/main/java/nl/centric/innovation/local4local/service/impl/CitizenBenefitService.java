@@ -3,7 +3,6 @@ package nl.centric.innovation.local4local.service.impl;
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.entity.Benefit;
 import nl.centric.innovation.local4local.entity.CitizenBenefit;
-import nl.centric.innovation.local4local.entity.Tenant;
 import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
 import nl.centric.innovation.local4local.repository.CitizenBenefitRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +34,9 @@ public class CitizenBenefitService {
         citizenBenefitRepository.saveAll(citizenBenefits);
     }
 
+    public void deleteCitizenBenefitsByUserIdd(UUID userId) {
+        citizenBenefitRepository.deleteByUserId(userId);
+    }
 
     public void createCitizenBenefitForBenefitAndUser(Benefit benefit, UUID userId) {
         CitizenBenefit citizenBenefit = CitizenBenefit.builder().amount(benefit.getAmount())

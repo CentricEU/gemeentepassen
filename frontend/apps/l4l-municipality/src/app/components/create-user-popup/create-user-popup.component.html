@@ -6,11 +6,29 @@
 		[attr.ariaLabel]="'general.button.close' | translate"
 		[ariaLabelTranslation]="'general.button.close'"
 		(click)="close()">
-		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+		<windmill-icon [svgIcon]="'cancel_b'" [size]="'20'"></windmill-icon>
 	</button>
 </section>
 <section mat-dialog-content>
 	<form centric-complex-form [formGroup]="createUserForm">
+		@if (isSuperAdmin) {
+			<div class="super-admin-section">
+				<p class="info-text">{{ 'createUser.superAdminInfo' | translate }}</p>
+
+				<centric-form-item>
+					<centric-form-control>
+						<windmill-checkbox
+							formControlName="isSuperAdmin"
+							[id]="'isSuperAdmin'"
+							[label]="'createUser.superAdminPermission' | translate"
+							[ariaLabel]="'createUser.superAdminPermission' | translate"
+							[ariaDescription]="'createUser.superAdminPermissionDescription' | translate">
+						</windmill-checkbox>
+					</centric-form-control>
+				</centric-form-item>
+			</div>
+		}
+
 		<centric-form-item>
 			<centric-form-label>
 				{{ 'genericFields.firstName.title' | translate }}
@@ -24,16 +42,20 @@
 					[maxLength]="256"
 					[ariaLabelTranslation]="'createUser.firstNamePlaceholder'"
 					[validationFunction]="validationFunctionError.bind(this, 'firstName', createUserForm)">
-					<ng-container errors *ngIf="hasFormControlRequiredErrors('firstName', createUserForm)">
-						<span class="centric-error-message">
-							{{ 'genericFields.firstName.requiredError' | translate }}
-						</span>
-					</ng-container>
-					<ng-container errors *ngIf="createUserForm.get('firstName')?.hasError('isHTML')">
-						<span class="centric-error-message">
-							{{ 'errors.htmlContent' | translate }}
-						</span>
-					</ng-container>
+					@if (hasFormControlRequiredErrors('firstName', createUserForm)) {
+						<ng-container errors>
+							<span class="centric-error-message">
+								{{ 'genericFields.firstName.requiredError' | translate }}
+							</span>
+						</ng-container>
+					}
+					@if (createUserForm.get('firstName')?.hasError('isHTML')) {
+						<ng-container errors>
+							<span class="centric-error-message">
+								{{ 'errors.htmlContent' | translate }}
+							</span>
+						</ng-container>
+					}
 				</windmill-input>
 			</centric-form-control>
 		</centric-form-item>
@@ -50,16 +72,20 @@
 					[maxLength]="256"
 					[ariaLabelTranslation]="'createUser.lastNamePlaceholder'"
 					[validationFunction]="validationFunctionError.bind(this, 'lastName', createUserForm)">
-					<ng-container errors *ngIf="hasFormControlRequiredErrors('lastName', createUserForm)">
-						<span class="centric-error-message">
-							{{ 'genericFields.lastName.requiredError' | translate }}
-						</span>
-					</ng-container>
-					<ng-container errors *ngIf="createUserForm.get('lastName')?.hasError('isHTML')">
-						<span class="centric-error-message">
-							{{ 'errors.htmlContent' | translate }}
-						</span>
-					</ng-container>
+					@if (hasFormControlRequiredErrors('lastName', createUserForm)) {
+						<ng-container errors>
+							<span class="centric-error-message">
+								{{ 'genericFields.lastName.requiredError' | translate }}
+							</span>
+						</ng-container>
+					}
+					@if (createUserForm.get('lastName')?.hasError('isHTML')) {
+						<ng-container errors>
+							<span class="centric-error-message">
+								{{ 'errors.htmlContent' | translate }}
+							</span>
+						</ng-container>
+					}
 				</windmill-input>
 			</centric-form-control>
 		</centric-form-item>
@@ -76,11 +102,13 @@
 					[ariaLabelTranslation]="'createUser.emailPlaceholder'"
 					[maxLength]="256"
 					[validationFunction]="validationFunctionError.bind(this, 'email', createUserForm)">
-					<ng-container errors *ngIf="validationFunctionError('email', createUserForm)">
-						<span class="centric-error-message">
-							{{ getEmailErrorMessage(createUserForm) | translate }}
-						</span>
-					</ng-container>
+					@if (validationFunctionError('email', createUserForm)) {
+						<ng-container errors>
+							<span class="centric-error-message">
+								{{ getEmailErrorMessage(createUserForm) | translate }}
+							</span>
+						</ng-container>
+					}
 				</windmill-input>
 			</centric-form-control>
 		</centric-form-item>

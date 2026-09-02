@@ -1,0 +1,11 @@
+@if (showTimeline()) {
+	<div class="timeline">
+		<frontend-history-timeline [data]="timelineData"></frontend-history-timeline>
+	</div>
+} @else {
+	<frontend-no-data
+		class="no-data"
+		[noDataTitle]="'timeline.noDataTitle'"
+		[noDataDescription]="'timeline.noDataDescription'">
+	</frontend-no-data>
+}

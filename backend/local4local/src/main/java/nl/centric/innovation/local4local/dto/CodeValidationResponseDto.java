@@ -1,11 +1,11 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import nl.centric.innovation.local4local.entity.DiscountCode;
 import nl.centric.innovation.local4local.util.DateUtils;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Pattern;
 import java.time.LocalTime;
 
 @Builder

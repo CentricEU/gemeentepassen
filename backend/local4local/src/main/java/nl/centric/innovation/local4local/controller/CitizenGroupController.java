@@ -1,6 +1,8 @@
 package nl.centric.innovation.local4local.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import nl.centric.innovation.local4local.dto.CitizenGroupDto;
 import nl.centric.innovation.local4local.dto.CitizenGroupViewDto;
@@ -16,8 +18,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,18 +30,18 @@ public class CitizenGroupController {
     private final CitizenGroupService citizenGroupService;
 
     @PostMapping
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     @Operation(
             summary = "Create a new citizen group",
             description = "Allows a Municipality Admin to create a new citizen group. " +
-                    "The request requires valid authentication and the role `ROLE_MUNICIPALITY_ADMIN`."
+                    "The request requires valid authentication and a municipality admin role."
     )
     public ResponseEntity<CitizenGroupDto> save(@RequestBody @Valid CitizenGroupDto citizenGroup) throws DtoValidateException {
         return ResponseEntity.status(HttpStatus.CREATED).body(citizenGroupService.save(citizenGroup));
     }
 
     @GetMapping("/paginated")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     @Operation(
             summary = "Retrieve paginated citizen groups",
             description = "Allows a Municipality Admin to retrieve a paginated list of citizen groups associated with their tenant."
@@ -53,7 +53,7 @@ public class CitizenGroupController {
     }
 
     @GetMapping
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_CITIZEN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN, Role.ROLE_CITIZEN})
     @Operation(
             summary = "Retrieve all citizen groups",
             description = "Returns a list of all citizen groups associated with the tenant of the currently authenticated user. " +
@@ -64,7 +64,7 @@ public class CitizenGroupController {
     }
 
     @GetMapping("/count")
-    @Secured({Role.ROLE_MUNICIPALITY_ADMIN})
+    @Secured({Role.ROLE_MUNICIPALITY_ADMIN, Role.ROLE_SUPER_ADMIN})
     @Operation(
             summary = "Count citizen groups",
             description = "Allows a Municipality Admin to count all citizen groups associated with their tenant"

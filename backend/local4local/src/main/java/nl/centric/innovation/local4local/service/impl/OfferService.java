@@ -1,11 +1,17 @@
 package nl.centric.innovation.local4local.service.impl;
 
+import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.kernel.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
+import nl.centric.innovation.local4local.dto.ApproveOfferDto;
 import nl.centric.innovation.local4local.dto.DeleteOffersDto;
+import nl.centric.innovation.local4local.dto.DiscountCodeViewDto;
 import nl.centric.innovation.local4local.dto.FilterOfferRequestDto;
+import nl.centric.innovation.local4local.dto.OfferDownloadRequestDto;
 import nl.centric.innovation.local4local.dto.OfferMobileDetailDto;
 import nl.centric.innovation.local4local.dto.OfferMobileListDto;
 import nl.centric.innovation.local4local.dto.OfferMobileMapLightDto;
+import nl.centric.innovation.local4local.dto.OfferMobileMapLightView;
 import nl.centric.innovation.local4local.dto.OfferRejectionReasonDto;
 import nl.centric.innovation.local4local.dto.OfferRequestDto;
 import nl.centric.innovation.local4local.dto.OfferDto;
@@ -25,10 +31,12 @@ import nl.centric.innovation.local4local.entity.Restriction;
 import nl.centric.innovation.local4local.entity.Supplier;
 import nl.centric.innovation.local4local.entity.Tenant;
 import nl.centric.innovation.local4local.entity.User;
+import nl.centric.innovation.local4local.enums.AssetsEnum;
 import nl.centric.innovation.local4local.enums.GenericStatusEnum;
 import nl.centric.innovation.local4local.enums.TimeIntervalPeriod;
 import nl.centric.innovation.local4local.exceptions.DtoValidateException;
 import nl.centric.innovation.local4local.exceptions.DtoValidateNotFoundException;
+import nl.centric.innovation.local4local.exceptions.ExportPdfGenerationException;
 import nl.centric.innovation.local4local.repository.DiscountCodeRepository;
 import nl.centric.innovation.local4local.repository.OfferRepository;
 import nl.centric.innovation.local4local.repository.OfferTypeRepository;
@@ -38,7 +46,6 @@ import nl.centric.innovation.local4local.repository.TenantRepository;
 import nl.centric.innovation.local4local.service.interfaces.EmailService;
 import nl.centric.innovation.local4local.service.interfaces.RestrictionService;
 import nl.centric.innovation.local4local.util.DateUtils;
-import nl.centric.innovation.local4local.util.ModelConverter;
 import nl.centric.innovation.local4local.util.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -48,13 +55,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.ITemplateEngine;
+import org.thymeleaf.context.Context;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -98,7 +112,7 @@ public class OfferService {
 
     private final BenefitService benefitService;
 
-    private static final Set<Integer> AMOUNT_REQUIRED_OFFER_TYPES = Set.of(1, 3, 4);
+    private final ITemplateEngine templateEngine;
 
 
     @Value("${error.general.availability}")
@@ -128,54 +142,143 @@ public class OfferService {
     @Value("${error.benefit.expired}")
     private String benefitExpiredError;
 
+    @Value("${error.offer.editNotAllowed}")
+    private String offerEditNotAllowedError;
+
+    @Value("${error.offer.reviewNotAllowed}")
+    private String offerReviewNotAllowedError;
+
+    @Value("${error.offer.notActive}")
+    private String offerNotActive;
+
+
     // Todo: to be refactored -> SRP violation
     @Transactional
     public void useOffer(OfferUsageRequestDto offerUsageRequestDto) throws DtoValidateException {
         UUID citizenId = getCurrentUser().getId();
-
-        Optional<Passholder> passholder = passholderRepository.findByUserId(citizenId);
-
-        if(passholder.isEmpty()) {
-            throw new DtoValidateNotFoundException(errorEntityNotFound);
-        }
-
-        if (passholder.get().expiringDate.isBefore(LocalDate.now())) {
-            throw new DtoValidateException(passExpiredError);
-        }
-
-        Offer offer = offerRepository.findByIdAndStatusWithBenefitAccess(offerUsageRequestDto.offerId(),
-                        GenericStatusEnum.ACTIVE, citizenId)
+        Passholder passholder = passholderRepository.findByUserId(citizenId)
                 .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
-
-        if(offer.getBenefit().getExpirationDate().isBefore(LocalDate.now())) {
-            throw new DtoValidateException(benefitExpiredError);
-        }
-
-        if (offer.getAmount() != null && offerUsageRequestDto.amount() > offer.getAmount()) {
-            throw new DtoValidateException(sizeExceeded);
-        }
-
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        LocalDateTime offerStartDateTime = offer.getStartDate().atStartOfDay();
-        LocalDateTime offerEndDateTime = offer.getExpirationDate().atTime(LocalTime.MAX);
-
-        if (currentDateTime.isBefore(offerStartDateTime) || currentDateTime.isAfter(offerEndDateTime)) {
-            throw new DtoValidateException(dateOutOfRange);
-        }
-
+        Offer offer = validateAndGetOffer(offerUsageRequestDto.offerId(), offerUsageRequestDto.amount(), passholder);
         discountCodeService.save(offer.getId(), citizenId);
     }
 
-    public OfferViewDto createOffer(OfferRequestDto offerRequestDto, String language) throws DtoValidateException {
-        Benefit benefit = getBenefit(offerRequestDto.benefitId());
-        OfferType offerType = validateOfferRequest(offerRequestDto, benefit);
+    @Transactional
+    public DiscountCodeViewDto downloadDiscountCode(OfferDownloadRequestDto offerUsageRequestDto) throws DtoValidateException {
+        Passholder passholder = passholderRepository.findById(offerUsageRequestDto.passholderId())
+                .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
+        Offer offer = validateAndGetOffer(offerUsageRequestDto.offerId(), offerUsageRequestDto.amount(), passholder);
+        return discountCodeService.save(offer.getId(), passholder.getUser().getId());
+    }
 
-        Restriction restriction = handleRestriction(offerRequestDto);
-        Offer savedOffer = saveOffer(offerRequestDto, restriction, offerType, benefit);
+    private Offer validateAndGetOffer(UUID offerId, Double requestedAmount, Passholder passholder) throws DtoValidateException {
+        if (passholder.expiringDate.isBefore(LocalDate.now())) {
+            throw new DtoValidateException(passExpiredError);
+        }
+        Offer offer = offerRepository.findByIdAndStatusWithBenefitAccess(
+                        offerId, GenericStatusEnum.ACTIVE, passholder.getUser().getId())
+                .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
+        if (offer.getBenefit().getExpirationDate().isBefore(LocalDate.now())) {
+            throw new DtoValidateException(benefitExpiredError);
+        }
+        if (offer.getAmount() != null && requestedAmount > offer.getAmount()) {
+            throw new DtoValidateException(sizeExceeded);
+        }
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime offerStartDateTime = offer.getStartDate().atStartOfDay();
+        LocalDateTime offerEndDateTime = offer.getExpirationDate().atTime(LocalTime.MAX);
+        if (currentDateTime.isBefore(offerStartDateTime) || currentDateTime.isAfter(offerEndDateTime)) {
+            throw new DtoValidateException(dateOutOfRange);
+        }
+        return offer;
+    }
+
+    public byte[] generateOfferPDF(DiscountCodeViewDto discoutCodeViewDto, String language) {
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             PdfWriter writer = new PdfWriter(byteArrayOutputStream)) {
+            String htmlContent = generateOfferHtml(discoutCodeViewDto, language);
+            HtmlConverter.convertToPdf(htmlContent, writer);
+            return byteArrayOutputStream.toByteArray();
+        } catch (Exception e) {
+            throw new ExportPdfGenerationException("Error generating offers PDF", e);
+        }
+    }
+
+    private String generateOfferHtml(DiscountCodeViewDto dto, String language) {
+        Context context = new Context(Locale.forLanguageTag(language));
+        context.setVariable("companyLogo", dto.companyLogo() != null
+                ? "data:image/png;base64," + dto.companyLogo()
+                : baseUrl + AssetsEnum.LOCAL_LOGO.getPath());
+        context.setVariable("companyName", dto.companyName());
+        context.setVariable("offerTypeKey", dto.offerType().getOfferTypeLabel());
+        context.setVariable("expirationDate", dto.expirationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        context.setVariable("code", dto.code());
+        context.setVariable("offerTitle", dto.offerTitle());
+        context.setVariable("color", getHexColorBasedOnOfferTypeId(dto.offerType().getOfferTypeId()));
+
+        return templateEngine.process("offerTemplate", context);
+    }
+
+    private String getHexColorBasedOnOfferTypeId(Integer offerTypeId) {
+        return switch (offerTypeId) {
+            case 1 -> "#B60809";
+            case 2 -> "#FF7C02";
+            case 3 -> "#28713D";
+            case 4 -> "#2B65C6";
+            case 5 -> "#8448A3";
+            default -> "#B60809";
+        };
+    }
+
+    @Transactional
+    public OfferViewDto editOffer(UUID offerId, OfferRequestDto dto, String language) throws DtoValidateException {
+        Supplier supplier = getSupplier();
+
+        if (!supplier.getIsReviewed()) {
+            throw new DtoValidateException("Supplier profile must be reviewed before editing an offer");
+        }
+
+        Offer offer = offerRepository.findByIdAndSupplierId(offerId, principalService.getSupplierId())
+                .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
+
+        if (!Objects.equals(dto.version(), offer.getVersion())) {
+            throw new DtoValidateException(offerEditNotAllowedError);
+        }
+
+        boolean hasClaims = discountCodeService.isDiscountCodeClaimedForOffer(offerId);
+
+        switch (offer.getStatus()) {
+            case ACTIVE, EXPIRED, REJECTED -> handleOfferEdit(offer, dto, hasClaims);
+            case PENDING -> applyEditableFields(offer, dto, !hasClaims);
+            default -> throw new DtoValidateException("Offer cannot be edited in its current status");
+        }
+
+        Offer savedOffer = offerRepository.save(offer);
 
         sendReviewOfferEmail(getTenantId(), language, getCurrentUser());
 
-        return ModelConverter.entityToOfferViewDto(savedOffer);
+        return OfferViewDto.entityToOfferViewDto(savedOffer);
+    }
+
+    public List<OfferViewDto> createOffer(OfferRequestDto offerRequestDto, String language) throws DtoValidateException {
+        Set<UUID> benefitIds = offerRequestDto.benefitIds();
+
+        List<OfferViewDto> savedOffers = new ArrayList<>();
+
+        Restriction restriction = handleRestriction(offerRequestDto);
+
+        for (UUID benefitId : benefitIds) {
+            Benefit benefit = getBenefit(benefitId);
+            OfferType offerType = validateOfferRequest(offerRequestDto, benefit);
+
+            Offer savedOffer = saveOffer(offerRequestDto, restriction, offerType, benefit);
+
+
+            savedOffers.add(OfferViewDto.entityToOfferViewDto(savedOffer));
+        }
+
+        sendReviewOfferEmail(getTenantId(), language, getCurrentUser());
+
+        return savedOffers;
     }
 
     public List<OfferViewTableDto> getAll(Integer page, Integer size) {
@@ -184,7 +287,7 @@ public class OfferService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(ORDER_CRITERIA));
         Page<Offer> offers = offerRepository.findAllBySupplierIdAndIsActive(supplierId, true, pageable);
         return offers.stream()
-                .map(ModelConverter::entityToOfferViewTableDto)
+                .map(OfferViewTableDto::entityToOfferViewTableDto)
                 .toList();
     }
 
@@ -194,7 +297,25 @@ public class OfferService {
 
         Page<Offer> offers = offerRepository.findAllBySupplierTenantIdAndIsActiveTrueAndStatusIn(getTenantId(), pageable, statusList);
         return offers.stream()
-                .map(ModelConverter::entityToOfferViewTableDto).toList();
+                .map(OfferViewTableDto::entityToOfferViewTableDto).toList();
+    }
+
+    public List<OfferViewTableDto> getAllForPassholder(UUID passholderId) throws DtoValidateException {
+        UUID tenantId = principalService.getTenantId();
+
+        Optional<Passholder> passholder = passholderRepository.findByIdAndTenantId(passholderId, tenantId);
+
+        if (passholder.isEmpty()) {
+            throw new DtoValidateNotFoundException(errorEntityNotFound);
+        }
+
+        if (passholder.get().expiringDate.isBefore(LocalDate.now())) {
+            throw new DtoValidateException(passExpiredError);
+        }
+
+        List<Offer> offers = offerRepository.findAllActiveOffersForPassholderId(passholderId, tenantId);
+        return offers.stream()
+                .map(OfferViewTableDto::entityToOfferViewTableDto).toList();
     }
 
     public List<OfferViewTableDto> getAllBySupplierIdPaginated(Integer page, Integer size, UUID supplierId) {
@@ -203,19 +324,19 @@ public class OfferService {
 
         Page<Offer> offers = offerRepository.findAllBySupplierIdAndIsActive(supplierId, true, pageable);
         return offers.stream()
-                .map(ModelConverter::entityToOfferViewTableDto).toList();
+                .map(OfferViewTableDto::entityToOfferViewTableDto).toList();
     }
 
-    public Map<String, List<OfferMobileMapLightDto>> getOffersWithinViewport(Double minLatitude, Double maxLatitude,
+    public Map<String, List<OfferMobileMapLightView>> getOffersWithinViewport(Double minLatitude, Double maxLatitude,
                                                                              Double minLongitude, Double maxLongitude,
                                                                              LocalDate currentDay,
                                                                              Integer offerType,
                                                                              String searchKeyword) {
-        List<OfferMobileMapLightDto> offers = findOffersInViewport(minLatitude, maxLatitude, minLongitude, maxLongitude,
+        List<OfferMobileMapLightView> offers = findOffersInViewport(minLatitude, maxLatitude, minLongitude, maxLongitude,
                 currentDay, offerType, searchKeyword);
 
         return offers.stream()
-                .collect(Collectors.groupingBy(OfferMobileMapLightDto::coordinatesString));
+                .collect(Collectors.groupingBy(OfferMobileMapLightView::getCoordinatesString));
     }
 
     public Integer countAll() {
@@ -259,11 +380,28 @@ public class OfferService {
     }
 
     @Transactional
-    public void approveOffer(UUID offerId, String language) throws DtoValidateException {
-        Optional<Offer> offer = offerRepository.findById(offerId);
+    public void suspendOffer(UUID offerId) throws DtoValidateException {
+        Offer offer = offerRepository.findByIdAndSupplierId(offerId, principalService.getSupplierId())
+                .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
+
+        validateOfferStatus(offer);
+
+        discountCodeRepository.deactivateAllByOfferId(offerId);
+
+        offer.expireNow();
+        offerRepository.save(offer);
+    }
+
+    @Transactional
+    public void approveOffer(ApproveOfferDto dto, String language) throws DtoValidateException {
+        Optional<Offer> offer = offerRepository.findById(dto.offerId());
 
         if (offer.isEmpty()) {
             throw new DtoValidateNotFoundException(errorEntityNotFound);
+        }
+
+        if (!Objects.equals(dto.version(), offer.get().getVersion())) {
+            throw new DtoValidateException(offerReviewNotAllowedError);
         }
 
         UUID supplierId = offer.get().getSupplier().getId();
@@ -318,8 +456,15 @@ public class OfferService {
         return OfferMobileDetailDto.entityToOfferMobileDetailDto(offer.get(), distance, discountCode, isActive);
     }
 
-    public void deleteOffers(DeleteOffersDto deleteOffersDto) {
+    public void deleteOffers(DeleteOffersDto deleteOffersDto) throws DtoValidateNotFoundException {
+        UUID supplierId = principalService.getSupplierId();
         List<Offer> offers = offerRepository.findAllById(deleteOffersDto.offersIds());
+
+        for (Offer offer : offers) {
+            if (!offer.getSupplier().getId().equals(supplierId)) {
+                throw new DtoValidateNotFoundException(errorEntityNotFound);
+            }
+        }
 
         offers.forEach(offer -> offer.setActive(false));
 
@@ -331,16 +476,14 @@ public class OfferService {
             throw new DtoValidateNotFoundException(errorGeneralAvailability);
         }
 
-        Offer offerToReactivate = offerRepository.findById(reactivateOfferDto.offerId())
+        Offer offerToReactivate = offerRepository.findByIdAndSupplierId(reactivateOfferDto.offerId(), principalService.getSupplierId())
                 .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
 
         offerToReactivate.setStartDate(reactivateOfferDto.startDate());
         offerToReactivate.setExpirationDate(reactivateOfferDto.expirationDate());
         offerToReactivate.setCreatedDate(LocalDateTime.now());
 
-        offerToReactivate.setStatus(offerToReactivate.getOfferType().getOfferTypeId() == 0 ?
-                GenericStatusEnum.PENDING :
-                GenericStatusEnum.ACTIVE);
+        offerToReactivate.setStatus(GenericStatusEnum.PENDING);
 
         offerRepository.save(offerToReactivate);
         return offerToReactivate;
@@ -351,17 +494,15 @@ public class OfferService {
         List<Offer> offers = offerRepository.findAllWithSpecification(principalService.getSupplierId(), filterParams, pageable);
 
         return offers.stream()
-                .map(ModelConverter::entityToOfferViewTableDto).toList();
+                .map(OfferViewTableDto::entityToOfferViewTableDto).toList();
     }
 
+    @Transactional
     public OfferDto getFullOffer(UUID offerId) throws DtoValidateNotFoundException {
-        Optional<Offer> offer = offerRepository.findById(offerId);
+        Offer offer = offerRepository.findByIdAndSupplierId(offerId, principalService.getSupplierId())
+                .orElseThrow(() -> new DtoValidateNotFoundException(errorEntityNotFound));
 
-        if (offer.isEmpty()) {
-            throw new DtoValidateNotFoundException(errorEntityNotFound);
-        }
-
-        return OfferDto.entityToOfferDto(offer.get());
+        return OfferDto.entityToOfferDto(offer);
     }
 
     public void rejectOffer(RejectOfferDto rejectOfferDto, String language) throws DtoValidateException {
@@ -369,6 +510,10 @@ public class OfferService {
 
         if (offer.isEmpty()) {
             throw new DtoValidateException(errorEntityNotFound);
+        }
+
+        if (!Objects.equals(rejectOfferDto.version(), offer.get().getVersion())) {
+            throw new DtoValidateException(offerReviewNotAllowedError);
         }
 
         if (!offer.get().getStatus().equals(GenericStatusEnum.PENDING)) {
@@ -419,10 +564,10 @@ public class OfferService {
         return offerRepository.searchByTitlePrefix(keyword, getTenantId(), GenericStatusEnum.ACTIVE, getCurrentUser().getId());
     }
 
-    private List<OfferMobileMapLightDto> findOffersInViewport(Double minLatitude, Double maxLatitude,
-                                                              Double minLongitude, Double maxLongitude,
-                                                              LocalDate currentDay, Integer offerType,
-                                                              String searchKeyword) {
+    private List<OfferMobileMapLightView> findOffersInViewport(Double minLatitude, Double maxLatitude,
+                                                               Double minLongitude, Double maxLongitude,
+                                                               LocalDate currentDay, Integer offerType,
+                                                               String searchKeyword) {
         if (isNotBlank(searchKeyword)) {
             return offerRepository.findActiveSearchOffersInViewport(minLatitude, maxLatitude, minLongitude, maxLongitude,
                     currentDay, getTenantId(), offerType, getCurrentUser().getId(), searchKeyword);
@@ -440,17 +585,11 @@ public class OfferService {
             throw new DtoValidateException(errorGeneralAvailability);
         }
 
-        if (offerRequestDto.offerTypeId() == 1 && (offerRequestDto.amount() < 0 || offerRequestDto.amount() > 100)) {
-            throw new DtoValidateException(errorEntityValidate);
-        }
-
         Optional<OfferType> offerType = offerTypeRepository.findById(offerRequestDto.offerTypeId());
 
         if (offerType.isEmpty() || !isCitizenWithPass(offerRequestDto)) {
             throw new DtoValidateException(errorEntityValidate);
         }
-
-        validateOfferType(offerRequestDto.offerTypeId(), offerRequestDto.amount());
         return offerType.get();
     }
 
@@ -499,7 +638,6 @@ public class OfferService {
     private Benefit getBenefit(UUID benefitId) throws DtoValidateException {
         Optional<Benefit> benefit = benefitService.findById(benefitId);
 
-
         if (benefit.isEmpty()) {
             throw new DtoValidateNotFoundException(errorEntityNotFound);
         }
@@ -525,14 +663,40 @@ public class OfferService {
         emailService.sendOfferRejectedEmail(url, emailsArray, StringUtils.getLanguageForLocale(language), rejectedOffer.reason(), supplier.getCompanyName());
     }
 
-    private void validateOfferType(Integer offerTypeId, Double amount) throws DtoValidateException {
-        if (isAmountRequired(offerTypeId) && (amount == null || amount <= 0)) {
-            throw new DtoValidateException(errorEntityValidate);
+    private void handleOfferEdit(Offer offer, OfferRequestDto dto, boolean hasClaims) throws DtoValidateException {
+        applyEditableFields(offer, dto, !hasClaims);
+        offer.setStatus(GenericStatusEnum.PENDING);
+    }
+
+    private void validateOfferStatus(Offer offer) throws DtoValidateException {
+        if (!offer.isActiveOffer()) {
+            throw new DtoValidateException(offerNotActive);
         }
     }
 
-    private boolean isAmountRequired(Integer offerTypeId) {
-        return AMOUNT_REQUIRED_OFFER_TYPES.contains(offerTypeId);
+    private void applyEditableFields(Offer offer, OfferRequestDto dto, boolean allowFullEdit) throws DtoValidateException {
+        offer.setTitle(dto.title());
+        offer.setDescription(dto.description());
+        offer.setStartDate(dto.startDate());
+        offer.setExpirationDate(dto.expirationDate());
+
+        if (allowFullEdit) {
+            Benefit benefit = getBenefit(dto.benefitIds().iterator().next());
+            OfferType offerType = validateOfferRequest(dto, benefit);
+
+            offer.setAmount(dto.amount());
+            offer.setOfferType(offerType);
+            offer.setBenefit(benefit);
+
+            if (dto.restrictionRequestDto() != null) {
+                offer.setRestriction(restrictionService.saveRestriction(dto.restrictionRequestDto()));
+                return;
+            }
+            if (offer.getRestriction() != null) {
+                restrictionService.deleteRestriction(offer.getRestriction().getId());
+                offer.setRestriction(null);
+            }
+        }
     }
 
 }

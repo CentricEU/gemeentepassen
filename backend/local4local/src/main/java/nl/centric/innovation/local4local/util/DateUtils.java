@@ -92,4 +92,8 @@ public class DateUtils {
         };
     }
 
+    public static LocalDateTime convertToLocalDateTime(LocalDate localDate, boolean endOfDay) {
+        return endOfDay ? localDate.atTime(LocalTime.MAX) : localDate.atStartOfDay();
+    }
+
 }

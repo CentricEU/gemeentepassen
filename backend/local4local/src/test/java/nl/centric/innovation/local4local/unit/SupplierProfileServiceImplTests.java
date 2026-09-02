@@ -46,6 +46,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -198,7 +199,7 @@ class SupplierProfileServiceImplTests {
                 "1234fe", "+31123456789", latlon);
         supplier.setProfile(SupplierProfile.supplierProfileToEntity(supplierProfileDto));
         // When
-        when(supplierService.findBySupplierId(any())).thenReturn(Optional.of(supplier));
+        when(supplierRepository.findById(any())).thenReturn(Optional.of(supplier));
         // Then
         Assertions.assertThrows(DtoValidateAlreadyExistsException.class, () -> supplierProfileService.save(supplierProfileDto, "nl-NL"));
     }
@@ -218,7 +219,7 @@ class SupplierProfileServiceImplTests {
         when(principalService.getTenantId()).thenReturn(UUID.randomUUID());
         when(workingHoursService.createWorkingHours(any(), any())).thenReturn(new ArrayList<>());
         when(supplierProfileRepository.save(any(SupplierProfile.class))).thenReturn(mock(SupplierProfile.class));
-        when(supplierService.findBySupplierId(any())).thenReturn(Optional.of(supplier));
+        when(supplierRepository.findById(any())).thenReturn(Optional.of(supplier));
 
         // Then
         supplierProfileService.save(supplierProfileDto, "nl-NL");
@@ -252,7 +253,7 @@ class SupplierProfileServiceImplTests {
 
         // When
         when(supplierProfileRepository.save(any(SupplierProfile.class))).thenReturn(mock(SupplierProfile.class));
-        when(supplierService.findBySupplierId(any())).thenReturn(Optional.of(supplier));
+        when(supplierRepository.findById(any())).thenReturn(Optional.of(supplier));
 
         // Then
         supplierProfileService.updateSupplierProfile(supplierProfileDto);
@@ -318,15 +319,13 @@ class SupplierProfileServiceImplTests {
         supplier.setProfile(new SupplierProfile());
 
         // When
-        when(supplierService.findBySupplierId(any())).thenReturn(Optional.of(supplier));
+        when(supplierRepository.findById(any())).thenReturn(Optional.of(supplier));
         when(principalService.getTenant()).thenReturn(mock(Tenant.class));
-        doNothing().when(supplierService).updateSupplierStatus(any(), any());
         doNothing().when(emailService).sendProfileCreatedEmail(any(), any(), any(), any(), any(), any());
         when(rejectSupplierRepository.findBySupplierId(any())).thenReturn(Optional.of(mock(RejectSupplier.class)));
 
         // Then
         Assertions.assertDoesNotThrow(() -> supplierProfileService.reapplySupplierProfile(supplierProfileDto, "en"));
-        verify(supplierService, times(1)).updateSupplierStatus(supplier, SupplierStatusEnum.PENDING);
         verify(emailService, times(1)).sendProfileCreatedEmail(any(), any(), any(), any(), any(), any());
         verify(rejectSupplierRepository, times(1)).deleteById(any());
     }
@@ -340,11 +339,10 @@ class SupplierProfileServiceImplTests {
         supplier.setStatus(SupplierStatusEnum.PENDING);
 
         // When
-        when(supplierService.findBySupplierId(any())).thenReturn(Optional.of(supplier));
+        when(supplierRepository.findById(any())).thenReturn(Optional.of(supplier));
 
         // Then
         Assertions.assertThrows(DtoValidateException.class, () -> supplierProfileService.reapplySupplierProfile(supplierProfileDto, "en"));
-        verify(supplierService, times(0)).updateSupplierStatus(any(), any());
         verify(emailService, times(0)).sendProfileCreatedEmail(any(), any(), any(), any(), any(), any());
         verify(rejectSupplierRepository, times(0)).deleteById(any());
     }
@@ -362,6 +360,74 @@ class SupplierProfileServiceImplTests {
 
         // Then
         Assertions.assertThrows(DtoValidateException.class, () -> supplierProfileService.save(supplierProfileDto, "nl-NL"));
+    }
+
+    @Test
+    void GivenValidSupplier_WhenAddCashiersToCurrentSupplier_ThenExpectReturnUsernames() throws DtoValidateException {
+        // Given
+        Set<String> cashierEmails = Set.of("cashier1@example.com", "cashier2@example.com");
+        String language = "en";
+        UUID supplierId = UUID.randomUUID();
+        supplier = Supplier.builder().build();
+        List<User> createdUsers = Arrays.asList(
+                User.builder().username("cashier1@example.com").build(),
+                User.builder().username("cashier2@example.com").build()
+        );
+
+        // When
+        when(principalService.getSupplierId()).thenReturn(supplierId);
+        when(supplierRepository.findByIdWithWorkingHours(supplierId)).thenReturn(Optional.of(supplier));
+        when(userService.createCashierUsers(supplier, cashierEmails, language)).thenReturn(createdUsers);
+
+        List<String> result = supplierProfileService.addCashiersToCurrentSupplier(cashierEmails, language);
+
+        // Then
+        Assertions.assertEquals(Arrays.asList("cashier1@example.com", "cashier2@example.com"), result);
+        verify(principalService).getSupplierId();
+        verify(supplierRepository).findByIdWithWorkingHours(supplierId);
+        verify(userService).createCashierUsers(supplier, cashierEmails, language);
+    }
+
+    @Test
+    void givenMissingSupplier_whenAddCashiersToCurrentSupplier_thenThrowDtoValidateNotFoundException() {
+        // Given
+        Set<String> emails = Set.of("cashier@mail.com");
+        String language = "en";
+        UUID supplierId = UUID.randomUUID();
+
+        when(principalService.getSupplierId()).thenReturn(supplierId);
+        when(supplierRepository.findByIdWithWorkingHours(supplierId))
+                .thenReturn(Optional.empty());
+
+        // When & Then
+        DtoValidateNotFoundException exception = Assertions.assertThrows(
+                DtoValidateNotFoundException.class,
+                () -> supplierProfileService.addCashiersToCurrentSupplier(emails, language)
+        );
+
+        verify(userService, never())
+                .createCashierUsers(any(), any(), any());
+    }
+
+    @Test
+    void GivenValidRequest_WhenCreateAndSetProfileAsAdmin_ThenExpectSuccess() throws DtoValidateException {
+        // Given
+        SupplierProfilePatchDto supplierProfileDto = supplierProfilePatchDtoBuilder("string", "test@example.com", "1234fe", "+0000001819", latlon);
+        Supplier supplier = new Supplier();
+        supplier.setId(UUID.randomUUID());
+
+        SupplierProfile savedProfile = new SupplierProfile();
+        savedProfile.setId(UUID.randomUUID());
+
+        // When
+        when(supplierProfileRepository.save(any(SupplierProfile.class))).thenReturn(savedProfile);
+
+        supplierProfileService.createAndSetProfileAsAdmin(supplier, supplierProfileDto);
+
+        // Then
+        verify(supplierProfileRepository, times(1)).save(any(SupplierProfile.class));
+        Assertions.assertNotNull(supplier.getProfile());
+        Assertions.assertEquals(savedProfile, supplier.getProfile());
     }
 
     private SupplierProfileDto supplierProfileDtoBuilder(String logo, String kvk, String email, String zipCode,

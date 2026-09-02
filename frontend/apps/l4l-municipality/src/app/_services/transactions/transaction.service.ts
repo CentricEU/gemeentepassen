@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Environment, MonthYearEntry, TransactionTableTenantDto, ValidatedCode } from '@frontend/common';
-import { Observable } from 'rxjs';
+import { Environment, MonthYearEntry, TransactionTableTenantDto } from '@frontend/common';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root',
@@ -16,21 +16,52 @@ export class TransactionService {
 		return this.httpClient.get<number>(`${this.environment.apiPath}/transactions/admin/count-all`);
 	}
 
-	public getDistinctYearsForTransactionsByTenant(): Observable<number[]> {
-		return this.httpClient.get<number[]>(`${this.environment.apiPath}/transactions/admin/years`);
-	}
-
-	public countCurrentMonthTransactionsByTenant(selectedDate?: MonthYearEntry): Observable<number> {
-		let httpParams = new HttpParams();
-
-		if (selectedDate) {
-			httpParams = this.addMonthAndYearToParams(httpParams, selectedDate);
+	public countDateIntervalTransactionsByTenant(
+		startDate: string | undefined,
+		endDate: string | undefined,
+		transactionsSupplierFilter?: string,
+	): Observable<number> {
+		if (!startDate || !endDate) {
+			return this.httpClient.get<number>(`${this.environment.apiPath}/transactions/admin/count-all`);
 		}
 
-		return this.httpClient.get<number>(`${this.environment.apiPath}/transactions/admin/count-by-month-and-year`, {
+		let httpParams = new HttpParams();
+
+		httpParams = httpParams.set('startDate', startDate);
+		httpParams = httpParams.set('endDate', endDate);
+		if (transactionsSupplierFilter) {
+			httpParams = httpParams.set('supplierId', transactionsSupplierFilter);
+		}
+
+		return this.httpClient.get<number>(`${this.environment.apiPath}/transactions/admin/count`, {
 			params: httpParams,
 			responseType: 'json',
 		});
+	}
+
+	public getDateIntervalTransactionsByTenant(
+		page: number,
+		size: number,
+		startDate: string | undefined,
+		endDate: string | undefined,
+		transactionsSupplierFilter?: string,
+	): Observable<TransactionTableTenantDto[]> {
+		if (!startDate || !endDate) {
+			return of([]);
+		}
+
+		let httpParams = new HttpParams().set('page', page).set('size', size);
+
+		httpParams = httpParams.set('startDate', startDate);
+		httpParams = httpParams.set('endDate', endDate);
+
+		if (transactionsSupplierFilter) {
+			httpParams = httpParams.set('supplierId', transactionsSupplierFilter);
+		}
+		return this.httpClient.get<TransactionTableTenantDto[]>(
+			`${this.environment.apiPath}/transactions/admin/filter`,
+			{ params: httpParams },
+		);
 	}
 
 	public getTransactionsByTenant(

@@ -4,4 +4,5 @@ export class OfferInformationDto extends OfferTableDto {
 	public description: string;
 	public startDate: Date;
 	public expirationDate: Date;
+	public version: number;
 }

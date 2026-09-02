@@ -1,12 +1,10 @@
 package nl.centric.innovation.local4local.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.NonNull;
 import nl.centric.innovation.local4local.entity.OfferTransaction;
-import nl.centric.innovation.local4local.entity.Supplier;
 import nl.centric.innovation.local4local.util.DateUtils;
-
-import javax.validation.constraints.NotEmpty;
 
 @Builder
 public record OfferTransactionInvoiceTenantDto(
@@ -27,7 +25,7 @@ public record OfferTransactionInvoiceTenantDto(
         this(supplierIban,
                 supplierName,
                 passNumber,
-                offerTransaction.getAmount(),
+                offerTransaction.getAmount().doubleValue(),
                 offerTransaction.getOfferBenefitName(),
                 DateUtils.formatDateDefault(offerTransaction.getCreatedDate().toLocalDate()));
     }

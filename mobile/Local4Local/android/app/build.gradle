@@ -37,13 +37,16 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.citypassesacceptance"
+    namespace "com.local4local"
     defaultConfig {
-        applicationId "com.citypassesacceptance"
+        applicationId "com.local4local"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "1.0"
+        versionCode 114
+        versionName "1.0.3"
+
+        manifestPlaceholders = [appAuthRedirectScheme: "com.local4local"]
+
     }
     signingConfigs {
         debug {
@@ -73,6 +76,17 @@ android {
 
          }
     }
+
+     // <-- Add the ABI splits here
+     // TODO: Remove this after upgrading to React Native
+    splits {
+        abi {
+            enable true
+            reset()
+            include "armeabi-v7a", "arm64-v8a"
+            universalApk false
+        }
+    }
 }
 
 dependencies {
@@ -95,5 +109,4 @@ dependencies {
 }
 
 //apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
-apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle")
- 
+apply from: file("../../node_modules/react-native-vector-icons/fonts.gradle") 

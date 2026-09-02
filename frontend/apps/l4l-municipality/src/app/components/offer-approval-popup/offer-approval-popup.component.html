@@ -11,25 +11,37 @@
 		[tooltipText]="'general.button.close' | translate"
 		[ariaLabelTranslation]="'general.button.close'"
 		(click)="close()">
-		<centric-icon2 [svgIcon]="'cancel_b'" [size]="'20'"></centric-icon2>
+		<windmill-icon [svgIcon]="'cancel_b'" [size]="'20'"></windmill-icon>
 	</button>
 </section>
 
-<section mat-dialog-content class="offer-information" *ngIf="!isRejecting; else offerRejectionForm">
-	<div class="half-width">
-		<div class="form-header">
-			<p class="generic-color-text bold">{{ 'offer.approve.titleLeft' | translate }}</p>
+@if (shouldDisplayEditedOfferAlert) {
+	<centric-alert
+		class="edited-info"
+		[type]="'info'"
+		[hasCloseButton]="true"
+		(closed)="alertDismissed = true"
+		[ariaLabelCloseButton]="'general.button.close' | translate">
+		<div [innerHTML]="'offer.approve.offerEditedInfo' | translate"></div>
+	</centric-alert>
+}
+
+@if (!isRejecting) {
+	<section mat-dialog-content class="offer-information">
+		<div class="half-width">
+			<div class="form-header">
+				<p class="generic-color-text bold">{{ 'offer.approve.titleLeft' | translate }}</p>
+			</div>
+			<frontend-offer-information [offer]="data.offer"></frontend-offer-information>
 		</div>
-		<frontend-offer-information [offer]="data.offer"></frontend-offer-information>
-	</div>
-	<div class="half-width">
-		<div class="form-header">
-			<p class="generic-color-text bold">{{ 'offer.approve.titleRight' | translate }}</p>
+		<div class="half-width">
+			<div class="form-header">
+				<p class="generic-color-text bold">{{ 'offer.approve.titleRight' | translate }}</p>
+			</div>
+			<frontend-general-information [isReadonly]="true"></frontend-general-information>
 		</div>
-		<frontend-general-information [isReadonly]="true"></frontend-general-information>
-	</div>
-</section>
-<ng-template #offerRejectionForm>
+	</section>
+} @else {
 	<section mat-dialog-content>
 		<form centric-complex-form [formGroup]="rejectionForm">
 			<centric-form-item>
@@ -68,33 +80,41 @@
 								</span>
 							</ng-container>
 						}
-						<ng-container errors *ngIf="rejectionForm.get('rejectionReason')?.hasError('isHTML')">
-							<span class="centric-error-message">
-								{{ 'errors.htmlContent' | translate }}
-							</span>
-						</ng-container>
-						<ng-container errors *ngIf="hasFormControlRequiredErrors('rejectionReason', rejectionForm)">
-							<span class="centric-error-message">
-								{{ 'rejectOffer.errorRequired' | translate }}
-							</span>
-						</ng-container>
+						@if (rejectionForm.get('rejectionReason')?.hasError('isHTML')) {
+							<ng-container errors>
+								<span class="centric-error-message">
+									{{ 'errors.htmlContent' | translate }}
+								</span>
+							</ng-container>
+						}
+						
+						@if (hasFormControlRequiredErrors('rejectionReason', rejectionForm)) {
+							<ng-container errors>
+								<span class="centric-error-message">
+									{{ 'rejectOffer.errorRequired' | translate }}
+								</span>
+							</ng-container>
+						}
 					</centric-textarea2>
 				</centric-form-control>
 			</centric-form-item>
 		</form>
 	</section>
-</ng-template>
+}
 
-<section mat-dialog-actions *ngIf="!isRejecting; else rejectionActions">
-	<centric-button type="ghost-greyscale" (click)="close()">{{ 'general.button.cancel' | translate }}</centric-button>
-	<centric-button type="outlined-theme" (click)="setIsRejecting(true)">{{
-		'general.reject' | translate
-	}}</centric-button>
-	<centric-button ariaAttributes [type]="data.acceptButtonType" (click)="approveOffer()">
-		{{ 'general.approve' | translate }}
-	</centric-button>
-</section>
-<ng-template #rejectionActions>
+@if (!isRejecting) {
+	<section mat-dialog-actions>
+		<centric-button type="ghost-greyscale" (click)="close()">{{
+			'general.button.cancel' | translate
+		}}</centric-button>
+		<centric-button type="outlined-theme" (click)="setIsRejecting(true)">{{
+			'general.reject' | translate
+		}}</centric-button>
+		<centric-button ariaAttributes [type]="data.acceptButtonType" (click)="approveOffer()">
+			{{ 'general.approve' | translate }}
+		</centric-button>
+	</section>
+} @else {
 	<section mat-dialog-actions>
 		<centric-button type="ghost-greyscale" (click)="close()">{{
 			'general.button.cancel' | translate
@@ -110,4 +130,4 @@
 			{{ 'general.reject' | translate }}
 		</centric-button>
 	</section>
-</ng-template>
+}

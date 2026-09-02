@@ -66,17 +66,46 @@ export class WorkingHoursEditComponent implements OnInit, AfterViewChecked {
 	}
 
 	public isFormValid(): boolean {
-		const hasEnabledDay = this.days.some((day) => this.getIsEnabledControl(day).value);
+		const isFormDirtyOrStored = !this.workingHoursForm.pristine || !!localStorage.getItem('workingHours');
 		this.cdr.detectChanges();
+
+		return this.areRequiredDaysValid() && isFormDirtyOrStored;
+	}
+
+	public areRequiredDaysValid(): boolean {
+		const hasEnabledDay = this.days.some((day) => this.getIsEnabledControl(day).value);
 
 		const areEnabledDaysValid = this.days.every((day) => {
 			const dayGroup = this.getDayFormGroup(day);
 			return !this.getIsEnabledControl(day).value || dayGroup.valid;
 		});
 
-		const isFormDirtyOrStored = !this.workingHoursForm.pristine || !!localStorage.getItem('workingHours');
+		return hasEnabledDay && areEnabledDaysValid;
+	}
 
-		return hasEnabledDay && areEnabledDaysValid && isFormDirtyOrStored;
+	public populateForm(workingHoursData: WorkingHoursDto[]): void {
+		let countDay = 0;
+		Object.keys(WeekDays).forEach((day) => {
+			const savedDay = workingHoursData[countDay++];
+			if (!savedDay?.isChecked) {
+				return;
+			}
+			const dayLowercase = day.toLocaleLowerCase();
+
+			const dayFormGroup = this.workingHoursForm.get(dayLowercase) as FormGroup;
+			dayFormGroup.get('isEnabled')?.setValue(true);
+
+			const scheduleGroup = dayFormGroup.get('schedule') as FormGroup;
+			scheduleGroup.controls['start'].setValue(this.createTimeDateFromString(savedDay.openTime));
+			scheduleGroup.controls['end']?.setValue(this.createTimeDateFromString(savedDay.closeTime));
+			workingHoursData[countDay - 1] = new WorkingHoursDto(
+				savedDay.day,
+				savedDay.openTime,
+				savedDay.closeTime,
+				savedDay.isChecked,
+				savedDay.id,
+			);
+		});
 	}
 
 	public mapWorkingHours(): WorkingHoursDto[] {

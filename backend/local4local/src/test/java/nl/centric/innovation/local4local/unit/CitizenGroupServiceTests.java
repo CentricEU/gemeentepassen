@@ -77,7 +77,7 @@ class CitizenGroupServiceTests {
         UUID tenantId = UUID.randomUUID();
         Tenant tenant = new Tenant();
         tenant.setId(tenantId);
-        tenant.setWage(494.08);
+        tenant.setWage(BigDecimal.valueOf(494.08));
 
         CitizenGroup entity = CitizenGroup.fromDto(dto, tenantId);
 
@@ -155,7 +155,7 @@ class CitizenGroupServiceTests {
         UUID tenantId = UUID.randomUUID();
         Tenant tenant = new Tenant();
         tenant.setId(tenantId);
-        tenant.setWage(494.08);
+        tenant.setWage(BigDecimal.valueOf(494.08));
 
         // When
         when(principalService.getTenantId()).thenReturn(tenantId);
@@ -222,7 +222,7 @@ class CitizenGroupServiceTests {
         UUID tenantId = UUID.randomUUID();
         Tenant tenant = new Tenant();
         tenant.setId(tenantId);
-        tenant.setWage(494.08); // so expected income = 494.08
+        tenant.setWage(BigDecimal.valueOf(494.08)); // so expected income = 494.08
 
         // When
         when(principalService.getTenantId()).thenReturn(tenantId);

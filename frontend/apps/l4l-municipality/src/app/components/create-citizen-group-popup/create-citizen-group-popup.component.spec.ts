@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
-import { CitizenGroupAge, CitizenGroupDto, CitizenGroupsService, EligibilityCriteria, RequiredDocuments } from '@frontend/common';
+import {
+	CitizenGroupAge,
+	CitizenGroupDto,
+	CitizenGroupsService,
+	EligibilityCriteria,
+	RequiredDocuments,
+} from '@frontend/common';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { DialogService } from '@windmill/ng-windmill/dialog';
+import { DialogService } from '@windmill/ng-windmill/deprecated-dialog';
 import DOMPurify from 'dompurify';
 import { of } from 'rxjs';
 
@@ -64,11 +70,10 @@ describe('CreateCitizenGroupPopupComponent', () => {
 		httpClientSpy = { post: jest.fn() };
 
 		await TestBed.configureTestingModule({
-			imports: [CreateCitizenGroupPopupComponent, TranslateModule.forRoot()],
+			imports: [CreateCitizenGroupPopupComponent, TranslateModule.forRoot(), HttpClientTestingModule],
 			providers: [
 				TranslateService,
 				{ provide: 'env', useValue: environmentMock },
-				{ provide: HttpClient, useValue: httpClientSpy },
 				{ provide: MatDialogRef, useValue: dialogRefStub },
 				{ provide: DialogService, useValue: dialogServiceMock },
 				{ provide: CitizenGroupsService, useValue: citizenGroupServiceMock },
@@ -246,7 +251,7 @@ describe('CreateCitizenGroupPopupComponent', () => {
 
 			component.createCitizenGroupForm.get('threshold')?.setValue(-10);
 
-			expect(component.createCitizenGroupForm.get('maxIncome')?.value).toBe('');
+			expect(component.createCitizenGroupForm.get('maxIncome')?.value).toBe('€200,00');
 		});
 
 		it('should set maxIncome to empty when threshold is not provided', () => {

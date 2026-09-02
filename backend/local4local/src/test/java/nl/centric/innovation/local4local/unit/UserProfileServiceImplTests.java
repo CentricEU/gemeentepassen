@@ -108,7 +108,6 @@ public class UserProfileServiceImplTests {
 
         // When
         when(principleService.getUser()).thenReturn(user);
-        when(userRepository.save(any(User.class))).thenReturn(user);
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // Verify

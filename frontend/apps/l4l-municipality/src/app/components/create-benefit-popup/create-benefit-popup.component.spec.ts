@@ -19,10 +19,10 @@ import {
 import { CustomDialogComponent, CustomDialogConfigUtil } from '@frontend/common-ui';
 import { TranslateModule } from '@ngx-translate/core';
 import DOMPurify from 'dompurify';
+import * as moment from 'moment';
 import { of, throwError } from 'rxjs';
 
 import { CreateBenefitPopupComponent } from './create-benefit-popup.component';
-import * as moment from 'moment';
 
 describe('CreateBenefitPopupComponent', () => {
 	let component: CreateBenefitPopupComponent;
@@ -325,7 +325,7 @@ describe('CreateBenefitPopupComponent', () => {
 			component.createNewBenefit();
 
 			expect(component['formValuesToBenefitDto']).toHaveReturnedWith(
-				new BenefitDto('Benefit Name', 'Benefit Description', '2023-01-01', '2023-12-31', ['id1'], 20),
+				new BenefitDto('Benefit Name', 'Benefit Description', '2023-01-01', '2023-12-31', ['id1'], 20, ''),
 			);
 		});
 	});

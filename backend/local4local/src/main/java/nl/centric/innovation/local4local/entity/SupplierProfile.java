@@ -1,5 +1,10 @@
 package nl.centric.innovation.local4local.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,13 +12,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import nl.centric.innovation.local4local.dto.SupplierProfileDto;
 import nl.centric.innovation.local4local.dto.SupplierProfilePatchDto;
+import org.javers.core.metamodel.annotation.DiffIgnore;
 import org.locationtech.jts.geom.Geometry;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+/**
+ * @DiffIgnore is used to ignore the geometry coordinates field when comparing SupplierProfile entities with JaVers.
+ */
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -55,9 +59,11 @@ public class SupplierProfile extends BaseEntity {
     private String accountManager;
 
     @Column(name = "coordinates_string")
+    @DiffIgnore
     private String coordinatesString;
 
     @Column(name = "coordinates", columnDefinition = "Geometry")
+    @DiffIgnore
     private Geometry coordinates;
 
     @ManyToOne
@@ -97,7 +103,7 @@ public class SupplierProfile extends BaseEntity {
                 .legalForm(LegalForm.builder().id(dto.legalForm()).build())
                 .groupName(Group.builder().id(dto.group()).build())
                 .category(Category.builder().id(dto.category()).build())
-                .subcategory(Subcategory.builder().id(dto.subcategory()).build())
+                .subcategory(dto.subcategory() != null ? Subcategory.builder().id(dto.subcategory()).build() : null)
                 .companyBranchAddress(dto.companyBranchAddress())
                 .branchProvince(dto.branchProvince())
                 .branchZip(dto.branchZip())

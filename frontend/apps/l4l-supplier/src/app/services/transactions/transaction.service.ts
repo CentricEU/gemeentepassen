@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { Environment, MonthYearEntry, TransactionTableDto, ValidatedCode } from '@frontend/common';
-import { Observable } from 'rxjs';
+import { Environment, TransactionTableDto, ValidatedCode } from '@frontend/common';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
 	providedIn: 'root',
@@ -16,55 +16,50 @@ export class TransactionService {
 		return this.httpClient.get<number[]>(`${this.environment.apiPath}/transactions/supplier/years`);
 	}
 
-	public getTransactions(
-		page: number,
-		size: number,
-		month?: number,
-		year?: number,
-	): Observable<TransactionTableDto[]> {
-		let httpParams = new HttpParams().set('page', page).set('size', size);
-
-		if (month || year) {
-			const selectedDate = new MonthYearEntry('', month, year);
-			httpParams = this.addMonthAndYearToParams(httpParams, selectedDate);
-		}
-
-		return this.httpClient.get<TransactionTableDto[]>(
-			`${this.environment.apiPath}/transactions/supplier/filter-by-month-and-year`,
-			{ params: httpParams },
-		);
-	}
-
 	public countAllTransactions(): Observable<number> {
 		return this.httpClient.get<number>(`${this.environment.apiPath}/transactions/supplier/count-all`);
 	}
 
-	public countCurrentMonthTransactions(selectedDate?: MonthYearEntry): Observable<number> {
-		let httpParams = new HttpParams();
-
-		if (selectedDate) {
-			httpParams = this.addMonthAndYearToParams(httpParams, selectedDate);
+	public countDateIntervalTransactions(
+		startDate: string | undefined,
+		endDate: string | undefined,
+	): Observable<number> {
+		if (!startDate || !endDate) {
+			return this.httpClient.get<number>(`${this.environment.apiPath}/transactions/supplier/count-all`);
 		}
 
-		return this.httpClient.get<number>(
-			`${this.environment.apiPath}/transactions/supplier/count-by-month-and-year`,
-			{
-				params: httpParams,
-				responseType: 'json',
-			},
-		);
+		let httpParams = new HttpParams();
+
+		httpParams = httpParams.set('startDate', startDate);
+		httpParams = httpParams.set('endDate', endDate);
+
+		return this.httpClient.get<number>(`${this.environment.apiPath}/transactions/supplier/count`, {
+			params: httpParams,
+			responseType: 'json',
+		});
+	}
+
+	public getDateIntervalTransactions(
+		page: number,
+		size: number,
+		startDate: string | undefined,
+		endDate: string | undefined,
+	): Observable<TransactionTableDto[]> {
+		if (!startDate || !endDate) {
+			return of([]);
+		}
+
+		let httpParams = new HttpParams().set('page', page).set('size', size);
+
+		httpParams = httpParams.set('startDate', startDate);
+		httpParams = httpParams.set('endDate', endDate);
+
+		return this.httpClient.get<TransactionTableDto[]>(`${this.environment.apiPath}/transactions/supplier/filter`, {
+			params: httpParams,
+		});
 	}
 
 	public getAllValidatedCodes(): Observable<ValidatedCode[]> {
 		return this.httpClient.get<ValidatedCode[]>(`${this.environment.apiPath}/transactions/supplier/all`);
-	}
-
-	private addMonthAndYearToParams(httpParams: HttpParams, selectedDate: MonthYearEntry): HttpParams {
-		const { monthValue, year } = selectedDate;
-
-		if (monthValue) httpParams = httpParams.set('month', monthValue);
-		if (year) httpParams = httpParams.set('year', year);
-
-		return httpParams;
 	}
 }

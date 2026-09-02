@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Locale;
 
 import nl.centric.innovation.local4local.service.impl.MailTemplateBuilderImpl;
@@ -18,31 +19,24 @@ import nl.centric.innovation.local4local.util.MailUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
-import com.amazonaws.services.simpleemail.model.Body;
-import com.amazonaws.services.simpleemail.model.Content;
-import com.amazonaws.services.simpleemail.model.Destination;
-import com.amazonaws.services.simpleemail.model.Message;
-import com.amazonaws.services.simpleemail.model.MessageRejectedException;
-import com.amazonaws.services.simpleemail.model.SendEmailRequest;
-import com.amazonaws.services.simpleemail.model.SendEmailResult;
-
 import lombok.SneakyThrows;
 import nl.centric.innovation.local4local.enums.EmailStructureEnum;
 import nl.centric.innovation.local4local.service.impl.EmailServiceImpl;
-import nl.centric.innovation.local4local.service.interfaces.MailTemplateBuilder;
 import nl.centric.innovation.local4local.util.MailTemplate;
+import software.amazon.awssdk.services.sesv2.SesV2Client;
+import software.amazon.awssdk.services.sesv2.model.MessageRejectedException;
+import software.amazon.awssdk.services.sesv2.model.SendEmailRequest;
+import software.amazon.awssdk.services.sesv2.model.SendEmailResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class EmailServiceImplTests {
     @Mock
-    private AmazonSimpleEmailService amazonEmailService;
+    private SesV2Client amazonEmailService;
 
     @Mock
     private MailTemplateBuilderImpl mailTemplateBuilder;
@@ -77,8 +71,8 @@ public class EmailServiceImplTests {
 
     @Test
     public void GivenValidRequest_WhenSendEmail_ThenResponseShouldNotBeNull() {
-        when(amazonEmailService.sendEmail(expectedRequest)).thenReturn(new SendEmailResult());
-        SendEmailResult response = amazonEmailService.sendEmail(expectedRequest);
+        when(amazonEmailService.sendEmail(expectedRequest)).thenReturn(SendEmailResponse.builder().build());
+        SendEmailResponse response = amazonEmailService.sendEmail(expectedRequest);
         assertNotNull(response);
     }
 
@@ -123,14 +117,14 @@ public class EmailServiceImplTests {
         String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
 
         when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
-        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
 
         // Act
         emailService.sendOfferReviewEmail(url, toAddress, language, receiverName, supplierName, repName);
 
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
-        verify(amazonEmailService, times(1)).sendEmail(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
     }
 
     @Test
@@ -145,14 +139,14 @@ public class EmailServiceImplTests {
         String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
 
         when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
-        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
 
         // Act
         emailService.sendProfileCreatedEmail(url, toAddress, language, receiverName, supplierName, repName);
 
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
-        verify(amazonEmailService, times(1)).sendEmail(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
     }
 
     @Test
@@ -166,14 +160,14 @@ public class EmailServiceImplTests {
         String municipalityName = "MunicipalityName";
 
         when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
-        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
 
         // Act
         emailService.sendApproveProfileEmail(url, toAddress, language, receiverName, municipalityName);
 
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
-        verify(amazonEmailService, times(1)).sendEmail(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
     }
 
     @Test
@@ -185,14 +179,14 @@ public class EmailServiceImplTests {
         String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
 
         when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
-        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
 
         // When
         emailService.sendPasswordRecoveryEmail(url, toAddress, language);
 
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
-        verify(amazonEmailService, times(1)).sendEmail(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
     }
 
     @Test
@@ -207,14 +201,14 @@ public class EmailServiceImplTests {
         String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
 
         when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
-        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
 
         // When
         emailService.sendRejectSupplierEmail(url, toAddress, language, receiverName, supplierName, reason);
 
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
-        verify(amazonEmailService, times(1)).sendEmail(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
     }
 
     @Test
@@ -226,14 +220,26 @@ public class EmailServiceImplTests {
         String htmlContent = "<html><body><h1>Hello</h1></body></html>";
         String textContent = "Hello";
 
-        SendEmailRequest expectedRequest = new SendEmailRequest()
-                .withDestination(new Destination().withToAddresses(toAddr))
-                .withMessage(new Message()
-                        .withBody(new Body()
-                                .withHtml(new Content().withCharset(UTF_8).withData(htmlContent))
-                                .withText(new Content().withCharset(UTF_8).withData(textContent)))
-                        .withSubject(new Content().withCharset(UTF_8).withData(subject)))
-                .withSource(fromAddr);
+        SendEmailRequest expectedRequest = SendEmailRequest.builder()
+                .fromEmailAddress(fromAddr)
+                .destination(software.amazon.awssdk.services.sesv2.model.Destination.builder()
+                        .toAddresses(toAddr)
+                        .build())
+                .content(software.amazon.awssdk.services.sesv2.model.EmailContent.builder()
+                        .simple(software.amazon.awssdk.services.sesv2.model.Message.builder()
+                                .subject(software.amazon.awssdk.services.sesv2.model.Content.builder()
+                                        .data(subject)
+                                        .charset("UTF-8")
+                                        .build())
+                                .body(software.amazon.awssdk.services.sesv2.model.Body.builder()
+                                        .html(software.amazon.awssdk.services.sesv2.model.Content.builder()
+                                                .data(htmlContent)
+                                                .charset("UTF-8")
+                                                .build())
+                                        .build())
+                                .build())
+                        .build())
+                .build();
 
         // When
         mailUtils.sendEmail(fromAddr, toAddr, subject, htmlContent, textContent);
@@ -252,12 +258,12 @@ public class EmailServiceImplTests {
         String supplierName = "ACME Corporation";
         String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
         when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
-        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
         // When
         emailService.sendApproveOfferEmail(url, toAddress, language, receiverName, supplierName);
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
-        verify(amazonEmailService, times(1)).sendEmail(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
     }
 
     @Test
@@ -270,12 +276,12 @@ public class EmailServiceImplTests {
         String supplierName = "ACME Corporation";
         String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
         when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
-        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
         // When
         emailService.sendOfferRejectedEmail(url, toAddress, language, reason, supplierName);
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
-        verify(amazonEmailService, times(1)).sendEmail(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
     }
 
     @Test
@@ -288,13 +294,13 @@ public class EmailServiceImplTests {
         String message = "Test message";
         String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
         when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
-        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
         // When
         emailService.sendSupplierInviteEmail(url, language, tenandName, toAddress, message);
         
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
-        verify(amazonEmailService, times(1)).sendEmail(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
     }
 
     @Test
@@ -322,13 +328,13 @@ public class EmailServiceImplTests {
         String message = "Test message";
         String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
         when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
-        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
         // When
         emailService.sendConfirmAccountEmail(url, language, tenantName, toAddress);
 
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
-        verify(amazonEmailService, times(1)).sendEmail(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
     }
 
     @Test
@@ -339,14 +345,14 @@ public class EmailServiceImplTests {
         String language = "en";
         String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
         when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
-        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
 
         // When
         emailService.sendEmailAfterUserCreated(url, language, toAddress);
 
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
-        verify(amazonEmailService, times(1)).sendEmail(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
     }
 
     @Test
@@ -359,14 +365,14 @@ public class EmailServiceImplTests {
         String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
 
         when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
-        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
 
         // Act
         emailService.sendNoCategoryEmail(url, toAddress, language, message);
 
         // Assert
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
-        verify(amazonEmailService, times(1)).sendEmail(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
     }
 
     @Test
@@ -377,14 +383,34 @@ public class EmailServiceImplTests {
         String language = "en";
         String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
         when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
-        when(amazonEmailService.sendEmail(any())).thenReturn(null);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
 
         // When
         emailService.sendEmailAfterCashierCreated(url, language, toAddress);
 
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
-        verify(amazonEmailService, times(1)).sendEmail(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
     }
 
+    @Test
+    void GivenValidInformation_WHenSendProfileApprovedWithChangesEmail_ThenExpectAmazonEmailServiceToBeCalled() {
+        // Given
+        String url = "http://example.com";
+        String[] toAddress = new String[]{"to@example.com"};
+        String language = "en";
+        String receiverName = "John Doe";
+        String municipalityName = "MunicipalityName";
+        String htmlContent = "<html><body><h1>Test Content</h1></body></html>";
+
+        when(mailTemplateBuilder.buildEmailTemplate(any())).thenReturn(htmlContent);
+        when(amazonEmailService.sendEmail((SendEmailRequest) any())).thenReturn(null);
+
+        // When
+        emailService.sendProfileApprovedWithChangesEmail(url, toAddress, language, receiverName, municipalityName, List.of("Change 18", "Change 19"), false);
+
+        // Then
+        verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any());
+        verify(amazonEmailService, times(1)).sendEmail((SendEmailRequest) any());
+    }
 }
