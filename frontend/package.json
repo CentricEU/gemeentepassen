@@ -30,7 +30,7 @@
 		"@ngx-translate/http-loader": "^7.0.0",
 		"@nx/angular": "^21.3.10",
 		"@windmill/ng-windmill": "20.0.1",
-		"@windmill/windmill": "19.0.0",
+		"@windmill/windmill": "20.0.0",
 		"angular-iban": "^19.0.0",
 		"angular-oauth2-oidc": "19.0.0",
 		"canvas": "^2.11.2",
